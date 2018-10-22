@@ -27,4 +27,19 @@ public class Type5UuidGeneratorTest {
     // Throws exception if the uuid cannot be parsed as a proper UUID.
     UUID.fromString(uuid1);
   }
+
+  @Test
+  public void specialPatient() {
+    ResourceIdentity id1 =
+        ResourceIdentity.builder()
+            .system("CDW")
+            .resource("PATIENT")
+            .identifier("Same Identifier")
+            .build();
+    ResourceIdentity id2 =
+        ResourceIdentity.builder().system("NOT").resource("SPECIAL").identifier("i1").build();
+    assertThat(generator.patientIsSpecial(id1)).isTrue();
+    assertThat(generator.patientIsSpecial(id2)).isFalse();
+    assertThat(generator.apply(id1)).isEqualToIgnoringCase("Same Identifier");
+  }
 }

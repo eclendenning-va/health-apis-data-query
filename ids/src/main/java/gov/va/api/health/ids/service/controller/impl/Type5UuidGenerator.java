@@ -24,8 +24,21 @@ public class Type5UuidGenerator implements UuidGenerator {
 
   @Override
   public String apply(@NonNull ResourceIdentity resourceIdentity) {
+    if (patientIsSpecial(resourceIdentity)) {
+      return resourceIdentity.identifier();
+    }
     return Generators.nameBasedGenerator(UUID.fromString(seed))
         .generate(resourceIdentity.resource() + ":" + resourceIdentity.identifier())
         .toString();
+  }
+
+  /** Checks to see if resource is "PATIENT" and system is "CDW". */
+  public boolean patientIsSpecial(@NonNull ResourceIdentity resourceIdentity) {
+    if ("CDW".equals(resourceIdentity.system())
+        && ("PATIENT".equals(resourceIdentity.resource()))) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }
