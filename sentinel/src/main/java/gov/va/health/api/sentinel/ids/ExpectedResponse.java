@@ -8,6 +8,10 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 
+/**
+ * A decorator for the standard Rest Assured response that adds a little more error support, by
+ * automatically logging everything if an validation occurs.
+ */
 @Value
 @AllArgsConstructor(staticName = "of")
 public class ExpectedResponse {
@@ -30,7 +34,10 @@ public class ExpectedResponse {
     return this;
   }
 
-  /** Expect the body to be JSON represented by the given type. */
+  /**
+   * Expect the body to be JSON represented by the given type, using the project standard {@link
+   * JacksonConfig} object mapper.
+   */
   public <T> T expect(Class<T> type) {
     try {
       return JacksonConfig.createMapper().readValue(response().asByteArray(), type);
@@ -40,7 +47,10 @@ public class ExpectedResponse {
     }
   }
 
-  /** Expect the body to be a JSON list represented by the given type. */
+  /**
+   * Expect the body to be a JSON list represented by the given type, using the project standard
+   * {@link JacksonConfig} object mapper.
+   */
   public <T> List<T> expectListOf(Class<T> type) {
     try {
       ObjectMapper mapper = JacksonConfig.createMapper();

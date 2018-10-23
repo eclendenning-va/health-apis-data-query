@@ -7,16 +7,21 @@ import java.util.function.Supplier;
 import lombok.Builder;
 import lombok.Value;
 
+/**
+ * This test client supports basic interaction with a service. It assumes that only one content-type
+ * is supported, which should be specified.
+ */
 @Value
 @Builder
 public class BasicTestClient implements TestClient {
 
   private final ServiceDefinition service;
   String contentType;
+  /** For post requests, this mapper will be used to convert the object to JSON or XML. */
   Supplier<ObjectMapper> mapper;
 
   @Override
-  public ExpectedResponse get(String path, String params) {
+  public ExpectedResponse get(String path, String... params) {
     return ExpectedResponse.of(
         service()
             .requestSpecification()

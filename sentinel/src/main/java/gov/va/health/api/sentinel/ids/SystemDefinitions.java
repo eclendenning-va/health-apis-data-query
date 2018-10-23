@@ -3,6 +3,7 @@ package gov.va.health.api.sentinel.ids;
 import lombok.NoArgsConstructor;
 import lombok.Value;
 
+/** The standard system configurations for typical environments like QA or PROD. */
 @Value
 @NoArgsConstructor(staticName = "get")
 public class SystemDefinitions {
