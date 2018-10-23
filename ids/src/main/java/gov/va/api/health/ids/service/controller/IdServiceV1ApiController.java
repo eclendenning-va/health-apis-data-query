@@ -50,7 +50,7 @@ public class IdServiceV1ApiController {
             .stream()
             .map(ResourceIdentityDetail::asResourceIdentity)
             .collect(Collectors.toList());
-    log.info("Found {} identities for {}", identities.size(), publicId);
+    log.info("Found {} identities for {}", identities.size(), safe(publicId));
 
     if (identities.isEmpty()) {
       throw new UnknownIdentity(publicId);
@@ -102,6 +102,14 @@ public class IdServiceV1ApiController {
         .resource(resourceIdentity.resource())
         .identifier(resourceIdentity.identifier())
         .build();
+  }
+
+  /** Sanitize strings to prevent log forgery. */
+  private String safe(String value) {
+    if (value == null) {
+      return null;
+    }
+    return value.replaceAll("[\\s\r\n]", "");
   }
 
   /**
