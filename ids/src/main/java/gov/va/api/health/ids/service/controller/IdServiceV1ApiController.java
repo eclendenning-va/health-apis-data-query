@@ -35,7 +35,7 @@ public class IdServiceV1ApiController {
 
   /** Implementation of GET /v1/ids/{publicId}. See api-v1.yaml. */
   @RequestMapping(
-    value = "/v1/ids/{publicId}",
+    value = {"/v1/ids/{publicId}", "/resourceIdentity/{publicId}"},
     produces = {"application/json"},
     method = RequestMethod.GET
   )
@@ -50,7 +50,6 @@ public class IdServiceV1ApiController {
             .stream()
             .map(ResourceIdentityDetail::asResourceIdentity)
             .collect(Collectors.toList());
-
     log.info("Found {}", identities);
 
     return ResponseEntity.ok().body(identities);
@@ -58,7 +57,7 @@ public class IdServiceV1ApiController {
 
   /** Implementation of POST /v1/ids. See api-v1.yaml. */
   @RequestMapping(
-    value = "v1/ids",
+    value = {"/v1/ids", "/resourceIdentity"},
     produces = {"application/json"},
     consumes = {"application/json"},
     method = RequestMethod.POST
@@ -75,7 +74,6 @@ public class IdServiceV1ApiController {
             .filter(this::isNotRegistered)
             .map(this::toDatabaseEntry)
             .collect(Collectors.toList());
-
     log.info("Register {} entries ({} are new)", identities.size(), newRegistrations.size());
     repository.saveAll(newRegistrations);
 
