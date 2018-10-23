@@ -4,17 +4,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import gov.va.api.health.ids.api.IdentityService.UnknownIdentity;
 import gov.va.api.health.ids.api.Registration;
 import gov.va.api.health.ids.api.ResourceIdentity;
 import gov.va.api.health.ids.service.controller.IdServiceV1ApiController.UuidGenerator;
 import gov.va.api.health.ids.service.controller.impl.ResourceIdentityDetail;
 import gov.va.api.health.ids.service.controller.impl.ResourceIdentityDetailRepository;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import lombok.Value;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
@@ -26,10 +30,10 @@ import org.springframework.web.server.ServerWebExchange;
 
 public class IdServiceV1ApiControllerTest {
 
+  @Rule public ExpectedException thrown = ExpectedException.none();
   @Mock ResourceIdentityDetailRepository repo;
   @Mock ServerWebExchange exchange;
   @Mock UuidGenerator uuidGenerator;
-
   IdServiceV1ApiController controller;
 
   @Before
@@ -104,6 +108,15 @@ public class IdServiceV1ApiControllerTest {
     assertThat(actual.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertThat(actual.getBody())
         .containsExactlyInAnyOrder(resourceIdentity(3), resourceIdentity(2), resourceIdentity(1));
+  }
+
+  @Test
+  public void lookupThrowsUnknownIdentityExceptionWhenNoIdentitiesAreFound() {
+    thrown.expect(UnknownIdentity.class);
+    List<ResourceIdentityDetail> searchResults = new ArrayList<>();
+    when(repo.findByUuid("x")).thenReturn(searchResults);
+
+    controller.lookup("x", exchange);
   }
 
   @Value

@@ -1,5 +1,6 @@
 package gov.va.api.health.ids.service.controller;
 
+import gov.va.api.health.ids.api.IdentityService.UnknownIdentity;
 import gov.va.api.health.ids.api.Registration;
 import gov.va.api.health.ids.api.ResourceIdentity;
 import gov.va.api.health.ids.service.controller.impl.ResourceIdentityDetail;
@@ -35,10 +36,9 @@ public class IdServiceV1ApiController {
 
   /** Implementation of GET /v1/ids/{publicId}. See api-v1.yaml. */
   @RequestMapping(
-    value = {"/v1/ids/{publicId}", "/resourceIdentity/{publicId}"},
-    produces = {"application/json"},
-    method = RequestMethod.GET
-  )
+      value = {"/v1/ids/{publicId}", "/resourceIdentity/{publicId}"},
+      produces = {"application/json"},
+      method = RequestMethod.GET)
   @SneakyThrows
   public ResponseEntity<List<ResourceIdentity>> lookup(
       @Valid @PathVariable("publicId") @Pattern(regexp = "[-A-Za-z0-9]+") String publicId,
@@ -50,18 +50,21 @@ public class IdServiceV1ApiController {
             .stream()
             .map(ResourceIdentityDetail::asResourceIdentity)
             .collect(Collectors.toList());
-    log.info("Found {}", identities);
+    log.info("Found {} identities for {}", identities.size(), safe(publicId));
+
+    if (identities.isEmpty()) {
+      throw new UnknownIdentity(publicId);
+    }
 
     return ResponseEntity.ok().body(identities);
   }
 
   /** Implementation of POST /v1/ids. See api-v1.yaml. */
   @RequestMapping(
-    value = {"/v1/ids", "/resourceIdentity"},
-    produces = {"application/json"},
-    consumes = {"application/json"},
-    method = RequestMethod.POST
-  )
+      value = {"/v1/ids", "/resourceIdentity"},
+      produces = {"application/json"},
+      consumes = {"application/json"},
+      method = RequestMethod.POST)
   public ResponseEntity<List<Registration>> register(
       @Valid @RequestBody List<ResourceIdentity> identities) {
 
@@ -99,6 +102,14 @@ public class IdServiceV1ApiController {
         .resource(resourceIdentity.resource())
         .identifier(resourceIdentity.identifier())
         .build();
+  }
+
+  /** Sanitize strings to prevent log forgery. */
+  private String safe(String value) {
+    if (value == null) {
+      return null;
+    }
+    return value.replaceAll("[\\s\r\n]", "");
   }
 
   /**
