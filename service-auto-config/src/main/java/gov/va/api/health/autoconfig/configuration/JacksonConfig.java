@@ -58,6 +58,11 @@ import org.springframework.context.annotation.Configuration;
 @Slf4j
 public class JacksonConfig {
 
+  /** Return a configured Jackson ObjectMapper. This method is useful as a supplier function. */
+  public static ObjectMapper createMapper() {
+    return new JacksonConfig().objectMapper();
+  }
+
   /**
    * Return a ready to use mapper that will work with classes adhering to the conventions described
    * in the class-level documentation.
