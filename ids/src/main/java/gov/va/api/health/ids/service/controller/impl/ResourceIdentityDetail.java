@@ -22,13 +22,13 @@ import lombok.ToString;
  *
  * <pre>
  *   CREATE TABLE `resource_identity_detail` (
- *   `pk` int(11) NOT NULL AUTO_INCREMENT,
+ *   `id` int(11) NOT NULL AUTO_INCREMENT,
  *   `identifier` varchar(45) NOT NULL,
  *   `station_identifier` varchar(45) DEFAULT NULL,
  *   `uuid` varchar(45) NOT NULL,
  *   `system` varchar(45) NOT NULL,
  *   `resource` varchar(45) NOT NULL,
- *   PRIMARY KEY (`pk`),
+ *   PRIMARY KEY (`id`),
  *   UNIQUE KEY `uuid_UNIQUE` (`uuid`),
  *   UNIQUE KEY `station_urn_UNIQUE` (`station_identifier`,`identifier`)
  * ) ENGINE=InnoDB AUTO_INCREMENT=3353 DEFAULT CHARSET=utf8;
