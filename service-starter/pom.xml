@@ -9,6 +9,7 @@
   <artifactId>service-starter</artifactId>
   <packaging>pom</packaging>
   <properties>
+    <h2.version>1.4.197</h2.version>
     <docker-maven-plugin.version>0.24.0</docker-maven-plugin.version>
     <docker.organization>vasdvp</docker.organization>
     <docker.baseImage>vasdvp/health-apis-application-base</docker.baseImage>
@@ -29,6 +30,12 @@
       <groupId>gov.va.dvp</groupId>
       <artifactId>lighthouse-keystore</artifactId>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <version>${h2.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.projectlombok</groupId>
@@ -70,6 +77,18 @@
             <configuration>
               <outputDirectory>${project.build.directory}/certs</outputDirectory>
               <includeArtifactIds>lighthouse-keystore</includeArtifactIds>
+            </configuration>
+          </execution>
+          <execution>
+            <id>copy-h2</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}</outputDirectory>
+              <includeArtifactIds>h2</includeArtifactIds>
+              <stripVersion>true</stripVersion>
             </configuration>
           </execution>
         </executions>
