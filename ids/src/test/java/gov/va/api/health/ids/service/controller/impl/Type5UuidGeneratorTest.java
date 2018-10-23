@@ -29,7 +29,7 @@ public class Type5UuidGeneratorTest {
   }
 
   @Test
-  public void specialPatient() {
+  public void cdwPatientResourcesUseProvidedIdentityInsteadOfGeneratingUUID() {
     ResourceIdentity id1 =
         ResourceIdentity.builder()
             .system("CDW")
@@ -38,8 +38,8 @@ public class Type5UuidGeneratorTest {
             .build();
     ResourceIdentity id2 =
         ResourceIdentity.builder().system("NOT").resource("SPECIAL").identifier("i1").build();
-    assertThat(generator.patientIsSpecial(id1)).isTrue();
-    assertThat(generator.patientIsSpecial(id2)).isFalse();
+    assertThat(generator.isSpecialPatient(id1)).isTrue();
+    assertThat(generator.isSpecialPatient(id2)).isFalse();
     assertThat(generator.apply(id1)).isEqualToIgnoringCase("Same Identifier");
   }
 }
