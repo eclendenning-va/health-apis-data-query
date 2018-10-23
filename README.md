@@ -59,3 +59,16 @@ for environment specific information, such as database connection URLs. In produ
 production-like environments, configuration is stored in AWS S3 buckets. In local developer
 environments, configuration can be `config/` directories that are not maintained in Git. See
 a teammate for connection details to shared databases, etc.
+
+
+----
+
+## Tools
+`src/scripts` provides tools to support development activities. 
+
+> ⚠ Review each script before running to ensure you understand exactly what it does.
+
+- `init-git-secrets.sh`
+  Initializes your clone of this repository to work with git secrets.
+- `trust-dev-certs.sh`
+  Configures the `cacerts` in your Java home to trust the development certs.
