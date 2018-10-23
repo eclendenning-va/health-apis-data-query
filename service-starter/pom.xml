@@ -9,7 +9,11 @@
   <artifactId>service-starter</artifactId>
   <packaging>pom</packaging>
   <properties>
-    <h2.version>1.4.197</h2.version>
+    <docker-maven-plugin.version>0.24.0</docker-maven-plugin.version>
+    <docker.organization>vasdvp</docker.organization>
+    <docker.baseImage>vasdvp/health-apis-application-base</docker.baseImage>
+    <docker.baseVersion>latest</docker.baseVersion>
+    <docker.tag>latest</docker.tag>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -107,7 +111,7 @@
             <configuration>
               <images>
                 <image>
-                  <name>${docker.organization}/${project.artifactId}</name>
+                  <name>${docker.organization}/health-apis-${project.artifactId}</name>
                   <build>
                     <from>${docker.baseImage}:${docker.baseVersion}</from>
                     <assembly>
@@ -141,6 +145,7 @@
                 <phase>deploy</phase>
                 <goals>
                   <goal>build</goal>
+                  <goal>push</goal>
                 </goals>
               </execution>
             </executions>
