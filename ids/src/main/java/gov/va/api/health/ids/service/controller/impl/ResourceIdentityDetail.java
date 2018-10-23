@@ -46,7 +46,7 @@ public class ResourceIdentityDetail {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "pk")
+  @Column(name = "id")
   int pk;
 
   @Column(name = "identifier")
