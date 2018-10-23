@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>gov.va.api.health</groupId>
@@ -8,6 +8,13 @@
   </parent>
   <artifactId>service-starter</artifactId>
   <packaging>pom</packaging>
+  <properties>
+    <docker-maven-plugin.version>0.24.0</docker-maven-plugin.version>
+    <docker.organization>vasdvp</docker.organization>
+    <docker.baseImage>vasdvp/health-apis-application-base</docker.baseImage>
+    <docker.baseVersion>latest</docker.baseVersion>
+    <docker.tag>latest</docker.tag>
+  </properties>
   <dependencyManagement>
     <dependencies>
       <dependency>
@@ -86,7 +93,7 @@
             <configuration>
               <images>
                 <image>
-                  <name>${docker.organization}/${project.artifactId}</name>
+                  <name>${docker.organization}/health-apis-${project.artifactId}</name>
                   <build>
                     <from>${docker.baseImage}:${docker.baseVersion}</from>
                     <assembly>
@@ -120,6 +127,7 @@
                 <phase>deploy</phase>
                 <goals>
                   <goal>build</goal>
+                  <goal>push</goal>
                 </goals>
               </execution>
             </executions>
