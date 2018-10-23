@@ -18,12 +18,12 @@ The Sentinel is a set of acceptance tests that can be used to verify the correct
 ##### Usage
 
 The `Sentinel` provides the entry point for obtaining a set of test clients. Using the system
-property `env`, it determines with environment should be accessed. 
-Supported `env` values are `LOCAL`, `QA`, `STAGING`, `PROD`, and `STANDBY`. 
+property `sentinel`, it determines with environment should be accessed. 
+Supported `sentinel` values are `LOCAL`, `QA`, `STAGING`, `PROD`, and `STANDBY`. 
 For example, 
 
 ```
-mvn install -Denv=LOCAL
+mvn install -Dsentinel=LOCAL
 ```
 
 To make a service request, use the `Sentinel` to create test clients for the configured environment.

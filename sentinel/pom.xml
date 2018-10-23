@@ -96,7 +96,7 @@
       <id>local</id>
       <activation>
         <property>
-          <name>env</name>
+          <name>sentinel</name>
           <value>LOCAL</value>
         </property>
       </activation>
