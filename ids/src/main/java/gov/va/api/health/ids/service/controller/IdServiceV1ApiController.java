@@ -5,7 +5,6 @@ import gov.va.api.health.ids.api.ResourceIdentity;
 import gov.va.api.health.ids.service.controller.impl.ResourceIdentityDetail;
 import gov.va.api.health.ids.service.controller.impl.ResourceIdentityDetailRepository;
 import java.util.List;
-import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
@@ -51,7 +50,6 @@ public class IdServiceV1ApiController {
             .stream()
             .map(ResourceIdentityDetail::asResourceIdentity)
             .collect(Collectors.toList());
-    log.error(publicId);
     log.info("Found {}", identities);
 
     return ResponseEntity.ok().body(identities);
@@ -76,7 +74,6 @@ public class IdServiceV1ApiController {
             .filter(this::isNotRegistered)
             .map(this::toDatabaseEntry)
             .collect(Collectors.toList());
-    log.info("{}", identities);
     log.info("Register {} entries ({} are new)", identities.size(), newRegistrations.size());
     repository.saveAll(newRegistrations);
 
