@@ -8,6 +8,9 @@
 
 cd $(dirname $0)
 
+set -e
+mvn clean package -DskipTests -P'!standard'
+
 echo "Running ID service with embedded H2 database"
 
 if [ -z "$HEALTH_APIS_CERT_PASSWORD" ]

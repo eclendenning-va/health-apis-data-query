@@ -13,7 +13,7 @@ public class ResourceIdentityDetailTest {
 
     // has no arg constructor
     ResourceIdentityDetail detail = new ResourceIdentityDetail();
-    detail.id(1);
+    detail.pk(1);
     detail.identifier("i1");
     detail.resource("r1");
     detail.system("s1");
@@ -21,8 +21,8 @@ public class ResourceIdentityDetailTest {
     detail.uuid("youyuoueyedee");
 
     assertThat(detail.hashCode()).isEqualTo(Objects.hash(1));
-    assertThat(detail).isEqualTo(ResourceIdentityDetail.builder().id(1).build());
-    assertThat(detail).isNotEqualTo(ResourceIdentityDetail.builder().id(2).build());
+    assertThat(detail).isEqualTo(ResourceIdentityDetail.builder().pk(1).build());
+    assertThat(detail).isNotEqualTo(ResourceIdentityDetail.builder().pk(2).build());
     assertThat(detail).isNotEqualTo(null);
     assertThat(detail).isEqualTo(detail);
     detail.toString();

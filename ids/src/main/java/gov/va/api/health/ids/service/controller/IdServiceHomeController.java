@@ -21,7 +21,7 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 @Controller
 public class IdServiceHomeController {
 
-  private static YAMLMapper yamlMapper = new YAMLMapper();
+  private static final YAMLMapper MAPPER = new YAMLMapper();
 
   @Value("classpath:/api-v1.yaml")
   private Resource openapi;
@@ -48,7 +48,7 @@ public class IdServiceHomeController {
   @GetMapping(value = "/openapi.json", produces = "application/json")
   @ResponseBody
   public Object openapiJson() throws IOException {
-    return IdServiceHomeController.yamlMapper.readValue(openapiContent(), Object.class);
+    return IdServiceHomeController.MAPPER.readValue(openapiContent(), Object.class);
   }
 
   @Bean

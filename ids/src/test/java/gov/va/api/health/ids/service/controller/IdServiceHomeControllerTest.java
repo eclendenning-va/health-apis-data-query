@@ -2,22 +2,19 @@ package gov.va.api.health.ids.service.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import gov.va.api.health.ids.service.controller.impl.ResourceIdentityDetailRepository;
 import java.nio.charset.StandardCharsets;
 import lombok.SneakyThrows;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.util.StreamUtils;
 
 @RunWith(SpringRunner.class)
-@WebFluxTest
+@WebFluxTest({IdServiceHomeController.class})
 public class IdServiceHomeControllerTest {
-  @MockBean ResourceIdentityDetailRepository resources;
 
   @Autowired private WebTestClient client;
 

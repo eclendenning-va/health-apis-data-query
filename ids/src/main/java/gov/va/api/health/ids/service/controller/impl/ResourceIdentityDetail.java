@@ -9,6 +9,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.Max;
+import javax.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -46,10 +47,11 @@ public class ResourceIdentityDetail {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id")
-  int id;
+  int pk;
 
   @Column(name = "identifier")
   @Max(45)
+  @NotBlank
   String identifier;
 
   @Column(name = "station_identifier")
@@ -58,14 +60,17 @@ public class ResourceIdentityDetail {
 
   @Column(name = "uuid")
   @Max(45)
+  @NotBlank
   String uuid;
 
   @Column(name = "system")
   @Max(45)
+  @NotBlank
   String system;
 
   @Column(name = "resource")
   @Max(45)
+  @NotBlank
   String resource;
 
   @Override
@@ -77,12 +82,12 @@ public class ResourceIdentityDetail {
       return false;
     }
     ResourceIdentityDetail that = (ResourceIdentityDetail) o;
-    return id == that.id;
+    return pk == that.pk;
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id);
+    return Objects.hash(pk);
   }
 
   /** Convert this database entity into a more friendly, non-JPA form. */

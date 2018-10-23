@@ -1,6 +1,7 @@
 package gov.va.api.health.ids.api;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import javax.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Value;
 
@@ -8,7 +9,7 @@ import lombok.Value;
 @Builder(toBuilder = true)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class ResourceIdentity {
-  String identifier;
-  String system;
-  String resource;
+  @NotBlank String identifier;
+  @NotBlank String system;
+  @NotBlank String resource;
 }
