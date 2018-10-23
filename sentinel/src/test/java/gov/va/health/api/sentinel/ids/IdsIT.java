@@ -7,7 +7,6 @@ import gov.va.api.health.ids.api.ResourceIdentity;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class IdsIT {
@@ -95,7 +94,6 @@ public class IdsIT {
     client().post("/api/v1/ids", Arrays.asList(identity)).expect(400);
   }
 
-  @Ignore("API-89")
   @Test
   public void lookupReturns404ForUnknownId() {
     client().get("/api/v1/ids/{id}", UUID.randomUUID().toString()).expect(404);
