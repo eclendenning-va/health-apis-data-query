@@ -30,9 +30,19 @@ fi
 
 APPLICATION_JAR=$(find target -maxdepth 1 -type f -name "ids-*.jar")
 APPLICATION_CLASS=gov.va.api.health.ids.service.Application
-  
+
+CLASSPATH=$APPLICATION_JAR:target/h2.jar 
+
+#
+# Deal with windows path which wants semi's. Also make sure there are no spaces by
+# using DOS names.
+#
+shopt -s nocasematch
+[[ "$OS" =~ windows.* ]] && CLASSPATH=$(cygpath --path --dos --mixed "$CLASSPATH") 
+
+
 java \
-  -cp $APPLICATION_JAR:target/h2.jar \
+  -cp "$CLASSPATH" \
   -Dloader=$APPLICATION_CLASS \
   -Dspring.jpa.generate-ddl=true \
   -Dspring.jpa.hibernate.ddl-auto=create-drop \
