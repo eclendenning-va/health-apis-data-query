@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -24,6 +26,7 @@ public class Fhir {
       "^[0-9]{4}(-(0[1-9]|1[0-2])(-(0[0-9]|[1-2][0-9]|3[0-1])(T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](\\.[0-9]+)?(Z|(\\+|-)((0[0-9]|1[0-3]):[0-5][0-9]|14:00)))))$";
 
   public static final String OID = "urn:oid:[0-2](\\.[1-9]\\d*)+";
+  public static final String XHTML = "<.+>";
 
   public interface Element {
     String id();
@@ -229,6 +232,49 @@ public class Fhir {
       anonymous,
       old,
       maiden
+    }
+  }
+
+  @Data
+  @Builder
+  @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+  public static class Meta implements Element {
+    @Pattern(regexp = ID)
+    String id;
+
+    @Valid List<Extension> extension;
+
+    @Pattern(regexp = ID)
+    String versionId;
+
+    @Pattern(regexp = INSTANT)
+    String lastUpdated;
+
+    List<@Pattern(regexp = URI) String> profile;
+    @Valid List<Coding> security;
+    @Valid List<Coding> tag;
+  }
+
+  @Data
+  @Builder
+  @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+  public static class Narrative implements Element {
+    @Pattern(regexp = ID)
+    String id;
+
+    @Valid List<Extension> extension;
+
+    @NotNull NarrativeStatus status;
+
+    @NotBlank
+    @Pattern(regexp = XHTML)
+    String div;
+
+    public enum NarrativeStatus {
+      generated,
+      extensions,
+      additional,
+      empty
     }
   }
 
