@@ -1,6 +1,7 @@
 package gov.va.api.health.autoconfig.configuration;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
@@ -77,6 +78,7 @@ public class JacksonConfig {
             .enable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
             .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
             .enable(MapperFeature.AUTO_DETECT_FIELDS)
+            .setSerializationInclusion(Include.NON_NULL)
             .setVisibility(PropertyAccessor.ALL, Visibility.ANY);
     return mapper;
   }
