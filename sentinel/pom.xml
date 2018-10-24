@@ -108,7 +108,7 @@
             <configuration>
               <name>ids</name>
               <waitForInterrupt>false</waitForInterrupt>
-              <processLogFile>${project.build.directory}/ids.log</processLogFile>
+             <!-- <processLogFile>${project.build.directory}/ids.log</processLogFile> -->
               <healthcheckUrl>https://localhost:8089/actuator/health</healthcheckUrl>
               <skip>${sentinel.skipLaunch}</skip>
               <arguments>
