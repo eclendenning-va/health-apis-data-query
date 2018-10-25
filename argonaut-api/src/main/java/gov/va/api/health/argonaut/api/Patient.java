@@ -32,25 +32,26 @@ public class Patient {
 
   @Valid List<Resource> contained;
 
-  @Valid ArgoRaceExtension argoRace;
+  @NotBlank @Valid ArgoRaceExtension argoRace;
 
-  @Valid ArgoEthnicityExtension argoEthnicity;
+  @NotBlank @Valid ArgoEthnicityExtension argoEthnicity;
 
-  @Valid ArgoBirthSexExtension argoBirthSex;
+  @NotBlank @Valid ArgoBirthSexExtension argoBirthSex;
 
-  @Valid Identifier identifier;
+  @NotBlank @Valid Identifier identifier;
 
   @Valid Extension extension;
 
-  @Valid Extension modifierExtension;
+  @Valid List<Extension> modifierExtension;
 
   Boolean active;
 
-  @Valid HumanName name;
+  @NotBlank @Valid List<HumanName> name;
 
-  @Valid ContactPoint telecom;
+  @Valid List<ContactPoint> telecom;
 
   @Pattern(regexp = Fhir.CODE)
+  @NotBlank
   Gender gender;
 
   @Pattern(regexp = Fhir.DATE)
@@ -73,7 +74,7 @@ public class Patient {
 
   @Valid List<Contact> contact;
 
-  @Valid List<Communication> communication;
+  @NotBlank @Valid List<Communication> communication;
 
   @Valid List<Reference> careProvider;
 
