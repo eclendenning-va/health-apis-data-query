@@ -62,7 +62,7 @@ public class Patient {
   @Pattern(regexp = Fhir.DATETIME)
   String deceasedDateTime;
 
-  @Valid Address address;
+  @Valid List<Address> address;
 
   @Valid CodeableConcept maritalStatus;
 

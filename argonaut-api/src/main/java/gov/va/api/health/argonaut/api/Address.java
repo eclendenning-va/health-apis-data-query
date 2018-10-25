@@ -34,7 +34,7 @@ public class Address implements Element {
     old
   }
 
-  private enum AddressType {
+  public enum AddressType {
     postal,
     physical,
     both

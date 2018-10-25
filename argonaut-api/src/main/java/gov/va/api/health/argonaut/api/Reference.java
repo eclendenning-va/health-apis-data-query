@@ -10,12 +10,12 @@ import lombok.Data;
 @Data
 @Builder
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-public class Reference implements Fhir.Element {
+
+public class Reference implements Element {
   @Pattern(regexp = Fhir.ID)
   String id;
 
-  @Valid List<Fhir.Extension> extension;
-
+  @Valid List<Extension> extension;
   String reference;
   String display;
 }
