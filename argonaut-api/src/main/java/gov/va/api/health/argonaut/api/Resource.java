@@ -2,11 +2,10 @@ package gov.va.api.health.argonaut.api;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Builder;
-import lombok.Data;
-
 import javax.validation.Valid;
 import javax.validation.constraints.Pattern;
+import lombok.Builder;
+import lombok.Data;
 
 @Data
 @Builder
@@ -23,4 +22,4 @@ public class Resource {
 
   @Pattern(regexp = Fhir.CODE)
   String language;
-    }
+}

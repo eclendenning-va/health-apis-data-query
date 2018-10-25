@@ -1,34 +1,33 @@
 package gov.va.api.health.argonaut.api;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import lombok.Builder;
-import lombok.Data;
-
+import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
-import java.util.List;
+import lombok.Builder;
+import lombok.Data;
 
 @Data
 @Builder
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class Narrative implements Element {
-    @Pattern(regexp = Fhir.ID)
-    String id;
+  @Pattern(regexp = Fhir.ID)
+  String id;
 
-    @Valid List<Extension> extension;
+  @Valid List<Extension> extension;
 
-    @NotNull NarrativeStatus status;
+  @NotNull NarrativeStatus status;
 
-    @NotBlank
-    @Pattern(regexp = Fhir.XHTML)
-    String div;
+  @NotBlank
+  @Pattern(regexp = Fhir.XHTML)
+  String div;
 
-    public enum NarrativeStatus {
-        generated,
-        extensions,
-        additional,
-        empty
-    }
+  public enum NarrativeStatus {
+    generated,
+    extensions,
+    additional,
+    empty
+  }
 }

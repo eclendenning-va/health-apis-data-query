@@ -1,15 +1,6 @@
 package gov.va.api.health.argonaut.api;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import java.util.List;
-import javax.validation.Valid;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -27,5 +18,4 @@ public class Fhir {
 
   public static final String OID = "urn:oid:[0-2](\\.[1-9]\\d*)+";
   public static final String XHTML = "<.+>";
-
 }
