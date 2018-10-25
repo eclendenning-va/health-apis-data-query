@@ -27,7 +27,7 @@ public class BasicTestClient implements TestClient {
             .requestSpecification()
             .contentType(contentType())
             .request()
-            .request(Method.GET, path, params));
+            .request(Method.GET, path, (Object[]) params));
   }
 
   @Override
