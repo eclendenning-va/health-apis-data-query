@@ -44,6 +44,7 @@
     <module>service-auto-config</module>
     <module>ids-api</module>
     <module>ids</module>
+    <module>mr-anderson</module>
     <module>sentinel</module>
     <!--
     <module>mr-anderson</module>
@@ -224,7 +225,7 @@
                 <phase>process-sources</phase>
                 <configuration>
                   <target>
-                    <fixcrlf eof="remove" eol="lf" excludes="**/*.png" includes="pom.xml,*.md,src/**" srcDir="${project.basedir}"/>
+                    <fixcrlf eof="remove" eol="lf" excludes="**/*.png,**/*.jks" includes="pom.xml,*.md,src/**" srcDir="${project.basedir}"/>
                   </target>
                 </configuration>
                 <goals>
