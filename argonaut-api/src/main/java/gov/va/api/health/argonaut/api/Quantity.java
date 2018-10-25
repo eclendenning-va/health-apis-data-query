@@ -1,29 +1,28 @@
 package gov.va.api.health.argonaut.api;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import lombok.Builder;
-import lombok.Data;
-
+import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.Pattern;
-import java.util.List;
+import lombok.Builder;
+import lombok.Data;
 
 @Data
 @Builder
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class Quantity implements Element {
-    @Pattern(regexp = Fhir.ID)
-    String id;
+  @Pattern(regexp = Fhir.ID)
+  String id;
 
-    @Valid List<Extension> extension;
+  @Valid List<Extension> extension;
 
-    Double value;
+  Double value;
 
-    @Pattern(regexp = "(<|<=|>=|>)")
-    String comparator;
+  @Pattern(regexp = "(<|<=|>=|>)")
+  String comparator;
 
-    String unit;
+  String unit;
 
-    @Pattern(regexp = Fhir.CODE)
-    String code;
+  @Pattern(regexp = Fhir.CODE)
+  String code;
 }

@@ -1,22 +1,21 @@
 package gov.va.api.health.argonaut.api;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import lombok.Builder;
-import lombok.Data;
-
+import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.Pattern;
-import java.util.List;
+import lombok.Builder;
+import lombok.Data;
 
 @Data
 @Builder
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class Ratio implements Element {
-    @Pattern(regexp = Fhir.ID)
-    String id;
+  @Pattern(regexp = Fhir.ID)
+  String id;
 
-    @Valid List<Extension> extension;
+  @Valid List<Extension> extension;
 
-    @Valid Quantity numerator;
-    @Valid Quantity denominator;
+  @Valid Quantity numerator;
+  @Valid Quantity denominator;
 }

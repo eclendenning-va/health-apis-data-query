@@ -2,14 +2,12 @@ package gov.va.api.health.argonaut.api;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import lombok.Builder;
 import lombok.Value;
-
-import java.util.List;
-import java.util.Optional;
 
 @Value
 @Builder
@@ -24,7 +22,7 @@ public class Patient {
   @Valid Meta meta;
 
   @Pattern(regexp = Fhir.URI)
-      @Schema()
+  @Schema()
   String implicitRules;
 
   @Pattern(regexp = Fhir.CODE)
@@ -55,18 +53,19 @@ public class Patient {
   @Pattern(regexp = Fhir.CODE)
   Gender gender;
 
-  @Pattern(regexp = Fhir.DATE )
+  @Pattern(regexp = Fhir.DATE)
   String birthDate;
 
   // TODO mutualExclusive validator
   boolean deceasedBoolean;
+
   @Pattern(regexp = Fhir.DATETIME)
   String deceasedDateTime;
 
-  @Valid Address address;
+  @Valid List<Address> address;
 
   @Valid CodeableConcept maritalStatus;
-  
+
   Boolean multipleBirthBoolean;
   Integer multipleBirthInteger;
 
@@ -79,7 +78,7 @@ public class Patient {
   @Valid List<Reference> careProvider;
 
   @Valid Reference managingOrganization;
-  //link
+  // link
   @Valid List<Link> link;
 
   public enum Gender {
