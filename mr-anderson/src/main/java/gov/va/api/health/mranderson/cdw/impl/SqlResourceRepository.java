@@ -14,6 +14,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
+/**
+ * The `prc_Entity_Return` stored procedure implementation of the resource repository. No error
+ * checking is performed.
+ */
 @Component
 public class SqlResourceRepository implements ResourceRepository {
 

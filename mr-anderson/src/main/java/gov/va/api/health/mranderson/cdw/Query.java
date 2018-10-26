@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Value;
 import org.springframework.util.MultiValueMap;
 
+/** The database query */
 @Value
 @Builder(toBuilder = true)
 public class Query {
@@ -24,7 +25,7 @@ public class Query {
   }
 
   /** Returns an abbreviated query string that just contains the /resource:version part. */
-  public String toResourceString() {
+  String toResourceString() {
     return '/' + resource + ':' + version;
   }
 

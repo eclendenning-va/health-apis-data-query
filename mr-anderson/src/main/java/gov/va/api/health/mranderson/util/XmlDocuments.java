@@ -18,6 +18,7 @@ import org.w3c.dom.ls.LSSerializer;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+/** Utilities for working with XML documents. */
 @NoArgsConstructor(staticName = "create")
 public final class XmlDocuments {
 

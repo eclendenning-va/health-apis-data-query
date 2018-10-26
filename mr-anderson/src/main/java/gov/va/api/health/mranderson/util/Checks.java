@@ -3,6 +3,7 @@ package gov.va.api.health.mranderson.util;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+/** Utility method for preconditions. */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Checks {
 

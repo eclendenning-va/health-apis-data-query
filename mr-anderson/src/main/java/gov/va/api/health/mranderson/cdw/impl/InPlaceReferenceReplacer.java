@@ -20,6 +20,20 @@ import org.w3c.dom.traversal.DocumentTraversal;
 import org.w3c.dom.traversal.NodeFilter;
 import org.w3c.dom.traversal.NodeIterator;
 
+/**
+ * Searches for an replaces CDW identities in references in XML documents with public identities
+ * returned by the Identity Service. Reference nodes are two fold. Resource Identifier _resources_
+ * are always specified in all uppercase with underscores when interacting with the Identity
+ * Service, e.g `PATIENT` or `ALLERGY_INTOLLERANCE`. For `<cdwId>` nodes, the resource type is
+ * defined byt the resource in the query. For `<reference>` nodes, the resource type is determined
+ * by splitting the value on `/` and using the first part.
+ *
+ * <p>Internally, the document is processed by seeing if "handler" can be applied to the node. For
+ * each node with a handler, Resource Identities are created to represent the reference and
+ * collected into a single list. All of the identities are registered in a single call. Using the
+ * registration response, nodes with handlers are revisited and updated with their public identity
+ * values.
+ */
 @Slf4j
 class InPlaceReferenceReplacer {
   private final Query query;
@@ -37,6 +51,9 @@ class InPlaceReferenceReplacer {
     this.identityService = identityService;
   }
 
+  /**
+   * Update and then return the document by registering all references and replacing their values.
+   */
   Document replaceReferences() {
     MultiValueMap<String, Node> referenceNodes = collectReferenceNodes();
     if (referenceNodes.isEmpty()) {
@@ -59,11 +76,14 @@ class InPlaceReferenceReplacer {
             registration);
         return;
       }
-
       nodes.forEach(node -> handlerFor(node).updateReference(node, reference.universal()));
     };
   }
 
+  /**
+   * Make the service call to register resource identities for each reference and return the
+   * corresponding registrations.
+   */
   private List<Registration> registerIds(MultiValueMap<String, Node> referenceNodes) {
     List<ResourceIdentity> identities =
         referenceNodes
@@ -74,6 +94,16 @@ class InPlaceReferenceReplacer {
     return identityService.register(identities);
   }
 
+  /**
+   * Scan the document for reference node and record their reference value to node. It is possible
+   * the multiple nodes have the same reference. This will build map that associates all nodes that
+   * share a reference. For example,
+   *
+   * <pre>
+   *   patient/1234 = [ n1 ]
+   *   practitioner/5678 = [ n2, n3, n4 ]
+   * </pre>
+   */
   private MultiValueMap<String, Node> collectReferenceNodes() {
     if (!(document instanceof DocumentTraversal)) {
       throw new CannotTraverseDocument();
@@ -81,7 +111,8 @@ class InPlaceReferenceReplacer {
     MultiValueMap<String, Node> referenceNodes = new LinkedMultiValueMap<>();
     DocumentTraversal traversal = (DocumentTraversal) document;
     NodeIterator iterator =
-        traversal.createNodeIterator(document, NodeFilter.SHOW_ELEMENT, filter(), false);
+        traversal.createNodeIterator(
+            document, NodeFilter.SHOW_ELEMENT, referenceNodeFilter(), false);
     Node node;
     while ((node = iterator.nextNode()) != null) {
       String reference = handlerFor(node).referenceOf(node);
@@ -90,6 +121,17 @@ class InPlaceReferenceReplacer {
     return referenceNodes;
   }
 
+  private NodeFilter referenceNodeFilter() {
+    return node ->
+        handlers.stream().anyMatch(t -> t.isReference(node))
+            ? NodeFilter.FILTER_ACCEPT
+            : NodeFilter.FILTER_SKIP;
+  }
+
+  /**
+   * Get the handler for the given node or throw an exception. This method expects that determining
+   * whether or not a node qualifies for handling has already been done.
+   */
   private ReferenceNodeHandler handlerFor(Node node) {
     return handlers
         .stream()
@@ -101,23 +143,21 @@ class InPlaceReferenceReplacer {
                     "Node appears to no longer have a handler:" + node.getNodeName()));
   }
 
-  private NodeFilter filter() {
-    return node ->
-        handlers.stream().anyMatch(t -> t.isReference(node))
-            ? NodeFilter.FILTER_ACCEPT
-            : NodeFilter.FILTER_SKIP;
-  }
-
+  /** This interface defines a generic mechanism to process nodes. */
   private interface ReferenceNodeHandler {
+    /** Return true if this handler can process the given node, otherwise false. */
     boolean isReference(Node node);
 
+    /** Determine the reference value of the node in `resource/identity` form. */
     String referenceOf(Node node);
 
+    /** Update the reference value in 'resource/identity' form. */
     void updateReference(Node node, String reference);
   }
 
-  static class CannotTraverseDocument extends RuntimeException {}
+  private static class CannotTraverseDocument extends RuntimeException {}
 
+  /** Handler for {@code <reference>resource/identity</reference>} nodes */
   private static class NormalReferenceNodeHandler implements ReferenceNodeHandler {
 
     @Override
@@ -136,6 +176,10 @@ class InPlaceReferenceReplacer {
     }
   }
 
+  /**
+   * Handler for {@code <cdwId>identity</cdwId>} nodes. The Query object will be used to determine
+   * the resource type.
+   */
   private class CdwIdReferenceNodeHandler implements ReferenceNodeHandler {
 
     @Override

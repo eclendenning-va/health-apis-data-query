@@ -41,8 +41,15 @@ substitution for input and output. For queries, Mr. Anderson will perform identi
 `identifier`, `patient`, and `_id`. For returned documents, Mr. Anderson will perform registration 
 and substitution for all `reference` nodes.
 
+Reference nodes are identified as one of the following forms:
+- `<cdwId>id</cdwId>`
+- `<reference>resource/id</reference>`
+
 Resource Identifier _resources_ are always specified in all uppercase with underscores when 
-interacting with the Identity Service, e.g `PATIENT` or `ALLERGY_INTOLLERANCE`
+interacting with the Identity Service, e.g `PATIENT` or `ALLERGY_INTOLLERANCE`. 
+For `<cdwId>` nodes, the resource type is defined byt the resource in the query. 
+For `<reference>` nodes, the resource type is determined by splitting the value on `/` and
+using the first part.
 
 
 ## Behavior
