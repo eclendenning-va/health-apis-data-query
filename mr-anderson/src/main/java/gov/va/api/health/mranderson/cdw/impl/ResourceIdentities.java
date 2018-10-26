@@ -8,17 +8,21 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Value;
 
+/** Utility methods for working with CDW-related Resource Identity objects. */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 final class ResourceIdentities {
 
+  /** Return true if the given identity belongs to the CDW system. */
   static boolean isCdw(@NonNull ResourceIdentity identity) {
     return cdw().equals(identity.system());
   }
 
+  /** The CDW system value. */
   public static String cdw() {
     return "CDW";
   }
 
+  /** Convert the 'resource/identity' reference into a CDW Resource Identity instance. */
   static ResourceIdentity referenceToResourceIdentity(@NonNull String typeSlashId) {
     String[] parts = typeSlashId.split("/");
     if (parts.length != 2) {
@@ -34,6 +38,7 @@ final class ResourceIdentities {
         .build();
   }
 
+  /** Create reference pairs of CDW and Universal identities in the `resource/identity` form. */
   static ReferencePair referencesOf(@NonNull Registration registration) {
     ResourceIdentity identity = findCdwIdentity(registration);
 
@@ -45,6 +50,10 @@ final class ResourceIdentities {
         .build();
   }
 
+  /**
+   * Extract the CDW identity from the possible identities in the given registration. An error is
+   * thrown if a CDW id cannot be found.
+   */
   private static ResourceIdentity findCdwIdentity(@NonNull Registration registration) {
     return registration
         .resourceIdentities()
@@ -54,6 +63,7 @@ final class ResourceIdentities {
         .orElseThrow(() -> new IllegalArgumentException("No CDW identity for: " + registration));
   }
 
+  /** A pair of references that represent the same object, in the `resource/identity` form. */
   @Value
   @Builder
   static class ReferencePair {

@@ -13,6 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 
+/**
+ * This workhorse combines parameter identifier substitution, resource querying, database response
+ * validation, reference registration and substitution.
+ */
 @Slf4j
 @Component
 @AllArgsConstructor(onConstructor = @__({@Autowired}))

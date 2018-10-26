@@ -24,6 +24,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 
+/**
+ * Rest client for the identity service. Requires `identityservice.url` to be defined a property.
+ */
 @Component
 @AllArgsConstructor(onConstructor = @__({@Autowired}))
 @Slf4j

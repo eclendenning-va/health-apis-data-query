@@ -30,10 +30,12 @@ final class ResourceNameTranslation {
   }
 
   /**
-   * Given a FHIR name, magically turn it into an Identity Service name.
+   * Given a FHIR name, magically turn it into an Identity Service name. For example,
    *
-   * @param fhirName A CamelCase name.
-   * @return an UPPERCASE_NAME.
+   * <pre>
+   * Patient -> PATIENT
+   * AllergyIntolerance -> ALLERGY_INTOLERANCE
+   * </pre>
    */
   String fhirToIdentityService(String fhirName) {
     return Arrays.asList(StringUtils.splitByCharacterTypeCamelCase(fhirName))
@@ -43,10 +45,12 @@ final class ResourceNameTranslation {
   }
 
   /**
-   * Given an Identity Service name, magically turn it into a FHIR name.
+   * Given an Identity Service name, magically turn it into a FHIR name. For example,
    *
-   * @param identityServiceName A UPPERCASE_NAME name.
-   * @return a CamelCase.
+   * <pre>
+   * PATIENT -> Patient
+   * ALLERGY_INTOLERANCE -> AllergyIntolerance
+   * </pre>
    */
   String identityServiceToFhir(String identityServiceName) {
     return Arrays.asList(StringUtils.splitByWholeSeparator(identityServiceName, "_"))

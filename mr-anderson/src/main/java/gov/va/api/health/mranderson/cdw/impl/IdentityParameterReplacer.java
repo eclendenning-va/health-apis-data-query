@@ -12,6 +12,7 @@ import lombok.Builder;
 import lombok.Singular;
 import org.apache.commons.lang3.StringUtils;
 
+/** Leverages the Identity Service to replace _identifier_ type parameters in Queries. */
 class IdentityParameterReplacer {
 
   private final IdentityService identityService;
@@ -24,6 +25,10 @@ class IdentityParameterReplacer {
     this.identityKeys = identityKeys;
   }
 
+  /**
+   * Return a new Query that matches the given original query except identity type parameters will
+   * have been replaced with CDW identity values returned for the Identity Service.
+   */
   Query rebuildWithCdwIdentities(Query originalQuery) {
     Parameters parameters = Parameters.builder();
     for (Entry<String, List<String>> entry : originalQuery.parameters().entrySet()) {
