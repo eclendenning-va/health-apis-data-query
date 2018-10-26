@@ -12,7 +12,7 @@ import org.w3c.dom.Document;
 
 /**
  * Process the CDW prc_Entity_Return XML responses for errors, throwing {@link
- * gov.va.api.health.mranderson.cdw.Resources} exceptions as necessary
+ * gov.va.api.health.mranderson.cdw.Resources} exceptions as necessary.
  */
 class XmlResponseValidator {
   private final Query query;

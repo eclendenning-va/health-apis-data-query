@@ -9,7 +9,7 @@ import lombok.Builder;
 import lombok.Value;
 import org.springframework.util.MultiValueMap;
 
-/** The database query */
+/** The database query. */
 @Value
 @Builder(toBuilder = true)
 public class Query {

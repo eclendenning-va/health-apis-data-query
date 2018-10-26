@@ -6,7 +6,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-/** A cleaner parameter map builder based on Spring's {@link MultiValueMap}. */
+/** A cleaner parameter map builder based on Spring' MultiValueMap. */
 @NoArgsConstructor(staticName = "builder")
 public class Parameters {
 

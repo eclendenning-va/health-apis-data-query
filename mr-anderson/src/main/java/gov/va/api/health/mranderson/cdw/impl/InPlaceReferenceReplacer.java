@@ -24,9 +24,9 @@ import org.w3c.dom.traversal.NodeIterator;
  * Searches for an replaces CDW identities in references in XML documents with public identities
  * returned by the Identity Service. Reference nodes are two fold. Resource Identifier _resources_
  * are always specified in all uppercase with underscores when interacting with the Identity
- * Service, e.g `PATIENT` or `ALLERGY_INTOLLERANCE`. For `<cdwId>` nodes, the resource type is
- * defined byt the resource in the query. For `<reference>` nodes, the resource type is determined
- * by splitting the value on `/` and using the first part.
+ * Service, e.g `PATIENT` or `ALLERGY_INTOLLERANCE`. For {@code <cdwId>} nodes, the resource type is
+ * defined byt the resource in the query. For {@code <reference>} nodes, the resource type is
+ * determined by splitting the value on `/` and using the first part.
  *
  * <p>Internally, the document is processed by seeing if "handler" can be applied to the node. For
  * each node with a handler, Resource Identities are created to represent the reference and
@@ -157,7 +157,10 @@ class InPlaceReferenceReplacer {
 
   private static class CannotTraverseDocument extends RuntimeException {}
 
-  /** Handler for {@code <reference>resource/identity</reference>} nodes */
+  /**
+   * Handler for standard reference nodes following the {@code
+   * <reference>resource/identity</reference>}. convention.
+   */
   private static class NormalReferenceNodeHandler implements ReferenceNodeHandler {
 
     @Override
