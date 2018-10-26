@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import lombok.Builder;
 import lombok.Data;
@@ -16,7 +17,8 @@ public class ContactPoint implements Element {
   String id;
 
   @Valid List<Extension> extension;
-  ContactPointSystem system;
+  @NotBlank ContactPointSystem system;
+  @NotBlank ContactPointUse use;
   String value;
 
   @Min(1)
@@ -30,5 +32,13 @@ public class ContactPoint implements Element {
     email,
     pager,
     other
+  }
+
+  enum ContactPointUse {
+    home,
+    work,
+    temp,
+    old,
+    mobile
   }
 }

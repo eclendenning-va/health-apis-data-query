@@ -7,8 +7,12 @@ import gov.va.api.health.argonaut.api.Address.AddressType;
 import gov.va.api.health.argonaut.api.Address.AddressUse;
 import gov.va.api.health.argonaut.api.ArgonautService.SearchFailed;
 import gov.va.api.health.argonaut.api.ArgonautService.UnknownResource;
+import gov.va.api.health.argonaut.api.ContactPoint.ContactPointSystem;
+import gov.va.api.health.argonaut.api.ContactPoint.ContactPointUse;
+import gov.va.api.health.argonaut.api.HumanName.NameUse;
 import gov.va.api.health.argonaut.api.Identifier.IdentifierUse;
 import gov.va.api.health.argonaut.api.Narrative.NarrativeStatus;
+import gov.va.api.health.argonaut.api.Patient.Gender;
 import gov.va.api.health.autoconfig.configuration.JacksonConfig;
 import java.util.Arrays;
 import lombok.SneakyThrows;
@@ -35,14 +39,35 @@ public class ModelTest {
             .meta(testMeta)
             .implicitRules("http://HelloRules.com")
             .language("Hello Language")
-            .identifier(testIdentifier)
             .text(testNarrative)
+            .contained(Arrays.asList(testResource))
+            .argoRace(testArgoRaceExtension)
+            .argoEthnicity(testArgoEthnicityExtension)
+            .argoRace(testArgoRaceExtension)
+            .argoBirthSex(testArgoBirthSexExtension)
+            .modifierExtension(Arrays.asList(testExtension))
+            .identifier(testIdentifier)
+            .active(true)
+            .name(Arrays.asList(testName))
+            .telecom(Arrays.asList(testTelecom))
+            .gender(Gender.unknown)
+            .birthDate("2000-01-01")
+            .deceasedBoolean(false)
+            .address(Arrays.asList(testAddress))
+            .maritalStatus(testMaritalStatus)
+            .multipleBirthBoolean(false)
+            .photo(Arrays.asList(testPhoto))
+            .contact(Arrays.asList(testContact))
+            .communication(Arrays.asList(testCommunication))
+            .careProvider(Arrays.asList(testReference))
+            .managingOrganization(testReference)
+            .link(Arrays.asList(testLink))
             .build());
   }
 
   @Test
-  public void address() {
-    roundTrip(testAddress);
+  public void range() {
+    roundTrip(testRange);
   }
 
   Coding testCoding =
@@ -83,11 +108,39 @@ public class ModelTest {
           .extension(Arrays.asList(testExtension))
           .build();
 
+  Period testPeriod =
+      Period.builder()
+          .id("5678")
+          .extension(
+              Arrays.asList(Extension.builder().url("http://wtf.com").valueInteger(1).build()))
+          .start("2000-01-01T00:00:00-00:00")
+          .end("2001-01-01T00:00:00-00:00")
+          .build();
+
+  HumanName testName =
+      HumanName.builder()
+          .use(NameUse.anonymous)
+          .text("HelloText")
+          .family(Arrays.asList("HelloFamily"))
+          .given(Arrays.asList("HelloGiven"))
+          .prefix(Arrays.asList("HelloPrefix"))
+          .suffix(Arrays.asList("HelloSuffix"))
+          .period(testPeriod)
+          .build();
+
+  CodeableConcept testMaritalStatus =
+      CodeableConcept.builder().coding(Arrays.asList(testCoding)).text("HelloText").build();
+
+  CodeableConcept testLanguage =
+      CodeableConcept.builder().coding(Arrays.asList(testCoding)).text("HelloText").build();
+
+  CodeableConcept testRelationship =
+      CodeableConcept.builder().coding(Arrays.asList(testCoding)).text("HelloText").build();
+
   Address testAddress =
       Address.builder()
           .id("1234")
-          .extension(
-              Arrays.asList(Extension.builder().url("http://wtf.com").valueInteger(1).build()))
+          .extension(Arrays.asList(testExtension))
           .use(AddressUse.home)
           .type(AddressType.both)
           .text("Hello")
@@ -97,16 +150,89 @@ public class ModelTest {
           .state("Hello State")
           .postalCode("12345")
           .country("Hello Country")
-          .period(
-              Period.builder()
-                  .id("5678")
-                  .extension(
-                      Arrays.asList(
-                          Extension.builder().url("http://wtf.com").valueInteger(1).build()))
-                  .start("2000-01-01T00:00:00-00:00")
-                  .end("2001-01-01T00:00:00-00:00")
-                  .build())
+          .period(testPeriod)
           .build();
+
+  ContactPoint testTelecom =
+      ContactPoint.builder()
+          .system(ContactPointSystem.other)
+          .value("HelloValue")
+          .use(ContactPointUse.home)
+          .rank(1)
+          .period(testPeriod)
+          .build();
+
+  Reference testReference =
+      Reference.builder().reference("HelloReference").display("HelloDisplay").build();
+
+  Attachment testPhoto =
+      Attachment.builder()
+          .contentType("HelloType")
+          .language("HelloLanguage")
+          .data("HelloData")
+          .url("http://HelloUrl.com")
+          .size(1)
+          .hash("HelloHash")
+          .title("HelloTitle")
+          .creation("2000-01-01T00:00:00-00:00")
+          .build();
+
+  Contact testContact =
+      Contact.builder()
+          .id("0000")
+          .extension(Arrays.asList(testExtension))
+          .modifierExtension(Arrays.asList(testExtension))
+          .relationship(Arrays.asList(testRelationship))
+          .name(testName)
+          .telecom(Arrays.asList(testTelecom))
+          .address(testAddress)
+          .gender(Contact.Gender.unknown)
+          .organization(testReference)
+          .period(testPeriod)
+          .build();
+
+  Communication testCommunication =
+      Communication.builder()
+          .id("8888")
+          .extension(Arrays.asList(testExtension))
+          .modifierExtension(Arrays.asList(testExtension))
+          .language(testLanguage)
+          .preferred(false)
+          .build();
+
+  Link testLink =
+      Link.builder()
+          .id("7777")
+          .extension(Arrays.asList(testExtension))
+          .modifierExtension(Arrays.asList(testExtension))
+          .other(testReference)
+          .type("HelloType")
+          .build();
+
+  ArgoRaceExtension testArgoRaceExtension =
+      ArgoRaceExtension.builder()
+          .id("2222")
+          .extension(Arrays.asList(testExtension))
+          .url("http://HelloUrl.com")
+          .build();
+  ArgoEthnicityExtension testArgoEthnicityExtension =
+      ArgoEthnicityExtension.builder()
+          .id("3333")
+          .extension(Arrays.asList(testExtension))
+          .url("http://HelloUrl.com")
+          .build();
+  ArgoBirthSexExtension testArgoBirthSexExtension =
+      ArgoBirthSexExtension.builder()
+          .id("4444")
+          .extension(Arrays.asList(testExtension))
+          .url("http://HelloUrl.com")
+          .valueCode("HelloCode")
+          .build();
+
+  SimpleQuantity testSimpleQuantity =
+      SimpleQuantity.builder().value(11.11).unit("HelloUnit").build();
+
+  Range testRange = Range.builder().low(testSimpleQuantity).high(testSimpleQuantity).build();
 
   @SuppressWarnings("ThrowableNotThrown")
   @Test
