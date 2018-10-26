@@ -26,6 +26,7 @@ public class QueryTest {
     parameters.add("a", "ack");
     parameters.add("a", "ick");
     return Query.builder()
+        .profile(Profile.ARGONAUT)
         .resource("Foo")
         .version("1.00")
         .count(1)

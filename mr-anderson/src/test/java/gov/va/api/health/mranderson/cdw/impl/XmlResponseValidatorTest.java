@@ -1,6 +1,7 @@
 package gov.va.api.health.mranderson.cdw.impl;
 
 import gov.va.api.health.mranderson.Samples;
+import gov.va.api.health.mranderson.cdw.Profile;
 import gov.va.api.health.mranderson.cdw.Query;
 import gov.va.api.health.mranderson.cdw.Resources.MissingSearchParameters;
 import gov.va.api.health.mranderson.cdw.Resources.SearchFailed;
@@ -13,6 +14,7 @@ import org.w3c.dom.Document;
 public class XmlResponseValidatorTest {
   private Query query() {
     return Query.builder()
+        .profile(Profile.ARGONAUT)
         .resource("whatever")
         .version("1.00")
         .page(1)

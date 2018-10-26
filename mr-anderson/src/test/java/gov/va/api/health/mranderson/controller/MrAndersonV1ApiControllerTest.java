@@ -4,6 +4,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import gov.va.api.health.mranderson.Samples;
+import gov.va.api.health.mranderson.cdw.Profile;
 import gov.va.api.health.mranderson.cdw.Query;
 import gov.va.api.health.mranderson.cdw.Resources;
 import gov.va.api.health.mranderson.util.Parameters;
@@ -28,7 +29,7 @@ public class MrAndersonV1ApiControllerTest {
     when(resources.search(Mockito.any())).thenReturn(Samples.create().patient());
     client
         .get()
-        .uri("/api/v1/resources/Patient/1.01?identity=123")
+        .uri("/api/v1/resources/argonaut/Patient/1.01?identity=123")
         .exchange()
         .expectStatus()
         .isOk();
@@ -37,6 +38,7 @@ public class MrAndersonV1ApiControllerTest {
 
   private Query query() {
     return Query.builder()
+        .profile(Profile.ARGONAUT)
         .resource("Patient")
         .version("1.01")
         .count(15)
