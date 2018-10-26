@@ -1,4 +1,4 @@
-package gov.va.api.health.argonaut.service.controller.impl;
+package gov.va.api.health.argonaut.service;
 
 import static org.springframework.web.reactive.function.server.RequestPredicates.GET;
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
