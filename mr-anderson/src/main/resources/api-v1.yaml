@@ -6,11 +6,21 @@ servers:
 - url: https://localhost:8088/api
   description: Local instance
 paths:
-  /v1/resources/{resourceType}/{resourceVersion}:
+  /v1/resources/{profile}/{resourceType}/{resourceVersion}:
     get:
       summary: Execute a query for the resource and version
       operationId: queryResourceVersion
       parameters:
+      - in: path
+        name: profile
+        schema:
+          type: string
+          enum:
+          - argonaut
+          - dstu2
+          - stu3
+        required: true
+        description: The FHIR specification
       - in: path
         name: resourceType
         schema:

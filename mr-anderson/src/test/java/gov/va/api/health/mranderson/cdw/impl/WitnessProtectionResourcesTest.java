@@ -11,6 +11,7 @@ import gov.va.api.health.ids.api.IdentityService.UnknownIdentity;
 import gov.va.api.health.ids.api.Registration;
 import gov.va.api.health.ids.api.ResourceIdentity;
 import gov.va.api.health.mranderson.Samples;
+import gov.va.api.health.mranderson.cdw.Profile;
 import gov.va.api.health.mranderson.cdw.Query;
 import gov.va.api.health.mranderson.cdw.ResourceRepository;
 import gov.va.api.health.mranderson.cdw.Resources.MissingSearchParameters;
@@ -52,6 +53,7 @@ public class WitnessProtectionResourcesTest {
 
   private Query forResource(String identity, String value) {
     return Query.builder()
+        .profile(Profile.ARGONAUT)
         .resource("Whatever")
         .version("1.23")
         .page(1)
@@ -97,6 +99,7 @@ public class WitnessProtectionResourcesTest {
     thrown.expect(MissingSearchParameters.class);
     resources.search(
         Query.builder()
+            .profile(Profile.ARGONAUT)
             .resource("Whatever")
             .version("1.23")
             .page(1)
@@ -110,6 +113,7 @@ public class WitnessProtectionResourcesTest {
     thrown.expect(MissingSearchParameters.class);
     resources.search(
         Query.builder()
+            .profile(Profile.ARGONAUT)
             .resource("Whatever")
             .version("1.23")
             .page(1)

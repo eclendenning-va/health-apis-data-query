@@ -5,6 +5,7 @@ import static org.mockito.Mockito.when;
 import gov.va.api.health.ids.api.IdentityService.LookupFailed;
 import gov.va.api.health.ids.api.IdentityService.RegistrationFailed;
 import gov.va.api.health.ids.api.IdentityService.UnknownIdentity;
+import gov.va.api.health.mranderson.cdw.Profile;
 import gov.va.api.health.mranderson.cdw.Query;
 import gov.va.api.health.mranderson.cdw.Resources;
 import gov.va.api.health.mranderson.cdw.Resources.MissingSearchParameters;
@@ -52,6 +53,7 @@ public class WebExceptionHandlerTest {
   public static List<Object[]> parameters() {
     Query query =
         Query.builder()
+            .profile(Profile.ARGONAUT)
             .resource("Patient")
             .version("1.01")
             .count(15)
@@ -82,7 +84,7 @@ public class WebExceptionHandlerTest {
     BodySpec<ErrorResponse, ?> body =
         client
             .get()
-            .uri("/api/v1/resources/Patient/1.01?identity=123")
+            .uri("/api/v1/resources/argonaut/Patient/1.01?identity=123")
             .exchange()
             .expectStatus()
             .isEqualTo(status)
