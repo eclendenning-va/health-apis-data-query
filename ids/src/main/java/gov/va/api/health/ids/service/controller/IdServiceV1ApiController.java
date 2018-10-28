@@ -34,9 +34,9 @@ public class IdServiceV1ApiController {
   private final ResourceIdentityDetailRepository repository;
   private final UuidGenerator uuidGenerator;
 
-  /** Implementation of GET /v1/ids/{publicId}. See api-v1.yaml. */
+  /** Implementation of GET /v1/client/{publicId}. See api-v1.yaml. */
   @RequestMapping(
-    value = {"/v1/ids/{publicId}", "/resourceIdentity/{publicId}"},
+    value = {"/v1/client/{publicId}", "/resourceIdentity/{publicId}"},
     produces = {"application/json"},
     method = RequestMethod.GET
   )
@@ -60,9 +60,9 @@ public class IdServiceV1ApiController {
     return ResponseEntity.ok().body(identities);
   }
 
-  /** Implementation of POST /v1/ids. See api-v1.yaml. */
+  /** Implementation of POST /v1/client. See api-v1.yaml. */
   @RequestMapping(
-    value = {"/v1/ids", "/resourceIdentity"},
+    value = {"/v1/client", "/resourceIdentity"},
     produces = {"application/json"},
     consumes = {"application/json"},
     method = RequestMethod.POST

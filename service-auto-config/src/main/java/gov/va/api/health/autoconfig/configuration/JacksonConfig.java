@@ -2,6 +2,7 @@ package gov.va.api.health.autoconfig.configuration;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -64,21 +65,32 @@ public class JacksonConfig {
   }
 
   /**
+   * Return a configured Jackson ObjectMapper that uses the given factory. Use this method to create
+   * a Yaml mapper. This method is useful as a supplier function.
+   */
+  public static ObjectMapper createMapper(JsonFactory jsonFactory) {
+    return new JacksonConfig().configureMapper(new ObjectMapper(jsonFactory));
+  }
+
+  /** Configure the given mapper as described in the class-level documentation. */
+  private ObjectMapper configureMapper(ObjectMapper mapper) {
+    return mapper
+        .registerModule(new Jdk8Module())
+        .registerModule(new JavaTimeModule())
+        .setAnnotationIntrospector(new LombokAnnotationIntrospector())
+        .enable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+        .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
+        .enable(MapperFeature.AUTO_DETECT_FIELDS)
+        .setVisibility(PropertyAccessor.ALL, Visibility.ANY);
+  }
+
+  /**
    * Return a ready to use mapper that will work with classes adhering to the conventions described
    * in the class-level documentation.
    */
   @Bean
   public ObjectMapper objectMapper() {
-    ObjectMapper mapper =
-        new ObjectMapper()
-            .registerModule(new Jdk8Module())
-            .registerModule(new JavaTimeModule())
-            .setAnnotationIntrospector(new LombokAnnotationIntrospector())
-            .enable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-            .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
-            .enable(MapperFeature.AUTO_DETECT_FIELDS)
-            .setVisibility(PropertyAccessor.ALL, Visibility.ANY);
-    return mapper;
+    return configureMapper(new ObjectMapper());
   }
 
   /**

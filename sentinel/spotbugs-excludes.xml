@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <FindBugsFilter>
-  <!-- Exclusions can be defined here and should include a comment on why the finding can be ignored -->
-  <!-- Example:
-  <Match>
-    <Class name="gov.va.dvp.SomeClass$SomeInnerClass" />
-    <Bug pattern="SIC_INNER_SHOULD_BE_STATIC"/>
-  </Match>
+  <!--
+    The MockEntityReturnDriver and related classes provide a Type 4 JDBC driver
+    implementation with a very narrow focus of reading sample data from files.
+    By design, the JDBC user specifies a file that acts as an index between
+    queries and XML files. These are test classes that are not used in production.
   -->
+  <Match>
+    <Or>
+      <Class name="gov.va.health.api.sentinel.mockcdw.MockEntityReturnDriver"/>
+      <Class name="gov.va.health.api.sentinel.mockcdw.MockResponses"/>
+    </Or>
+    <Bug pattern="PATH_TRAVERSAL_IN"/>
+  </Match>
 </FindBugsFilter>

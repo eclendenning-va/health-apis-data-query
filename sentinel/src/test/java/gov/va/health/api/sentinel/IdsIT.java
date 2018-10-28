@@ -1,4 +1,4 @@
-package gov.va.health.api.sentinel.ids;
+package gov.va.health.api.sentinel;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -22,21 +22,21 @@ public class IdsIT {
 
     List<Registration> registrations =
         client()
-            .post("/api/v1/ids", Arrays.asList(identity))
+            .post("/api/v1/client", Arrays.asList(identity))
             .expect(201)
             .expectListOf(Registration.class);
     assertThat(registrations.size()).isEqualTo(1);
 
     List<Registration> repeatedRegistrations =
         client()
-            .post("/api/v1/ids", Arrays.asList(identity))
+            .post("/api/v1/client", Arrays.asList(identity))
             .expect(201)
             .expectListOf(Registration.class);
     assertThat(repeatedRegistrations).isEqualTo(registrations);
 
     List<ResourceIdentity> identities =
         client()
-            .get("/api/v1/ids/{id}", registrations.get(0).uuid())
+            .get("/api/v1/client/{id}", registrations.get(0).uuid())
             .expect(200)
             .expectListOf(ResourceIdentity.class);
 
@@ -51,13 +51,13 @@ public class IdsIT {
 
     List<Registration> registrations =
         client()
-            .post("/api/v1/ids", Arrays.asList(identity))
+            .post("/api/v1/client", Arrays.asList(identity))
             .expect(201)
             .expectListOf(Registration.class);
     assertThat(registrations.size()).isEqualTo(1);
 
     List<ResourceIdentity> identities =
-        client().get("/api/v1/ids/{id}", icn).expect(200).expectListOf(ResourceIdentity.class);
+        client().get("/api/v1/client/{id}", icn).expect(200).expectListOf(ResourceIdentity.class);
 
     assertThat(identities).containsExactly(identity);
   }
@@ -91,12 +91,12 @@ public class IdsIT {
   public void registerReturns400ForInvalidRequest() {
     ResourceIdentity identity =
         ResourceIdentity.builder().system("CDW").resource("WHATEVER").identifier(null).build();
-    client().post("/api/v1/ids", Arrays.asList(identity)).expect(400);
+    client().post("/api/v1/client", Arrays.asList(identity)).expect(400);
   }
 
   @Test
   public void lookupReturns404ForUnknownId() {
-    client().get("/api/v1/ids/{id}", UUID.randomUUID().toString()).expect(404);
+    client().get("/api/v1/client/{id}", UUID.randomUUID().toString()).expect(404);
   }
 
   private TestClient client() {

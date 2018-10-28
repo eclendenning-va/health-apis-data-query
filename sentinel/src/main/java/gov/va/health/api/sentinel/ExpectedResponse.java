@@ -1,4 +1,4 @@
-package gov.va.health.api.sentinel.ids;
+package gov.va.health.api.sentinel;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.va.api.health.autoconfig.configuration.JacksonConfig;
