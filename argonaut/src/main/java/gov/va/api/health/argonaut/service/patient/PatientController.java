@@ -8,10 +8,13 @@ import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ServerWebExchange;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -43,10 +46,13 @@ public class PatientController {
     @SneakyThrows
     public Patient read(@PathVariable("publicId") String publicId, ServerWebExchange exchange) {
 
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.put("publicId", Collections.singletonList(publicId));
         MrAndersonQuery query = MrAndersonQuery.builder()
                 .version(VERSION)
                 .profile(Profile.ARGONAUT)
                 .resource(Patient.class)
+                .queryParams(params)
                 .build();
         return patientTransformer.apply(mrAndersonClient.query(query));
     }
