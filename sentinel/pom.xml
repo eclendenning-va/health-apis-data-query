@@ -39,7 +39,6 @@
       <groupId>gov.va.api.health</groupId>
       <artifactId>ids-api</artifactId>
       <version>1.0.12-SNAPSHOT</version>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>gov.va.api.health</groupId>

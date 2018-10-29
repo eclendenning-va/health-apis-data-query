@@ -156,6 +156,7 @@ public class MockEntityReturnCallableStatement implements CallableStatement {
   }
 
   @Override
+  @Deprecated
   public BigDecimal getBigDecimal(int parameterIndex, int scale) throws SQLException {
     throw notSupported();
   }
@@ -1119,6 +1120,7 @@ public class MockEntityReturnCallableStatement implements CallableStatement {
   }
 
   @Override
+  @Deprecated
   public void setUnicodeStream(int parameterIndex, InputStream x, int length) throws SQLException {
     throw notSupported();
   }

@@ -34,9 +34,13 @@ public class IdServiceV1ApiController {
   private final ResourceIdentityDetailRepository repository;
   private final UuidGenerator uuidGenerator;
 
-  /** Implementation of GET /v1/client/{publicId}. See api-v1.yaml. */
+  private boolean isNotRegistered(Registration registration) {
+    return repository.findByUuid(registration.uuid()).isEmpty();
+  }
+
+  /** Implementation of GET /v1/ids/{publicId}. See api-v1.yaml. */
   @RequestMapping(
-    value = {"/v1/client/{publicId}", "/resourceIdentity/{publicId}"},
+    value = {"/v1/ids/{publicId}", "/resourceIdentity/{publicId}"},
     produces = {"application/json"},
     method = RequestMethod.GET
   )
@@ -60,9 +64,9 @@ public class IdServiceV1ApiController {
     return ResponseEntity.ok().body(identities);
   }
 
-  /** Implementation of POST /v1/client. See api-v1.yaml. */
+  /** Implementation of POST /v1/ids. See api-v1.yaml. */
   @RequestMapping(
-    value = {"/v1/client", "/resourceIdentity"},
+    value = {"/v1/ids", "/resourceIdentity"},
     produces = {"application/json"},
     consumes = {"application/json"},
     method = RequestMethod.POST
@@ -85,15 +89,12 @@ public class IdServiceV1ApiController {
     return ResponseEntity.status(HttpStatus.CREATED).body(registrations);
   }
 
-  private boolean isNotRegistered(Registration registration) {
-    return repository.findByUuid(registration.uuid()).isEmpty();
-  }
-
-  private Registration toRegistration(ResourceIdentity resourceIdentity) {
-    return Registration.builder()
-        .uuid(uuidGenerator.apply(resourceIdentity))
-        .resourceIdentity(resourceIdentity)
-        .build();
+  /** Sanitize strings to prevent log forgery. */
+  private String safe(String value) {
+    if (value == null) {
+      return null;
+    }
+    return value.replaceAll("[\\s\r\n]", "");
   }
 
   private ResourceIdentityDetail toDatabaseEntry(Registration registration) {
@@ -106,12 +107,11 @@ public class IdServiceV1ApiController {
         .build();
   }
 
-  /** Sanitize strings to prevent log forgery. */
-  private String safe(String value) {
-    if (value == null) {
-      return null;
-    }
-    return value.replaceAll("[\\s\r\n]", "");
+  private Registration toRegistration(ResourceIdentity resourceIdentity) {
+    return Registration.builder()
+        .uuid(uuidGenerator.apply(resourceIdentity))
+        .resourceIdentity(resourceIdentity)
+        .build();
   }
 
   /**
