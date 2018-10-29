@@ -12,7 +12,9 @@ import lombok.Value;
 @Value
 @Builder
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-@Schema
+@Schema(
+  description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-patient.html"
+)
 public class Patient {
 
   @NotBlank
