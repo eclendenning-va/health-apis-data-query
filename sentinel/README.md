@@ -26,6 +26,17 @@ For example,
 mvn install -Dsentinel=LOCAL
 ```
 
+The `Sentinel` requires a partial security settings file to be defined for `LOCAL` environment
+The `config/secrets.properties` file must be created and define passwords used with the
+_DVP-DVP-NONPROD_ keystore and truststores. 
+See the template [secrets.properties](src/test/config/secrets.properties) for requried values.
+
+```
+
+```
+
+
+##### Java API
 To make a service request, use the `Sentinel` to create test clients for the configured environment.
 
 ```
