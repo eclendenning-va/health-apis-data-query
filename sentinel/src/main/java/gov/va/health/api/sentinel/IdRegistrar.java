@@ -31,6 +31,21 @@ public class IdRegistrar {
         .uuid();
   }
 
+  /** Register a CDW identity and return the registered UUID. */
+  public String register(String resource, String id) {
+    ResourceIdentity identity =
+        ResourceIdentity.builder().system("CDW").resource(resource).identifier(id).build();
+    log.info("Registering {}", identity);
+    List<Registration> registrations =
+        system()
+            .clients()
+            .ids()
+            .post("/api/v1/ids", Arrays.asList(identity))
+            .expect(201)
+            .expectListOf(Registration.class);
+    return findUuid(registrations, identity);
+  }
+
   private TestIds registerCdwIds() {
     TestIds cdwIds = system().cdwIds();
     ResourceIdentity patient =

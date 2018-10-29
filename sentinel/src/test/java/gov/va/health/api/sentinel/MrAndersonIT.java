@@ -29,14 +29,24 @@ public class MrAndersonIT {
   }
 
   @Test
-  public void invalidVersionNumberReturns404() {
-    mrAnderson()
-        .get("/api/v1/resources/argonaut/Patient/9.99?identifier={id}", ids().patient())
-        .expect(404);
+  public void invalidQueryParamsReturns400() {
+    mrAnderson().get("/api/v1/resources/argonaut/Patient/1.03?stuff=missing").expect(400);
   }
 
   private TestClient mrAnderson() {
     return Sentinel.get().clients().mrAnderson();
+  }
+
+  @Test
+  public void noResultsReturns200WithEmptyResults() {
+    String id = registrar.register("DIAGNOSTIC_REPORT", "5555555555555-mra-it");
+    String records =
+        mrAnderson()
+            .get("/api/v1/resources/argonaut/DiagnosticReport/1.02?identifier={id}", id)
+            .expect(200)
+            .response()
+            .path("root.recordCount");
+    assertThat(records).isEqualTo("0");
   }
 
   @Test
@@ -74,6 +84,13 @@ public class MrAndersonIT {
             .response()
             .path("root.diagnosticReports.diagnosticReport[0].cdwId");
     assertThat(id2).isEqualTo(id);
+  }
+
+  @Test
+  public void unknownResourceReturns404() {
+    mrAnderson()
+        .get("/api/v1/resources/argonaut/Patient/9.99?identifier=" + ids().patient())
+        .expect(404);
   }
 
   @Test

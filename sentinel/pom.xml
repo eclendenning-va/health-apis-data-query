@@ -173,7 +173,7 @@
                 <argument>-Dloader=gov.va.api.health.mranderson.Application</argument>
                 <argument>-Dmanagement.health.db.enabled=false</argument>
                 <argument>-Dspring.datasource.driver-class-name=gov.va.health.api.sentinel.mockcdw.MockEntityReturnDriver</argument>
-                <argument>-Dspring.datasource.url=jdbc:mockcdw://cdw/samples/index.yaml</argument>
+                <argument>-Dspring.datasource.url=jdbc:mockcdw://cdw/samples/index.yaml,${project.basedir}/src/test/resources/cdw/index.yaml</argument>
                 <argument>-Didentityservice.url=https://localhost:8089</argument>
                 <argument>-Dserver.ssl.key-store=file:certs/system/DVP-DVP-NONPROD.jks</argument>
                 <argument>-Dserver.ssl.key-alias=internal-sys-dev</argument>

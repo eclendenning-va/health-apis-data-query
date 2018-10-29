@@ -1,6 +1,5 @@
 package gov.va.health.api.sentinel.mockcdw;
 
-import gov.va.health.api.sentinel.mockcdw.MockResponses.MockCall;
 import java.io.InputStream;
 import java.io.Reader;
 import java.math.BigDecimal;

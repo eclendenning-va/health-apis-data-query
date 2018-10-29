@@ -4,7 +4,7 @@ Sentinel provides a Type 4 JDBC driver implementation that mock the CDW `prc_Ent
 procedure.
 
 * Driver class: `gov.va.health.api.sentinel.mockcdw.MockEntityReturnDriver`
-* JDBC Url: `jdbc:mockcdw://path/to/index.yaml`
+* JDBC Url: `jdbc:mockcdw://path/to/index.yaml,path/to/another/index.yaml`
 
 > ⚠ This driver supports just enough functionality for Mr. Anderson to function. It is not a 
 > general purpose JDBC driver and is not suitable for any other purpose. For Spring Boot 

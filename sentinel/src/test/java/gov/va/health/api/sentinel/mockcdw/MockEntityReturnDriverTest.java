@@ -38,7 +38,7 @@ public class MockEntityReturnDriverTest {
     Class.forName(MockEntityReturnDriver.class.getName());
     Connection connection =
         DriverManager.getConnection(
-            "jdbc:mockcdw://src/test/resources/gov.va.health.api.sentinel.mockcdw/mock-cdw-test.yaml");
+            "jdbc:mockcdw://src/test/resources/cdw/index.yaml,src/test/resources/gov/va/health/api/sentinel/mockcdw/mock-cdw-test.yaml");
     assertThat(connection).isNotNull();
     CallableStatement cs =
         connection.prepareCall("{call [whatever].[prc_Entity_Return](?,?,?,?,?,?,?)}");
