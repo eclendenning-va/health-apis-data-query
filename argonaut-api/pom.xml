@@ -20,6 +20,31 @@
           </resourceClasses>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>attach-artifact</goal>
+            </goals>
+            <configuration>
+              <artifacts>
+                <artifact>
+                  <file>target/swagger/openapi.yaml</file>
+                  <classifier>openapi</classifier>
+                  <type>yaml</type>
+                </artifact>
+                <artifact>
+                  <file>target/swagger/openapi.json</file>
+                  <classifier>openapi</classifier>
+                  <type>json</type>
+                </artifact>
+              </artifacts>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 </project>
