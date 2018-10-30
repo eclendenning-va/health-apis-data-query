@@ -50,7 +50,7 @@
     <dependency>
       <groupId>gov.va.api.health</groupId>
       <artifactId>mr-anderson</artifactId>
-      <version>1.0.12-SNAPSHOT</version>
+      <version>1.0.18-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
     <dependency>
