@@ -17,7 +17,6 @@ public class Ratio implements Element {
   String id;
 
   @Valid List<Extension> extension;
-
   @Valid Quantity numerator;
   @Valid Quantity denominator;
 }

@@ -16,7 +16,6 @@ public class Contact implements BackboneElement {
 
   @Valid List<Extension> modifierExtension;
   @Valid List<Extension> extension;
-
   @Valid List<CodeableConcept> relationship;
   @Valid HumanName name;
   @Valid List<ContactPoint> telecom;

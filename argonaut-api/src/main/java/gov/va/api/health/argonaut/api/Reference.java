@@ -17,7 +17,6 @@ public class Reference implements Element {
   String id;
 
   @Valid List<Extension> extension;
-
   String reference;
   String display;
 }

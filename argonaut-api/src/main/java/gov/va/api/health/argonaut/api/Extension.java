@@ -22,6 +22,7 @@ public class Extension implements Element {
   @Pattern(regexp = Fhir.URI)
   String url;
 
+  // TODO https://vasdvp.atlassian.net/browse/API-134
   Integer valueInteger;
   Double valueDecimal;
 

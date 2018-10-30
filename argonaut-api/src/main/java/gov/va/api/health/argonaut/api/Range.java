@@ -17,7 +17,6 @@ public class Range implements Element {
   String id;
 
   @Valid List<Extension> extension;
-
   @Valid SimpleQuantity low;
   @Valid SimpleQuantity high;
 }

@@ -15,8 +15,8 @@ import lombok.Data;
 public class ArgoRaceExtension {
   @Pattern(regexp = Fhir.ID)
   String id;
-  // TODO custom validator to match
-  // http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-race.html
+
+  // TODO https://vasdvp.atlassian.net/browse/API-133
   @Valid List<Extension> extension;
 
   @Pattern(regexp = Fhir.URI)
