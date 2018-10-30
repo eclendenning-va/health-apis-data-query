@@ -7,8 +7,8 @@ import org.springframework.util.MultiValueMap;
 @Builder
 @Value
 public class MrAndersonQuery {
-    String version;
-    Profile profile;
-    MultiValueMap<String,String> queryParams;
-    Class<?> resource;
+  String version;
+  Profile profile;
+  MultiValueMap<String, String> queryParams;
+  Class<?> resource;
 }

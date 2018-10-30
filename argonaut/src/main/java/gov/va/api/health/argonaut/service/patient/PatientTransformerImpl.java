@@ -6,8 +6,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class PatientTransformerImpl implements PatientTransformer {
 
-    @Override
-    public Patient apply(Patient patient) {
-        return Patient.builder().id("One-two-three is " + patient.id()).build();
-    }
+  @Override
+  public Patient apply(Patient patient) {
+    return Patient.builder().id("One-two-three is " + patient.id()).build();
+  }
 }
