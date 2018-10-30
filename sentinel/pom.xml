@@ -33,24 +33,24 @@
     <dependency>
       <groupId>gov.va.api.health</groupId>
       <artifactId>service-auto-config</artifactId>
-      <version>1.0.18-SNAPSHOT</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>gov.va.api.health</groupId>
       <artifactId>ids-api</artifactId>
-      <version>1.0.18-SNAPSHOT</version>
+      <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>gov.va.api.health</groupId>
       <artifactId>ids</artifactId>
-      <version>1.0.18-SNAPSHOT</version>
+      <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>gov.va.api.health</groupId>
       <artifactId>mr-anderson</artifactId>
-      <version>1.0.18-SNAPSHOT</version>
+      <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
