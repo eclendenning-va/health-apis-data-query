@@ -15,7 +15,10 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.HttpClient;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.TrustAllStrategy;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,22 +45,9 @@ import org.springframework.web.client.RestTemplate;
 public class SecureRestTemplateConfig {
   private final SslClientProperties config;
 
-  /**
-   * Creates a RestTemplate that is configured to SSL. It will also have a logging interceptor that
-   * will record information on a service call failure.
-   */
-  @Bean
-  public RestTemplate restTemplate(@Autowired RestTemplateBuilder restTemplateBuilder) {
-
-    HttpClient client =
-        config.isEnableClient()
-            ? HttpClients.custom().setSSLContext(sslContext()).build()
-            : HttpClients.custom().build();
-
-    return restTemplateBuilder
-        .requestFactory(bufferingRequestFactory(client))
-        .additionalInterceptors(loggingInterceptor())
-        .build();
+  private Supplier<ClientHttpRequestFactory> bufferingRequestFactory(HttpClient client) {
+    return () ->
+        new BufferingClientHttpRequestFactory(new HttpComponentsClientHttpRequestFactory(client));
   }
 
   private String fileOrClasspath(String path) {
@@ -65,6 +55,17 @@ public class SecureRestTemplateConfig {
       return path;
     }
     throw new IllegalArgumentException("Expected file or classpath resources. Got " + path);
+  }
+
+  private CloseableHttpClient httpClientWithSsl() {
+    HttpClientBuilder builder = HttpClients.custom();
+    if (config.isEnableClient()) {
+      builder.setSSLContext(sslContext());
+    }
+    if (!config.isVerify()) {
+      builder.setSSLHostnameVerifier(new NoopHostnameVerifier());
+    }
+    return builder.build();
   }
 
   private KeyStore loadKeyStore(String path, char[] password) {
@@ -76,27 +77,6 @@ public class SecureRestTemplateConfig {
       return keyStore;
     } catch (IOException | KeyStoreException | NoSuchAlgorithmException | CertificateException e) {
       throw new FailedToConfigureSsl("Cannot load: " + path, e);
-    }
-  }
-
-  private SSLContext sslContext() {
-    try {
-      SSLContextBuilder builder =
-          SSLContextBuilder.create()
-              .loadKeyMaterial(
-                  loadKeyStore(config.getKeyStore(), config.keyStorePassword()),
-                  config.clientKeyPassword());
-      if (config.isUseTrustStore()) {
-        builder.loadTrustMaterial(
-            loadKeyStore(config.getTrustStore(), config.trustStorePassword()),
-            new TrustAllStrategy());
-      }
-      return builder.build();
-    } catch (KeyStoreException
-        | NoSuchAlgorithmException
-        | UnrecoverableKeyException
-        | KeyManagementException e) {
-      throw new FailedToConfigureSsl(e);
     }
   }
 
@@ -124,9 +104,37 @@ public class SecureRestTemplateConfig {
     };
   }
 
-  private Supplier<ClientHttpRequestFactory> bufferingRequestFactory(HttpClient client) {
-    return () ->
-        new BufferingClientHttpRequestFactory(new HttpComponentsClientHttpRequestFactory(client));
+  /**
+   * Creates a RestTemplate that is configured to SSL. It will also have a logging interceptor that
+   * will record information on a service call failure.
+   */
+  @Bean
+  public RestTemplate restTemplate(@Autowired RestTemplateBuilder restTemplateBuilder) {
+    return restTemplateBuilder
+        .requestFactory(bufferingRequestFactory(httpClientWithSsl()))
+        .additionalInterceptors(loggingInterceptor())
+        .build();
+  }
+
+  private SSLContext sslContext() {
+    try {
+      SSLContextBuilder builder =
+          SSLContextBuilder.create()
+              .loadKeyMaterial(
+                  loadKeyStore(config.getKeyStore(), config.keyStorePassword()),
+                  config.clientKeyPassword());
+      if (config.isUseTrustStore()) {
+        builder.loadTrustMaterial(
+            loadKeyStore(config.getTrustStore(), config.trustStorePassword()),
+            new TrustAllStrategy());
+      }
+      return builder.build();
+    } catch (KeyStoreException
+        | NoSuchAlgorithmException
+        | UnrecoverableKeyException
+        | KeyManagementException e) {
+      throw new FailedToConfigureSsl(e);
+    }
   }
 
   public static class FailedToConfigureSsl extends RuntimeException {

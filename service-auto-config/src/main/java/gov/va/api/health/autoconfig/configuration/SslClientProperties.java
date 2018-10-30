@@ -33,6 +33,7 @@ import org.springframework.context.annotation.Configuration;
 public class SslClientProperties {
 
   private boolean enableClient = true;
+  private boolean verify = true;
   private String keyStore;
   private String keyStorePassword;
   private String clientKeyPassword;
@@ -40,12 +41,12 @@ public class SslClientProperties {
   private String trustStore;
   private String trustStorePassword;
 
-  public char[] keyStorePassword() {
-    return getKeyStorePassword().toCharArray();
-  }
-
   public char[] clientKeyPassword() {
     return getClientKeyPassword().toCharArray();
+  }
+
+  public char[] keyStorePassword() {
+    return getKeyStorePassword().toCharArray();
   }
 
   public char[] trustStorePassword() {

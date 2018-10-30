@@ -10,23 +10,6 @@ import org.springframework.web.client.RestTemplate;
 @Slf4j
 public class SecureRestTemplateConfigTest {
 
-  /**
-   * Since we're using external website, example.com, we don't want to rely too heavily on it being
-   * available. The risk is low with the SecureRestTemplateConfig class to begin with, so if we
-   * can't exercise this portion we'll be ok. Integration tests later on will also be exercising it.
-   */
-  private void tryWebRequest(RestTemplate rt) {
-    try {
-      rt.getForEntity("http://example.com", String.class);
-      rt.getForEntity("https://example.com", String.class);
-    } catch (Exception e) {
-      log.warn(
-          "Could not completely test {}: {}",
-          SecureRestTemplateConfig.class.getSimpleName(),
-          e.getMessage());
-    }
-  }
-
   @Test
   @SneakyThrows
   public void errorAreLogged() {
@@ -45,6 +28,7 @@ public class SecureRestTemplateConfigTest {
     makeOne(
         SslClientProperties.builder()
             .enableClient(true)
+            .verify(true)
             .clientKeyPassword("secret")
             .keyStore("classpath:nope")
             .keyStorePassword("secret")
@@ -56,25 +40,11 @@ public class SecureRestTemplateConfigTest {
 
   @Test(expected = FailedToConfigureSsl.class)
   @SneakyThrows
-  public void exceptionIsThrownWhenKeyStorePasswordIsWrong() {
-    makeOne(
-        SslClientProperties.builder()
-            .enableClient(true)
-            .clientKeyPassword("secret")
-            .keyStore("classpath:test-keystore.jks")
-            .keyStorePassword("secret")
-            .useTrustStore(true)
-            .trustStore("classpath:test-truststore.jks")
-            .trustStorePassword("wrong")
-            .build());
-  }
-
-  @Test(expected = FailedToConfigureSsl.class)
-  @SneakyThrows
   public void exceptionIsThrownWhenKeyStoreCannotBeOpened() {
     makeOne(
         SslClientProperties.builder()
             .enableClient(true)
+            .verify(true)
             .clientKeyPassword("secret")
             .keyStore("classpath:corrupt-keystore.jks")
             .keyStorePassword("secret")
@@ -90,6 +60,7 @@ public class SecureRestTemplateConfigTest {
     makeOne(
         SslClientProperties.builder()
             .enableClient(true)
+            .verify(true)
             .clientKeyPassword("secret")
             .keyStore("http://nope.com")
             .keyStorePassword("secret")
@@ -99,11 +70,20 @@ public class SecureRestTemplateConfigTest {
             .build());
   }
 
-  @Test
+  @Test(expected = FailedToConfigureSsl.class)
   @SneakyThrows
-  public void keyStoresAreIgnoredWhenSslIsDisabled() {
-    /* Would throw null pointers if the key store was attempted to be used. */
-    tryWebRequest(makeOne(SslClientProperties.builder().enableClient(false).build()));
+  public void exceptionIsThrownWhenKeyStorePasswordIsWrong() {
+    makeOne(
+        SslClientProperties.builder()
+            .enableClient(true)
+            .verify(true)
+            .clientKeyPassword("secret")
+            .keyStore("classpath:test-keystore.jks")
+            .keyStorePassword("secret")
+            .useTrustStore(true)
+            .trustStore("classpath:test-truststore.jks")
+            .trustStorePassword("wrong")
+            .build());
   }
 
   @Test
@@ -113,6 +93,7 @@ public class SecureRestTemplateConfigTest {
         makeOne(
             SslClientProperties.builder()
                 .enableClient(true)
+                .verify(true)
                 .clientKeyPassword("secret")
                 .keyStore("classpath:test-keystore.jks")
                 .keyStorePassword("secret")
@@ -130,6 +111,7 @@ public class SecureRestTemplateConfigTest {
         makeOne(
             SslClientProperties.builder()
                 .enableClient(true)
+                .verify(true)
                 .clientKeyPassword("secret")
                 .keyStore("classpath:test-keystore.jks")
                 .keyStorePassword("secret")
@@ -137,10 +119,34 @@ public class SecureRestTemplateConfigTest {
                 .build()));
   }
 
+  @Test
+  @SneakyThrows
+  public void keyStoresAreIgnoredWhenSslIsDisabled() {
+    /* Would throw null pointers if the key store was attempted to be used. */
+    tryWebRequest(makeOne(SslClientProperties.builder().enableClient(false).build()));
+  }
+
   private RestTemplate makeOne(SslClientProperties props) {
     props.equals(new SslClientProperties());
     props.hashCode();
     RestTemplateBuilder rtb = new RestTemplateBuilder();
     return new SecureRestTemplateConfig(props).restTemplate(rtb);
+  }
+
+  /**
+   * Since we're using external website, example.com, we don't want to rely too heavily on it being
+   * available. The risk is low with the SecureRestTemplateConfig class to begin with, so if we
+   * can't exercise this portion we'll be ok. Integration tests later on will also be exercising it.
+   */
+  private void tryWebRequest(RestTemplate rt) {
+    try {
+      rt.getForEntity("http://example.com", String.class);
+      rt.getForEntity("https://example.com", String.class);
+    } catch (Exception e) {
+      log.warn(
+          "Could not completely test {}: {}",
+          SecureRestTemplateConfig.class.getSimpleName(),
+          e.getMessage());
+    }
   }
 }
