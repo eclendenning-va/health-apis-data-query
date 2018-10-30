@@ -25,11 +25,6 @@ public class Query {
     return entry.getValue().stream().map((value) -> entry.getKey() + '=' + value);
   }
 
-  /** Returns an abbreviated query string that just contains the /resource:version part. */
-  String toResourceString() {
-    return '/' + resource + ':' + version;
-  }
-
   /**
    * Returns a CDW formatted query string, also called a "FHIRString" in the format of
    * /resource:version?key=value&key=value. The query parameters will be sorted alphabetically.
@@ -48,5 +43,10 @@ public class Query {
       msg.append('?').append(params);
     }
     return msg.toString();
+  }
+
+  /** Returns an abbreviated query string that just contains the /resource:version part. */
+  String toResourceString() {
+    return '/' + resource + ':' + version;
   }
 }

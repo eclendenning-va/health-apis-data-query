@@ -31,9 +31,17 @@ The `config/secrets.properties` file must be created and define passwords used w
 _DVP-DVP-NONPROD_ keystore and truststores. 
 See the template [secrets.properties](src/test/config/secrets.properties) for requried values.
 
-```
+###### Interactive local system
+The applications can be started for ad-hoc, interactive testing.
 
 ```
+mvn pre-integration-test -Dsentinel=LOCAL -Dexec.waitForInterrupt=true
+```
+
+###### Local databases
+
+When ran in `LOCAL` mode, `ids` is started with an empty in-memory H2 database and `mr-anderson`
+is started with a [mock database](mock-database.md).
 
 
 ##### Java API
