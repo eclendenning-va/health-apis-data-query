@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>gov.va.api.health</groupId>
@@ -187,6 +187,7 @@
                 <argument>-Didentityservice.url=https://localhost:8089</argument>
                 <argument>-Dserver.ssl.key-store=file:certs/system/DVP-DVP-NONPROD.jks</argument>
                 <argument>-Dserver.ssl.key-alias=internal-sys-dev</argument>
+                <argument>-Dssl.verify=false</argument>
                 <argument>-Dssl.key-store=file:certs/system/DVP-DVP-NONPROD.jks</argument>
                 <argument>-Dssl.use-trust-store=false</argument>
                 <argument>-Dssl.trust-store=file:certs/system/DVP-NONPROD-truststore.jks</argument>
@@ -313,6 +314,22 @@
                       <filtering>true</filtering>
                     </resource>
                   </resources>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>trust-dev-certs</id>
+                <phase>initialize</phase>
+                <goals>
+                  <goal>exec</goal>
+                </goals>
+                <configuration>
+                  <executable>../src/scripts/trust-dev-certs.sh</executable>
                 </configuration>
               </execution>
             </executions>
