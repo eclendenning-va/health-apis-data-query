@@ -67,7 +67,7 @@ public class WebExceptionHandlerTest {
     BodySpec<ErrorResponse, ?> body =
         client
             .get()
-            .uri("/api/v1/client/123")
+            .uri("/api/v1/ids/123")
             .exchange()
             .expectStatus()
             .isEqualTo(status)

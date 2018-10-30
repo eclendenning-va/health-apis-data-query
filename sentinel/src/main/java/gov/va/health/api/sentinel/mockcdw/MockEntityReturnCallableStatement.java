@@ -1,6 +1,5 @@
 package gov.va.health.api.sentinel.mockcdw;
 
-import gov.va.health.api.sentinel.mockcdw.MockResponses.MockCall;
 import java.io.InputStream;
 import java.io.Reader;
 import java.math.BigDecimal;
@@ -156,6 +155,7 @@ public class MockEntityReturnCallableStatement implements CallableStatement {
   }
 
   @Override
+  @Deprecated
   public BigDecimal getBigDecimal(int parameterIndex, int scale) throws SQLException {
     throw notSupported();
   }
@@ -1119,6 +1119,7 @@ public class MockEntityReturnCallableStatement implements CallableStatement {
   }
 
   @Override
+  @Deprecated
   public void setUnicodeStream(int parameterIndex, InputStream x, int length) throws SQLException {
     throw notSupported();
   }

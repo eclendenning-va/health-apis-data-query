@@ -1,0 +1,13 @@
+entries:
+- file: NoResults.xml
+  query: /DiagnosticReport:1.02?identifier=5555555555555-mra-it
+  page: 1
+  count: 15
+- file: InvalidQueryParams.xml
+  query: /Patient:1.03?stuff=missing
+  page: 1
+  count: 15
+- file: UnknownResource.xml
+  query: /Patient:9.99?identifier=185601V825290
+  page: 1
+  count: 15

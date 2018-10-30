@@ -2,6 +2,7 @@ package gov.va.health.api.sentinel.mockcdw;
 
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import gov.va.api.health.autoconfig.configuration.JacksonConfig;
+import gov.va.health.api.sentinel.mockcdw.MockResponses.MockResponsesBuilder;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.Driver;
@@ -80,23 +81,28 @@ public class MockEntityReturnDriver implements Driver {
     if (!acceptsURL(url)) {
       return null;
     }
-    File index = new File(url.replace(URL_PREFIX, ""));
-    log.info("Using index: {}", index);
-    if (!index.exists()) {
-      throw new SQLException("Mock CDW mapping file does not exist: " + index.getAbsolutePath());
+
+    MockResponsesBuilder responses = MockResponses.builder();
+    for (String indexFile : url.replace(URL_PREFIX, "").split(",")) {
+      File index = new File(indexFile);
+      log.debug("Using index: {}", index);
+      if (!index.exists()) {
+        throw new SQLException("Mock CDW mapping file does not exist: " + index.getAbsolutePath());
+      }
+      try {
+        MockEntries mockEntries =
+            JacksonConfig.createMapper(new YAMLFactory()).readValue(index, MockEntries.class);
+        responses.source(
+            MockResponseSource.builder()
+                .baseDirectory(index.getParentFile())
+                .entries(mockEntries)
+                .build());
+      } catch (Exception e) {
+        log.error("Failed create connection", e);
+        throw new SQLException("Failed read mock entries: " + index.getAbsolutePath(), e);
+      }
     }
-    try {
-      MockEntries mockEntries =
-          JacksonConfig.createMapper(new YAMLFactory()).readValue(index, MockEntries.class);
-      return MockEntityReturnConnection.of(
-          MockResponses.builder()
-              .baseDirectory(index.getParentFile())
-              .entries(mockEntries)
-              .build());
-    } catch (Exception e) {
-      log.error("Failed create connection", e);
-      throw new SQLException("Failed read mock entries: " + index.getAbsolutePath(), e);
-    }
+    return MockEntityReturnConnection.of(responses.build());
   }
 
   @Override

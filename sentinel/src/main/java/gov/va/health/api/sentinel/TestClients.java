@@ -18,4 +18,12 @@ public class TestClients {
         .mapper(JacksonConfig::createMapper)
         .build();
   }
+
+  TestClient mrAnderson() {
+    return BasicTestClient.builder()
+        .service(systemDefinition.mrAnderson())
+        .contentType("application/xml")
+        .mapper(JacksonConfig::createMapper)
+        .build();
+  }
 }

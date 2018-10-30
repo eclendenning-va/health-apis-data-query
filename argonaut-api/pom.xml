@@ -14,11 +14,24 @@
       <plugin>
         <groupId>io.swagger.core.v3</groupId>
         <artifactId>swagger-maven-plugin</artifactId>
-        <configuration>
-          <resourceClasses>
-            <resourceClass>gov.va.api.health.argonaut.api.ArgonautService</resourceClass>
-          </resourceClasses>
-        </configuration>
+        <executions>
+          <execution>
+            <id>argonaut-swag</id>
+            <phase>compile</phase>
+            <goals>
+              <goal>resolve</goal>
+            </goals>
+            <configuration>
+              <resourceClasses>
+                <resourceClass>gov.va.api.health.argonaut.api.ArgonautService</resourceClass>
+              </resourceClasses>
+              <outputFileName>openapi</outputFileName>
+              <outputPath>${project.build.directory}/swagger</outputPath>
+              <outputFormat>JSONANDYAML</outputFormat>
+              <prettyPrint>true</prettyPrint>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>

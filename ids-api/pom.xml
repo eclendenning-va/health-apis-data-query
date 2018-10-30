@@ -9,17 +9,4 @@
   </parent>
   <artifactId>ids-api</artifactId>
   <packaging>jar</packaging>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>io.swagger.core.v3</groupId>
-        <artifactId>swagger-maven-plugin</artifactId>
-        <configuration>
-          <resourceClasses>
-            <resourceClass>gov.va.api.health.ids.api.IdentityService</resourceClass>
-          </resourceClasses>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 </project>

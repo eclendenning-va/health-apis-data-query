@@ -10,7 +10,7 @@
 cd $(dirname $0)/../..
 
 [ -z "$JAVA_HOME" ] && echo "JAVA_HOME not set" && exit 1
-[ -z "$LIGHTHOUSE_KEYSTORE_PASSWORD" ] && echo "LIGHTHOUSE_KEYSTORE_PASSWORD not set" && exit 1
+[ -z "$HEALTH_API_CERTIFICATE_PASSWORD" ] && echo "HEALTH_API_CERTIFICATE_PASSWORD not set" && exit 1
 [ -z "$TRUST_STORE" ] && TRUST_STORE="$JAVA_HOME/jre/lib/security/cacerts"
 [ ! -f "$TRUST_STORE" ] && echo "Trust store not found: $TRUST_STORE" && exit 1
 [ -z "$TRUST_STORE_PASSWORD" ] && TRUST_STORE_PASSWORD=changeit
@@ -28,7 +28,7 @@ echo -e "Backed up $TRUST_STORE\nto $(pwd)/$BACKUP"
 
 keytool \
   -exportcert \
-  -storepass "$LIGHTHOUSE_KEYSTORE_PASSWORD" \
+  -storepass "$HEALTH_API_CERTIFICATE_PASSWORD" \
   -keystore "$KEYSTORE" \
   -alias $ALIAS \
   -file $ALIAS.crt
@@ -38,7 +38,7 @@ keytool \
   -trustcacerts \
   -alias $ALIAS \
   -file $ALIAS.crt \
-  -keypass "$LIGHTHOUSE_KEYSTORE_PASSWORD" \
+  -keypass "$HEALTH_API_CERTIFICATE_PASSWORD" \
   -keystore "$TRUST_STORE" \
   -storepass "$TRUST_STORE_PASSWORD" \
   -noprompt
