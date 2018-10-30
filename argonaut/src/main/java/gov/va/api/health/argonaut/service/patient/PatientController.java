@@ -6,13 +6,19 @@ import gov.va.api.health.argonaut.service.mranderson.MrAndersonClientImpl;
 import java.util.Arrays;
 import java.util.Collections;
 
+import gov.va.dvp.cdw.xsd.pojos.Patient103Root;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.*;
+import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ServerWebExchange;
 
 /**
@@ -29,14 +35,26 @@ import org.springframework.web.server.ServerWebExchange;
 @Slf4j
 public class PatientController {
 
+  @Value("${mranderson.url}")
+  private String baseUrl;
   private final PatientTransformer patientTransformer;
   private final String VERSION = "/1.03";
+
+  @Autowired
+  private final RestTemplate restTemplate;
+
+  private HttpHeaders headers() {
+    HttpHeaders headers = new HttpHeaders();
+    headers.setAccept(Arrays.asList(MediaType.APPLICATION_XML));
+    return headers;
+  }
 
   private MrAndersonClient client() {
     return MrAndersonClientImpl.<Patient>builder()
         .profile(MrAndersonClient.Profile.ARGONAUT)
         .resource("/Patient")
         .root(Patient.class)
+        .url(baseUrl)
         .version(VERSION)
         .build();
   }
@@ -48,7 +66,13 @@ public class PatientController {
 
     MrAndersonClient mrAndersonClient = client();
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-    params.put("publicId", Collections.singletonList(publicId));
+    params.put("id", Collections.singletonList(publicId));
+
+    ResponseEntity entity = restTemplate.exchange("https://localhost:8088/api/v1/resources/argonaut/Patient/1.03?id={publicId}",
+            HttpMethod.GET,
+            new HttpEntity<Patient103Root>(headers()), new ParameterizedTypeReference<Patient103Root>() {},
+            publicId);
+
     return patientTransformer.apply(mrAndersonClient.query(params));
   }
 

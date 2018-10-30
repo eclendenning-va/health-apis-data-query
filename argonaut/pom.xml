@@ -4,11 +4,14 @@
   <parent>
     <groupId>gov.va.api.health</groupId>
     <artifactId>service-starter</artifactId>
-    <version>1.0.9-SNAPSHOT</version>
+    <version>1.0.19-SNAPSHOT</version>
     <relativePath>../service-starter</relativePath>
   </parent>
   <artifactId>argonaut</artifactId>
   <packaging>jar</packaging>
+  <properties>
+    <cdw-schemas.version>1.0.27-SNAPSHOT</cdw-schemas.version>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>gov.va.api.health</groupId>
@@ -18,6 +21,25 @@
       <groupId>gov.va.api.health</groupId>
       <artifactId>argonaut-api</artifactId>
       <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>gov.va.dvp</groupId>
+      <artifactId>cdw-schemas</artifactId>
+      <version>${cdw-schemas.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.mule.modules</groupId>
+          <artifactId>mule-module-objectstore</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.mulesoft.security</groupId>
+          <artifactId>mule-module-security-property-placeholder</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>io.rest-assured</groupId>
+      <artifactId>rest-assured</artifactId>
     </dependency>
   </dependencies>
   <build>

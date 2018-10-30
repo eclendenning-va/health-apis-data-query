@@ -5,23 +5,22 @@ import gov.va.api.health.argonaut.api.Patient;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import lombok.Builder;
+import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.MultiValueMap;
 
 @Builder
-@lombok.Value
+@Value
 @Slf4j
 public class MrAndersonClientImpl<T> implements MrAndersonClient {
 
   Profile profile;
   String resource;
   Class<T> root;
-  String version;
-
-  @Value("${mranderson.url}")
   String url;
+  String version;
 
   private static Stream<String> toKeyValueString(Map.Entry<String, List<String>> entry) {
     return entry.getValue().stream().map((value) -> entry.getKey() + '=' + value);
