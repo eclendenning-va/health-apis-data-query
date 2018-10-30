@@ -10,7 +10,7 @@
   </parent>
   <groupId>gov.va.api.health</groupId>
   <artifactId>health-apis-parent</artifactId>
-  <version>1.0.9-SNAPSHOT</version>
+  <version>1.0.19-SNAPSHOT</version>
   <packaging>pom</packaging>
   <properties>
     <fmt-maven-plugin.version>2.3.0</fmt-maven-plugin.version>
@@ -47,10 +47,8 @@
     <module>ids</module>
     <module>argonaut</module>
     <module>argonaut-api</module>
-    <module>sentinel</module>
-    <!--
     <module>mr-anderson</module>
-    -->
+    <module>sentinel</module>
   </modules>
   <dependencyManagement>
     <dependencies>
@@ -227,7 +225,7 @@
                 <phase>process-sources</phase>
                 <configuration>
                   <target>
-                    <fixcrlf eof="remove" eol="lf" excludes="**/*.png" includes="pom.xml,*.md,src/**" srcDir="${project.basedir}"/>
+                    <fixcrlf eof="remove" eol="lf" excludes="**/*.png,**/*.jks" includes="pom.xml,*.md,src/**" srcDir="${project.basedir}"/>
                   </target>
                 </configuration>
                 <goals>

@@ -12,7 +12,9 @@ import lombok.Value;
 @Value
 @Builder
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-@Schema
+@Schema(
+  description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-patient.html"
+)
 public class Patient {
 
   @NotBlank
@@ -57,7 +59,7 @@ public class Patient {
   @Pattern(regexp = Fhir.DATE)
   String birthDate;
 
-  // TODO mutualExclusive validator
+  // TODO https://vasdvp.atlassian.net/browse/API-135
   boolean deceasedBoolean;
 
   @Pattern(regexp = Fhir.DATETIME)

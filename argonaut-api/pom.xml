@@ -4,7 +4,7 @@
   <parent>
     <groupId>gov.va.api.health</groupId>
     <artifactId>api-starter</artifactId>
-    <version>1.0.9-SNAPSHOT</version>
+    <version>1.0.19-SNAPSHOT</version>
     <relativePath>../api-starter</relativePath>
   </parent>
   <artifactId>argonaut-api</artifactId>
@@ -19,6 +19,31 @@
             <resourceClass>gov.va.api.health.argonaut.api.ArgonautService</resourceClass>
           </resourceClasses>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>attach-artifact</goal>
+            </goals>
+            <configuration>
+              <artifacts>
+                <artifact>
+                  <file>target/swagger/openapi.yaml</file>
+                  <classifier>openapi</classifier>
+                  <type>yaml</type>
+                </artifact>
+                <artifact>
+                  <file>target/swagger/openapi.json</file>
+                  <classifier>openapi</classifier>
+                  <type>json</type>
+                </artifact>
+              </artifacts>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>

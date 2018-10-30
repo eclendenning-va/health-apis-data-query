@@ -17,7 +17,6 @@ public class Communication implements BackboneElement {
 
   @Valid List<Extension> modifierExtension;
   @Valid List<Extension> extension;
-
   @NotBlank @Valid CodeableConcept language;
   Boolean preferred;
 }

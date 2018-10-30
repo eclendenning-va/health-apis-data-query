@@ -1,6 +1,7 @@
 package gov.va.api.health.argonaut.api;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.Pattern;
@@ -10,6 +11,7 @@ import lombok.Data;
 @Data
 @Builder
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+@Schema(description = "http://hl7.org/fhir/DSTU2/extensibility.html#extension")
 public class Extension implements Element {
 
   @Pattern(regexp = Fhir.ID)
@@ -20,6 +22,7 @@ public class Extension implements Element {
   @Pattern(regexp = Fhir.URI)
   String url;
 
+  // TODO https://vasdvp.atlassian.net/browse/API-134
   Integer valueInteger;
   Double valueDecimal;
 

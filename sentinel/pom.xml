@@ -4,7 +4,7 @@
   <parent>
     <groupId>gov.va.api.health</groupId>
     <artifactId>health-apis-parent</artifactId>
-    <version>1.0.9-SNAPSHOT</version>
+    <version>1.0.19-SNAPSHOT</version>
   </parent>
   <artifactId>sentinel</artifactId>
   <packaging>jar</packaging>
@@ -31,18 +31,18 @@
     <dependency>
       <groupId>gov.va.api.health</groupId>
       <artifactId>service-auto-config</artifactId>
-      <version>1.0.9-SNAPSHOT</version>
+      <version>1.0.19-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>gov.va.api.health</groupId>
       <artifactId>ids-api</artifactId>
-      <version>1.0.9-SNAPSHOT</version>
+      <version>1.0.19-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>gov.va.api.health</groupId>
       <artifactId>ids</artifactId>
-      <version>1.0.9-SNAPSHOT</version>
+      <version>1.0.19-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -108,7 +108,7 @@
             <configuration>
               <name>ids</name>
               <waitForInterrupt>false</waitForInterrupt>
-              <processLogFile>${project.build.directory}/ids.log</processLogFile>
+              <!-- <processLogFile>${project.build.directory}/ids.log</processLogFile> -->
               <healthcheckUrl>https://localhost:8089/actuator/health</healthcheckUrl>
               <skip>${sentinel.skipLaunch}</skip>
               <arguments>
@@ -213,6 +213,47 @@
       <properties>
         <sentinel.skipLaunch>true</sentinel.skipLaunch>
       </properties>
+    </profile>
+    <!--
+      On Jenkins, the certificate password is provided by Jenkins credentials system and
+      made available as the environment variable 'HEALTH_API_CERTIFICATE_PASSWORD'. This
+      profile generates the 'config/secrets.properties' needed to launch the application.
+    -->
+    <profile>
+      <id>jenkins-config</id>
+      <activation>
+        <property>
+          <name>env.HEALTH_API_CERTIFICATE_PASSWORD</name>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-resources-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>create-secrets-config</id>
+                <phase>generate-test-resources</phase>
+                <goals>
+                  <goal>copy-resources</goal>
+                </goals>
+                <configuration>
+                  <outputDirectory>${project.basedir}/config</outputDirectory>
+                  <delimiters>
+                    <delimiter>${*}</delimiter>
+                  </delimiters>
+                  <resources>
+                    <resource>
+                      <directory>src/test/config</directory>
+                      <filtering>true</filtering>
+                    </resource>
+                  </resources>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
     </profile>
     <profile>
       <id>docker</id>

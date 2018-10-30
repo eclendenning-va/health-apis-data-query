@@ -4,7 +4,7 @@
   <parent>
     <groupId>gov.va.api.health</groupId>
     <artifactId>health-apis-parent</artifactId>
-    <version>1.0.9-SNAPSHOT</version>
+    <version>1.0.19-SNAPSHOT</version>
   </parent>
   <artifactId>api-starter</artifactId>
   <packaging>pom</packaging>
@@ -43,7 +43,7 @@
     <dependency>
       <groupId>gov.va.api.health</groupId>
       <artifactId>service-auto-config</artifactId>
-      <version>1.0.9-SNAPSHOT</version>
+      <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -57,8 +57,8 @@
           <configuration>
             <outputFileName>openapi</outputFileName>
             <outputPath>${project.build.directory}/swagger</outputPath>
-            <outputFormat>YAML</outputFormat>
-            <prettyPrint>TRUE</prettyPrint>
+            <outputFormat>JSONANDYAML</outputFormat>
+            <prettyPrint>true</prettyPrint>
           </configuration>
           <executions>
             <execution>
