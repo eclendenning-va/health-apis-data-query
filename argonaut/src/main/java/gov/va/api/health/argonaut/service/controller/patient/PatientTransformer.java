@@ -1,4 +1,4 @@
-package gov.va.api.health.argonaut.service.patient;
+package gov.va.api.health.argonaut.service.controller.patient;
 
 import gov.va.api.health.argonaut.api.Patient;
 import gov.va.dvp.cdw.xsd.pojos.Patient103Root;
