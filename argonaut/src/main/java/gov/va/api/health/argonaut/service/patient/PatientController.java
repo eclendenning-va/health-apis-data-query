@@ -1,23 +1,29 @@
 package gov.va.api.health.argonaut.service.patient;
 
 import gov.va.api.health.argonaut.api.Patient;
+import gov.va.api.health.argonaut.service.config.WithJaxb;
 import gov.va.api.health.argonaut.service.mranderson.MrAndersonClient;
 import gov.va.api.health.argonaut.service.mranderson.MrAndersonClientImpl;
-import java.util.Arrays;
-import java.util.Collections;
-
 import gov.va.dvp.cdw.xsd.pojos.Patient103Root;
-import lombok.AllArgsConstructor;
-import lombok.SneakyThrows;
+import java.util.Arrays;
+import java.util.function.Function;
+import javax.xml.bind.annotation.XmlRootElement;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.*;
-import org.springframework.stereotype.Component;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ServerWebExchange;
 
@@ -28,26 +34,17 @@ import org.springframework.web.server.ServerWebExchange;
  */
 @RestController
 @RequestMapping(
-  value = {"/api/Patient"},
-  produces = {"application/json"}
-)
-@AllArgsConstructor(onConstructor = @__({@Autowired}))
+    value = {"/api/Patient"},
+    produces = {"application/json"})
 @Slf4j
 public class PatientController {
 
+  private static final String VERSION = "/1.03";
+  @Autowired PatientTransformer patientTransformer;
+  @Autowired @WithJaxb private RestTemplate restTemplate;
+
   @Value("${mranderson.url}")
   private String baseUrl;
-  private final PatientTransformer patientTransformer;
-  private final String VERSION = "/1.03";
-
-  @Autowired
-  private final RestTemplate restTemplate;
-
-  private HttpHeaders headers() {
-    HttpHeaders headers = new HttpHeaders();
-    headers.setAccept(Arrays.asList(MediaType.APPLICATION_XML));
-    return headers;
-  }
 
   private MrAndersonClient client() {
     return MrAndersonClientImpl.<Patient>builder()
@@ -59,58 +56,33 @@ public class PatientController {
         .build();
   }
 
+  private ParameterizedTypeReference<PatientSearchResultsRoot> patientSearchResultsType() {
+    return new ParameterizedTypeReference<PatientSearchResultsRoot>() {};
+  }
+
   /** Read */
   @GetMapping(value = {"/{publicId}"})
-  @SneakyThrows
   public Patient read(@PathVariable("publicId") String publicId, ServerWebExchange exchange) {
 
-    MrAndersonClient mrAndersonClient = client();
-    MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-    params.put("id", Collections.singletonList(publicId));
-
-    ResponseEntity entity = restTemplate.exchange("https://localhost:8088/api/v1/resources/argonaut/Patient/1.03?id={publicId}",
+    ResponseEntity<PatientSearchResultsRoot> entity =
+        restTemplate.exchange(
+            url() + "?id={publicId}",
             HttpMethod.GET,
-            new HttpEntity<Patient103Root>(headers()), new ParameterizedTypeReference<Patient103Root>() {},
+            requestEntity(),
+            patientSearchResultsType(),
             publicId);
 
-    return patientTransformer.apply(mrAndersonClient.query(params));
+    return patientTransformer.apply(entity.getBody().getPatients().getPatient().get(0));
   }
 
-  /** Search by Identifier */
-  @GetMapping(params = {"identifier"})
-  @SneakyThrows
-  public Patient searchByIdentifier(
-      @RequestParam("identifier") String[] identifier, ServerWebExchange exchange) {
-
-    MrAndersonClient mrAndersonClient = client();
-    MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-    params.put("identifier", Arrays.asList(identifier));
-    return patientTransformer.apply(mrAndersonClient.query(params));
-  }
-
-  /** Search by Name+Birthdate */
-  @GetMapping(params = {"name", "birthdate"})
-  @SneakyThrows
-  public String searchByNameAndBirthdate(
-      @RequestParam("name") String name,
-      @RequestParam("birthdate") String birthdate,
-      ServerWebExchange exchange) {
-    return null;
-  }
-
-  /** Search by Name+Gender */
-  @GetMapping(params = {"name", "gender"})
-  @SneakyThrows
-  public String searchByNameAndGender(
-      @RequestParam("name") String name,
-      @RequestParam("gender") String gender,
-      ServerWebExchange exchange) {
-    return null;
+  private HttpEntity<Void> requestEntity() {
+    HttpHeaders headers = new HttpHeaders();
+    headers.setAccept(Arrays.asList(MediaType.APPLICATION_XML));
+    return new HttpEntity<>(headers);
   }
 
   /** Search by Family+Gender */
   @GetMapping(params = {"family", "gender"})
-  @SneakyThrows
   public String searchByFamilyAndGender(
       @RequestParam("family") String name,
       @RequestParam("gender") String gender,
@@ -120,11 +92,48 @@ public class PatientController {
 
   /** Search by Given+Gender */
   @GetMapping(params = {"given", "gender"})
-  @SneakyThrows
   public String searchByGivenAndGender(
       @RequestParam("given") String name,
       @RequestParam("gender") String gender,
       ServerWebExchange exchange) {
     return null;
   }
+
+  /** Search by Identifier */
+  @GetMapping(params = {"identifier"})
+  public Patient searchByIdentifier(
+      @RequestParam("identifier") String[] identifier, ServerWebExchange exchange) {
+
+    MrAndersonClient mrAndersonClient = client();
+    MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+    params.put("identifier", Arrays.asList(identifier));
+    return null;
+  }
+
+  /** Search by Name+Birthdate */
+  @GetMapping(params = {"name", "birthdate"})
+  public String searchByNameAndBirthdate(
+      @RequestParam("name") String name,
+      @RequestParam("birthdate") String birthdate,
+      ServerWebExchange exchange) {
+    return null;
+  }
+
+  /** Search by Name+Gender */
+  @GetMapping(params = {"name", "gender"})
+  public String searchByNameAndGender(
+      @RequestParam("name") String name,
+      @RequestParam("gender") String gender,
+      ServerWebExchange exchange) {
+    return null;
+  }
+
+  private String url() {
+    return baseUrl + "api/v1/resources/argonaut/Patient/1.03";
+  }
+
+  public interface PatientTransformer extends Function<Patient103Root.Patients.Patient, Patient> {}
+
+  @XmlRootElement(name = "root")
+  public static class PatientSearchResultsRoot extends Patient103Root {}
 }

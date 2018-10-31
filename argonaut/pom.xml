@@ -10,7 +10,7 @@
   <artifactId>argonaut</artifactId>
   <packaging>jar</packaging>
   <properties>
-    <cdw-schemas.version>1.0.27-SNAPSHOT</cdw-schemas.version>
+    <cdw-schemas.version>1.0.26</cdw-schemas.version>
   </properties>
   <dependencies>
     <dependency>

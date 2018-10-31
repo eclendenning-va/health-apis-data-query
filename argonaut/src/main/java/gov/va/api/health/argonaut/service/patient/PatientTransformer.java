@@ -1,8 +1,14 @@
 package gov.va.api.health.argonaut.service.patient;
 
 import gov.va.api.health.argonaut.api.Patient;
+import gov.va.dvp.cdw.xsd.pojos.Patient103Root;
+import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.function.Function;
+@Service
+public class PatientTransformer implements PatientController.PatientTransformer {
 
-public interface PatientTransformer extends Function<List<Patient>, Patient> {}
+  @Override
+  public Patient apply(Patient103Root.Patients.Patient patient) {
+    return Patient.builder().id(patient.getCdwId()).build();
+  }
+}
