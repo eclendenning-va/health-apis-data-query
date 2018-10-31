@@ -1,8 +1,11 @@
 package gov.va.api.health.argonaut.service.patient;
 
 import com.sun.org.apache.xerces.internal.jaxp.datatype.XMLGregorianCalendarImpl;
+import gov.va.api.health.argonaut.api.Patient;
 import gov.va.dvp.cdw.xsd.pojos.*;
 import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
 
 import java.math.BigInteger;
 
@@ -27,6 +30,12 @@ public class PatientTransformerTest {
         testPatient.setBirthDate(getBirthdate());
         testPatient.setDeceasedBoolean(false);
         testPatient.setContacts(getContacts());
+    }
+
+    @Ignore
+    @Test
+    public void patient103RootToPatient() {
+
     }
 
     private Patient103Root.Patients.Patient.Contacts getContacts() {
@@ -132,5 +141,4 @@ public class PatientTransformerTest {
         extensions.getExtension().add(extension);
         return extensions;
     }
-
 }
