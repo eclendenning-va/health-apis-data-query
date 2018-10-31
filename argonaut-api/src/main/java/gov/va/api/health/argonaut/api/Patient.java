@@ -40,7 +40,7 @@ public class Patient {
 
   @NotBlank @Valid ArgoBirthSexExtension argoBirthSex;
 
-  @NotBlank @Valid Identifier identifier;
+  @NotBlank @Valid List<Identifier> identifier;
 
   @Valid Extension extension;
 
@@ -60,7 +60,7 @@ public class Patient {
   String birthDate;
 
   // TODO https://vasdvp.atlassian.net/browse/API-135
-  boolean deceasedBoolean;
+  Boolean deceasedBoolean;
 
   @Pattern(regexp = Fhir.DATETIME)
   String deceasedDateTime;

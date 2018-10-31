@@ -1,4 +1,4 @@
-package gov.va.health.api.sentinel.ids;
+package gov.va.health.api.sentinel;
 
 import gov.va.api.health.autoconfig.configuration.JacksonConfig;
 import lombok.AllArgsConstructor;
@@ -15,6 +15,14 @@ public class TestClients {
     return BasicTestClient.builder()
         .service(systemDefinition.ids())
         .contentType("application/json")
+        .mapper(JacksonConfig::createMapper)
+        .build();
+  }
+
+  TestClient mrAnderson() {
+    return BasicTestClient.builder()
+        .service(systemDefinition.mrAnderson())
+        .contentType("application/xml")
         .mapper(JacksonConfig::createMapper)
         .build();
   }

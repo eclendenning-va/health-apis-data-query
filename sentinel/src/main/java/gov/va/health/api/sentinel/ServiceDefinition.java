@@ -1,4 +1,4 @@
-package gov.va.health.api.sentinel.ids;
+package gov.va.health.api.sentinel;
 
 import io.restassured.RestAssured;
 import io.restassured.specification.RequestSpecification;

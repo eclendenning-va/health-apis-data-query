@@ -4,22 +4,9 @@
   <parent>
     <groupId>gov.va.api.health</groupId>
     <artifactId>api-starter</artifactId>
-    <version>1.0.19-SNAPSHOT</version>
+    <version>1.0.20-SNAPSHOT</version>
     <relativePath>../api-starter</relativePath>
   </parent>
   <artifactId>ids-api</artifactId>
   <packaging>jar</packaging>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>io.swagger.core.v3</groupId>
-        <artifactId>swagger-maven-plugin</artifactId>
-        <configuration>
-          <resourceClasses>
-            <resourceClass>gov.va.api.health.ids.api.IdentityService</resourceClass>
-          </resourceClasses>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 </project>
