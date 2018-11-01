@@ -20,8 +20,8 @@ public class ContactPoint implements Element {
 
   @Valid List<Extension> extension;
   @NotBlank ContactPointSystem system;
-  @NotBlank ContactPointUse use;
   String value;
+  @NotBlank ContactPointUse use;
 
   @Min(1)
   Integer rank;

@@ -1,145 +1,199 @@
 package gov.va.api.health.argonaut.service.controller.patient;
 
-import gov.va.api.health.argonaut.api.*;
+import gov.va.api.health.argonaut.api.Address;
+import gov.va.api.health.argonaut.api.CodeableConcept;
+import gov.va.api.health.argonaut.api.Coding;
+import gov.va.api.health.argonaut.api.Contact;
+import gov.va.api.health.argonaut.api.ContactPoint;
+import gov.va.api.health.argonaut.api.Extension;
+import gov.va.api.health.argonaut.api.HumanName;
+import gov.va.api.health.argonaut.api.Identifier;
+import gov.va.api.health.argonaut.api.Patient;
+import gov.va.api.health.argonaut.api.Reference;
 import gov.va.dvp.cdw.xsd.pojos.BirthsexExtension;
 import gov.va.dvp.cdw.xsd.pojos.Extensions;
 import gov.va.dvp.cdw.xsd.pojos.Patient103Root;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
-
-import javax.validation.constraints.Pattern;
-import javax.xml.datatype.XMLGregorianCalendar;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
+import javax.xml.datatype.XMLGregorianCalendar;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
 
 @Service
 public class PatientTransformer implements PatientController.Transformer {
+
+  private Address address(Patient103Root.Patients.Patient.Contacts.Contact contact) {
+    return Address.builder()
+        .line(getLine(contact))
+        .city(contact.getCity())
+        .state(contact.getState())
+        .postalCode(contact.getPostalCode())
+        .build();
+  }
+
+  private List<Address> addresses(Patient103Root.Patients.Patient.Addresses addresses) {
+    List<Address> argoAddresses = new LinkedList<>();
+    for (Patient103Root.Patients.Patient.Addresses.Address address : addresses.getAddress()) {
+      argoAddresses.add(
+          Address.builder()
+              .line(getLine(address))
+              .city(address.getCity())
+              .state(address.getState())
+              .postalCode(address.getPostalCode())
+              .build());
+    }
+    return argoAddresses;
+  }
 
   @Override
   public Patient apply(Patient103Root.Patients.Patient patient) {
 
     return Patient.builder()
-            .id(patient.getCdwId())
-            .argoRace(argoRace(patient.getArgoRace()))
-            .argoEthnicity(argoEthnicity(patient.getArgoEthnicity()))
-            .argoBirthSex(argoBirthSex(patient.getArgoBirthsex()))
-            .identifier(identifiers(patient.getIdentifier()))
-            .name(Collections.singletonList(name(patient.getName())))
-            .telecom(telecoms(patient.getTelecoms()))
-            .address(addresses(patient.getAddresses()))
-            .gender(Patient.Gender.valueOf(patient.getGender().toString().toLowerCase()))
-            .birthDate(getSimpleBirthDate(patient.getBirthDate()))
-            .deceasedBoolean(patient.isDeceasedBoolean())
-            .deceasedDateTime(deceasedDateTime(patient.getDeceasedDateTime()))
-            .maritalStatus(maritalStatus(patient.getMaritalStatus()))
-            .contact(contacts(patient.getContacts()))
-            .build();
+        .id(patient.getCdwId())
+        .resourceType("Patient")
+        .extension(
+            extensions(
+                argoRace(patient.getArgoRace()),
+                argoEthnicity(patient.getArgoEthnicity()),
+                argoBirthSex(patient.getArgoBirthsex())))
+        .identifier(identifiers(patient.getIdentifier()))
+        .name(Collections.singletonList(name(patient.getName())))
+        .telecom(telecoms(patient.getTelecoms()))
+        .address(addresses(patient.getAddresses()))
+        .gender(Patient.Gender.valueOf(patient.getGender().toString().toLowerCase()))
+        .birthDate(getSimpleBirthDate(patient.getBirthDate()))
+        .deceasedBoolean(patient.isDeceasedBoolean())
+        .deceasedDateTime(deceasedDateTime(patient.getDeceasedDateTime()))
+        .maritalStatus(maritalStatus(patient.getMaritalStatus()))
+        .contact(contacts(patient.getContacts()))
+        .build();
   }
 
-  private String getSimpleBirthDate(XMLGregorianCalendar birthdate) {
-    Date date = birthdate.toGregorianCalendar().getTime();
-    DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-    return formatter.format(date);
-  }
-
-  private String deceasedDateTime(XMLGregorianCalendar deceasedDateTime) {
-    if(deceasedDateTime == null) {
-      return null;
+  private Optional<Extension> argoBirthSex(BirthsexExtension argoBirthsex) {
+    if (argoBirthsex == null) {
+      return Optional.empty();
     }
-    return deceasedDateTime.toString();
-  }
-
-  private ArgoBirthSexExtension argoBirthSex(BirthsexExtension argoBirthsex) {
-    return ArgoBirthSexExtension.builder()
+    return Optional.of(
+        Extension.builder()
             .url(argoBirthsex.getUrl())
             .valueCode(argoBirthsex.getValueCode().name())
-            .build();
+            .build());
   }
 
-  private ArgoEthnicityExtension argoEthnicity(List<Extensions> argoEthnicity) {
-    return ArgoEthnicityExtension.builder()
+  private Optional<Extension> argoEthnicity(List<Extensions> argoEthnicity) {
+    if (argoEthnicity.isEmpty()) {
+      return Optional.empty();
+    }
+    return Optional.of(
+        Extension.builder()
             .url(argoEthnicity.get(0).getUrl())
             .extension(ethnicityExtensions(argoEthnicity.get(0).getExtension()))
-            .build();
+            .build());
   }
 
-  private List<Extension> ethnicityExtensions(List<Extensions.Extension> argoEthnicity) {
-    List<Extension> extensions = new LinkedList<>();
-    for (Extensions.Extension extension: argoEthnicity) {
-      if (extension.getUrl().equals("text")) {
-        extensions.add(Extension.builder()
-                .url(extension.getUrl())
-                .valueString(extension.getValueString())
-                .build());
-      } else {
-        extensions.add(Extension.builder()
-                .url(extension.getUrl())
-                .valueCoding(valueCoding(extension.getValueCoding()))
-                .build());
-      }
+  private Optional<Extension> argoRace(List<Extensions> argoRace) {
+    if (argoRace.isEmpty()) {
+      return Optional.empty();
     }
-    return extensions;
-  }
-
-  private ArgoRaceExtension argoRace(List<Extensions> argoRace) {
-    return ArgoRaceExtension.builder()
+    return Optional.of(
+        Extension.builder()
             .url(argoRace.get(0).getUrl())
             .extension(raceExtensions(argoRace.get(0).getExtension()))
-            .build();
+            .build());
   }
 
-  private List<Extension> raceExtensions(List<Extensions.Extension> argoRace) {
-    List<Extension> extensions = new LinkedList<>();
-    for (Extensions.Extension extension: argoRace) {
-      if (extension.getUrl().equals("text")) {
-        extensions.add(Extension.builder()
-                .url(extension.getUrl())
-                .valueString(extension.getValueString())
-                .build());
-      } else {
-        extensions.add(Extension.builder()
-                .url(extension.getUrl())
-                .valueCoding(valueCoding(extension.getValueCoding()))
-                .build());
-      }
+  private CodeableConcept codeableConcept(Patient103Root.Patients.Patient.Identifier.Type type) {
+    return CodeableConcept.builder().coding(codings(type.getCoding())).build();
+  }
+
+  private List<Coding> coding(
+      Patient103Root.Patients.Patient.Contacts.Contact.Relationship.Coding relationship) {
+    return Collections.singletonList(
+        Coding.builder()
+            .system(relationship.getSystem().value())
+            .code(relationship.getCode().value())
+            .display(relationship.getDisplay())
+            .build());
+  }
+
+  private List<Coding> codings(
+      List<Patient103Root.Patients.Patient.Identifier.Type.Coding> codings) {
+    List<Coding> argoCodings = new LinkedList<>();
+    for (Patient103Root.Patients.Patient.Identifier.Type.Coding coding : codings) {
+      argoCodings.add(Coding.builder().system(coding.getSystem()).code(coding.getCode()).build());
     }
-    return extensions;
-  }
-
-  private Coding valueCoding(Extensions.Extension.ValueCoding valueCoding) {
-    return Coding.builder()
-            .display(valueCoding.getDisplay())
-            .code(valueCoding.getCode())
-            .system(valueCoding.getSystem())
-            .build();
+    return argoCodings;
   }
 
   private List<Contact> contacts(Patient103Root.Patients.Patient.Contacts contacts) {
     List<Contact> argoContacts = new LinkedList<>();
-    for (Patient103Root.Patients.Patient.Contacts.Contact contact: contacts.getContact()) {
-        argoContacts.add(
-                Contact.builder()
-                        .relationship(relationship(contact.getRelationship()))
-                        .name(humanName(contact.getName()))
-                        .telecom(telecom(contact))
-                        .address(address(contact))
-                        .build());
+    for (Patient103Root.Patients.Patient.Contacts.Contact contact : contacts.getContact()) {
+      argoContacts.add(
+          Contact.builder()
+              .relationship(relationship(contact.getRelationship()))
+              .name(humanName(contact.getName()))
+              .telecom(telecom(contact))
+              .address(address(contact))
+              .build());
     }
 
     return argoContacts;
   }
 
-  private Address address(Patient103Root.Patients.Patient.Contacts.Contact contact) {
-    return Address.builder()
-            .line(getLine(contact))
-            .city(contact.getCity())
-            .state(contact.getState())
-            .postalCode(contact.getPostalCode())
-            .build();
+  private String deceasedDateTime(XMLGregorianCalendar deceasedDateTime) {
+    if (deceasedDateTime == null) {
+      return null;
+    }
+    return deceasedDateTime.toString();
+  }
+
+  private List<Extension> ethnicityExtensions(List<Extensions.Extension> argoEthnicity) {
+    List<Extension> extensions = new LinkedList<>();
+    for (Extensions.Extension extension : argoEthnicity) {
+      if (extension.getUrl().equals("text")) {
+        extensions.add(
+            Extension.builder()
+                .url(extension.getUrl())
+                .valueString(extension.getValueString())
+                .build());
+      } else {
+        extensions.add(
+            Extension.builder()
+                .url(extension.getUrl())
+                .valueCoding(valueCoding(extension.getValueCoding()))
+                .build());
+      }
+    }
+    return extensions;
+  }
+
+  private List<Extension> extensions(
+      Optional<Extension> race, Optional<Extension> ethnicity, Optional<Extension> birthSex) {
+    List<Extension> extensions = new ArrayList<>(3);
+    race.ifPresent(extensions::add);
+    ethnicity.ifPresent(extensions::add);
+    birthSex.ifPresent(extensions::add);
+    return extensions;
+  }
+
+  private List<Coding> getCodings(
+      List<Patient103Root.Patients.Patient.MaritalStatus.Coding> codings) {
+    List<Coding> argoCodings = new LinkedList<>();
+    for (Patient103Root.Patients.Patient.MaritalStatus.Coding coding : codings) {
+      argoCodings.add(
+          Coding.builder()
+              .system(coding.getSystem().value())
+              .code(coding.getCode().toString())
+              .display(coding.getDisplay())
+              .build());
+    }
+    return argoCodings;
   }
 
   private List<String> getLine(Patient103Root.Patients.Patient.Contacts.Contact contact) {
@@ -156,71 +210,6 @@ public class PatientTransformer implements PatientController.Transformer {
     return line;
   }
 
-  private List<ContactPoint> telecom(Patient103Root.Patients.Patient.Contacts.Contact contact) {
-    ContactPoint.ContactPointBuilder contactPointBuilder = ContactPoint.builder();
-    if(StringUtils.isNotBlank(contact.getPhone())) {
-      contactPointBuilder.system(ContactPoint.ContactPointSystem.phone);
-      contactPointBuilder.value(contact.getPhone());
-    }
-    return Collections.singletonList(contactPointBuilder.build());
-  }
-
-  private HumanName humanName(String name) {
-    return HumanName.builder()
-            .text(name)
-            .build();
-  }
-
-  private List<CodeableConcept> relationship(Patient103Root.Patients.Patient.Contacts.Contact.Relationship relationship) {
-    return Collections.singletonList(CodeableConcept.builder()
-            .coding(coding(relationship.getCoding()))
-            .text(relationship.getText())
-            .build());
-  }
-
-  private List<Coding> coding(Patient103Root.Patients.Patient.Contacts.Contact.Relationship.Coding relationship) {
-    return Collections.singletonList(Coding.builder()
-            .system(relationship.getSystem().value())
-            .code(relationship.getCode().value())
-            .display(relationship.getDisplay())
-            .build());
-  }
-
-  private CodeableConcept maritalStatus(Patient103Root.Patients.Patient.MaritalStatus maritalStatus) {
-    return CodeableConcept.builder()
-            .text(maritalStatus.getText())
-            .coding(getCodings(maritalStatus.getCoding()))
-            .build();
-  }
-
-  private List<Coding> getCodings(List<Patient103Root.Patients.Patient.MaritalStatus.Coding> codings) {
-    List<Coding> argoCodings = new LinkedList<>();
-    for (Patient103Root.Patients.Patient.MaritalStatus.Coding coding: codings) {
-      argoCodings.add(
-              Coding.builder()
-                      .system(coding.getSystem().value())
-                      .code(coding.getCode().toString())
-                      .display(coding.getDisplay())
-                      .build());
-    }
-    return argoCodings;
-  }
-
-
-  private List<Address> addresses(Patient103Root.Patients.Patient.Addresses addresses) {
-    List<Address> argoAddresses = new LinkedList<>();
-    for (Patient103Root.Patients.Patient.Addresses.Address address: addresses.getAddress()) {
-      argoAddresses.add(
-              Address.builder()
-                      .line(getLine(address))
-                      .city(address.getCity())
-                      .state(address.getState())
-                      .postalCode(address.getPostalCode())
-                      .build());
-    }
-    return argoAddresses;
-  }
-
   private List<String> getLine(Patient103Root.Patients.Patient.Addresses.Address address) {
     List<String> line = new LinkedList<>();
     if (StringUtils.isNotBlank(address.getStreetAddress1())) {
@@ -235,69 +224,116 @@ public class PatientTransformer implements PatientController.Transformer {
     return line;
   }
 
-  private List<ContactPoint> telecoms(Patient103Root.Patients.Patient.Telecoms telecoms) {
-    List<ContactPoint> contactPoints = new LinkedList<>();
-    for (Patient103Root.Patients.Patient.Telecoms.Telecom telecom: telecoms.getTelecom()) {
-      contactPoints.add(
-              ContactPoint.builder()
-                      .system(ContactPoint.ContactPointSystem.valueOf(telecom.getSystem().toString().toLowerCase()))
-                      .value(telecom.getValue())
-                      .use(ContactPoint.ContactPointUse.valueOf(telecom.getUse().toString().toLowerCase()))
-                      .build());
-    }
-    return contactPoints;
+  private String getSimpleBirthDate(XMLGregorianCalendar birthdate) {
+    Date date = birthdate.toGregorianCalendar().getTime();
+    DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+    return formatter.format(date);
   }
 
-  private HumanName name(Patient103Root.Patients.Patient.Name name) {
-    return HumanName.builder()
-            .use(HumanName.NameUse.valueOf(name.getUse()))
-            .text(name.getText())
-            .family(Collections.singletonList(name.getFamily()))
-            .given(Collections.singletonList(name.getGiven()))
-            .build();
-
+  private HumanName humanName(String name) {
+    return HumanName.builder().text(name).build();
   }
 
-  private List<Identifier> identifiers(List<Patient103Root.Patients.Patient.Identifier> identifiers) {
+  private Identifier.IdentifierUse identifierUse(
+      Patient103Root.Patients.Patient.Identifier identifier) {
+    return Identifier.IdentifierUse.valueOf(identifier.getUse().name().toLowerCase());
+  }
+
+  private List<Identifier> identifiers(
+      List<Patient103Root.Patients.Patient.Identifier> identifiers) {
     List<Identifier> argoIdentifiers = new LinkedList<>();
-    for (Patient103Root.Patients.Patient.Identifier identifier: identifiers) {
+    for (Patient103Root.Patients.Patient.Identifier identifier : identifiers) {
       argoIdentifiers.add(
-              Identifier.builder()
-                      .use(identifierUse(identifier))
-                      .type(codeableConcept(identifier.getType()))
-                      .system(identifier.getSystem())
-                      .value(identifier.getValue())
-                      .assigner(reference(identifier.getAssigner()))
-                      .build());
+          Identifier.builder()
+              .use(identifierUse(identifier))
+              .type(codeableConcept(identifier.getType()))
+              .system(identifier.getSystem())
+              .value(identifier.getValue())
+              .assigner(reference(identifier.getAssigner()))
+              .build());
     }
     return argoIdentifiers;
   }
 
-  private Reference reference(Patient103Root.Patients.Patient.Identifier.Assigner assigner) {
-    return Reference.builder()
-            .display(assigner.getDisplay())
-            .build();
-  }
-
-  private Identifier.IdentifierUse identifierUse(Patient103Root.Patients.Patient.Identifier identifier) {
-    return Identifier.IdentifierUse.valueOf(identifier.getUse().name().toLowerCase());
-  }
-
-  private CodeableConcept codeableConcept(Patient103Root.Patients.Patient.Identifier.Type type) {
+  private CodeableConcept maritalStatus(
+      Patient103Root.Patients.Patient.MaritalStatus maritalStatus) {
     return CodeableConcept.builder()
-            .coding(codings(type.getCoding()))
-            .build();
+        .text(maritalStatus.getText())
+        .coding(getCodings(maritalStatus.getCoding()))
+        .build();
   }
 
-  private List<Coding> codings(List<Patient103Root.Patients.Patient.Identifier.Type.Coding> codings) {
-    List<Coding> argoCodings = new LinkedList<>();
-    for (Patient103Root.Patients.Patient.Identifier.Type.Coding coding: codings) {
-      argoCodings.add(
-              Coding.builder()
-                      .system(coding.getSystem())
-                      .code(coding.getCode())
-                      .build());
+  private HumanName name(Patient103Root.Patients.Patient.Name name) {
+    return HumanName.builder()
+        .use(HumanName.NameUse.valueOf(name.getUse()))
+        .text(name.getText())
+        .family(Collections.singletonList(name.getFamily()))
+        .given(Collections.singletonList(name.getGiven()))
+        .build();
+  }
+
+  private List<Extension> raceExtensions(List<Extensions.Extension> argoRace) {
+    List<Extension> extensions = new LinkedList<>();
+    for (Extensions.Extension extension : argoRace) {
+      if (extension.getUrl().equals("text")) {
+        extensions.add(
+            Extension.builder()
+                .url(extension.getUrl())
+                .valueString(extension.getValueString())
+                .build());
+      } else {
+        extensions.add(
+            Extension.builder()
+                .url(extension.getUrl())
+                .valueCoding(valueCoding(extension.getValueCoding()))
+                .build());
+      }
     }
-    return argoCodings;
+    return extensions;
+  }
+
+  private Reference reference(Patient103Root.Patients.Patient.Identifier.Assigner assigner) {
+    return Reference.builder().display(assigner.getDisplay()).build();
+  }
+
+  private List<CodeableConcept> relationship(
+      Patient103Root.Patients.Patient.Contacts.Contact.Relationship relationship) {
+    return Collections.singletonList(
+        CodeableConcept.builder()
+            .coding(coding(relationship.getCoding()))
+            .text(relationship.getText())
+            .build());
+  }
+
+  private List<ContactPoint> telecom(Patient103Root.Patients.Patient.Contacts.Contact contact) {
+    ContactPoint.ContactPointBuilder contactPointBuilder = ContactPoint.builder();
+    if (StringUtils.isNotBlank(contact.getPhone())) {
+      contactPointBuilder.system(ContactPoint.ContactPointSystem.phone);
+      contactPointBuilder.value(contact.getPhone());
+    }
+    return Collections.singletonList(contactPointBuilder.build());
+  }
+
+  private List<ContactPoint> telecoms(Patient103Root.Patients.Patient.Telecoms telecoms) {
+    List<ContactPoint> contactPoints = new LinkedList<>();
+    for (Patient103Root.Patients.Patient.Telecoms.Telecom telecom : telecoms.getTelecom()) {
+      contactPoints.add(
+          ContactPoint.builder()
+              .system(
+                  ContactPoint.ContactPointSystem.valueOf(
+                      telecom.getSystem().toString().toLowerCase()))
+              .value(telecom.getValue())
+              .use(ContactPoint.ContactPointUse.valueOf(telecom.getUse().toString().toLowerCase()))
+              .build());
+    }
+    return contactPoints;
+  }
+
+  private Coding valueCoding(Extensions.Extension.ValueCoding valueCoding) {
+    return Coding.builder()
+        .display(valueCoding.getDisplay())
+        .code(valueCoding.getCode())
+        .system(valueCoding.getSystem())
+        .build();
   }
 }

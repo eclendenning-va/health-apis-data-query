@@ -37,31 +37,6 @@ class SampleData {
         .build();
   }
 
-  ArgoBirthSexExtension argoBirthSexExtension() {
-    return ArgoBirthSexExtension.builder()
-        .id("4444")
-        .extension(singletonList(extension()))
-        .url("http://HelloUrl.com")
-        .valueCode("HelloCode")
-        .build();
-  }
-
-  ArgoEthnicityExtension argoEthnicityExtension() {
-    return ArgoEthnicityExtension.builder()
-        .id("3333")
-        .extension(singletonList(extension()))
-        .url("http://HelloUrl.com")
-        .build();
-  }
-
-  ArgoRaceExtension argoRaceExtension() {
-    return ArgoRaceExtension.builder()
-        .id("2222")
-        .extension(singletonList(extension()))
-        .url("http://HelloUrl.com")
-        .build();
-  }
-
   Coding coding() {
     return Coding.builder()
         .system("http://HelloSystem.com")
