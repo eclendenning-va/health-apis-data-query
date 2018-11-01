@@ -9,6 +9,8 @@ import org.junit.Test;
 
 import java.math.BigInteger;
 
+import static org.junit.Assert.fail;
+
 public class PatientTransformerTest {
 
     private Patient103Root.Patients.Patient testPatient;
@@ -32,10 +34,11 @@ public class PatientTransformerTest {
         testPatient.setContacts(getContacts());
     }
 
-    @Ignore
     @Test
     public void patient103RootToPatient() {
-
+        PatientTransformer transformer = new PatientTransformer();
+        transformer.apply(testPatient);
+        fail();
     }
 
     private Patient103Root.Patients.Patient.Contacts getContacts() {

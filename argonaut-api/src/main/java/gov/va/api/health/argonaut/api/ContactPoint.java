@@ -28,7 +28,7 @@ public class ContactPoint implements Element {
 
   @Valid Period period;
 
-  enum ContactPointSystem {
+  public enum ContactPointSystem {
     phone,
     fax,
     email,
@@ -36,7 +36,7 @@ public class ContactPoint implements Element {
     other
   }
 
-  enum ContactPointUse {
+  public enum ContactPointUse {
     home,
     work,
     temp,

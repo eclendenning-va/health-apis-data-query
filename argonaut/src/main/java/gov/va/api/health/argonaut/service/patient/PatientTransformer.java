@@ -3,9 +3,10 @@ package gov.va.api.health.argonaut.service.patient;
 import gov.va.api.health.argonaut.api.*;
 import gov.va.dvp.cdw.xsd.pojos.Extensions;
 import gov.va.dvp.cdw.xsd.pojos.Patient103Root;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
-import javax.validation.Valid;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -17,12 +18,64 @@ public class PatientTransformer implements PatientController.PatientTransformer 
 
     return Patient.builder()
             .id(patient.getCdwId())
-            // TODO: Fix these in the model! They are zero to many
-            //.argoRace(race(patient.getArgoRace()))
-            //.argoEthnicity()
-            //.argoBirthSex()
             .identifier(identifiers(patient.getIdentifier()))
+            .name(Collections.singletonList(name(patient.getName())))
+            .telecom(telecoms(patient.getTelecoms()))
+            .address(addresses(patient.getAddresses()))
+            .gender(Patient.Gender.valueOf(patient.getGender().toString()))
+            .birthDate(patient.getBirthDate().toString())
             .build();
+  }
+
+  private List<Address> addresses(Patient103Root.Patients.Patient.Addresses addresses) {
+    List<Address> argoAddresses = new LinkedList<>();
+    for (Patient103Root.Patients.Patient.Addresses.Address address: addresses.getAddress()) {
+      argoAddresses.add(
+              Address.builder()
+                      .line(getLine(address))
+                      .city(address.getCity())
+                      .state(address.getState())
+                      .postalCode(address.getPostalCode())
+                      .build());
+    }
+    return argoAddresses;
+  }
+
+  private List<String> getLine(Patient103Root.Patients.Patient.Addresses.Address address) {
+    List<String> line = new LinkedList<>();
+    if (StringUtils.isNotBlank(address.getStreetAddress1())) {
+      line.add(address.getStreetAddress1());
+    }
+    if (StringUtils.isNotBlank(address.getStreetAddress2())) {
+      line.add(address.getStreetAddress2());
+    }
+    if (StringUtils.isNotBlank(address.getStreetAddress3())) {
+      line.add(address.getStreetAddress3());
+    }
+    return line;
+  }
+
+  private List<ContactPoint> telecoms(Patient103Root.Patients.Patient.Telecoms telecoms) {
+    List<ContactPoint> contactPoints = new LinkedList<>();
+    for (Patient103Root.Patients.Patient.Telecoms.Telecom telecom: telecoms.getTelecom()) {
+      contactPoints.add(
+              ContactPoint.builder()
+                      .system(ContactPoint.ContactPointSystem.valueOf(telecom.getSystem().toString()))
+                      .value(telecom.getValue())
+                      .use(ContactPoint.ContactPointUse.valueOf(telecom.getUse().toString()))
+                      .build());
+    }
+    return contactPoints;
+  }
+
+  private HumanName name(Patient103Root.Patients.Patient.Name name) {
+    return HumanName.builder()
+            .use(HumanName.NameUse.valueOf(name.getUse()))
+            .text(name.getText())
+            .family(Collections.singletonList(name.getFamily()))
+            .given(Collections.singletonList(name.getGiven()))
+            .build();
+
   }
 
   private ArgoRaceExtension race(List<Extensions> argoRace) {
