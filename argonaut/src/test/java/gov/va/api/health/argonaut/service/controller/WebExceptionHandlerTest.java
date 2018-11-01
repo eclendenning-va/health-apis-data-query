@@ -48,7 +48,7 @@ public class WebExceptionHandlerTest {
   public Exception exception;
 
   @MockBean MrAndersonClient mrAnderson;
-  @MockBean PatientController.PatientTransformer tx;
+  @MockBean PatientController.Transformer tx;
   @Autowired private WebTestClient client;
 
   @Parameterized.Parameters(name = "{index}:{0} - {1}")

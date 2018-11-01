@@ -26,19 +26,34 @@ public class ModelTest {
   }
 
   @Test
-  public void patient() {
+  public void operationOutcome() {
     roundTrip(
-        Patient.builder()
-            .id("1234")
+        OperationOutcome.builder()
+            .id("4321")
             .meta(data.meta())
             .implicitRules("http://HelloRules.com")
             .language("Hello Language")
             .text(data.narrative())
             .contained(singletonList(data.resource()))
-            .argoRace(data.argoRaceExtension())
-            .argoEthnicity(data.argoEthnicityExtension())
-            .argoRace(data.argoRaceExtension())
-            .argoBirthSex(data.argoBirthSexExtension())
+            .modifierExtension(
+                Arrays.asList(
+                    data.extension(), data.extensionWithQuantity(), data.extensionWithRatio()))
+            .issue(singletonList(data.issue()))
+            .build());
+  }
+
+  @Test
+  public void patient() {
+    roundTrip(
+        Patient.builder()
+            .id("1234")
+            .resourceType("Patient")
+            .meta(data.meta())
+            .implicitRules("http://HelloRules.com")
+            .language("Hello Language")
+            .text(data.narrative())
+            .contained(singletonList(data.resource()))
+            .extension(Arrays.asList(data.extension(), data.extension()))
             .modifierExtension(
                 Arrays.asList(
                     data.extension(), data.extensionWithQuantity(), data.extensionWithRatio()))
@@ -58,23 +73,6 @@ public class ModelTest {
             .careProvider(singletonList(data.reference()))
             .managingOrganization(data.reference())
             .link(singletonList(data.link()))
-            .build());
-  }
-
-  @Test
-  public void operationOutcome() {
-    roundTrip(
-        OperationOutcome.builder()
-            .id("4321")
-            .meta(data.meta())
-            .implicitRules("http://HelloRules.com")
-            .language("Hello Language")
-            .text(data.narrative())
-            .contained(singletonList(data.resource()))
-            .modifierExtension(
-                Arrays.asList(
-                    data.extension(), data.extensionWithQuantity(), data.extensionWithRatio()))
-            .issue(singletonList(data.issue()))
             .build());
   }
 

@@ -25,7 +25,7 @@ public class PatientControllerTest {
 
   @Mock MrAndersonClient client;
 
-  @Mock PatientController.PatientTransformer tx;
+  @Mock PatientController.Transformer tx;
 
   @Mock ServerWebExchange exchange;
 

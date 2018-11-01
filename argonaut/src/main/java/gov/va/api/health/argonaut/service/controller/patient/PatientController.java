@@ -30,7 +30,7 @@ import org.springframework.web.server.ServerWebExchange;
 @Slf4j
 public class PatientController {
 
-  private PatientTransformer patientTransformer;
+  private Transformer patientTransformer;
   private MrAndersonClient client;
 
   /** Read by id. */
@@ -40,7 +40,7 @@ public class PatientController {
     Query<PatientSearchResultsRoot> query =
         Query.forType(PatientSearchResultsRoot.class)
             .profile(Query.Profile.ARGONAUT)
-            .resource("xPatient")
+            .resource("Patient")
             .version("1.03")
             .parameters(Parameters.forIdentity(publicId))
             .build();
@@ -50,7 +50,7 @@ public class PatientController {
     return patientTransformer.apply(root.getPatients().getPatient().get(0));
   }
 
-  public interface PatientTransformer extends Function<Patient103Root.Patients.Patient, Patient> {}
+  public interface Transformer extends Function<Patient103Root.Patients.Patient, Patient> {}
 
   @XmlRootElement(name = "root")
   public static class PatientSearchResultsRoot extends Patient103Root {}

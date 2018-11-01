@@ -15,14 +15,14 @@ import lombok.Value;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @JsonDeserialize(builder = Patient.PatientBuilder.class)
 @Schema(
-  description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-patient.html"
-)
+    description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-patient.html")
 public class Patient {
 
   @NotBlank
   @Pattern(regexp = Fhir.ID)
   String id;
 
+  @NotBlank String resourceType;
   @Valid Meta meta;
 
   @Pattern(regexp = Fhir.URI)
@@ -33,18 +33,9 @@ public class Patient {
   String language;
 
   @Valid Narrative text;
-
   @Valid List<SimpleResource> contained;
-
-  @NotBlank @Valid ArgoRaceExtension argoRace;
-
-  @NotBlank @Valid ArgoEthnicityExtension argoEthnicity;
-
-  @NotBlank @Valid ArgoBirthSexExtension argoBirthSex;
-
+  @Valid List<Extension> extension;
   @NotBlank @Valid List<Identifier> identifier;
-
-  @Valid Extension extension;
 
   @Valid List<Extension> modifierExtension;
 

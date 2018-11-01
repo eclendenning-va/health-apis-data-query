@@ -20,15 +20,15 @@ public class ContactPoint implements Element {
 
   @Valid List<Extension> extension;
   @NotBlank ContactPointSystem system;
-  @NotBlank ContactPointUse use;
   String value;
+  @NotBlank ContactPointUse use;
 
   @Min(1)
   Integer rank;
 
   @Valid Period period;
 
-  enum ContactPointSystem {
+  public enum ContactPointSystem {
     phone,
     fax,
     email,
@@ -36,7 +36,7 @@ public class ContactPoint implements Element {
     other
   }
 
-  enum ContactPointUse {
+  public enum ContactPointUse {
     home,
     work,
     temp,

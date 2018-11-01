@@ -17,10 +17,10 @@ public class Extension implements Element {
   @Pattern(regexp = Fhir.ID)
   String id;
 
-  @Valid List<Extension> extension;
-
   @Pattern(regexp = Fhir.URI)
   String url;
+
+  @Valid List<Extension> extension;
 
   // TODO https://vasdvp.atlassian.net/browse/API-134
   Integer valueInteger;
