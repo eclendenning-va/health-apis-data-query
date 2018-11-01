@@ -7,8 +7,12 @@ import gov.va.dvp.cdw.xsd.pojos.Patient103Root;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
+import javax.validation.constraints.Pattern;
 import javax.xml.datatype.XMLGregorianCalendar;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -28,12 +32,18 @@ public class PatientTransformer implements PatientController.Transformer {
             .telecom(telecoms(patient.getTelecoms()))
             .address(addresses(patient.getAddresses()))
             .gender(Patient.Gender.valueOf(patient.getGender().toString().toLowerCase()))
-            .birthDate(patient.getBirthDate().toString())
+            .birthDate(getSimpleBirthDate(patient.getBirthDate()))
             .deceasedBoolean(patient.isDeceasedBoolean())
             .deceasedDateTime(deceasedDateTime(patient.getDeceasedDateTime()))
             .maritalStatus(maritalStatus(patient.getMaritalStatus()))
             .contact(contacts(patient.getContacts()))
             .build();
+  }
+
+  private String getSimpleBirthDate(XMLGregorianCalendar birthdate) {
+    Date date = birthdate.toGregorianCalendar().getTime();
+    DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+    return formatter.format(date);
   }
 
   private String deceasedDateTime(XMLGregorianCalendar deceasedDateTime) {
@@ -170,8 +180,8 @@ public class PatientTransformer implements PatientController.Transformer {
 
   private List<Coding> coding(Patient103Root.Patients.Patient.Contacts.Contact.Relationship.Coding relationship) {
     return Collections.singletonList(Coding.builder()
-            .system(relationship.getSystem().toString())
-            .code(relationship.getCode().toString())
+            .system(relationship.getSystem().value())
+            .code(relationship.getCode().value())
             .display(relationship.getDisplay())
             .build());
   }
@@ -188,8 +198,9 @@ public class PatientTransformer implements PatientController.Transformer {
     for (Patient103Root.Patients.Patient.MaritalStatus.Coding coding: codings) {
       argoCodings.add(
               Coding.builder()
-                      .system(coding.getSystem().toString())
+                      .system(coding.getSystem().value())
                       .code(coding.getCode().toString())
+                      .display(coding.getDisplay())
                       .build());
     }
     return argoCodings;
