@@ -45,6 +45,7 @@
     <module>service-auto-config</module>
     <module>ids-api</module>
     <module>ids</module>
+    <module>argonaut</module>
     <module>argonaut-api</module>
     <module>mr-anderson</module>
     <module>sentinel</module>
