@@ -40,7 +40,7 @@ public class PatientController {
     Query<PatientSearchResultsRoot> query =
         Query.forType(PatientSearchResultsRoot.class)
             .profile(Query.Profile.ARGONAUT)
-            .resource("Patient")
+            .resource("xPatient")
             .version("1.03")
             .parameters(Parameters.forIdentity(publicId))
             .build();
@@ -50,7 +50,7 @@ public class PatientController {
     return patientTransformer.apply(root.getPatients().getPatient().get(0));
   }
 
-  interface PatientTransformer extends Function<Patient103Root.Patients.Patient, Patient> {}
+  public interface PatientTransformer extends Function<Patient103Root.Patients.Patient, Patient> {}
 
   @XmlRootElement(name = "root")
   public static class PatientSearchResultsRoot extends Patient103Root {}
