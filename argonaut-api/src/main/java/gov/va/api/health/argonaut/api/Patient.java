@@ -32,7 +32,7 @@ public class Patient {
 
   @Valid Narrative text;
 
-  @Valid List<Resource> contained;
+  @Valid List<SimpleResource> contained;
 
   @NotBlank @Valid ArgoRaceExtension argoRace;
 
