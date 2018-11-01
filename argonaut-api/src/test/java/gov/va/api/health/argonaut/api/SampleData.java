@@ -8,6 +8,7 @@ import gov.va.api.health.argonaut.api.ContactPoint.ContactPointSystem;
 import gov.va.api.health.argonaut.api.ContactPoint.ContactPointUse;
 import gov.va.api.health.argonaut.api.HumanName.NameUse;
 import gov.va.api.health.argonaut.api.Identifier.IdentifierUse;
+import gov.va.api.health.argonaut.api.Issue.IssueSeverity;
 import gov.va.api.health.argonaut.api.Narrative.NarrativeStatus;
 import java.util.Arrays;
 import lombok.NoArgsConstructor;
@@ -140,7 +141,7 @@ class SampleData {
 
   Issue issue() {
     return Issue.builder()
-        .severity("HelloSeverity")
+        .severity(IssueSeverity.error)
         .code("HelloCode")
         .details(details())
         .diagnostics("HelloDiagnostics")

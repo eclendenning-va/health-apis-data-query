@@ -23,12 +23,11 @@ public class Issue implements BackboneElement {
 
   @Valid List<Extension> extension;
 
-  @NotBlank
-  @Pattern(regexp = Fhir.CODE)
-  String severity;
+  @NotBlank IssueSeverity severity;
 
   @NotBlank
   @Pattern(regexp = Fhir.CODE)
+  @Schema(description = "http://hl7.org/fhir/DSTU2/valueset-issue-type.html")
   String code;
 
   @Valid CodeableConcept details;
@@ -38,4 +37,11 @@ public class Issue implements BackboneElement {
   List<String> location;
 
   List<String> expression;
+
+  public enum IssueSeverity {
+    fatal,
+    error,
+    warning,
+    information
+  }
 }

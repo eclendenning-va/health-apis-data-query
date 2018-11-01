@@ -1,6 +1,7 @@
 package gov.va.api.health.argonaut.api;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import javax.validation.Valid;
@@ -12,6 +13,7 @@ import lombok.Value;
 @Value
 @Builder
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+@JsonDeserialize(builder = OperationOutcome.OperationOutcomeBuilder.class)
 @Schema(description = "https://www.hl7.org/fhir/operationoutcome.html")
 public class OperationOutcome implements DomainResource {
 
