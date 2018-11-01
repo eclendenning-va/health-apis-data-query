@@ -10,7 +10,7 @@ import lombok.Data;
 @Data
 @Builder
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-@Schema(description = "http://hl7.org/fhir/DSTU2/resource.html")
+@Schema(description = "https://www.hl7.org/fhir/resource.html")
 public class SimpleResource implements Resource {
   @Pattern(regexp = Fhir.ID)
   String id;
