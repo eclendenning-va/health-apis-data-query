@@ -14,10 +14,6 @@ public interface MrAndersonClient {
     MrAndersonServiceException(Query<?> query) {
       super(query.toQueryString());
     }
-
-    MrAndersonServiceException(Query<?> query, Exception cause) {
-      super(query.toQueryString(), cause);
-    }
   }
 
   class NotFound extends MrAndersonServiceException {

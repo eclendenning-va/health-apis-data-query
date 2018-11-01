@@ -86,5 +86,7 @@ public class RestMrAndersonClientTest {
     mockResponse(HttpStatus.OK, root);
     Patient103Root actual = client.search(query());
     assertThat(actual).isSameAs(root);
+    query().hashCode();
+    query().equals(query());
   }
 }

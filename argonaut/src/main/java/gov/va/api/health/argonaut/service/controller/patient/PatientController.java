@@ -5,16 +5,11 @@ import gov.va.api.health.argonaut.service.controller.Parameters;
 import gov.va.api.health.argonaut.service.mranderson.client.MrAndersonClient;
 import gov.va.api.health.argonaut.service.mranderson.client.Query;
 import gov.va.dvp.cdw.xsd.pojos.Patient103Root;
-import java.util.Arrays;
 import java.util.function.Function;
 import javax.xml.bind.annotation.XmlRootElement;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,10 +33,6 @@ public class PatientController {
   private PatientTransformer patientTransformer;
   private MrAndersonClient client;
 
-  private ParameterizedTypeReference<PatientSearchResultsRoot> patientSearchResultsType() {
-    return ParameterizedTypeReference.forType(PatientSearchResultsRoot.class);
-  }
-
   /** Read by id. */
   @GetMapping(value = {"/{publicId}"})
   public Patient read(@PathVariable("publicId") String publicId, ServerWebExchange exchange) {
@@ -57,12 +48,6 @@ public class PatientController {
     PatientSearchResultsRoot root = client.search(query);
 
     return patientTransformer.apply(root.getPatients().getPatient().get(0));
-  }
-
-  private HttpEntity<Void> requestEntity() {
-    HttpHeaders headers = new HttpHeaders();
-    headers.setAccept(Arrays.asList(MediaType.APPLICATION_XML));
-    return new HttpEntity<>(headers);
   }
 
   interface PatientTransformer extends Function<Patient103Root.Patients.Patient, Patient> {}
