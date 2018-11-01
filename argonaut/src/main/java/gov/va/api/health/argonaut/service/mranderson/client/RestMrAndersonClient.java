@@ -15,13 +15,19 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+/** A rest implementation of the Mr. Anderson client. */
 @Component
 @Slf4j
 public class RestMrAndersonClient implements MrAndersonClient {
-  @Autowired @WithJaxb private RestTemplate restTemplate;
+  private final RestTemplate restTemplate;
 
-  @Value("${mranderson.url}")
-  private String baseUrl;
+  private final String baseUrl;
+
+  public RestMrAndersonClient(
+      @Value("${mranderson.url}") String baseUrl, @Autowired @WithJaxb RestTemplate restTemplate) {
+    this.baseUrl = baseUrl;
+    this.restTemplate = restTemplate;
+  }
 
   private HttpEntity<Void> requestEntity() {
     HttpHeaders headers = new HttpHeaders();
@@ -31,15 +37,20 @@ public class RestMrAndersonClient implements MrAndersonClient {
 
   @Override
   public <T> T search(Query<T> query) {
-    String url = urlOf(query);
     ResponseEntity<T> entity =
         restTemplate.exchange(
-            url, HttpMethod.GET, requestEntity(), ParameterizedTypeReference.forType(query.type()));
+            urlOf(query),
+            HttpMethod.GET,
+            requestEntity(),
+            ParameterizedTypeReference.forType(query.type()));
     if (entity.getStatusCode() == HttpStatus.NOT_FOUND) {
       throw new NotFound(query);
     }
     if (entity.getStatusCode() == HttpStatus.BAD_REQUEST) {
       throw new BadRequest(query);
+    }
+    if (entity.getStatusCode().isError()) {
+      throw new SearchFailed(query);
     }
     return entity.getBody();
   }

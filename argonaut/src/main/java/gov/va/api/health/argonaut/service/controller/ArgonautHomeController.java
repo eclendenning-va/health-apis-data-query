@@ -23,8 +23,14 @@ public class ArgonautHomeController {
 
   private static final YAMLMapper MAPPER = new YAMLMapper();
 
-  @Value("classpath:/argonaut.yaml")
+  @Value("classpath:/openapi.yaml")
   private Resource openapi;
+
+  @Bean
+  RouterFunction<ServerResponse> index() {
+    return route(
+        GET("/"), req -> ServerResponse.temporaryRedirect(URI.create("/openapi.json")).build());
+  }
 
   /** The OpenAPI specific content in yaml form. */
   @Bean
@@ -32,13 +38,6 @@ public class ArgonautHomeController {
     try (InputStream is = openapi.getInputStream()) {
       return StreamUtils.copyToString(is, Charset.defaultCharset());
     }
-  }
-
-  /** Provide access to the OpenAPI yaml via RESTful interface. */
-  @GetMapping(value = "/openapi.yaml", produces = "application/vnd.oai.openapi")
-  @ResponseBody
-  public String openapiYaml() throws IOException {
-    return openapiContent();
   }
 
   /**
@@ -51,9 +50,10 @@ public class ArgonautHomeController {
     return ArgonautHomeController.MAPPER.readValue(openapiContent(), Object.class);
   }
 
-  @Bean
-  RouterFunction<ServerResponse> index() {
-    return route(
-        GET("/"), req -> ServerResponse.temporaryRedirect(URI.create("/openapi.json")).build());
+  /** Provide access to the OpenAPI yaml via RESTful interface. */
+  @GetMapping(value = "/openapi.yaml", produces = "application/vnd.oai.openapi")
+  @ResponseBody
+  public String openapiYaml() throws IOException {
+    return openapiContent();
   }
 }
