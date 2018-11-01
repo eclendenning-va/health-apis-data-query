@@ -34,6 +34,10 @@ public class IdServiceV1ApiController {
   private final ResourceIdentityDetailRepository repository;
   private final UuidGenerator uuidGenerator;
 
+  private boolean isNotRegistered(Registration registration) {
+    return repository.findByUuid(registration.uuid()).isEmpty();
+  }
+
   /** Implementation of GET /v1/ids/{publicId}. See api-v1.yaml. */
   @RequestMapping(
     value = {"/v1/ids/{publicId}", "/resourceIdentity/{publicId}"},
@@ -85,15 +89,12 @@ public class IdServiceV1ApiController {
     return ResponseEntity.status(HttpStatus.CREATED).body(registrations);
   }
 
-  private boolean isNotRegistered(Registration registration) {
-    return repository.findByUuid(registration.uuid()).isEmpty();
-  }
-
-  private Registration toRegistration(ResourceIdentity resourceIdentity) {
-    return Registration.builder()
-        .uuid(uuidGenerator.apply(resourceIdentity))
-        .resourceIdentity(resourceIdentity)
-        .build();
+  /** Sanitize strings to prevent log forgery. */
+  private String safe(String value) {
+    if (value == null) {
+      return null;
+    }
+    return value.replaceAll("[\\s\r\n]", "");
   }
 
   private ResourceIdentityDetail toDatabaseEntry(Registration registration) {
@@ -106,12 +107,11 @@ public class IdServiceV1ApiController {
         .build();
   }
 
-  /** Sanitize strings to prevent log forgery. */
-  private String safe(String value) {
-    if (value == null) {
-      return null;
-    }
-    return value.replaceAll("[\\s\r\n]", "");
+  private Registration toRegistration(ResourceIdentity resourceIdentity) {
+    return Registration.builder()
+        .uuid(uuidGenerator.apply(resourceIdentity))
+        .resourceIdentity(resourceIdentity)
+        .build();
   }
 
   /**

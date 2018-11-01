@@ -1,4 +1,4 @@
-package gov.va.health.api.sentinel.ids;
+package gov.va.health.api.sentinel;
 
 import java.util.Locale;
 import lombok.Value;

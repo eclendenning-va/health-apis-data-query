@@ -1,4 +1,4 @@
-package gov.va.health.api.sentinel.ids;
+package gov.va.health.api.sentinel;
 
 /**
  * The TestClient provides an abstraction to REST requests for a server that returns Rest Assured

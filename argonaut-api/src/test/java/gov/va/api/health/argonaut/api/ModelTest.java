@@ -42,7 +42,7 @@ public class ModelTest {
             .modifierExtension(
                 Arrays.asList(
                     data.extension(), data.extensionWithQuantity(), data.extensionWithRatio()))
-            .identifier(data.identifier())
+            .identifier(singletonList(data.identifier()))
             .active(true)
             .name(singletonList(data.name()))
             .telecom(singletonList(data.telecom()))
