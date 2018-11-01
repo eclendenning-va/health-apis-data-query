@@ -62,6 +62,23 @@ public class ModelTest {
   }
 
   @Test
+  public void operationOutcome() {
+    roundTrip(
+        OperationOutcome.builder()
+            .id("4321")
+            .meta(data.meta())
+            .implicitRules("http://HelloRules.com")
+            .language("Hello Language")
+            .text(data.narrative())
+            .contained(singletonList(data.resource()))
+            .modifierExtension(
+                Arrays.asList(
+                    data.extension(), data.extensionWithQuantity(), data.extensionWithRatio()))
+            .issue(singletonList(data.issue()))
+            .build());
+  }
+
+  @Test
   public void range() {
     roundTrip(data.range());
   }

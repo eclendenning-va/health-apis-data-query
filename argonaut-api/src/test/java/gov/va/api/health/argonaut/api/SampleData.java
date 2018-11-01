@@ -96,6 +96,10 @@ class SampleData {
         .build();
   }
 
+  CodeableConcept details() {
+    return CodeableConcept.builder().coding(singletonList(coding())).text("HelloText").build();
+  }
+
   Extension extension() {
     return Extension.builder().url("http://HelloUrl.com").valueInteger(1).build();
   }
@@ -131,6 +135,17 @@ class SampleData {
         .id("5678")
         .use(IdentifierUse.official)
         .extension(singletonList(extension()))
+        .build();
+  }
+
+  Issue issue() {
+    return Issue.builder()
+        .severity("HelloSeverity")
+        .code("HelloCode")
+        .details(details())
+        .diagnostics("HelloDiagnostics")
+        .location(singletonList("HelloLocation"))
+        .expression(singletonList("HelloExpression"))
         .build();
   }
 
@@ -212,8 +227,8 @@ class SampleData {
     return CodeableConcept.builder().coding(singletonList(coding())).text("HelloText").build();
   }
 
-  Resource resource() {
-    return Resource.builder()
+  SimpleResource resource() {
+    return SimpleResource.builder()
         .id("1111")
         .meta(meta())
         .implicitRules("http://HelloRules.com")
