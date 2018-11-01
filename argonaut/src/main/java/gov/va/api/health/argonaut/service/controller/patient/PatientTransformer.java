@@ -1,4 +1,4 @@
-package gov.va.api.health.argonaut.service.patient;
+package gov.va.api.health.argonaut.service.controller.patient;
 
 import gov.va.api.health.argonaut.api.*;
 import gov.va.dvp.cdw.xsd.pojos.BirthsexExtension;
@@ -13,7 +13,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Service
-public class PatientTransformer implements PatientController.PatientTransformer {
+public class PatientTransformer implements PatientController.Transformer {
 
   @Override
   public Patient apply(Patient103Root.Patients.Patient patient) {

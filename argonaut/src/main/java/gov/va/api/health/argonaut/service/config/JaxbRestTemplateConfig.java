@@ -10,13 +10,18 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.xml.Jaxb2RootElementHttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
-/** Supplier for RestTemplate that support JAXB. Use the @{@link WithJaxb} qualifier. */
+/**
+ * Supplier for RestTemplate that support JAXB.
+ *
+ * <p>Use the @{@link WithJaxb} qualifier.
+ */
 @Configuration
 @AllArgsConstructor(onConstructor = @__({@Autowired}))
 public class JaxbRestTemplateConfig {
 
   private final SecureRestTemplateConfig secureConfig;
 
+  /** Create a instance of the RestTemplate that works only with JAXB data entities. */
   @Bean
   @WithJaxb
   public RestTemplate jaxbRestTemplate(@Autowired RestTemplateBuilder restTemplateBuilder) {
