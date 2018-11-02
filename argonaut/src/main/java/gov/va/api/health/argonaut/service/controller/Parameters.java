@@ -9,7 +9,7 @@ public class Parameters {
   /** Create a new parameter map with single 'identity' entry. */
   public static MultiValueMap<String, String> forIdentity(String identity) {
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-    params.add("identity", identity);
+    params.add("identifier", identity);
     return params;
   }
 }
