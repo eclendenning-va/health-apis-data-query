@@ -8,7 +8,6 @@ import gov.va.dvp.cdw.xsd.pojos.*;
 import java.math.BigInteger;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class PatientTransformerTest {
@@ -36,6 +35,7 @@ public class PatientTransformerTest {
         testPatient.setGender(AdministrativeGenderCodes.UNKNOWN);
         testPatient.setBirthDate(getBirthdate());
         testPatient.setDeceasedBoolean(false);
+        testPatient.setMaritalStatus(getMaritalStatus());
         testPatient.setContacts(getContacts());
     }
 
@@ -60,6 +60,8 @@ public class PatientTransformerTest {
                 PatientContactRelationshipSystem.HTTP_HL_7_ORG_FHIR_PATIENT_CONTACT_RELATIONSHIP);
         relationshipCoding.setCode(PatientContactRelationshipCodes.EMERGENCY);
         relationshipCoding.setDisplay("Emergency");
+        relationship.setCoding(relationshipCoding);
+        relationship.setText("TestRelations");
         contact.setRelationship(relationship);
         contact.setName("DAFFY, DUCK");
         contact.setPhone("1112223334");
@@ -120,7 +122,7 @@ public class PatientTransformerTest {
     private Patient103Root.Patients.Patient.Telecoms.Telecom getTelecom() {
         Patient103Root.Patients.Patient.Telecoms.Telecom telecom =
                 new Patient103Root.Patients.Patient.Telecoms.Telecom();
-        telecom.setSystem(ContactPointSystemCodes.PAGER);
+        telecom.setSystem(ContactPointSystemCodes.PHONE);
         telecom.setValue("987345126");
         telecom.setUse(ContactPointUseCodes.HOME);
         return telecom;
@@ -159,10 +161,20 @@ public class PatientTransformerTest {
     private Extensions getExtensions() {
         Extensions extensions = new Extensions();
         Extensions.Extension extension = new Extensions.Extension();
+        extensions.setUrl("http://testland.com");
         extension.setValueString("testvalue");
         extension.setUrl("http://testville.com");
+        extension.setValueCoding(valueCoding());
         extensions.getExtension().add(extension);
         return extensions;
+    }
+
+    private Extensions.Extension.ValueCoding valueCoding() {
+        Extensions.Extension.ValueCoding valueCoding = new Extensions.Extension.ValueCoding();
+        valueCoding.setCode("testcode");
+        valueCoding.setDisplay("testdisplay");
+        valueCoding.setSystem("testsystem");
+        return valueCoding;
     }
 
     private void setTestBirthSexExtension(){
