@@ -1,31 +1,37 @@
 package gov.va.api.health.argonaut.service.patient;
 
 import com.sun.org.apache.xerces.internal.jaxp.datatype.XMLGregorianCalendarImpl;
+
 import gov.va.api.health.argonaut.service.controller.patient.PatientTransformer;
+
 import gov.va.dvp.cdw.xsd.pojos.*;
+import java.math.BigInteger;
+
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import java.math.BigInteger;
-
-
 public class PatientTransformerTest {
 
     private Patient103Root.Patients.Patient testPatient;
-
+    private BirthsexExtension testBirthSexExtension;
+    private Patient103Root.Patients.Patient.Telecoms testTelecoms;
     @Before
     public void setTestPatient() {
+
+
+        setTestBirthSexExtension();
+        setTestTelecoms();
+
         testPatient = new Patient103Root.Patients.Patient();
         testPatient.setRowNumber(new BigInteger("1"));
         testPatient.setCdwId("123456789");
         testPatient.getArgoRace().add(getExtensions());
         testPatient.getArgoEthnicity().add(getExtensions());
-        testPatient.getArgoBirthsex().setUrl("http://mytestville.com");
-        testPatient.getArgoBirthsex().setValueCode(BirthSexCodes.UNK);
+        testPatient.setArgoBirthsex(testBirthSexExtension);
         testPatient.getIdentifier().add(getIdentifier());
         testPatient.setName(getName());
-        testPatient.getTelecoms().getTelecom().add(getTelecom());
+        testPatient.setTelecoms(testTelecoms);
         testPatient.setAddresses(getAddresses());
         testPatient.setGender(AdministrativeGenderCodes.UNKNOWN);
         testPatient.setBirthDate(getBirthdate());
@@ -33,7 +39,8 @@ public class PatientTransformerTest {
         testPatient.setContacts(getContacts());
     }
 
-    @Ignore
+
+
     @Test
     public void patient103RootToPatient() {
         PatientTransformer transformer = new PatientTransformer();
@@ -41,11 +48,16 @@ public class PatientTransformerTest {
     }
 
     private Patient103Root.Patients.Patient.Contacts getContacts() {
-        Patient103Root.Patients.Patient.Contacts contacts = new Patient103Root.Patients.Patient.Contacts();
-        Patient103Root.Patients.Patient.Contacts.Contact contact = new Patient103Root.Patients.Patient.Contacts.Contact();
-        Patient103Root.Patients.Patient.Contacts.Contact.Relationship relationship = new Patient103Root.Patients.Patient.Contacts.Contact.Relationship();
-        Patient103Root.Patients.Patient.Contacts.Contact.Relationship.Coding relationshipCoding = new Patient103Root.Patients.Patient.Contacts.Contact.Relationship.Coding();
-        relationshipCoding.setSystem(PatientContactRelationshipSystem.HTTP_HL_7_ORG_FHIR_PATIENT_CONTACT_RELATIONSHIP);
+        Patient103Root.Patients.Patient.Contacts contacts =
+                new Patient103Root.Patients.Patient.Contacts();
+        Patient103Root.Patients.Patient.Contacts.Contact contact =
+                new Patient103Root.Patients.Patient.Contacts.Contact();
+        Patient103Root.Patients.Patient.Contacts.Contact.Relationship relationship =
+                new Patient103Root.Patients.Patient.Contacts.Contact.Relationship();
+        Patient103Root.Patients.Patient.Contacts.Contact.Relationship.Coding relationshipCoding =
+                new Patient103Root.Patients.Patient.Contacts.Contact.Relationship.Coding();
+        relationshipCoding.setSystem(
+                PatientContactRelationshipSystem.HTTP_HL_7_ORG_FHIR_PATIENT_CONTACT_RELATIONSHIP);
         relationshipCoding.setCode(PatientContactRelationshipCodes.EMERGENCY);
         relationshipCoding.setDisplay("Emergency");
         contact.setRelationship(relationship);
@@ -63,9 +75,11 @@ public class PatientTransformerTest {
     }
 
     private Patient103Root.Patients.Patient.MaritalStatus getMaritalStatus() {
-        Patient103Root.Patients.Patient.MaritalStatus maritalStatus = new Patient103Root.Patients.Patient.MaritalStatus();
+        Patient103Root.Patients.Patient.MaritalStatus maritalStatus =
+                new Patient103Root.Patients.Patient.MaritalStatus();
         maritalStatus.setText("testMarriage");
-        Patient103Root.Patients.Patient.MaritalStatus.Coding coding = new Patient103Root.Patients.Patient.MaritalStatus.Coding();
+        Patient103Root.Patients.Patient.MaritalStatus.Coding coding =
+                new Patient103Root.Patients.Patient.MaritalStatus.Coding();
         coding.setSystem(MaritalStatusSystems.HTTP_HL_7_ORG_FHIR_MARITAL_STATUS);
         coding.setCode(MaritalStatusCodes.M);
         coding.setDisplay("Married");
@@ -86,7 +100,8 @@ public class PatientTransformerTest {
     }
 
     private Patient103Root.Patients.Patient.Addresses getAddresses() {
-        Patient103Root.Patients.Patient.Addresses.Address address = new Patient103Root.Patients.Patient.Addresses.Address();
+        Patient103Root.Patients.Patient.Addresses.Address address =
+                new Patient103Root.Patients.Patient.Addresses.Address();
         address.setStreetAddress1("hi road");
         address.setStreetAddress2("low park");
         address.setStreetAddress3("mid way");
@@ -96,13 +111,15 @@ public class PatientTransformerTest {
         address.setGisFipsCode("GIS_FIPS");
         address.setGisPatientAddressLatitude(12.0f);
         address.setGisPatientAddressLongitude(21.0f);
-        Patient103Root.Patients.Patient.Addresses addresses = new Patient103Root.Patients.Patient.Addresses();
+        Patient103Root.Patients.Patient.Addresses addresses =
+                new Patient103Root.Patients.Patient.Addresses();
         addresses.getAddress().add(address);
         return addresses;
     }
 
     private Patient103Root.Patients.Patient.Telecoms.Telecom getTelecom() {
-        Patient103Root.Patients.Patient.Telecoms.Telecom telecom = new Patient103Root.Patients.Patient.Telecoms.Telecom();
+        Patient103Root.Patients.Patient.Telecoms.Telecom telecom =
+                new Patient103Root.Patients.Patient.Telecoms.Telecom();
         telecom.setSystem(ContactPointSystemCodes.PAGER);
         telecom.setValue("987345126");
         telecom.setUse(ContactPointUseCodes.HOME);
@@ -119,17 +136,21 @@ public class PatientTransformerTest {
     }
 
     private Patient103Root.Patients.Patient.Identifier getIdentifier() {
-        Patient103Root.Patients.Patient.Identifier identifier = new Patient103Root.Patients.Patient.Identifier();
+        Patient103Root.Patients.Patient.Identifier identifier =
+                new Patient103Root.Patients.Patient.Identifier();
         identifier.setUse(IdentifierUseCodes.USUAL);
-        Patient103Root.Patients.Patient.Identifier.Type type = new Patient103Root.Patients.Patient.Identifier.Type();
-        Patient103Root.Patients.Patient.Identifier.Type.Coding coding = new Patient103Root.Patients.Patient.Identifier.Type.Coding();
+        Patient103Root.Patients.Patient.Identifier.Type type =
+                new Patient103Root.Patients.Patient.Identifier.Type();
+        Patient103Root.Patients.Patient.Identifier.Type.Coding coding =
+                new Patient103Root.Patients.Patient.Identifier.Type.Coding();
         coding.setSystem("http://coding.system");
         coding.setCode("testCODE");
         type.getCoding().add(coding);
         identifier.setType(type);
         identifier.setSystem("http://identifier.system");
         identifier.setValue("123456789");
-        Patient103Root.Patients.Patient.Identifier.Assigner assigner = new Patient103Root.Patients.Patient.Identifier.Assigner();
+        Patient103Root.Patients.Patient.Identifier.Assigner assigner =
+                new Patient103Root.Patients.Patient.Identifier.Assigner();
         assigner.setDisplay("tester's brain");
         identifier.setAssigner(assigner);
         return identifier;
@@ -142,5 +163,16 @@ public class PatientTransformerTest {
         extension.setUrl("http://testville.com");
         extensions.getExtension().add(extension);
         return extensions;
+    }
+
+    private void setTestBirthSexExtension(){
+        testBirthSexExtension = new BirthsexExtension();
+        testBirthSexExtension.setValueCode(BirthSexCodes.UNK);
+        testBirthSexExtension.setUrl("http://www.testville.com");
+    }
+
+    private void setTestTelecoms(){
+        testTelecoms = new Patient103Root.Patients.Patient.Telecoms();
+        testTelecoms.getTelecom().add(getTelecom());
     }
 }
