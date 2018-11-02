@@ -4,7 +4,6 @@ import com.sun.org.apache.xerces.internal.jaxp.datatype.XMLGregorianCalendarImpl
 import gov.va.api.health.argonaut.service.controller.patient.PatientTransformer;
 import gov.va.dvp.cdw.xsd.pojos.*;
 import java.math.BigInteger;
-import javax.xml.datatype.XMLGregorianCalendar;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -194,7 +193,7 @@ public class PatientTransformerTest {
     return testBirthSexExtension;
   }
 
-  private XMLGregorianCalendar getDeceasedDateTime() {
+  private XMLGregorianCalendarImpl getDeceasedDateTime() {
     XMLGregorianCalendarImpl deceasedDate = new XMLGregorianCalendarImpl();
     deceasedDate.setYear(2088);
     deceasedDate.setMonth(11);
