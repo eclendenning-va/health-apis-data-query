@@ -5,7 +5,6 @@ import gov.va.api.health.argonaut.service.controller.patient.PatientTransformer;
 import gov.va.dvp.cdw.xsd.pojos.*;
 import java.math.BigInteger;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class PatientTransformerTest {
@@ -19,22 +18,37 @@ public class PatientTransformerTest {
     testPatient.setCdwId("123456789");
     testPatient.getArgoRace().add(getExtensions());
     testPatient.getArgoEthnicity().add(getExtensions());
-    testPatient.getArgoBirthsex().setUrl("http://mytestville.com");
-    testPatient.getArgoBirthsex().setValueCode(BirthSexCodes.UNK);
+    testPatient.setArgoBirthsex(getBirthSexExtension());
     testPatient.getIdentifier().add(getIdentifier());
     testPatient.setName(getName());
-    testPatient.getTelecoms().getTelecom().add(getTelecom());
+    testPatient.setTelecoms(getTelecoms());
     testPatient.setAddresses(getAddresses());
     testPatient.setGender(AdministrativeGenderCodes.UNKNOWN);
     testPatient.setBirthDate(getBirthdate());
-    testPatient.setDeceasedBoolean(false);
+    testPatient.setMaritalStatus(getMaritalStatus());
     testPatient.setContacts(getContacts());
   }
 
-  @Ignore
   @Test
-  public void patient103RootToPatient() {
+  public void alivePatient103RootToPatient() {
     PatientTransformer transformer = new PatientTransformer();
+    testPatient.setDeceasedBoolean(false);
+    transformer.apply(testPatient);
+  }
+
+  @Test
+  public void deceasedPatient103RootToPatient() {
+    PatientTransformer transformer = new PatientTransformer();
+    testPatient.setDeceasedDateTime(getDeceasedDateTime());
+    transformer.apply(testPatient);
+  }
+
+  @Test
+  public void testArgoPatientExtension() {
+    PatientTransformer transformer = new PatientTransformer();
+    testPatient.getArgoRace().clear();
+    testPatient.getArgoEthnicity().clear();
+    testPatient.setArgoBirthsex(null);
     transformer.apply(testPatient);
   }
 
@@ -51,6 +65,8 @@ public class PatientTransformerTest {
         PatientContactRelationshipSystem.HTTP_HL_7_ORG_FHIR_PATIENT_CONTACT_RELATIONSHIP);
     relationshipCoding.setCode(PatientContactRelationshipCodes.EMERGENCY);
     relationshipCoding.setDisplay("Emergency");
+    relationship.setCoding(relationshipCoding);
+    relationship.setText("TestRelations");
     contact.setRelationship(relationship);
     contact.setName("DAFFY, DUCK");
     contact.setPhone("1112223334");
@@ -111,7 +127,7 @@ public class PatientTransformerTest {
   private Patient103Root.Patients.Patient.Telecoms.Telecom getTelecom() {
     Patient103Root.Patients.Patient.Telecoms.Telecom telecom =
         new Patient103Root.Patients.Patient.Telecoms.Telecom();
-    telecom.setSystem(ContactPointSystemCodes.PAGER);
+    telecom.setSystem(ContactPointSystemCodes.PHONE);
     telecom.setValue("987345126");
     telecom.setUse(ContactPointUseCodes.HOME);
     return telecom;
@@ -150,9 +166,49 @@ public class PatientTransformerTest {
   private Extensions getExtensions() {
     Extensions extensions = new Extensions();
     Extensions.Extension extension = new Extensions.Extension();
+    Extensions.Extension testExtension = new Extensions.Extension();
+    extensions.setUrl("http://testland.com");
     extension.setValueString("testvalue");
     extension.setUrl("http://testville.com");
+    testExtension.setUrl("text");
+    testExtension.setValueString("textvalue");
+    extension.setValueCoding(valueCoding());
     extensions.getExtension().add(extension);
+    extensions.getExtension().add(testExtension);
     return extensions;
+  }
+
+  private Extensions.Extension.ValueCoding valueCoding() {
+    Extensions.Extension.ValueCoding valueCoding = new Extensions.Extension.ValueCoding();
+    valueCoding.setCode("testcode");
+    valueCoding.setDisplay("testdisplay");
+    valueCoding.setSystem("testsystem");
+    return valueCoding;
+  }
+
+  private BirthsexExtension getBirthSexExtension() {
+    BirthsexExtension testBirthSexExtension = new BirthsexExtension();
+    testBirthSexExtension.setValueCode(BirthSexCodes.UNK);
+    testBirthSexExtension.setUrl("http://www.testville.com");
+    return testBirthSexExtension;
+  }
+
+  private XMLGregorianCalendarImpl getDeceasedDateTime() {
+    XMLGregorianCalendarImpl deceasedDate = new XMLGregorianCalendarImpl();
+    deceasedDate.setYear(2088);
+    deceasedDate.setMonth(11);
+    deceasedDate.setDay(3);
+    deceasedDate.setTimezone(0);
+    deceasedDate.setHour(6);
+    deceasedDate.setMinute(0);
+    deceasedDate.setSecond(9);
+    return deceasedDate;
+  }
+
+  private Patient103Root.Patients.Patient.Telecoms getTelecoms() {
+    Patient103Root.Patients.Patient.Telecoms testTelecoms =
+        new Patient103Root.Patients.Patient.Telecoms();
+    testTelecoms.getTelecom().add(getTelecom());
+    return testTelecoms;
   }
 }
