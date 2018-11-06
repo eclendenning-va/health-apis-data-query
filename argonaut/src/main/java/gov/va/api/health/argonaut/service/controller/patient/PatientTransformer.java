@@ -28,7 +28,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class PatientTransformer implements PatientController.Transformer {
 
-  private Address address(Patient103Root.Patients.Patient.Contacts.Contact contact) {
+  Address address(Patient103Root.Patients.Patient.Contacts.Contact contact) {
     return Address.builder()
         .line(getLine(contact))
         .city(contact.getCity())
@@ -37,7 +37,7 @@ public class PatientTransformer implements PatientController.Transformer {
         .build();
   }
 
-  private List<Address> addresses(Patient103Root.Patients.Patient.Addresses addresses) {
+  List<Address> addresses(Patient103Root.Patients.Patient.Addresses addresses) {
     List<Address> argoAddresses = new LinkedList<>();
     for (Patient103Root.Patients.Patient.Addresses.Address address : addresses.getAddress()) {
       argoAddresses.add(
@@ -75,7 +75,7 @@ public class PatientTransformer implements PatientController.Transformer {
         .build();
   }
 
-  private Optional<Extension> argoBirthSex(BirthsexExtension argoBirthsex) {
+  Optional<Extension> argoBirthSex(BirthsexExtension argoBirthsex) {
     if (argoBirthsex == null) {
       return Optional.empty();
     }
@@ -86,7 +86,7 @@ public class PatientTransformer implements PatientController.Transformer {
             .build());
   }
 
-  private Optional<Extension> argoEthnicity(List<Extensions> argoEthnicity) {
+  Optional<Extension> argoEthnicity(List<Extensions> argoEthnicity) {
     if (argoEthnicity.isEmpty()) {
       return Optional.empty();
     }
@@ -97,7 +97,7 @@ public class PatientTransformer implements PatientController.Transformer {
             .build());
   }
 
-  private Optional<Extension> argoRace(List<Extensions> argoRace) {
+  Optional<Extension> argoRace(List<Extensions> argoRace) {
     if (argoRace.isEmpty()) {
       return Optional.empty();
     }
@@ -108,11 +108,11 @@ public class PatientTransformer implements PatientController.Transformer {
             .build());
   }
 
-  private CodeableConcept codeableConcept(Patient103Root.Patients.Patient.Identifier.Type type) {
+  CodeableConcept codeableConcept(Patient103Root.Patients.Patient.Identifier.Type type) {
     return CodeableConcept.builder().coding(codings(type.getCoding())).build();
   }
 
-  private List<Coding> coding(
+  List<Coding> coding(
       Patient103Root.Patients.Patient.Contacts.Contact.Relationship.Coding relationship) {
     return Collections.singletonList(
         Coding.builder()
@@ -122,7 +122,7 @@ public class PatientTransformer implements PatientController.Transformer {
             .build());
   }
 
-  private List<Coding> codings(
+  List<Coding> codings(
       List<Patient103Root.Patients.Patient.Identifier.Type.Coding> codings) {
     List<Coding> argoCodings = new LinkedList<>();
     for (Patient103Root.Patients.Patient.Identifier.Type.Coding coding : codings) {
@@ -131,7 +131,7 @@ public class PatientTransformer implements PatientController.Transformer {
     return argoCodings;
   }
 
-  private List<Contact> contacts(Patient103Root.Patients.Patient.Contacts contacts) {
+  List<Contact> contacts(Patient103Root.Patients.Patient.Contacts contacts) {
     List<Contact> argoContacts = new LinkedList<>();
     for (Patient103Root.Patients.Patient.Contacts.Contact contact : contacts.getContact()) {
       argoContacts.add(
@@ -146,14 +146,14 @@ public class PatientTransformer implements PatientController.Transformer {
     return argoContacts;
   }
 
-  private String deceasedDateTime(XMLGregorianCalendar deceasedDateTime) {
+  String deceasedDateTime(XMLGregorianCalendar deceasedDateTime) {
     if (deceasedDateTime == null) {
       return null;
     }
     return deceasedDateTime.toString();
   }
 
-  private List<Extension> ethnicityExtensions(List<Extensions.Extension> argoEthnicity) {
+  List<Extension> ethnicityExtensions(List<Extensions.Extension> argoEthnicity) {
     List<Extension> extensions = new LinkedList<>();
     for (Extensions.Extension extension : argoEthnicity) {
       if (extension.getUrl().equals("text")) {
@@ -173,7 +173,7 @@ public class PatientTransformer implements PatientController.Transformer {
     return extensions;
   }
 
-  private List<Extension> extensions(
+  List<Extension> extensions(
       Optional<Extension> race, Optional<Extension> ethnicity, Optional<Extension> birthSex) {
     List<Extension> extensions = new ArrayList<>(3);
     race.ifPresent(extensions::add);
@@ -182,7 +182,7 @@ public class PatientTransformer implements PatientController.Transformer {
     return extensions;
   }
 
-  private List<Coding> getCodings(
+  List<Coding> getCodings(
       List<Patient103Root.Patients.Patient.MaritalStatus.Coding> codings) {
     List<Coding> argoCodings = new LinkedList<>();
     for (Patient103Root.Patients.Patient.MaritalStatus.Coding coding : codings) {
@@ -196,7 +196,7 @@ public class PatientTransformer implements PatientController.Transformer {
     return argoCodings;
   }
 
-  private List<String> getLine(Patient103Root.Patients.Patient.Contacts.Contact contact) {
+  List<String> getLine(Patient103Root.Patients.Patient.Contacts.Contact contact) {
     List<String> line = new LinkedList<>();
     if (StringUtils.isNotBlank(contact.getStreetAddress1())) {
       line.add(contact.getStreetAddress1());
@@ -210,7 +210,7 @@ public class PatientTransformer implements PatientController.Transformer {
     return line;
   }
 
-  private List<String> getLine(Patient103Root.Patients.Patient.Addresses.Address address) {
+  List<String> getLine(Patient103Root.Patients.Patient.Addresses.Address address) {
     List<String> line = new LinkedList<>();
     if (StringUtils.isNotBlank(address.getStreetAddress1())) {
       line.add(address.getStreetAddress1());
@@ -224,22 +224,22 @@ public class PatientTransformer implements PatientController.Transformer {
     return line;
   }
 
-  private String getSimpleBirthDate(XMLGregorianCalendar birthdate) {
+  String getSimpleBirthDate(XMLGregorianCalendar birthdate) {
     Date date = birthdate.toGregorianCalendar().getTime();
     DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
     return formatter.format(date);
   }
 
-  private HumanName humanName(String name) {
+  HumanName humanName(String name) {
     return HumanName.builder().text(name).build();
   }
 
-  private Identifier.IdentifierUse identifierUse(
+  Identifier.IdentifierUse identifierUse(
       Patient103Root.Patients.Patient.Identifier identifier) {
     return Identifier.IdentifierUse.valueOf(identifier.getUse().name().toLowerCase());
   }
 
-  private List<Identifier> identifiers(
+  List<Identifier> identifiers(
       List<Patient103Root.Patients.Patient.Identifier> identifiers) {
     List<Identifier> argoIdentifiers = new LinkedList<>();
     for (Patient103Root.Patients.Patient.Identifier identifier : identifiers) {
@@ -255,7 +255,7 @@ public class PatientTransformer implements PatientController.Transformer {
     return argoIdentifiers;
   }
 
-  private CodeableConcept maritalStatus(
+  CodeableConcept maritalStatus(
       Patient103Root.Patients.Patient.MaritalStatus maritalStatus) {
     return CodeableConcept.builder()
         .text(maritalStatus.getText())
@@ -263,7 +263,7 @@ public class PatientTransformer implements PatientController.Transformer {
         .build();
   }
 
-  private HumanName name(Patient103Root.Patients.Patient.Name name) {
+  HumanName name(Patient103Root.Patients.Patient.Name name) {
     return HumanName.builder()
         .use(HumanName.NameUse.valueOf(name.getUse()))
         .text(name.getText())
@@ -272,7 +272,7 @@ public class PatientTransformer implements PatientController.Transformer {
         .build();
   }
 
-  private List<Extension> raceExtensions(List<Extensions.Extension> argoRace) {
+  List<Extension> raceExtensions(List<Extensions.Extension> argoRace) {
     List<Extension> extensions = new LinkedList<>();
     for (Extensions.Extension extension : argoRace) {
       if (extension.getUrl().equals("text")) {
@@ -292,11 +292,11 @@ public class PatientTransformer implements PatientController.Transformer {
     return extensions;
   }
 
-  private Reference reference(Patient103Root.Patients.Patient.Identifier.Assigner assigner) {
+  Reference reference(Patient103Root.Patients.Patient.Identifier.Assigner assigner) {
     return Reference.builder().display(assigner.getDisplay()).build();
   }
 
-  private List<CodeableConcept> relationship(
+  List<CodeableConcept> relationship(
       Patient103Root.Patients.Patient.Contacts.Contact.Relationship relationship) {
     return Collections.singletonList(
         CodeableConcept.builder()
@@ -305,7 +305,7 @@ public class PatientTransformer implements PatientController.Transformer {
             .build());
   }
 
-  private List<ContactPoint> telecom(Patient103Root.Patients.Patient.Contacts.Contact contact) {
+  List<ContactPoint> telecom(Patient103Root.Patients.Patient.Contacts.Contact contact) {
     ContactPoint.ContactPointBuilder contactPointBuilder = ContactPoint.builder();
     if (StringUtils.isNotBlank(contact.getPhone())) {
       contactPointBuilder.system(ContactPoint.ContactPointSystem.phone);
@@ -314,7 +314,7 @@ public class PatientTransformer implements PatientController.Transformer {
     return Collections.singletonList(contactPointBuilder.build());
   }
 
-  private List<ContactPoint> telecoms(Patient103Root.Patients.Patient.Telecoms telecoms) {
+  List<ContactPoint> telecoms(Patient103Root.Patients.Patient.Telecoms telecoms) {
     List<ContactPoint> contactPoints = new LinkedList<>();
     for (Patient103Root.Patients.Patient.Telecoms.Telecom telecom : telecoms.getTelecom()) {
       contactPoints.add(
@@ -329,7 +329,7 @@ public class PatientTransformer implements PatientController.Transformer {
     return contactPoints;
   }
 
-  private Coding valueCoding(Extensions.Extension.ValueCoding valueCoding) {
+  Coding valueCoding(Extensions.Extension.ValueCoding valueCoding) {
     return Coding.builder()
         .display(valueCoding.getDisplay())
         .code(valueCoding.getCode())

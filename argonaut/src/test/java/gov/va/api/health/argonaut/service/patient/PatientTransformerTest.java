@@ -20,24 +20,161 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import lombok.SneakyThrows;
 import org.junit.Test;
 
+import static org.junit.Assert.fail;
+
 public class PatientTransformerTest {
 
   private XmlSampleData data = new XmlSampleData();
 
   @Test
-  public void alivePatient103RootToPatient() {
+  public void patient103TransformsToJsonPatient() {
     new PatientTransformer().apply(data.alivePatient());
+    fail();
   }
 
   @Test
-  public void deceasedPatient103RootToPatient() {
-    new PatientTransformer().apply(data.deadPatient());
+  public void contactTransformsToAddress() {
+    fail();
   }
 
   @Test
-  public void testArgoPatientExtension() {
-    new PatientTransformer().apply(data.patientWithNoExtensions());
+  public void addressesTransformsToAddressList() {
+    fail();
   }
+
+  @Test
+  public void argoBirthsex() {
+    fail();
+  }
+
+  @Test
+  public void argoEthnicity() {
+    fail();
+  }
+
+  @Test
+  public void argoRace() {
+    fail();
+  }
+
+  @Test
+  public void identifierTypeTransfromsToCodeableConcept() {
+    fail();
+  }
+
+  @Test
+  public void relationshipCodingTransformsToCodingList() {
+    fail();
+  }
+
+  @Test
+  public void identifierTypeCodingListTransformsToCodingList() {
+    fail();
+  }
+
+  @Test
+  public void contactsTransformsToContactList() {
+    fail();
+  }
+
+  @Test
+  public void deceasedDateTimeTransformsToString() {
+    fail();
+  }
+
+  @Test
+  public void deceasedDateTimeMissingReturnsNull() {
+    fail();
+  }
+
+  @Test
+  public void argoEthnicityTransformsToExtensionList() {
+    fail();
+  }
+
+  @Test
+  public void argoEthnicityTextUrlTransformsToExtensionsList() {
+    fail();
+  }
+
+  @Test
+  public void argoPatientExtensionsTransformToExtensionList() {
+    fail();
+  }
+
+  @Test
+  public void argoPatientExtensionsMissingTransformsToEmptyExtensionList() { fail(); }
+
+  @Test
+  public void argoPartialPatientExtensionsTransformsToExtensionList() { fail(); }
+
+  @Test
+  public void maritalStatusCodingListTransformsToCodingList() {
+    fail();
+  }
+
+  @Test
+  public void contactTransformsToStringLine() {
+    fail();
+  }
+
+  @Test
+  public void addressTransformsToLine() {
+    fail();
+  }
+
+  @Test
+  public void birthDateTransformsToSimpleDateString() {
+    fail();
+  }
+
+  @Test
+  public void contactNameTransformsToHumanName() {
+    fail();
+  }
+
+  @Test
+  public void identifierTransformsToIdentifierUse() {
+    fail();
+  }
+
+  @Test
+  public void identifiersTransformsToIdentifiersList() {
+    fail();
+  }
+
+  @Test
+  public void maritalStatusTransformsToCodeableConcept() {
+    fail();
+  }
+
+  @Test
+  public void stringTransformsToHumanName() {
+    fail();
+  }
+
+  @Test
+  public void argoRaceExtensionTransformsToExtensionList() {
+    fail();
+  }
+
+  @Test
+  public void argoRaceExtensionTextUrlTransformsToExtensionsList() { fail(); }
+
+  @Test
+  public void assignerTransformsToReference() { fail(); }
+
+  @Test
+  public void relationshipTransformsToCodeableConceptList() { fail(); }
+
+  @Test
+  public void contactTranformsToContactPointList() { fail();  }
+
+  @Test
+  public void telecomsTransformsToContactPointList() { fail(); }
+
+  @Test
+  public void valueCodingTransformsToCoding() { fail(); }
 
   private static class XmlSampleData {
 
