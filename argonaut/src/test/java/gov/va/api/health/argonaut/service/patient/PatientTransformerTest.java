@@ -1,6 +1,5 @@
 package gov.va.api.health.argonaut.service.patient;
 
-import com.sun.org.apache.xerces.internal.jaxp.datatype.XMLGregorianCalendarImpl;
 import gov.va.api.health.argonaut.service.controller.patient.PatientTransformer;
 import gov.va.dvp.cdw.xsd.pojos.AdministrativeGenderCodes;
 import gov.va.dvp.cdw.xsd.pojos.BirthSexCodes;
@@ -16,6 +15,9 @@ import gov.va.dvp.cdw.xsd.pojos.Patient103Root.Patients.Patient;
 import gov.va.dvp.cdw.xsd.pojos.PatientContactRelationshipCodes;
 import gov.va.dvp.cdw.xsd.pojos.PatientContactRelationshipSystem;
 import java.math.BigInteger;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
+import lombok.SneakyThrows;
 import org.junit.Test;
 
 public class PatientTransformerTest {
@@ -38,6 +40,14 @@ public class PatientTransformerTest {
   }
 
   private static class SampleData {
+
+    private DatatypeFactory datatypeFactory;
+
+    @SneakyThrows
+    private SampleData() {
+      datatypeFactory = DatatypeFactory.newInstance();
+    }
+
     Patient103Root.Patients.Patient.Addresses addresses() {
       Patient103Root.Patients.Patient.Addresses.Address address =
           new Patient103Root.Patients.Patient.Addresses.Address();
@@ -82,8 +92,9 @@ public class PatientTransformerTest {
       return testBirthSexExtension;
     }
 
-    XMLGregorianCalendarImpl birthdate() {
-      XMLGregorianCalendarImpl birthdate = new XMLGregorianCalendarImpl();
+    @SneakyThrows
+    XMLGregorianCalendar birthdate() {
+      XMLGregorianCalendar birthdate = datatypeFactory.newXMLGregorianCalendar();
       birthdate.setYear(2088);
       birthdate.setMonth(11);
       birthdate.setDay(3);
@@ -130,8 +141,8 @@ public class PatientTransformerTest {
       return patient;
     }
 
-    XMLGregorianCalendarImpl deceasedDateTime() {
-      XMLGregorianCalendarImpl deceasedDate = new XMLGregorianCalendarImpl();
+    XMLGregorianCalendar deceasedDateTime() {
+      XMLGregorianCalendar deceasedDate = datatypeFactory.newXMLGregorianCalendar();
       deceasedDate.setYear(2088);
       deceasedDate.setMonth(11);
       deceasedDate.setDay(3);
