@@ -18,8 +18,14 @@ import lombok.Value;
   description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-patient.html"
 )
 @RelatedFields({
-        @ZeroOrOneOf(fields = {"deceasedBoolean" , "deceasedDateTime"} , message="Only one deceased value may be specified"),
-        @ZeroOrOneOf(fields = {"multipleBirthBoolean" , "multipleBirthInteger"}, message="Only one multiple birth value may be specified")
+  @ZeroOrOneOf(
+    fields = {"deceasedBoolean", "deceasedDateTime"},
+    message = "Only one deceased value may be specified"
+  ),
+  @ZeroOrOneOf(
+    fields = {"multipleBirthBoolean", "multipleBirthInteger"},
+    message = "Only one multiple birth value may be specified"
+  )
 })
 public class Patient {
 
