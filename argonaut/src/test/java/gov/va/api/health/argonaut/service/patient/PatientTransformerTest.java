@@ -22,7 +22,7 @@ import org.junit.Test;
 
 public class PatientTransformerTest {
 
-  private SampleData data = new SampleData();
+  private XmlSampleData data = new XmlSampleData();
 
   @Test
   public void alivePatient103RootToPatient() {
@@ -39,12 +39,12 @@ public class PatientTransformerTest {
     new PatientTransformer().apply(data.patientWithNoExtensions());
   }
 
-  private static class SampleData {
+  private static class XmlSampleData {
 
     private DatatypeFactory datatypeFactory;
 
     @SneakyThrows
-    private SampleData() {
+    private XmlSampleData() {
       datatypeFactory = DatatypeFactory.newInstance();
     }
 
