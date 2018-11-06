@@ -235,22 +235,22 @@ public class PatientTransformerTest {
       Extensions extensions = new Extensions();
       extensions.setUrl("http://test-race");
 
-      Extensions.Extension extension = new Extensions.Extension();
-      extension.setUrl("ombTest");
+      Extensions.Extension extension1 = new Extensions.Extension();
+      extension1.setUrl("ombTest");
 
       Extensions.Extension.ValueCoding valueCoding = new Extensions.Extension.ValueCoding();
       valueCoding.setSystem("http://test-race");
       valueCoding.setCode("R4C3");
       valueCoding.setDisplay("tester");
-      extension.setValueCoding(valueCoding);
+      extension1.setValueCoding(valueCoding);
 
-      extensions.getExtension().add(extension);
+      extensions.getExtension().add(extension1);
 
-      extension = new Extensions.Extension();
-      extension.setUrl("text");
-      extension.setValueString("tester");
+      Extensions.Extension extension2 = new Extensions.Extension();
+      extension2.setUrl("text");
+      extension2.setValueString("tester");
 
-      extensions.getExtension().add(extension);
+      extensions.getExtension().add(extension2);
       return extensions;
     }
 
@@ -258,22 +258,22 @@ public class PatientTransformerTest {
       Extensions extensions = new Extensions();
       extensions.setUrl("http://test-ethnicity");
 
-      Extensions.Extension extension = new Extensions.Extension();
-      extension.setUrl("ombTest");
+      Extensions.Extension extension1 = new Extensions.Extension();
+      extension1.setUrl("ombTest");
 
       Extensions.Extension.ValueCoding valueCoding = new Extensions.Extension.ValueCoding();
       valueCoding.setSystem("http://test-ethnicity");
       valueCoding.setCode("3THN1C1TY");
       valueCoding.setDisplay("testa");
-      extension.setValueCoding(valueCoding);
+      extension1.setValueCoding(valueCoding);
 
-      extensions.getExtension().add(extension);
+      extensions.getExtension().add(extension1);
 
-      extension = new Extensions.Extension();
-      extension.setUrl("text");
-      extension.setValueString("testa");
+      Extensions.Extension extension2 = new Extensions.Extension();
+      extension2.setUrl("text");
+      extension2.setValueString("testa");
 
-      extensions.getExtension().add(extension);
+      extensions.getExtension().add(extension2);
       return extensions;    }
 
     BirthsexExtension birthSexExtension() {
@@ -296,58 +296,57 @@ public class PatientTransformerTest {
       Patient103Root.Patients.Patient.Contacts contacts =
           new Patient103Root.Patients.Patient.Contacts();
 
-      Patient103Root.Patients.Patient.Contacts.Contact contact =
+      Patient103Root.Patients.Patient.Contacts.Contact contact1 =
           new Patient103Root.Patients.Patient.Contacts.Contact();
 
-      Patient103Root.Patients.Patient.Contacts.Contact.Relationship relationship =
+      Patient103Root.Patients.Patient.Contacts.Contact.Relationship relationship1 =
           new Patient103Root.Patients.Patient.Contacts.Contact.Relationship();
 
-      Patient103Root.Patients.Patient.Contacts.Contact.Relationship.Coding relationshipCoding =
+      Patient103Root.Patients.Patient.Contacts.Contact.Relationship.Coding relationshipCoding1 =
           new Patient103Root.Patients.Patient.Contacts.Contact.Relationship.Coding();
-      relationshipCoding.setSystem(
+      relationshipCoding1.setSystem(
           PatientContactRelationshipSystem.HTTP_HL_7_ORG_FHIR_PATIENT_CONTACT_RELATIONSHIP);
-      relationshipCoding.setCode(PatientContactRelationshipCodes.EMERGENCY);
-      relationshipCoding.setDisplay("Emergency");
+      relationshipCoding1.setCode(PatientContactRelationshipCodes.EMERGENCY);
+      relationshipCoding1.setDisplay("Emergency");
 
-      relationship.setCoding(relationshipCoding);
-      relationship.setText("Emergency Contact");
+      relationship1.setCoding(relationshipCoding1);
+      relationship1.setText("Emergency Contact");
 
-      contact.setRelationship(relationship);
-      contact.setName("DAFFY, DUCK JOHN");
-      contact.setPhone("9998886666");
-      contact.setStreetAddress1("123 Happy Avenue");
-      contact.setStreetAddress2("456 Smile Drive");
-      contact.setStreetAddress3("789 Laughter Lane");
-      contact.setCity("Happyland");
-      contact.setState("Happylina");
-      contact.setPostalCode("12345");
-      contact.setCountry("USA");
+      contact1.setRelationship(relationship1);
+      contact1.setName("DAFFY, DUCK JOHN");
+      contact1.setPhone("9998886666");
+      contact1.setStreetAddress1("123 Happy Avenue");
+      contact1.setStreetAddress2("456 Smile Drive");
+      contact1.setStreetAddress3("789 Laughter Lane");
+      contact1.setCity("Happyland");
+      contact1.setState("Happylina");
+      contact1.setPostalCode("12345");
+      contact1.setCountry("USA");
 
-      contacts.getContact().add(contact);
+      Patient103Root.Patients.Patient.Contacts.Contact contact2 =
+              new Patient103Root.Patients.Patient.Contacts.Contact();
 
-      contact = new Patient103Root.Patients.Patient.Contacts.Contact();
+      Patient103Root.Patients.Patient.Contacts.Contact.Relationship relationship2 = new Patient103Root.Patients.Patient.Contacts.Contact.Relationship();
 
-      relationship = new Patient103Root.Patients.Patient.Contacts.Contact.Relationship();
-
-      relationshipCoding = new Patient103Root.Patients.Patient.Contacts.Contact.Relationship.Coding();
-      relationshipCoding.setSystem(
+      Patient103Root.Patients.Patient.Contacts.Contact.Relationship.Coding relationshipCoding2 = new Patient103Root.Patients.Patient.Contacts.Contact.Relationship.Coding();
+      relationshipCoding2.setSystem(
               PatientContactRelationshipSystem.HTTP_HL_7_ORG_FHIR_PATIENT_CONTACT_RELATIONSHIP);
-      relationshipCoding.setCode(PatientContactRelationshipCodes.EMERGENCY);
-      relationshipCoding.setDisplay("Emergency");
+      relationshipCoding2.setCode(PatientContactRelationshipCodes.EMERGENCY);
+      relationshipCoding2.setDisplay("Emergency");
 
-      relationship.setCoding(relationshipCoding);
-      relationship.setText("Emergency Contact");
+      relationship2.setCoding(relationshipCoding2);
+      relationship2.setText("Emergency Contact");
 
-      contact.setRelationship(relationship);
-      contact.setName("DAFFY, DUCK JOHN");
-      contact.setPhone("1112224444");
-      contact.setStreetAddress1("123 Sad Avenue");
-      contact.setStreetAddress2("456 Frown Drive");
-      contact.setStreetAddress3("789 Weeping Lane");
-      contact.setCity("Sadland");
-      contact.setState("Sadlina");
-      contact.setPostalCode("98765");
-      contact.setCountry("USA");
+      contact2.setRelationship(relationship2);
+      contact2.setName("DAFFY, DUCK JOHN");
+      contact2.setPhone("1112224444");
+      contact2.setStreetAddress1("123 Sad Avenue");
+      contact2.setStreetAddress2("456 Frown Drive");
+      contact2.setStreetAddress3("789 Weeping Lane");
+      contact2.setCity("Sadland");
+      contact2.setState("Sadlina");
+      contact2.setPostalCode("98765");
+      contact2.setCountry("USA");
 
 
       return contacts;
@@ -370,21 +369,6 @@ public class PatientTransformerTest {
       deceasedDate.setMinute(0);
       deceasedDate.setSecond(9);
       return deceasedDate;
-    }
-
-    Extensions extensions() {
-      Extensions extensions = new Extensions();
-      Extensions.Extension extension = new Extensions.Extension();
-      Extensions.Extension testExtension = new Extensions.Extension();
-      extensions.setUrl("http://testland.com");
-      extension.setValueString("testvalue");
-      extension.setUrl("http://testville.com");
-      testExtension.setUrl("text");
-      testExtension.setValueString("textvalue");
-      extension.setValueCoding(valueCoding());
-      extensions.getExtension().add(extension);
-      extensions.getExtension().add(testExtension);
-      return extensions;
     }
 
     Patient103Root.Patients.Patient.Identifier identifier() {
@@ -442,17 +426,18 @@ public class PatientTransformerTest {
       Patient103Root.Patients.Patient.Telecoms testTelecoms =
           new Patient103Root.Patients.Patient.Telecoms();
 
-      Patient103Root.Patients.Patient.Telecoms.Telecom telecom =
+      Patient103Root.Patients.Patient.Telecoms.Telecom telecom1 =
               new Patient103Root.Patients.Patient.Telecoms.Telecom();
-      telecom.setSystem(ContactPointSystemCodes.PHONE);
-      telecom.setValue("9998886666");
-      telecom.setUse(ContactPointUseCodes.HOME);
-      testTelecoms.getTelecom().add(telecom);
+      telecom1.setSystem(ContactPointSystemCodes.PHONE);
+      telecom1.setValue("9998886666");
+      telecom1.setUse(ContactPointUseCodes.HOME);
+      testTelecoms.getTelecom().add(telecom1);
 
-      telecom = new Patient.Telecoms.Telecom();
-      telecom.setSystem(ContactPointSystemCodes.PHONE);
-      telecom.setValue("1112224444");
-      telecom.setUse(ContactPointUseCodes.WORK);
+      Patient103Root.Patients.Patient.Telecoms.Telecom telecom2 =
+              new Patient103Root.Patients.Patient.Telecoms.Telecom();
+      telecom2.setSystem(ContactPointSystemCodes.PHONE);
+      telecom2.setValue("1112224444");
+      telecom2.setUse(ContactPointUseCodes.WORK);
       return testTelecoms;
     }
 
@@ -493,10 +478,10 @@ public class PatientTransformerTest {
     List<Contact> contact() {
       List<Contact> contacts = new LinkedList<>();
 
-      List<String> line = new LinkedList<>();
-      line.add("123 Happy Avenue");
-      line.add("456 Smile Drive");
-      line.add("789 Laugher Lane");
+      List<String> line1 = new LinkedList<>();
+      line1.add("123 Happy Avenue");
+      line1.add("456 Smile Drive");
+      line1.add("789 Laugher Lane");
       contacts.add(Contact.builder()
               .relationship(relationship())
               .name(HumanName.builder().text("DUCK, DAFFY JOHN").build())
@@ -505,7 +490,7 @@ public class PatientTransformerTest {
                       .value("9998886666")
                       .build()))
               .address(Address.builder()
-                      .line(line)
+                      .line(line1)
                       .city("Happyland")
                       .state("Happylina")
                       .postalCode("12345")
@@ -514,10 +499,10 @@ public class PatientTransformerTest {
               .build());
 
 
-      line = new LinkedList<>();
-      line.add("123 Sad Avenue");
-      line.add("456 Frown Drive");
-      line.add("789 Weeping Lane");
+      List<String> line2 = new LinkedList<>();
+      line2.add("123 Sad Avenue");
+      line2.add("456 Frown Drive");
+      line2.add("789 Weeping Lane");
       contacts.add(Contact.builder()
               .relationship(relationship())
               .name(HumanName.builder().text("ALICE, TEST JANE").build())
@@ -526,7 +511,7 @@ public class PatientTransformerTest {
                       .value("1112224444")
                       .build()))
               .address(Address.builder()
-                      .line(line)
+                      .line(line2)
                       .city("Sadland")
                       .state("Sadlina")
                       .postalCode("98765")
@@ -564,20 +549,20 @@ public class PatientTransformerTest {
       addresses.add(Address.builder()
               .state("Missing*")
               .build());
-      List<String> line = new LinkedList<>();
-      line.add("1234 Test Road");
-      line.add("Testland");
-      line.add("Test POSTGRES");
+      List<String> line1 = new LinkedList<>();
+      line1.add("1234 Test Road");
+      line1.add("Testland");
+      line1.add("Test POSTGRES");
       addresses.add(Address.builder()
-              .line(line)
+              .line(line1)
               .city("Testville")
               .state("Testlina")
               .postalCode("12345")
               .build());
-      line.clear();
-      line.add("9876 Fake Lane");
+      List<String> line2 = new LinkedList<>();
+      line2.add("9876 Fake Lane");
       addresses.add(Address.builder()
-              .line(line)
+              .line(line2)
               .city("Fooville")
               .state("Foolina")
               .postalCode("98765")
