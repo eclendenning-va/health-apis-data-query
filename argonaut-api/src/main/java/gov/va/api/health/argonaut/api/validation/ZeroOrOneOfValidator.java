@@ -1,4 +1,4 @@
-package gov.va.api.health.argonaut.api;
+package gov.va.api.health.argonaut.api.validation;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
@@ -8,26 +8,7 @@ import lombok.SneakyThrows;
 import org.springframework.beans.BeanUtils;
 
 public class ZeroOrOneOfValidator implements ConstraintValidator<ZeroOrOneOf, Object> {
-  private String[] fieldNames;
-  private int notNullCount = 0;
-
-  @Override
-  public void initialize(final ZeroOrOneOf constraintAnnotation) {
-    fieldNames = constraintAnnotation.fields();
-  }
-
-  @Override
-  public boolean isValid(final Object value, final ConstraintValidatorContext context) {
-    for (String fieldName : fieldNames) {
-      if (valueOf(value, fieldName) != null) {
-        notNullCount++;
-      }
-    }
-    if (notNullCount > 1) {
-      return false;
-    }
-    return true;
-  }
+  private ZeroOrOneOf annotation;
 
   private Method findGetter(Class<?> type, String name) {
     Method getter = null;
@@ -43,6 +24,25 @@ public class ZeroOrOneOfValidator implements ConstraintValidator<ZeroOrOneOf, Ob
           "Cannot find Java bean property or fluent getter: " + type.getName() + "." + name);
     }
     return getter;
+  }
+
+  @Override
+  public void initialize(final ZeroOrOneOf constraintAnnotation) {
+    annotation = constraintAnnotation;
+  }
+
+  @Override
+  public boolean isValid(final Object value, final ConstraintValidatorContext context) {
+    int notNullCount = 0;
+    for (String fieldName : annotation.fields()) {
+      if (valueOf(value, fieldName) != null) {
+        notNullCount++;
+      }
+    }
+    if (notNullCount > 1) {
+      return false;
+    }
+    return true;
   }
 
   @SneakyThrows
