@@ -2,6 +2,8 @@ package gov.va.api.health.argonaut.api;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import gov.va.api.health.argonaut.api.validation.RelatedFields;
+import gov.va.api.health.argonaut.api.validation.ZeroOrOneOf;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import javax.validation.Valid;
@@ -18,6 +20,16 @@ import lombok.Value;
 @JsonDeserialize(builder = Patient.PatientBuilder.class)
 @Schema(
     description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-patient.html")
+@RelatedFields({
+  @ZeroOrOneOf(
+    fields = {"deceasedBoolean", "deceasedDateTime"},
+    message = "Only one deceased value may be specified"
+  ),
+  @ZeroOrOneOf(
+    fields = {"multipleBirthBoolean", "multipleBirthInteger"},
+    message = "Only one multiple birth value may be specified"
+  )
+})
 public class Patient {
 
   @NotBlank
@@ -52,7 +64,6 @@ public class Patient {
   @Pattern(regexp = Fhir.DATE)
   String birthDate;
 
-  // TODO https://vasdvp.atlassian.net/browse/API-135
   Boolean deceasedBoolean;
 
   @Pattern(regexp = Fhir.DATETIME)

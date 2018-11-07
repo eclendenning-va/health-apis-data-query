@@ -1,6 +1,7 @@
 package gov.va.api.health.argonaut.api;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import gov.va.api.health.argonaut.api.validation.ZeroOrOneOf;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import javax.validation.Valid;
@@ -12,6 +13,35 @@ import lombok.Data;
 @Builder
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @Schema(description = "http://hl7.org/fhir/DSTU2/extensibility.html#extension")
+@ZeroOrOneOf(
+  fields = {
+    "valueInteger",
+    "valueDecimal",
+    "valueDateTime",
+    "valueDate",
+    "valueDateTime",
+    "valueDate",
+    "valueInstant",
+    "valueString",
+    "valueUri",
+    "valueBoolean",
+    "valueCode",
+    "valueBase64Binary",
+    "valueCoding",
+    "valueCodeableConcept",
+    "valueIdentifier",
+    "valueQuantity",
+    "valueAttachment",
+    "valueRange",
+    "valuePeriod",
+    "valueRatio",
+    "valueHumanName",
+    "valueAddress",
+    "valueContactPoint",
+    "valueReference"
+  },
+  message = "Only one value type may be specified"
+)
 public class Extension implements Element {
 
   @Pattern(regexp = Fhir.ID)
@@ -50,9 +80,9 @@ public class Extension implements Element {
 
   @Valid Coding valueCoding;
   @Valid CodeableConcept valueCodeableConcept;
-  @Valid Attachment valueAttachment;
   @Valid Identifier valueIdentifier;
   @Valid Quantity valueQuantity;
+  @Valid Attachment valueAttachment;
   @Valid Range valueRange;
   @Valid Period valuePeriod;
   @Valid Ratio valueRatio;
