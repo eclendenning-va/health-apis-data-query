@@ -10,6 +10,19 @@ import lombok.Builder;
 import lombok.Value;
 import org.springframework.util.MultiValueMap;
 
+/**
+ * Type safe model for searching Mr. Anderson.
+ *
+ * <pre>
+ *   Query.forType(Patient103Root.class)
+ *     .profile(Profile.ARGONAUT)
+ *     .resource(Patient.class.getSimpleName())
+ *     .version("1.03")
+ *     .parameters(params)
+ *     .type(Patient.class)
+ *     .build();
+ * </pre>
+ */
 @Value
 @Builder(toBuilder = true)
 public class Query<T> {
@@ -19,6 +32,7 @@ public class Query<T> {
   MultiValueMap<String, String> parameters;
   Class<T> type;
 
+  /** Start a builder chain to query for a given type. */
   public static <R> QueryBuilder<R> forType(Class<R> forType) {
     return Query.<R>builder().type(forType);
   }
@@ -28,8 +42,8 @@ public class Query<T> {
   }
 
   /**
-   * Returns a CDW formatted query string, also called a "FHIRString" in the format of
-   * /resource:version?key=value&key=value. The query parameters will be sorted alphabetically.
+   * Returns a Mr. Anderson formatted query string, /profile/resource/version?key=value&key=value.
+   * The query parameters will be sorted alphabetically.
    */
   public String toQueryString() {
     StringBuilder msg = new StringBuilder();
@@ -52,6 +66,7 @@ public class Query<T> {
     return msg.toString();
   }
 
+  /** The Argonaut profile to request. */
   public enum Profile {
     ARGONAUT,
     DSTU2,
