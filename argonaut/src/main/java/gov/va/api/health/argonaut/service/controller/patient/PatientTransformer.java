@@ -33,6 +33,7 @@ public class PatientTransformer implements PatientController.Transformer {
         .line(getLine(contact))
         .city(contact.getCity())
         .state(contact.getState())
+        .country(contact.getCountry())
         .postalCode(contact.getPostalCode())
         .build();
   }
@@ -207,7 +208,7 @@ public class PatientTransformer implements PatientController.Transformer {
     if (StringUtils.isNotBlank(contact.getStreetAddress3())) {
       line.add(contact.getStreetAddress3());
     }
-    return line;
+    return line.isEmpty()?null:line;
   }
 
   List<String> getLine(Patient103Root.Patients.Patient.Addresses.Address address) {
@@ -221,7 +222,7 @@ public class PatientTransformer implements PatientController.Transformer {
     if (StringUtils.isNotBlank(address.getStreetAddress3())) {
       line.add(address.getStreetAddress3());
     }
-    return line;
+    return line.isEmpty()?null:line;
   }
 
   String getSimpleBirthDate(XMLGregorianCalendar birthdate) {

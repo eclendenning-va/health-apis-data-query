@@ -24,155 +24,223 @@ public class PatientTransformerTest {
   @Test
   public void patient103TransformsToJsonPatient() {
     new PatientTransformer().apply(data.alivePatient());
-    fail();
+        PatientTransformer patientTransformer = new PatientTransformer();
+
   }
 
   @Test
   public void contactTransformsToAddress() {
-    fail();
+    PatientTransformer patientTransformer = new PatientTransformer();
+    Address testAddress = patientTransformer.address(data.alivePatient().getContacts().getContact().get(0));
+    Address expectedAddress = patient.alivePatient().contact().get(0).address();
+    assertThat(testAddress).isEqualTo(expectedAddress);
   }
 
   @Test
   public void addressesTransformsToAddressList() {
     PatientTransformer patientTransformer = new PatientTransformer();
     List<Address> testAddresses = patientTransformer.addresses(data.alivePatient().getAddresses());
-    List<Address> expectedAddresses = patient.address();
-    assertThat(testAddresses.equals(expectedAddresses));
+    List<Address> expectedAddresses = patient.alivePatient().address();
+    assertThat(testAddresses).isEqualTo(expectedAddresses);
   }
 
   @Test
   public void argoBirthsex() {
-    fail();
+    PatientTransformer patientTransformer = new PatientTransformer();
+    Optional<Extension> testArgoBirthsex = patientTransformer.argoBirthSex(data.alivePatient().getArgoBirthsex());
+    Extension expexctedArgoBirthsex = patient.alivePatient().extension().get(2);
+    assertThat(testArgoBirthsex.get()).isEqualTo(expexctedArgoBirthsex);
   }
 
   @Test
   public void argoEthnicity() {
-    fail();
+    PatientTransformer patientTransformer = new PatientTransformer();
+    Optional<Extension> testArgoEthnicity = patientTransformer.argoEthnicity(data.alivePatient().getArgoEthnicity());
+    Extension expectedArgoEthnicity = patient.alivePatient().extension().get(1);
+    assertThat(testArgoEthnicity.get()).isEqualTo(expectedArgoEthnicity);
   }
 
   @Test
   public void argoRace() {
-    fail();
+    PatientTransformer patientTransformer = new PatientTransformer();
+    Optional<Extension> testArgoRace = patientTransformer.argoRace(data.alivePatient().getArgoRace());
+    Extension expectedArgoRace = patient.alivePatient().extension().get(0);
+    assertThat(testArgoRace.get()).isEqualTo(expectedArgoRace);
   }
 
   @Test
   public void identifierTypeTransfromsToCodeableConcept() {
-    fail();
+    PatientTransformer patientTransformer = new PatientTransformer();
+    CodeableConcept testCodeableConcept = patientTransformer.codeableConcept(data.alivePatient().getIdentifier().get(0).getType());
+    CodeableConcept expectedCodeableConcept = patient.alivePatient().identifier().get(0).type();
+    assertThat(testCodeableConcept).isEqualTo(expectedCodeableConcept);
   }
 
   @Test
   public void relationshipCodingTransformsToCodingList() {
-    fail();
+    PatientTransformer patientTransformer = new PatientTransformer();
+    List<Coding> testCodings = patientTransformer.coding(data.alivePatient().getContacts().getContact().get(0).getRelationship().getCoding());
+    List<Coding> expectedCodings = patient.contact().get(0).relationship().get(0).coding();
+    assertThat(testCodings).isEqualTo(expectedCodings);
   }
 
   @Test
   public void identifierTypeCodingListTransformsToCodingList() {
-    fail();
+    PatientTransformer patientTransformer = new PatientTransformer();
+    List<Coding> testCodings = patientTransformer.codings(data.alivePatient().getIdentifier().get(0).getType().getCoding());
+    List<Coding> expectedCodings = patient.identifier().get(0).type().coding();
+    assertThat(testCodings).isEqualTo(expectedCodings);
   }
 
   @Test
   public void contactsTransformsToContactList() {
-    fail();
+    PatientTransformer patientTransformer = new PatientTransformer();
+    List<Contact> testContacts = patientTransformer.contacts(data.alivePatient().getContacts());
+    List<Contact> expectedContacts = patient.contact();
+    assertThat(testContacts).isEqualTo(expectedContacts);
   }
+
+
+  //TODO: need a dead patient constructor for testing
 
   @Test
   public void deceasedDateTimeTransformsToString() {
+    PatientTransformer patientTransformer = new PatientTransformer();
+    String testDateTime = patientTransformer.deceasedDateTime(data.deadPatient().getDeceasedDateTime());
     fail();
   }
 
   @Test
   public void deceasedDateTimeMissingReturnsNull() {
-    fail();
+    PatientTransformer patientTransformer = new PatientTransformer();
+    String testDateTime = patientTransformer.deceasedDateTime(data.alivePatient().getDeceasedDateTime());
+    assertThat(testDateTime).isNull();
   }
 
   @Test
   public void argoEthnicityTransformsToExtensionList() {
-    fail();
-  }
-
-  @Test
-  public void argoEthnicityTextUrlTransformsToExtensionsList() {
-    fail();
+    PatientTransformer patientTransformer = new PatientTransformer();
+    List<Extension> testArgoEthnicity = patientTransformer.ethnicityExtensions(data.alivePatient().getArgoEthnicity().get(0).getExtension());
+    List<Extension> expectedArgoEthnicity = patient.alivePatient().extension().get(1).extension();
+    assertThat(testArgoEthnicity).isEqualTo(expectedArgoEthnicity);
   }
 
   @Test
   public void argoPatientExtensionsTransformToExtensionList() {
-    fail();
+    PatientTransformer patientTransformer = new PatientTransformer();
+    List<Extension> testPatientExtensions = patientTransformer.extensions(
+            patientTransformer.argoRace(data.alivePatient().getArgoRace()),
+            patientTransformer.argoEthnicity(data.alivePatient().getArgoEthnicity()),
+            patientTransformer.argoBirthSex(data.alivePatient().getArgoBirthsex()));
+    List<Extension> expectedPatientExtensions = patient.alivePatient().extension();
+    assertThat(testPatientExtensions).isEqualTo(expectedPatientExtensions);
   }
 
   @Test
-  public void argoPatientExtensionsMissingTransformsToEmptyExtensionList() { fail(); }
-
-  @Test
-  public void argoPartialPatientExtensionsTransformsToExtensionList() { fail(); }
+  public void argoPatientExtensionsMissingTransformsToEmptyExtensionList() {
+    PatientTransformer patientTransformer = new PatientTransformer();
+    List<Extension> testPatientExtensions = patientTransformer.extensions(null, null,null);
+    List<Extension> expectedPatientExtensions = new LinkedList<>();
+    assertThat(testPatientExtensions).isEqualTo(expectedPatientExtensions);
+  }
 
   @Test
   public void maritalStatusCodingListTransformsToCodingList() {
-    fail();
+    PatientTransformer patientTransformer = new PatientTransformer();
+    List<Coding> testCodingList = patientTransformer.getCodings(data.alivePatient().getMaritalStatus().getCoding());
+    List<Coding> expectedCodingList = patient.alivePatient().maritalStatus().coding();
+    assertThat(testCodingList).isEqualTo(expectedCodingList);
   }
 
   @Test
   public void contactTransformsToStringLine() {
-    fail();
+    PatientTransformer patientTransformer = new PatientTransformer();
+    List<String> testLine = patientTransformer.getLine(data.alivePatient().getContacts().getContact().get(0));
+    List<String> expectedLine = patient.alivePatient().contact().get(0).address().line();
+    assertThat(testLine).isEqualTo(expectedLine);
   }
 
   @Test
   public void addressTransformsToLine() {
-    fail();
+    PatientTransformer patientTransformer = new PatientTransformer();
+    List<String> testLine = patientTransformer.getLine(data.alivePatient().getAddresses().getAddress().get(0));
+    List<String> expectedLine = patient.alivePatient().address().get(0).line();
+    assertThat(testLine).isEqualTo(expectedLine);
   }
 
   @Test
   public void birthDateTransformsToSimpleDateString() {
-    fail();
+    PatientTransformer patientTransformer = new PatientTransformer();
+    String testSimpleDate = patientTransformer.getSimpleBirthDate(data.alivePatient().getBirthDate());
+    String expectedSimpleDate = patient.alivePatient().birthDate();
+    assertThat(testSimpleDate).isEqualTo(expectedSimpleDate);
   }
 
   @Test
   public void contactNameTransformsToHumanName() {
+    PatientTransformer patientTransformer = new PatientTransformer();
     fail();
   }
 
   @Test
   public void identifierTransformsToIdentifierUse() {
+    PatientTransformer patientTransformer = new PatientTransformer();
     fail();
   }
 
   @Test
   public void identifiersTransformsToIdentifiersList() {
+    PatientTransformer patientTransformer = new PatientTransformer();
     fail();
   }
 
   @Test
   public void maritalStatusTransformsToCodeableConcept() {
+    PatientTransformer patientTransformer = new PatientTransformer();
     fail();
   }
 
   @Test
   public void stringTransformsToHumanName() {
+    PatientTransformer patientTransformer = new PatientTransformer();
     fail();
   }
 
   @Test
   public void argoRaceExtensionTransformsToExtensionList() {
+    PatientTransformer patientTransformer = new PatientTransformer();
     fail();
   }
 
   @Test
-  public void argoRaceExtensionTextUrlTransformsToExtensionsList() { fail(); }
+  public void assignerTransformsToReference() {
+    PatientTransformer patientTransformer = new PatientTransformer();
+    fail();
+ }
 
   @Test
-  public void assignerTransformsToReference() { fail(); }
+  public void relationshipTransformsToCodeableConceptList() {
+    PatientTransformer patientTransformer = new PatientTransformer();
+    fail();
+ }
 
   @Test
-  public void relationshipTransformsToCodeableConceptList() { fail(); }
+  public void contactTranformsToContactPointList() {
+    PatientTransformer patientTransformer = new PatientTransformer();
+    fail();
+  }
 
   @Test
-  public void contactTranformsToContactPointList() { fail();  }
+  public void telecomsTransformsToContactPointList() {
+    PatientTransformer patientTransformer = new PatientTransformer();
+    fail();
+ }
 
   @Test
-  public void telecomsTransformsToContactPointList() { fail(); }
-
-  @Test
-  public void valueCodingTransformsToCoding() { fail(); }
+  public void valueCodingTransformsToCoding() {
+    PatientTransformer patientTransformer = new PatientTransformer();
+    fail();
+ }
 
   private static class XmlSampleData {
 
@@ -279,7 +347,7 @@ public class PatientTransformerTest {
     BirthsexExtension birthSexExtension() {
       BirthsexExtension testBirthSexExtension = new BirthsexExtension();
       testBirthSexExtension.setValueCode(BirthSexCodes.M);
-      testBirthSexExtension.setUrl("http://argo-birthsex");
+      testBirthSexExtension.setUrl("http://test-birthsex");
       return testBirthSexExtension;
     }
 
@@ -313,7 +381,7 @@ public class PatientTransformerTest {
       relationship1.setText("Emergency Contact");
 
       contact1.setRelationship(relationship1);
-      contact1.setName("DAFFY, DUCK JOHN");
+      contact1.setName("DUCK, DAFFY JOHN");
       contact1.setPhone("9998886666");
       contact1.setStreetAddress1("123 Happy Avenue");
       contact1.setStreetAddress2("456 Smile Drive");
@@ -322,6 +390,7 @@ public class PatientTransformerTest {
       contact1.setState("Happylina");
       contact1.setPostalCode("12345");
       contact1.setCountry("USA");
+      contacts.getContact().add(contact1);
 
       Patient103Root.Patients.Patient.Contacts.Contact contact2 =
               new Patient103Root.Patients.Patient.Contacts.Contact();
@@ -338,7 +407,7 @@ public class PatientTransformerTest {
       relationship2.setText("Emergency Contact");
 
       contact2.setRelationship(relationship2);
-      contact2.setName("DAFFY, DUCK JOHN");
+      contact2.setName("ALICE, TEST JANE");
       contact2.setPhone("1112224444");
       contact2.setStreetAddress1("123 Sad Avenue");
       contact2.setStreetAddress2("456 Frown Drive");
@@ -347,6 +416,7 @@ public class PatientTransformerTest {
       contact2.setState("Sadlina");
       contact2.setPostalCode("98765");
       contact2.setCountry("USA");
+      contacts.getContact().add(contact2);
 
 
       return contacts;
@@ -441,13 +511,6 @@ public class PatientTransformerTest {
       return testTelecoms;
     }
 
-    Extensions.Extension.ValueCoding valueCoding() {
-      Extensions.Extension.ValueCoding valueCoding = new Extensions.Extension.ValueCoding();
-      valueCoding.setCode("testcode");
-      valueCoding.setDisplay("testdisplay");
-      valueCoding.setSystem("testsystem");
-      return valueCoding;
-    }
   }
 
   private static class PatientSampleData {
@@ -481,7 +544,7 @@ public class PatientTransformerTest {
       List<String> line1 = new LinkedList<>();
       line1.add("123 Happy Avenue");
       line1.add("456 Smile Drive");
-      line1.add("789 Laugher Lane");
+      line1.add("789 Laughter Lane");
       contacts.add(Contact.builder()
               .relationship(relationship())
               .name(HumanName.builder().text("DUCK, DAFFY JOHN").build())
@@ -525,7 +588,7 @@ public class PatientTransformerTest {
     List<CodeableConcept> relationship() {
       return Collections.singletonList(CodeableConcept.builder()
               .coding(Collections.singletonList(Coding.builder()
-                      .system("http://patient-contact-relationship")
+                      .system("http://hl7.org/fhir/patient-contact-relationship")
                       .code("emergency")
                       .display("Emergency")
                       .build()))
@@ -536,7 +599,7 @@ public class PatientTransformerTest {
     CodeableConcept maritalStatus() {
       return CodeableConcept.builder()
               .coding(Collections.singletonList(Coding.builder()
-                      .system("http://test-maritalstatus")
+                      .system("http://hl7.org/fhir/marital-status")
                       .code("M")
                       .display("Married")
                       .build()))
@@ -646,15 +709,15 @@ public class PatientTransformerTest {
               .build());
 
       extensions.add(Extension.builder()
-              .url("http://argo-race.com")
+              .url("http://test-race")
               .extension(raceExtensions)
               .build());
       extensions.add(Extension.builder()
-              .url("http://argo-ethnicity")
+              .url("http://test-ethnicity")
               .extension(ethnicityExtensions)
               .build());
       extensions.add(Extension.builder()
-              .url("http://argo-birthsex")
+              .url("http://test-birthsex")
               .valueCode("M")
               .build());
       return extensions;
