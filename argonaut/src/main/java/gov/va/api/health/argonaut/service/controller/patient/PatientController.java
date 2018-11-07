@@ -9,7 +9,6 @@ import gov.va.api.health.argonaut.service.mranderson.client.MrAndersonClient;
 import gov.va.api.health.argonaut.service.mranderson.client.Query;
 import gov.va.dvp.cdw.xsd.pojos.Patient103Root;
 import java.util.function.Function;
-import javax.xml.bind.annotation.XmlRootElement;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,21 +39,18 @@ public class PatientController {
   @GetMapping(value = {"/{publicId}"})
   public Patient read(@PathVariable("publicId") String publicId, ServerWebExchange exchange) {
 
-    Query<PatientSearchResultsRoot> query =
-        Query.forType(PatientSearchResultsRoot.class)
+    Query<Patient103Root> query =
+        Query.forType(Patient103Root.class)
             .profile(Query.Profile.ARGONAUT)
             .resource("Patient")
             .version("1.03")
             .parameters(Parameters.forIdentity(publicId))
             .build();
 
-    PatientSearchResultsRoot root = client.search(query);
+    Patient103Root root = client.search(query);
 
     return patientTransformer.apply(firstPayloadItem(hasPayload(root.getPatients()).getPatient()));
   }
 
   public interface Transformer extends Function<Patient103Root.Patients.Patient, Patient> {}
-
-  @XmlRootElement(name = "root")
-  public static class PatientSearchResultsRoot extends Patient103Root {}
 }

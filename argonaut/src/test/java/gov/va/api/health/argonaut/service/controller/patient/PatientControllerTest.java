@@ -6,7 +6,6 @@ import static org.mockito.Mockito.when;
 
 import gov.va.api.health.argonaut.api.Patient;
 import gov.va.api.health.argonaut.service.controller.Parameters;
-import gov.va.api.health.argonaut.service.controller.patient.PatientController.PatientSearchResultsRoot;
 import gov.va.api.health.argonaut.service.mranderson.client.MrAndersonClient;
 import gov.va.api.health.argonaut.service.mranderson.client.Query;
 import gov.va.dvp.cdw.xsd.pojos.Patient103Root;
@@ -39,8 +38,7 @@ public class PatientControllerTest {
 
   @Test
   public void read() {
-    PatientController.PatientSearchResultsRoot root =
-        new PatientController.PatientSearchResultsRoot();
+    Patient103Root root = new Patient103Root();
     root.setPatients(new Patients());
     Patient103Root.Patients.Patient xmlPatient = new Patient103Root.Patients.Patient();
     root.getPatients().getPatient().add(xmlPatient);
@@ -49,7 +47,7 @@ public class PatientControllerTest {
     when(tx.apply(xmlPatient)).thenReturn(patient);
     Patient actual = controller.read("hello", exchange);
     assertThat(actual).isSameAs(patient);
-    ArgumentCaptor<Query<PatientSearchResultsRoot>> captor = ArgumentCaptor.forClass(Query.class);
+    ArgumentCaptor<Query<Patient103Root>> captor = ArgumentCaptor.forClass(Query.class);
     verify(client).search(captor.capture());
     Entry<? extends String, ? extends List<String>> e;
     assertThat(captor.getValue().parameters()).isEqualTo(Parameters.forIdentity("hello"));
