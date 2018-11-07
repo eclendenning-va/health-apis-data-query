@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.server.ServerWebExchange;
 
 /**
@@ -32,7 +33,7 @@ public class WebExceptionHandler {
     return responseFor("structure", e, exchange);
   }
 
-  @ExceptionHandler({NotFound.class})
+  @ExceptionHandler({NotFound.class, HttpClientErrorException.NotFound.class})
   @ResponseStatus(HttpStatus.NOT_FOUND)
   public OperationOutcome handleNotFound(Exception e, ServerWebExchange exchange) {
     return responseFor("not-found", e, exchange);

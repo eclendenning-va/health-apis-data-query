@@ -6,6 +6,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import lombok.Builder;
 import lombok.Value;
@@ -15,8 +17,7 @@ import lombok.Value;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @JsonDeserialize(builder = Patient.PatientBuilder.class)
 @Schema(
-  description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-patient.html"
-)
+    description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-patient.html")
 public class Patient {
 
   @NotBlank
@@ -36,19 +37,17 @@ public class Patient {
   @Valid Narrative text;
   @Valid List<SimpleResource> contained;
   @Valid List<Extension> extension;
-  @NotBlank @Valid List<Identifier> identifier;
+  @NotEmpty @Valid List<Identifier> identifier;
 
   @Valid List<Extension> modifierExtension;
 
   Boolean active;
 
-  @NotBlank @Valid List<HumanName> name;
+  @NotEmpty @Valid List<HumanName> name;
 
   @Valid List<ContactPoint> telecom;
 
-  @Pattern(regexp = Fhir.CODE)
-  @NotBlank
-  Gender gender;
+  @NotNull Gender gender;
 
   @Pattern(regexp = Fhir.DATE)
   String birthDate;
@@ -60,22 +59,14 @@ public class Patient {
   String deceasedDateTime;
 
   @Valid List<Address> address;
-
   @Valid CodeableConcept maritalStatus;
-
   Boolean multipleBirthBoolean;
   Integer multipleBirthInteger;
-
   @Valid List<Attachment> photo;
-
   @Valid List<Contact> contact;
-
-  @NotBlank @Valid List<Communication> communication;
-
+  @Valid List<Communication> communication;
   @Valid List<Reference> careProvider;
-
   @Valid Reference managingOrganization;
-  // link
   @Valid List<Link> link;
 
   public enum Gender {

@@ -21,7 +21,6 @@ public class Contact implements BackboneElement {
   @Valid List<ContactPoint> telecom;
   @Valid Address address;
 
-  @Pattern(regexp = Fhir.CODE)
   Gender gender;
 
   @Valid Reference organization;
