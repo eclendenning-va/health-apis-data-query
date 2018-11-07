@@ -55,25 +55,7 @@ public class PatientTransformer implements PatientController.Transformer {
   @Override
   public Patient apply(Patient103Root.Patients.Patient patient) {
 
-    return Patient.builder()
-        .id(patient.getCdwId())
-        .resourceType("Patient")
-        .extension(
-            extensions(
-                argoRace(patient.getArgoRace()),
-                argoEthnicity(patient.getArgoEthnicity()),
-                argoBirthSex(patient.getArgoBirthsex())))
-        .identifier(identifiers(patient.getIdentifier()))
-        .name(Collections.singletonList(name(patient.getName())))
-        .telecom(telecoms(patient.getTelecoms()))
-        .address(addresses(patient.getAddresses()))
-        .gender(Patient.Gender.valueOf(patient.getGender().toString().toLowerCase()))
-        .birthDate(getSimpleBirthDate(patient.getBirthDate()))
-        .deceasedBoolean(patient.isDeceasedBoolean())
-        .deceasedDateTime(deceasedDateTime(patient.getDeceasedDateTime()))
-        .maritalStatus(maritalStatus(patient.getMaritalStatus()))
-        .contact(contacts(patient.getContacts()))
-        .build();
+    return patient(patient);
   }
 
   Optional<Extension> argoBirthSex(BirthsexExtension argoBirthsex) {
@@ -123,8 +105,7 @@ public class PatientTransformer implements PatientController.Transformer {
             .build());
   }
 
-  List<Coding> codings(
-      List<Patient103Root.Patients.Patient.Identifier.Type.Coding> codings) {
+  List<Coding> codings(List<Patient103Root.Patients.Patient.Identifier.Type.Coding> codings) {
     List<Coding> argoCodings = new LinkedList<>();
     for (Patient103Root.Patients.Patient.Identifier.Type.Coding coding : codings) {
       argoCodings.add(Coding.builder().system(coding.getSystem()).code(coding.getCode()).build());
@@ -183,8 +164,7 @@ public class PatientTransformer implements PatientController.Transformer {
     return extensions;
   }
 
-  List<Coding> getCodings(
-      List<Patient103Root.Patients.Patient.MaritalStatus.Coding> codings) {
+  List<Coding> getCodings(List<Patient103Root.Patients.Patient.MaritalStatus.Coding> codings) {
     List<Coding> argoCodings = new LinkedList<>();
     for (Patient103Root.Patients.Patient.MaritalStatus.Coding coding : codings) {
       argoCodings.add(
@@ -208,7 +188,7 @@ public class PatientTransformer implements PatientController.Transformer {
     if (StringUtils.isNotBlank(contact.getStreetAddress3())) {
       line.add(contact.getStreetAddress3());
     }
-    return line.isEmpty()?null:line;
+    return line.isEmpty() ? null : line;
   }
 
   List<String> getLine(Patient103Root.Patients.Patient.Addresses.Address address) {
@@ -222,7 +202,7 @@ public class PatientTransformer implements PatientController.Transformer {
     if (StringUtils.isNotBlank(address.getStreetAddress3())) {
       line.add(address.getStreetAddress3());
     }
-    return line.isEmpty()?null:line;
+    return line.isEmpty() ? null : line;
   }
 
   String getSimpleBirthDate(XMLGregorianCalendar birthdate) {
@@ -235,13 +215,11 @@ public class PatientTransformer implements PatientController.Transformer {
     return HumanName.builder().text(name).build();
   }
 
-  Identifier.IdentifierUse identifierUse(
-      Patient103Root.Patients.Patient.Identifier identifier) {
+  Identifier.IdentifierUse identifierUse(Patient103Root.Patients.Patient.Identifier identifier) {
     return Identifier.IdentifierUse.valueOf(identifier.getUse().name().toLowerCase());
   }
 
-  List<Identifier> identifiers(
-      List<Patient103Root.Patients.Patient.Identifier> identifiers) {
+  List<Identifier> identifiers(List<Patient103Root.Patients.Patient.Identifier> identifiers) {
     List<Identifier> argoIdentifiers = new LinkedList<>();
     for (Patient103Root.Patients.Patient.Identifier identifier : identifiers) {
       argoIdentifiers.add(
@@ -256,20 +234,42 @@ public class PatientTransformer implements PatientController.Transformer {
     return argoIdentifiers;
   }
 
-  CodeableConcept maritalStatus(
-      Patient103Root.Patients.Patient.MaritalStatus maritalStatus) {
+  CodeableConcept maritalStatus(Patient103Root.Patients.Patient.MaritalStatus maritalStatus) {
     return CodeableConcept.builder()
         .text(maritalStatus.getText())
         .coding(getCodings(maritalStatus.getCoding()))
         .build();
   }
 
-  HumanName name(Patient103Root.Patients.Patient.Name name) {
-    return HumanName.builder()
-        .use(HumanName.NameUse.valueOf(name.getUse()))
-        .text(name.getText())
-        .family(Collections.singletonList(name.getFamily()))
-        .given(Collections.singletonList(name.getGiven()))
+  List<HumanName> name(Patient103Root.Patients.Patient.Name name) {
+    return Collections.singletonList(
+        HumanName.builder()
+            .use(HumanName.NameUse.valueOf(name.getUse()))
+            .text(name.getText())
+            .family(Collections.singletonList(name.getFamily()))
+            .given(Collections.singletonList(name.getGiven()))
+            .build());
+  }
+
+  private Patient patient(Patient103Root.Patients.Patient patient) {
+    return Patient.builder()
+        .id(patient.getCdwId())
+        .resourceType("Patient")
+        .extension(
+            extensions(
+                argoRace(patient.getArgoRace()),
+                argoEthnicity(patient.getArgoEthnicity()),
+                argoBirthSex(patient.getArgoBirthsex())))
+        .identifier(identifiers(patient.getIdentifier()))
+        .name(name(patient.getName()))
+        .telecom(telecoms(patient.getTelecoms()))
+        .address(addresses(patient.getAddresses()))
+        .gender(Patient.Gender.valueOf(patient.getGender().toString().toLowerCase()))
+        .birthDate(getSimpleBirthDate(patient.getBirthDate()))
+        .deceasedBoolean(patient.isDeceasedBoolean())
+        .deceasedDateTime(deceasedDateTime(patient.getDeceasedDateTime()))
+        .maritalStatus(maritalStatus(patient.getMaritalStatus()))
+        .contact(contacts(patient.getContacts()))
         .build();
   }
 
