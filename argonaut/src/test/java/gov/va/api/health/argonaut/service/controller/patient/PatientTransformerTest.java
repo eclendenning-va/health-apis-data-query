@@ -2,12 +2,35 @@ package gov.va.api.health.argonaut.service.controller.patient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import gov.va.api.health.argonaut.api.*;
+import gov.va.api.health.argonaut.api.Address;
+import gov.va.api.health.argonaut.api.CodeableConcept;
+import gov.va.api.health.argonaut.api.Coding;
+import gov.va.api.health.argonaut.api.Contact;
+import gov.va.api.health.argonaut.api.ContactPoint;
+import gov.va.api.health.argonaut.api.Extension;
+import gov.va.api.health.argonaut.api.HumanName;
+import gov.va.api.health.argonaut.api.Identifier;
 import gov.va.api.health.argonaut.api.Reference;
-import gov.va.dvp.cdw.xsd.pojos.*;
+import gov.va.api.health.argonaut.service.controller.Transformers;
+import gov.va.dvp.cdw.xsd.pojos.AdministrativeGenderCodes;
+import gov.va.dvp.cdw.xsd.pojos.BirthSexCodes;
+import gov.va.dvp.cdw.xsd.pojos.BirthsexExtension;
+import gov.va.dvp.cdw.xsd.pojos.ContactPointSystemCodes;
+import gov.va.dvp.cdw.xsd.pojos.ContactPointUseCodes;
+import gov.va.dvp.cdw.xsd.pojos.Extensions;
+import gov.va.dvp.cdw.xsd.pojos.IdentifierUseCodes;
+import gov.va.dvp.cdw.xsd.pojos.MaritalStatusCodes;
+import gov.va.dvp.cdw.xsd.pojos.MaritalStatusSystems;
+import gov.va.dvp.cdw.xsd.pojos.Patient103Root;
 import gov.va.dvp.cdw.xsd.pojos.Patient103Root.Patients.Patient;
+import gov.va.dvp.cdw.xsd.pojos.PatientContactRelationshipCodes;
+import gov.va.dvp.cdw.xsd.pojos.PatientContactRelationshipSystem;
 import java.math.BigInteger;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import lombok.SneakyThrows;
@@ -19,112 +42,131 @@ public class PatientTransformerTest {
   private PatientSampleData patient = new PatientSampleData();
 
   @Test
+  public void addressReturnsNullForNull() {
+    assertThat(transformer().address(null)).isNull();
+  }
+
+  @Test
   public void addressTransformsToLine() {
-    PatientTransformer patientTransformer = new PatientTransformer();
     List<String> testLine =
-        patientTransformer.getLine(data.alivePatient().getAddresses().getAddress().get(0));
+        transformer().addressLine(data.alivePatient().getAddresses().getAddress().get(0));
     List<String> expectedLine = patient.alivePatient().address().get(0).line();
     assertThat(testLine).isEqualTo(expectedLine);
   }
 
   @Test
   public void addressesTransformsToAddressList() {
-    PatientTransformer patientTransformer = new PatientTransformer();
-    List<Address> testAddresses = patientTransformer.addresses(data.alivePatient().getAddresses());
+    List<Address> testAddresses = transformer().addresses(data.alivePatient().getAddresses());
     List<Address> expectedAddresses = patient.alivePatient().address();
     assertThat(testAddresses).isEqualTo(expectedAddresses);
   }
 
   @Test
+  public void addressessReturnsEmptyListForNull() {
+    assertThat(transformer().addresses(null)).isEmpty();
+  }
+
+  @Test
   public void argoBirthsex() {
-    PatientTransformer patientTransformer = new PatientTransformer();
     Optional<Extension> testArgoBirthsex =
-        patientTransformer.argoBirthSex(data.alivePatient().getArgoBirthsex());
+        transformer().argoBirthSex(data.alivePatient().getArgoBirthsex());
     Extension expexctedArgoBirthsex = patient.alivePatient().extension().get(2);
     assertThat(testArgoBirthsex.get()).isEqualTo(expexctedArgoBirthsex);
   }
 
   @Test
-  public void argoEthnicityTransformsToOptionalExtensionList() {
-    PatientTransformer patientTransformer = new PatientTransformer();
-    Optional<Extension> testArgoEthnicity =
-        patientTransformer.argoEthnicity(data.alivePatient().getArgoEthnicity());
-    Extension expectedArgoEthnicity = patient.alivePatient().extension().get(1);
-    assertThat(testArgoEthnicity.get()).isEqualTo(expectedArgoEthnicity);
+  public void argoBirthsexReturnsEmptyForNull() {
+    assertThat(transformer().argoBirthSex(null)).isEmpty();
+  }
+
+  @Test
+  public void argoEthnicityReturnsEmptyForNull() {
+    assertThat(transformer().argoEthnicity(Collections.emptyList())).isEmpty();
   }
 
   @Test
   public void argoEthnicityTransformsToExtensionList() {
-    PatientTransformer patientTransformer = new PatientTransformer();
     List<Extension> testArgoEthnicity =
-        patientTransformer.ethnicityExtensions(
-            data.alivePatient().getArgoEthnicity().get(0).getExtension());
+        transformer()
+            .argonautExtensions(data.alivePatient().getArgoEthnicity().get(0).getExtension());
     List<Extension> expectedArgoEthnicity = patient.alivePatient().extension().get(1).extension();
     assertThat(testArgoEthnicity).isEqualTo(expectedArgoEthnicity);
   }
 
   @Test
+  public void argoEthnicityTransformsToOptionalExtensionList() {
+    Optional<Extension> testArgoEthnicity =
+        transformer().argoEthnicity(data.alivePatient().getArgoEthnicity());
+    Extension expectedArgoEthnicity = patient.alivePatient().extension().get(1);
+    assertThat(testArgoEthnicity.get()).isEqualTo(expectedArgoEthnicity);
+  }
+
+  @Test
   public void argoPatientExtensionsMissingTransformsToEmptyExtensionList() {
-    PatientTransformer patientTransformer = new PatientTransformer();
     List<Extension> testPatientExtensions =
-        patientTransformer.extensions(Optional.empty(), Optional.empty(), Optional.empty());
+        transformer().extensions(Optional.empty(), Optional.empty(), Optional.empty());
     List<Extension> expectedPatientExtensions = new LinkedList<>();
     assertThat(testPatientExtensions).isEqualTo(expectedPatientExtensions);
   }
 
   @Test
   public void argoPatientExtensionsTransformToExtensionList() {
-    PatientTransformer patientTransformer = new PatientTransformer();
     List<Extension> testPatientExtensions =
-        patientTransformer.extensions(
-            patientTransformer.argoRace(data.alivePatient().getArgoRace()),
-            patientTransformer.argoEthnicity(data.alivePatient().getArgoEthnicity()),
-            patientTransformer.argoBirthSex(data.alivePatient().getArgoBirthsex()));
+        transformer()
+            .extensions(
+                transformer().argoRace(data.alivePatient().getArgoRace()),
+                transformer().argoEthnicity(data.alivePatient().getArgoEthnicity()),
+                transformer().argoBirthSex(data.alivePatient().getArgoBirthsex()));
     List<Extension> expectedPatientExtensions = patient.alivePatient().extension();
     assertThat(testPatientExtensions).isEqualTo(expectedPatientExtensions);
   }
 
   @Test
-  public void argoRaceTransformsToOptionalExtensionList() {
-    PatientTransformer patientTransformer = new PatientTransformer();
-    Optional<Extension> testArgoRace =
-        patientTransformer.argoRace(data.alivePatient().getArgoRace());
-    Extension expectedArgoRace = patient.alivePatient().extension().get(0);
-    assertThat(testArgoRace.get()).isEqualTo(expectedArgoRace);
-  }
-
-  @Test
   public void argoRaceExtensionTransformsToExtensionList() {
-    PatientTransformer patientTransformer = new PatientTransformer();
     List<Extension> testRaceExtension =
-        patientTransformer.raceExtensions(data.alivePatient().getArgoRace().get(0).getExtension());
+        transformer().argonautExtensions(data.alivePatient().getArgoRace().get(0).getExtension());
     List<Extension> expectedRaceExtension = patient.alivePatient().extension().get(0).extension();
     assertThat(testRaceExtension).isEqualTo(expectedRaceExtension);
   }
 
   @Test
+  public void argoRaceReturnsEmptyForNull() {
+    assertThat(transformer().argoRace(Collections.emptyList())).isEmpty();
+  }
+
+  @Test
+  public void argoRaceTransformsToOptionalExtensionList() {
+    Optional<Extension> testArgoRace = transformer().argoRace(data.alivePatient().getArgoRace());
+    Extension expectedArgoRace = patient.alivePatient().extension().get(0);
+    assertThat(testArgoRace.get()).isEqualTo(expectedArgoRace);
+  }
+
+  @Test
   public void birthDateTransformsToSimpleDateString() {
-    PatientTransformer patientTransformer = new PatientTransformer();
-    String testSimpleDate =
-        patientTransformer.getSimpleBirthDate(data.alivePatient().getBirthDate());
+    String testSimpleDate = Transformers.asDateString(data.alivePatient().getBirthDate());
     String expectedSimpleDate = patient.alivePatient().birthDate();
     assertThat(testSimpleDate).isEqualTo(expectedSimpleDate);
   }
 
   @Test
   public void contactRelationshipTransformsToCodeableConceptList() {
-    PatientTransformer patientTransformer = new PatientTransformer();
     List<CodeableConcept> testRelationships =
-        patientTransformer.relationship(
-            data.alivePatient().getContacts().getContact().get(0).getRelationship());
+        transformer()
+            .contactRelationship(
+                data.alivePatient().getContacts().getContact().get(0).getRelationship());
     List<CodeableConcept> expectedRelationships =
         patient.alivePatient().contact().get(0).relationship();
     assertThat(testRelationships).isEqualTo(expectedRelationships);
   }
 
   @Test
+  public void contactReturnsEmptyListForNull() {
+    assertThat(transformer().contact(null)).isEmpty();
+  }
+
+  @Test
   public void contactStringNameTransformsToHumanName() {
-    PatientTransformer patientTransformer = new PatientTransformer();
+    PatientTransformer patientTransformer = transformer();
     HumanName testName =
         patientTransformer.humanName(
             data.alivePatient().getContacts().getContact().get(0).getName());
@@ -134,81 +176,81 @@ public class PatientTransformerTest {
 
   @Test
   public void contactTelecomTranformsToContactPointList() {
-    PatientTransformer patientTransformer = new PatientTransformer();
     List<ContactPoint> testTelecoms =
-        patientTransformer.telecom(data.alivePatient().getContacts().getContact().get(0));
+        transformer().contact(data.alivePatient().getContacts().getContact().get(0));
     List<ContactPoint> expectedTelecoms = patient.contact().get(0).telecom();
     assertThat(testTelecoms).isEqualTo(expectedTelecoms);
   }
 
   @Test
   public void contactTransformsToAddress() {
-    PatientTransformer patientTransformer = new PatientTransformer();
     Address testAddress =
-        patientTransformer.address(data.alivePatient().getContacts().getContact().get(0));
+        transformer().address(data.alivePatient().getContacts().getContact().get(0));
     Address expectedAddress = patient.alivePatient().contact().get(0).address();
     assertThat(testAddress).isEqualTo(expectedAddress);
   }
 
   @Test
   public void contactTransformsToStringLine() {
-    PatientTransformer patientTransformer = new PatientTransformer();
     List<String> testLine =
-        patientTransformer.getLine(data.alivePatient().getContacts().getContact().get(0));
+        transformer().addressLine(data.alivePatient().getContacts().getContact().get(0));
     List<String> expectedLine = patient.alivePatient().contact().get(0).address().line();
     assertThat(testLine).isEqualTo(expectedLine);
   }
 
   @Test
+  public void contactsReturnsNullForNull() {
+    assertThat(transformer().contacts(null)).isNull();
+  }
+
+  @Test
   public void contactsTransformsToContactList() {
-    PatientTransformer patientTransformer = new PatientTransformer();
-    List<Contact> testContacts = patientTransformer.contacts(data.alivePatient().getContacts());
+    List<Contact> testContacts = transformer().contacts(data.alivePatient().getContacts());
     List<Contact> expectedContacts = patient.contact();
     assertThat(testContacts).isEqualTo(expectedContacts);
   }
 
   @Test
   public void deceasedDateTimeMissingReturnsNull() {
-    PatientTransformer patientTransformer = new PatientTransformer();
-    String testDateTime =
-        patientTransformer.deceasedDateTime(data.alivePatient().getDeceasedDateTime());
+    String testDateTime = Transformers.asDateTimeString(data.alivePatient().getDeceasedDateTime());
     assertThat(testDateTime).isNull();
   }
 
   @Test
   public void deceasedDateTimeTransformsToString() {
-    PatientTransformer patientTransformer = new PatientTransformer();
-    String testDateTime =
-        patientTransformer.deceasedDateTime(data.deadPatient().getDeceasedDateTime());
+    String testDateTime = Transformers.asDateTimeString(data.deadPatient().getDeceasedDateTime());
     String expectedDateTime = patient.deceasedPatient().deceasedDateTime();
     assertThat(testDateTime).isEqualTo(expectedDateTime);
   }
 
   @Test
   public void extensionValueCodingTransformsToCoding() {
-    PatientTransformer patientTransformer = new PatientTransformer();
     Coding testCoding =
-        patientTransformer.valueCoding(
-            data.alivePatient().getArgoRace().get(0).getExtension().get(0).getValueCoding());
+        transformer()
+            .valueCoding(
+                data.alivePatient().getArgoRace().get(0).getExtension().get(0).getValueCoding());
     Coding expectedCoding =
         patient.alivePatient().extension().get(0).extension().get(0).valueCoding();
     assertThat(testCoding).isEqualTo(expectedCoding);
   }
 
   @Test
+  public void humanNameReturnsNullForNull() {
+    assertThat(transformer().humanName(null)).isNull();
+  }
+
+  @Test
   public void identifierAssignerTransformsToReference() {
-    PatientTransformer patientTransformer = new PatientTransformer();
     Reference testReference =
-        patientTransformer.reference(data.alivePatient().getIdentifier().get(0).getAssigner());
+        transformer().identifierAssigner(data.alivePatient().getIdentifier().get(0).getAssigner());
     Reference expectedReference = patient.alivePatient().identifier().get(0).assigner();
     assertThat(testReference).isEqualTo(expectedReference);
   }
 
   @Test
   public void identifierTransformsToIdentifierUse() {
-    PatientTransformer patientTransformer = new PatientTransformer();
     Identifier.IdentifierUse testIdentifierUse =
-        patientTransformer.identifierUse(data.alivePatient().getIdentifier().get(0));
+        transformer().identifierUse(data.alivePatient().getIdentifier().get(0));
     Identifier.IdentifierUse expectedIdentifierUse =
         patient.alivePatient().identifier().get(0).use();
     assertThat(testIdentifierUse).isEqualTo(expectedIdentifierUse);
@@ -216,83 +258,331 @@ public class PatientTransformerTest {
 
   @Test
   public void identifierTypeCodingListTransformsToCodingList() {
-    PatientTransformer patientTransformer = new PatientTransformer();
     List<Coding> testCodings =
-        patientTransformer.codings(
-            data.alivePatient().getIdentifier().get(0).getType().getCoding());
+        transformer()
+            .identifierTypeCodings(
+                data.alivePatient().getIdentifier().get(0).getType().getCoding());
     List<Coding> expectedCodings = patient.identifier().get(0).type().coding();
     assertThat(testCodings).isEqualTo(expectedCodings);
   }
 
   @Test
   public void identifierTypeTransfromsToCodeableConcept() {
-    PatientTransformer patientTransformer = new PatientTransformer();
     CodeableConcept testCodeableConcept =
-        patientTransformer.codeableConcept(data.alivePatient().getIdentifier().get(0).getType());
+        transformer().identifierType(data.alivePatient().getIdentifier().get(0).getType());
     CodeableConcept expectedCodeableConcept = patient.alivePatient().identifier().get(0).type();
     assertThat(testCodeableConcept).isEqualTo(expectedCodeableConcept);
   }
 
   @Test
   public void identifiersTransformsToIdentifiersList() {
-    PatientTransformer patientTransformer = new PatientTransformer();
     List<Identifier> testIdentifiers =
-        patientTransformer.identifiers(data.alivePatient().getIdentifier());
+        transformer().identifiers(data.alivePatient().getIdentifier());
     List<Identifier> expectedIdentifiers = patient.alivePatient().identifier();
     assertThat(testIdentifiers).isEqualTo(expectedIdentifiers);
   }
 
   @Test
   public void maritalStatusCodingListTransformsToCodingList() {
-    PatientTransformer patientTransformer = new PatientTransformer();
     List<Coding> testCodingList =
-        patientTransformer.getCodings(data.alivePatient().getMaritalStatus().getCoding());
+        transformer().maritalStatusCoding(data.alivePatient().getMaritalStatus().getCoding());
     List<Coding> expectedCodingList = patient.alivePatient().maritalStatus().coding();
     assertThat(testCodingList).isEqualTo(expectedCodingList);
   }
 
   @Test
+  public void maritalStatusReturnsNullForNull() {
+    assertThat(transformer().maritalStatus(null)).isNull();
+  }
+
+  @Test
   public void maritalStatusTransformsToCodeableConcept() {
-    PatientTransformer patientTransformer = new PatientTransformer();
-    CodeableConcept testMaritalStatus = patientTransformer.maritalStatus(data.maritalStatus());
+    CodeableConcept testMaritalStatus = transformer().maritalStatus(data.maritalStatus());
     CodeableConcept expectedMaritalStatus = patient.alivePatient().maritalStatus();
     assertThat(testMaritalStatus).isEqualTo(expectedMaritalStatus);
   }
 
   @Test
+  public void namesReturnsEmptyForNull() {
+    assertThat(transformer().names(null)).isEmpty();
+  }
+
+  @Test
   public void patient103TransformsToModelPatient() {
-    PatientTransformer patientTransformer = new PatientTransformer();
-    gov.va.api.health.argonaut.api.Patient testPatient =
-        patientTransformer.apply(data.alivePatient());
+    gov.va.api.health.argonaut.api.Patient testPatient = transformer().apply(data.alivePatient());
     gov.va.api.health.argonaut.api.Patient expectedPatient = patient.alivePatient();
     assertThat(testPatient).isEqualTo(expectedPatient);
   }
 
   @Test
   public void patientStringTransformsToHumanName() {
-    PatientTransformer patientTransformer = new PatientTransformer();
-    List<HumanName> testPatientName = patientTransformer.name(data.alivePatient().getName());
+    List<HumanName> testPatientName = transformer().names(data.alivePatient().getName());
     List<HumanName> expectedPatientName = patient.alivePatient().name();
     assertThat(testPatientName).isEqualTo(expectedPatientName);
   }
 
   @Test
   public void patientTelecomsTransformsToContactPointList() {
-    PatientTransformer patientTransformer = new PatientTransformer();
-    List<ContactPoint> testTelecoms =
-        patientTransformer.telecoms(data.alivePatient().getTelecoms());
+    List<ContactPoint> testTelecoms = transformer().telecoms(data.alivePatient().getTelecoms());
     List<ContactPoint> expectedTelecoms = patient.telecom();
     assertThat(testTelecoms).isEqualTo(expectedTelecoms);
   }
 
   @Test
   public void relationshipCodingTransformsToCodingList() {
-    PatientTransformer patientTransformer = new PatientTransformer();
     List<Coding> testCodings =
-        patientTransformer.coding(
-            data.alivePatient().getContacts().getContact().get(0).getRelationship().getCoding());
+        transformer()
+            .contactRelationshipCoding(
+                data.alivePatient()
+                    .getContacts()
+                    .getContact()
+                    .get(0)
+                    .getRelationship()
+                    .getCoding());
     List<Coding> expectedCodings = patient.contact().get(0).relationship().get(0).coding();
     assertThat(testCodings).isEqualTo(expectedCodings);
+  }
+
+  @Test
+  public void telecomsReturnsEmptyForNull() {
+    assertThat(transformer().telecoms(null)).isEmpty();
+  }
+
+  private PatientTransformer transformer() {
+    return new PatientTransformer();
+  }
+
+  private static class PatientSampleData {
+
+    private DatatypeFactory datatypeFactory;
+
+    @SneakyThrows
+    private PatientSampleData() {
+      datatypeFactory = DatatypeFactory.newInstance();
+    }
+
+    List<Address> address() {
+      List<Address> addresses = new LinkedList<>();
+      addresses.add(Address.builder().state("Missing*").build());
+      List<String> line1 = new LinkedList<>();
+      line1.add("1234 Test Road");
+      line1.add("Testland");
+      line1.add("Test POSTGRES");
+      addresses.add(
+          Address.builder()
+              .line(line1)
+              .city("Testville")
+              .state("Testlina")
+              .postalCode("12345")
+              .build());
+      List<String> line2 = new LinkedList<>();
+      line2.add("9876 Fake Lane");
+      addresses.add(
+          Address.builder()
+              .line(line2)
+              .city("Fooville")
+              .state("Foolina")
+              .postalCode("98765")
+              .build());
+      return addresses;
+    }
+
+    gov.va.api.health.argonaut.api.Patient alivePatient() {
+      return gov.va.api.health.argonaut.api.Patient.builder()
+          .resourceType("Patient")
+          .id("123456789")
+          .extension(argoExtensions())
+          .identifier(identifier())
+          .name(name())
+          .telecom(telecom())
+          .gender(gov.va.api.health.argonaut.api.Patient.Gender.male)
+          .birthDate("2018-11-06")
+          .deceasedBoolean(false)
+          .address(address())
+          .maritalStatus(maritalStatus())
+          .contact(contact())
+          .build();
+    }
+
+    List<Extension> argoExtensions() {
+      List<Extension> extensions = new ArrayList<>(3);
+
+      List<Extension> raceExtensions = new LinkedList<>();
+      raceExtensions.add(
+          Extension.builder()
+              .url("ombTest")
+              .valueCoding(
+                  Coding.builder()
+                      .system("http://test-race")
+                      .code("R4C3")
+                      .display("tester")
+                      .build())
+              .build());
+      raceExtensions.add(Extension.builder().url("text").valueString("tester").build());
+
+      List<Extension> ethnicityExtensions = new LinkedList<>();
+      ethnicityExtensions.add(
+          Extension.builder()
+              .url("ombTest")
+              .valueCoding(
+                  Coding.builder()
+                      .system("http://test-ethnicity")
+                      .code("3THN1C1TY")
+                      .display("testa")
+                      .build())
+              .build());
+      ethnicityExtensions.add(Extension.builder().url("text").valueString("testa").build());
+
+      extensions.add(Extension.builder().url("http://test-race").extension(raceExtensions).build());
+      extensions.add(
+          Extension.builder().url("http://test-ethnicity").extension(ethnicityExtensions).build());
+      extensions.add(Extension.builder().url("http://test-birthsex").valueCode("M").build());
+      return extensions;
+    }
+
+    List<Contact> contact() {
+      List<Contact> contacts = new LinkedList<>();
+
+      List<String> line1 = new LinkedList<>();
+      line1.add("123 Happy Avenue");
+      line1.add("456 Smile Drive");
+      line1.add("789 Laughter Lane");
+      contacts.add(
+          Contact.builder()
+              .relationship(relationship())
+              .name(HumanName.builder().text("DUCK, DAFFY JOHN").build())
+              .telecom(
+                  Collections.singletonList(
+                      ContactPoint.builder()
+                          .system(ContactPoint.ContactPointSystem.phone)
+                          .value("9998886666")
+                          .build()))
+              .address(
+                  Address.builder()
+                      .line(line1)
+                      .city("Happyland")
+                      .state("Happylina")
+                      .postalCode("12345")
+                      .country("USA")
+                      .build())
+              .build());
+
+      List<String> line2 = new LinkedList<>();
+      line2.add("123 Sad Avenue");
+      line2.add("456 Frown Drive");
+      line2.add("789 Weeping Lane");
+      contacts.add(
+          Contact.builder()
+              .relationship(relationship())
+              .name(HumanName.builder().text("ALICE, TEST JANE").build())
+              .telecom(
+                  Collections.singletonList(
+                      ContactPoint.builder()
+                          .system(ContactPoint.ContactPointSystem.phone)
+                          .value("1112224444")
+                          .build()))
+              .address(
+                  Address.builder()
+                      .line(line2)
+                      .city("Sadland")
+                      .state("Sadlina")
+                      .postalCode("98765")
+                      .country("USA")
+                      .build())
+              .build());
+
+      return contacts;
+    }
+
+    gov.va.api.health.argonaut.api.Patient deceasedPatient() {
+      return gov.va.api.health.argonaut.api.Patient.builder()
+          .id("123456789")
+          .extension(argoExtensions())
+          .identifier(identifier())
+          .name(name())
+          .telecom(telecom())
+          .gender(gov.va.api.health.argonaut.api.Patient.Gender.male)
+          .birthDate("2018-11-06")
+          .deceasedBoolean(true)
+          .deceasedDateTime("2018-11-07")
+          .address(address())
+          .maritalStatus(maritalStatus())
+          .contact(contact())
+          .build();
+    }
+
+    List<Identifier> identifier() {
+      List<Identifier> identifiers = new LinkedList<>();
+      identifiers.add(
+          Identifier.builder()
+              .use(Identifier.IdentifierUse.usual)
+              .type(
+                  CodeableConcept.builder()
+                      .coding(
+                          Collections.singletonList(
+                              Coding.builder().system("http://test-code").code("C0D3").build()))
+                      .build())
+              .system("http://test-system")
+              .value("123456789")
+              .assigner(Reference.builder().display("tester-test-index").build())
+              .build());
+
+      return identifiers;
+    }
+
+    CodeableConcept maritalStatus() {
+      return CodeableConcept.builder()
+          .coding(
+              Collections.singletonList(
+                  Coding.builder()
+                      .system("http://hl7.org/fhir/marital-status")
+                      .code("M")
+                      .display("Married")
+                      .build()))
+          .text("testMarriage")
+          .build();
+    }
+
+    List<HumanName> name() {
+      return Collections.singletonList(
+          HumanName.builder()
+              .use(HumanName.NameUse.usual)
+              .text("FOOMAN FOO")
+              .family(Collections.singletonList("FOO"))
+              .given(Collections.singletonList("FOOMAN"))
+              .build());
+    }
+
+    List<CodeableConcept> relationship() {
+      return Collections.singletonList(
+          CodeableConcept.builder()
+              .coding(
+                  Collections.singletonList(
+                      Coding.builder()
+                          .system("http://hl7.org/fhir/patient-contact-relationship")
+                          .code("emergency")
+                          .display("Emergency")
+                          .build()))
+              .text("Emergency Contact")
+              .build());
+    }
+
+    List<ContactPoint> telecom() {
+      List<ContactPoint> telecoms = new LinkedList<>();
+      telecoms.add(
+          ContactPoint.builder()
+              .system(ContactPoint.ContactPointSystem.phone)
+              .value("9998886666")
+              .use(ContactPoint.ContactPointUse.home)
+              .build());
+      telecoms.add(
+          ContactPoint.builder()
+              .system(ContactPoint.ContactPointSystem.phone)
+              .value("1112224444")
+              .use(ContactPoint.ContactPointUse.work)
+              .build());
+      return telecoms;
+    }
   }
 
   private static class XmlSampleData {
@@ -553,239 +843,6 @@ public class PatientTransformerTest {
       telecom2.setUse(ContactPointUseCodes.WORK);
       testTelecoms.getTelecom().add(telecom2);
       return testTelecoms;
-    }
-  }
-
-  private static class PatientSampleData {
-
-    private DatatypeFactory datatypeFactory;
-
-    @SneakyThrows
-    private PatientSampleData() {
-      datatypeFactory = DatatypeFactory.newInstance();
-    }
-
-    List<Address> address() {
-      List<Address> addresses = new LinkedList<>();
-      addresses.add(Address.builder().state("Missing*").build());
-      List<String> line1 = new LinkedList<>();
-      line1.add("1234 Test Road");
-      line1.add("Testland");
-      line1.add("Test POSTGRES");
-      addresses.add(
-          Address.builder()
-              .line(line1)
-              .city("Testville")
-              .state("Testlina")
-              .postalCode("12345")
-              .build());
-      List<String> line2 = new LinkedList<>();
-      line2.add("9876 Fake Lane");
-      addresses.add(
-          Address.builder()
-              .line(line2)
-              .city("Fooville")
-              .state("Foolina")
-              .postalCode("98765")
-              .build());
-      return addresses;
-    }
-
-    gov.va.api.health.argonaut.api.Patient alivePatient() {
-      return gov.va.api.health.argonaut.api.Patient.builder()
-          .resourceType("Patient")
-          .id("123456789")
-          .extension(argoExtensions())
-          .identifier(identifier())
-          .name(name())
-          .telecom(telecom())
-          .gender(gov.va.api.health.argonaut.api.Patient.Gender.male)
-          .birthDate("2018-11-06")
-          .deceasedBoolean(false)
-          .address(address())
-          .maritalStatus(maritalStatus())
-          .contact(contact())
-          .build();
-    }
-
-    List<Extension> argoExtensions() {
-      List<Extension> extensions = new ArrayList<>(3);
-
-      List<Extension> raceExtensions = new LinkedList<>();
-      raceExtensions.add(
-          Extension.builder()
-              .url("ombTest")
-              .valueCoding(
-                  Coding.builder()
-                      .system("http://test-race")
-                      .code("R4C3")
-                      .display("tester")
-                      .build())
-              .build());
-      raceExtensions.add(Extension.builder().url("text").valueString("tester").build());
-
-      List<Extension> ethnicityExtensions = new LinkedList<>();
-      ethnicityExtensions.add(
-          Extension.builder()
-              .url("ombTest")
-              .valueCoding(
-                  Coding.builder()
-                      .system("http://test-ethnicity")
-                      .code("3THN1C1TY")
-                      .display("testa")
-                      .build())
-              .build());
-      ethnicityExtensions.add(Extension.builder().url("text").valueString("testa").build());
-
-      extensions.add(Extension.builder().url("http://test-race").extension(raceExtensions).build());
-      extensions.add(
-          Extension.builder().url("http://test-ethnicity").extension(ethnicityExtensions).build());
-      extensions.add(Extension.builder().url("http://test-birthsex").valueCode("M").build());
-      return extensions;
-    }
-
-    List<Contact> contact() {
-      List<Contact> contacts = new LinkedList<>();
-
-      List<String> line1 = new LinkedList<>();
-      line1.add("123 Happy Avenue");
-      line1.add("456 Smile Drive");
-      line1.add("789 Laughter Lane");
-      contacts.add(
-          Contact.builder()
-              .relationship(relationship())
-              .name(HumanName.builder().text("DUCK, DAFFY JOHN").build())
-              .telecom(
-                  Collections.singletonList(
-                      ContactPoint.builder()
-                          .system(ContactPoint.ContactPointSystem.phone)
-                          .value("9998886666")
-                          .build()))
-              .address(
-                  Address.builder()
-                      .line(line1)
-                      .city("Happyland")
-                      .state("Happylina")
-                      .postalCode("12345")
-                      .country("USA")
-                      .build())
-              .build());
-
-      List<String> line2 = new LinkedList<>();
-      line2.add("123 Sad Avenue");
-      line2.add("456 Frown Drive");
-      line2.add("789 Weeping Lane");
-      contacts.add(
-          Contact.builder()
-              .relationship(relationship())
-              .name(HumanName.builder().text("ALICE, TEST JANE").build())
-              .telecom(
-                  Collections.singletonList(
-                      ContactPoint.builder()
-                          .system(ContactPoint.ContactPointSystem.phone)
-                          .value("1112224444")
-                          .build()))
-              .address(
-                  Address.builder()
-                      .line(line2)
-                      .city("Sadland")
-                      .state("Sadlina")
-                      .postalCode("98765")
-                      .country("USA")
-                      .build())
-              .build());
-
-      return contacts;
-    }
-
-    gov.va.api.health.argonaut.api.Patient deceasedPatient() {
-      return gov.va.api.health.argonaut.api.Patient.builder()
-          .id("123456789")
-          .extension(argoExtensions())
-          .identifier(identifier())
-          .name(name())
-          .telecom(telecom())
-          .gender(gov.va.api.health.argonaut.api.Patient.Gender.male)
-          .birthDate("2018-11-06")
-          .deceasedBoolean(true)
-          .deceasedDateTime("2018-11-07")
-          .address(address())
-          .maritalStatus(maritalStatus())
-          .contact(contact())
-          .build();
-    }
-
-    List<Identifier> identifier() {
-      List<Identifier> identifiers = new LinkedList<>();
-      identifiers.add(
-          Identifier.builder()
-              .use(Identifier.IdentifierUse.usual)
-              .type(
-                  CodeableConcept.builder()
-                      .coding(
-                          Collections.singletonList(
-                              Coding.builder().system("http://test-code").code("C0D3").build()))
-                      .build())
-              .system("http://test-system")
-              .value("123456789")
-              .assigner(Reference.builder().display("tester-test-index").build())
-              .build());
-
-      return identifiers;
-    }
-
-    CodeableConcept maritalStatus() {
-      return CodeableConcept.builder()
-          .coding(
-              Collections.singletonList(
-                  Coding.builder()
-                      .system("http://hl7.org/fhir/marital-status")
-                      .code("M")
-                      .display("Married")
-                      .build()))
-          .text("testMarriage")
-          .build();
-    }
-
-    List<HumanName> name() {
-      return Collections.singletonList(
-          HumanName.builder()
-              .use(HumanName.NameUse.usual)
-              .text("FOOMAN FOO")
-              .family(Collections.singletonList("FOO"))
-              .given(Collections.singletonList("FOOMAN"))
-              .build());
-    }
-
-    List<CodeableConcept> relationship() {
-      return Collections.singletonList(
-          CodeableConcept.builder()
-              .coding(
-                  Collections.singletonList(
-                      Coding.builder()
-                          .system("http://hl7.org/fhir/patient-contact-relationship")
-                          .code("emergency")
-                          .display("Emergency")
-                          .build()))
-              .text("Emergency Contact")
-              .build());
-    }
-
-    List<ContactPoint> telecom() {
-      List<ContactPoint> telecoms = new LinkedList<>();
-      telecoms.add(
-          ContactPoint.builder()
-              .system(ContactPoint.ContactPointSystem.phone)
-              .value("9998886666")
-              .use(ContactPoint.ContactPointUse.home)
-              .build());
-      telecoms.add(
-          ContactPoint.builder()
-              .system(ContactPoint.ContactPointSystem.phone)
-              .value("1112224444")
-              .use(ContactPoint.ContactPointUse.work)
-              .build());
-      return telecoms;
     }
   }
 }

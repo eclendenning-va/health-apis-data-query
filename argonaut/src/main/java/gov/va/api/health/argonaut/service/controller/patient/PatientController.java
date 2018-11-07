@@ -1,5 +1,8 @@
 package gov.va.api.health.argonaut.service.controller.patient;
 
+import static gov.va.api.health.argonaut.service.controller.Transformers.firstPayloadItem;
+import static gov.va.api.health.argonaut.service.controller.Transformers.hasPayload;
+
 import gov.va.api.health.argonaut.api.Patient;
 import gov.va.api.health.argonaut.service.controller.Parameters;
 import gov.va.api.health.argonaut.service.mranderson.client.MrAndersonClient;
@@ -47,7 +50,7 @@ public class PatientController {
 
     PatientSearchResultsRoot root = client.search(query);
 
-    return patientTransformer.apply(root.getPatients().getPatient().get(0));
+    return patientTransformer.apply(firstPayloadItem(hasPayload(root.getPatients()).getPatient()));
   }
 
   public interface Transformer extends Function<Patient103Root.Patients.Patient, Patient> {}
