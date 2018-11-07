@@ -105,6 +105,15 @@ checkForUnsetValues() {
   [ $? == 0 ] && rm -v $target.$MARKER
 }
 
+makeSentinelSecrets() {
+cat > $REPO/sentinel/config/secrets.properties <<EOF
+server.ssl.key-store-password=$KEYSTORE_PASSWORD
+server.ssl.trust-store-password=$KEYSTORE_PASSWORD
+ssl.key-store-password=$KEYSTORE_PASSWORD
+ssl.trust-store-password=$KEYSTORE_PASSWORD
+EOF
+}
+
 makeConfig ids $PROFILE
 configValue ids $PROFILE spring.datasource.url "$IDS_DB_URL"
 configValue ids $PROFILE spring.datasource.username "$IDS_DB_USER"
@@ -122,4 +131,4 @@ makeConfig argonaut $PROFILE
 configValue argonaut $PROFILE mranderson.url https://localhost:8088 
 checkForUnsetValues argonaut $PROFILE
 
-
+makeSentinelSecrets
