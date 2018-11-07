@@ -3,6 +3,7 @@ package gov.va.api.health.argonaut.service.controller;
 import gov.va.api.health.argonaut.api.Issue;
 import gov.va.api.health.argonaut.api.Issue.IssueSeverity;
 import gov.va.api.health.argonaut.api.Narrative;
+import gov.va.api.health.argonaut.api.Narrative.NarrativeStatus;
 import gov.va.api.health.argonaut.api.OperationOutcome;
 import gov.va.api.health.argonaut.service.mranderson.client.MrAndersonClient.BadRequest;
 import gov.va.api.health.argonaut.service.mranderson.client.MrAndersonClient.NotFound;
@@ -51,7 +52,8 @@ public class WebExceptionHandler {
             .id(UUID.randomUUID().toString())
             .text(
                 Narrative.builder()
-                    .div("Failure: " + exchange.getRequest().getPath().toString())
+                    .status(NarrativeStatus.additional)
+                    .div("<div>Failure: " + exchange.getRequest().getPath().toString() + "</div>")
                     .build())
             .issue(
                 Collections.singletonList(

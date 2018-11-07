@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 import lombok.Builder;
 import lombok.Value;
@@ -23,7 +23,6 @@ public class OperationOutcome implements DomainResource {
   @Valid Meta meta;
 
   @Pattern(regexp = Fhir.URI)
-  @Schema()
   String implicitRules;
 
   @Pattern(regexp = Fhir.CODE)
@@ -37,5 +36,5 @@ public class OperationOutcome implements DomainResource {
 
   @Valid List<Extension> extension;
 
-  @NotBlank @Valid List<Issue> issue;
+  @NotEmpty @Valid List<Issue> issue;
 }
