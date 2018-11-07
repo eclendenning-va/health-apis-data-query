@@ -65,7 +65,6 @@ public class Patient {
   @Pattern(regexp = Fhir.DATE)
   String birthDate;
 
-  // TODO https://vasdvp.atlassian.net/browse/API-135
   Boolean deceasedBoolean;
 
   @Pattern(regexp = Fhir.DATETIME)
