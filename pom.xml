@@ -423,7 +423,7 @@
   <distributionManagement>
     <repository>
       <id>health-apis-releases</id>
-      <url>http://internal-devtoolsinternalalb-1479233608.us-gov-west-1.elb.amazonaws.com/nexus/repository/health-apis-releases/</url>
+      <url>https://tools.health.dev-developer.va.gov/nexus/repository/health-apis-releases/</url>
     </repository>
   </distributionManagement>
 </project>
