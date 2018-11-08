@@ -42,6 +42,26 @@ public interface ArgonautService {
   @ApiResponse(responseCode = "404", description = "Bad request")
   Patient patientRead(@Parameter(in = ParameterIn.PATH, name = "id", required = true) String id);
 
+  @Operation(
+    summary = "Medication read",
+    description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-medication.html"
+  )
+  @GET
+  @Path("Medication/{id}")
+  @ApiResponse(
+    responseCode = "200",
+    description = "Record found",
+    content =
+        @Content(
+          mediaType = "application/fhir+json",
+          schema = @Schema(implementation = Medication.class)
+        )
+  )
+  @ApiResponse(responseCode = "400", description = "Not found")
+  @ApiResponse(responseCode = "404", description = "Bad request")
+  Medication medicationRead(
+      @Parameter(in = ParameterIn.PATH, name = "id", required = true) String id);
+
   class ArgonautServiceException extends RuntimeException {
     ArgonautServiceException(String message) {
       super(message);
