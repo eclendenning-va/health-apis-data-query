@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import lombok.Builder;
 import lombok.Data;
@@ -19,9 +18,9 @@ public class ContactPoint implements Element {
   String id;
 
   @Valid List<Extension> extension;
-  @NotBlank ContactPointSystem system;
+  ContactPointSystem system;
   String value;
-  @NotBlank ContactPointUse use;
+  ContactPointUse use;
 
   @Min(1)
   Integer rank;

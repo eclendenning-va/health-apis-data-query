@@ -11,6 +11,13 @@ public class TestClients {
 
   SystemDefinition systemDefinition;
 
+  TestClient argonaut() {
+    return FhirTestClient.builder()
+        .service(systemDefinition.argonaut())
+        .mapper(JacksonConfig::createMapper)
+        .build();
+  }
+
   TestClient ids() {
     return BasicTestClient.builder()
         .service(systemDefinition.ids())

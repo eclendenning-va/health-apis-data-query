@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import lombok.Builder;
 import lombok.Data;
@@ -23,7 +24,7 @@ public class Issue implements BackboneElement {
 
   @Valid List<Extension> extension;
 
-  @NotBlank IssueSeverity severity;
+  @NotNull IssueSeverity severity;
 
   @NotBlank
   @Pattern(regexp = Fhir.CODE)
