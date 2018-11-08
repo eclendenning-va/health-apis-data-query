@@ -64,7 +64,7 @@ public class MedicationSampleData extends CommonSampleData {
         .modifierExtension(
             Arrays.asList(extension(), extensionWithQuantity(), extensionWithRatio()))
         .code(code())
-        // .isBrand(true)
+        .isBrand(true)
         .manufacturer(reference())
         .product(product())
         .medicationPackage(medicationPackage())

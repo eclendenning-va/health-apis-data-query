@@ -16,7 +16,7 @@ import org.junit.Test;
 public class ModelTest {
 
   private final PatientSampleData patientData = PatientSampleData.get();
-  // private final MedicationSampleData medicationData = MedicationSampleData.get();
+  private final MedicationSampleData medicationData = MedicationSampleData.get();
 
   @SuppressWarnings("ThrowableNotThrown")
   @Test
@@ -49,10 +49,16 @@ public class ModelTest {
     roundTrip(patientData.patient());
   }
 
-  /*@Test
+  /*
+    Believe this test to be failing due to a java bean property.
+    it is viewing the "isBrand" variable as a method and creating its own "brand" field
+    This may be fixed with a JsonProperty similar to "package" - however, package is not completely ironed out either
+   */
+
+  @Test
   public void medication() {
     roundTrip(medicationData.medication());
-  }*/
+  }
 
   @Test
   public void range() {
