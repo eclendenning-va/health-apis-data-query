@@ -26,12 +26,14 @@ BACKUP=$(basename "$TRUST_STORE").$(date +%s)
 cp "$TRUST_STORE" "$BACKUP"
 echo -e "Backed up $TRUST_STORE\nto $(pwd)/$BACKUP"
 
+set +e
 OLD=$(keytool \
   -list \
-  -alias $ALIAS \
   -keypass "$HEALTH_API_CERTIFICATE_PASSWORD" \
   -keystore "$TRUST_STORE" \
-  -storepass "$TRUST_STORE_PASSWORD")
+  -storepass "$TRUST_STORE_PASSWORD" \
+  | grep "$ALIAS")
+
 if [ -n "$OLD" ]
 then
   echo "Removing old $ALIAS trusted certificate"
@@ -42,6 +44,7 @@ then
     -keystore "$TRUST_STORE" \
     -storepass "$TRUST_STORE_PASSWORD"
 fi
+set -e
 
 keytool \
   -exportcert \
