@@ -21,7 +21,6 @@ ALIAS=internal-sys-dev
 [ ! -f "$KEYSTORE" ] && echo -e "OH NOES! Keystore not found: $KEYSTORE\nTry building ids project" && exit 1
 
 set -e
-set -x
 
 BACKUP=$(basename "$TRUST_STORE").$(date +%s)
 cp "$TRUST_STORE" "$BACKUP"
