@@ -29,6 +29,19 @@ public class MrAndersonV1ApiController {
 
   private final Resources resources;
 
+  /** Support profile values in any case. */
+  @InitBinder
+  public void initBinder(WebDataBinder dataBinder) {
+    dataBinder.registerCustomEditor(
+        Profile.class,
+        new PropertyEditorSupport() {
+          @Override
+          public void setAsText(String text) throws IllegalArgumentException {
+            setValue(Profile.fromValue(text));
+          }
+        });
+  }
+
   /**
    * Implementation of /v1/resources/{profile}/{resourceType}/{resourceVersion}. See api-v1.yaml.
    */
@@ -63,18 +76,5 @@ public class MrAndersonV1ApiController {
                 .build());
 
     return ResponseEntity.ok().body(xml);
-  }
-
-  /** Support profile values in any case. */
-  @InitBinder
-  public void initBinder(WebDataBinder dataBinder) {
-    dataBinder.registerCustomEditor(
-        Profile.class,
-        new PropertyEditorSupport() {
-          @Override
-          public void setAsText(String text) throws IllegalArgumentException {
-            setValue(Profile.fromValue(text));
-          }
-        });
   }
 }

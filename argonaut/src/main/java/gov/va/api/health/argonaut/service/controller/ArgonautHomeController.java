@@ -33,8 +33,9 @@ public class ArgonautHomeController {
    * redirect.
    */
   @GetMapping(
-      value = {"/", "/openapi.json"},
-      produces = "application/json")
+    value = {"/", "/openapi.json"},
+    produces = "application/json"
+  )
   @ResponseBody
   public Object openapiJson() throws IOException {
     return ArgonautHomeController.MAPPER.readValue(openapiContent(), Object.class);

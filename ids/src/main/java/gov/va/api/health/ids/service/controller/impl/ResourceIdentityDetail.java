@@ -8,8 +8,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.validation.constraints.Max;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -49,29 +49,38 @@ public class ResourceIdentityDetail {
   @Column(name = "id")
   int pk;
 
-  @Column(name = "identifier")
-  @Max(45)
+  @Column(name = "identifier", length = 45)
+  @Size(max = 45)
   @NotBlank
   String identifier;
 
-  @Column(name = "station_identifier")
-  @Max(45)
+  @Column(name = "station_identifier", length = 45)
+  @Size(max = 45)
   String stationIdentifier;
 
-  @Column(name = "uuid")
-  @Max(45)
+  @Column(name = "uuid", length = 45)
+  @Size(max = 45)
   @NotBlank
   String uuid;
 
-  @Column(name = "system")
-  @Max(45)
+  @Column(name = "system", length = 45)
+  @Size(max = 45)
   @NotBlank
   String system;
 
-  @Column(name = "resource")
-  @Max(45)
+  @Column(name = "resource", length = 45)
+  @Size(max = 45)
   @NotBlank
   String resource;
+
+  /** Convert this database entity into a more friendly, non-JPA form. */
+  public ResourceIdentity asResourceIdentity() {
+    return ResourceIdentity.builder()
+        .identifier(identifier())
+        .system(system())
+        .resource(resource())
+        .build();
+  }
 
   @Override
   public boolean equals(Object o) {
@@ -88,14 +97,5 @@ public class ResourceIdentityDetail {
   @Override
   public int hashCode() {
     return Objects.hash(pk);
-  }
-
-  /** Convert this database entity into a more friendly, non-JPA form. */
-  public ResourceIdentity asResourceIdentity() {
-    return ResourceIdentity.builder()
-        .identifier(identifier())
-        .system(system())
-        .resource(resource())
-        .build();
   }
 }

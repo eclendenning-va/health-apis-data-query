@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ServerWebExchange;
 
 @RestController
 @Validated
@@ -40,14 +39,12 @@ public class IdServiceV1ApiController {
 
   /** Implementation of GET /v1/ids/{publicId}. See api-v1.yaml. */
   @RequestMapping(
-    value = {"/v1/ids/{publicId}", "/resourceIdentity/{publicId}"},
-    produces = {"application/json"},
-    method = RequestMethod.GET
-  )
+      value = {"/v1/ids/{publicId}", "/resourceIdentity/{publicId}"},
+      produces = {"application/json"},
+      method = RequestMethod.GET)
   @SneakyThrows
   public ResponseEntity<List<ResourceIdentity>> lookup(
-      @Valid @PathVariable("publicId") @Pattern(regexp = "[-A-Za-z0-9]+") String publicId,
-      ServerWebExchange exchange) {
+      @Valid @PathVariable("publicId") @Pattern(regexp = "[-A-Za-z0-9]+") String publicId) {
 
     List<ResourceIdentity> identities =
         repository
@@ -66,11 +63,10 @@ public class IdServiceV1ApiController {
 
   /** Implementation of POST /v1/ids. See api-v1.yaml. */
   @RequestMapping(
-    value = {"/v1/ids", "/resourceIdentity"},
-    produces = {"application/json"},
-    consumes = {"application/json"},
-    method = RequestMethod.POST
-  )
+      value = {"/v1/ids", "/resourceIdentity"},
+      produces = {"application/json"},
+      consumes = {"application/json"},
+      method = RequestMethod.POST)
   public ResponseEntity<List<Registration>> register(
       @Valid @RequestBody List<ResourceIdentity> identities) {
 
@@ -83,6 +79,7 @@ public class IdServiceV1ApiController {
             .filter(this::isNotRegistered)
             .map(this::toDatabaseEntry)
             .collect(Collectors.toList());
+    newRegistrations.forEach(x -> log.info("{}", x));
     log.info("Register {} entries ({} are new)", identities.size(), newRegistrations.size());
     repository.saveAll(newRegistrations);
 
