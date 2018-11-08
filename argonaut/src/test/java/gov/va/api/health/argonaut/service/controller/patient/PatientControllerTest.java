@@ -18,15 +18,12 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.web.server.ServerWebExchange;
 
 public class PatientControllerTest {
 
   @Mock MrAndersonClient client;
 
   @Mock PatientController.Transformer tx;
-
-  @Mock ServerWebExchange exchange;
 
   PatientController controller;
 
@@ -45,7 +42,7 @@ public class PatientControllerTest {
     Patient patient = Patient.builder().build();
     when(client.search(Mockito.any())).thenReturn(root);
     when(tx.apply(xmlPatient)).thenReturn(patient);
-    Patient actual = controller.read("hello", exchange);
+    Patient actual = controller.read("hello");
     assertThat(actual).isSameAs(patient);
     ArgumentCaptor<Query<Patient103Root>> captor = ArgumentCaptor.forClass(Query.class);
     verify(client).search(captor.capture());

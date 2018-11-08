@@ -32,19 +32,12 @@ import org.junit.runners.Parameterized.Parameter;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.bind.support.WebDataBinderFactory;
-import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.method.annotation.ExceptionHandlerMethodResolver;
-import org.springframework.web.method.support.HandlerMethodArgumentResolver;
-import org.springframework.web.method.support.ModelAndViewContainer;
-import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver;
 import org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod;
 
@@ -57,8 +50,6 @@ public class WebExceptionHandlerTest {
   @Parameter(1)
   public Exception exception;
 
-  @Mock ServerWebExchange exchange;
-  @Mock ServerHttpRequest request;
   @Mock Resources resources;
   WebExceptionHandler exceptionHandler;
   MrAndersonV1ApiController controller;
@@ -99,24 +90,6 @@ public class WebExceptionHandlerTest {
     exceptionHandler = new WebExceptionHandler();
   }
 
-  private HandlerMethodArgumentResolver argumentResolver() {
-    return new HandlerMethodArgumentResolver() {
-      @Override
-      public Object resolveArgument(
-          MethodParameter parameter,
-          ModelAndViewContainer mavContainer,
-          NativeWebRequest webRequest,
-          WebDataBinderFactory binderFactory) {
-        return exchange;
-      }
-
-      @Override
-      public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.getParameterType() == ServerWebExchange.class;
-      }
-    };
-  }
-
   private ExceptionHandlerExceptionResolver createExceptionResolver() {
     ExceptionHandlerExceptionResolver exceptionResolver =
         new ExceptionHandlerExceptionResolver() {
@@ -140,11 +113,8 @@ public class WebExceptionHandlerTest {
   @SneakyThrows
   public void expectStatus() {
     when(resources.search(Mockito.any())).thenThrow(exception);
-    when(exchange.getRequest()).thenReturn(request);
-    when(request.getQueryParams()).thenReturn(Parameters.empty());
     MockMvc mvc =
         MockMvcBuilders.standaloneSetup(controller)
-            .setCustomArgumentResolvers(argumentResolver())
             .setHandlerExceptionResolvers(createExceptionResolver())
             .setMessageConverters()
             .build();

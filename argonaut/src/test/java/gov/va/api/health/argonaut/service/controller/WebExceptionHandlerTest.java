@@ -18,6 +18,7 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolationException;
 import lombok.SneakyThrows;
 import org.junit.Before;
@@ -28,21 +29,13 @@ import org.junit.runners.Parameterized.Parameter;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.http.server.RequestPath;
-import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.bind.support.WebDataBinderFactory;
-import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.method.annotation.ExceptionHandlerMethodResolver;
-import org.springframework.web.method.support.HandlerMethodArgumentResolver;
-import org.springframework.web.method.support.HandlerMethodArgumentResolverComposite;
-import org.springframework.web.method.support.ModelAndViewContainer;
-import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver;
 import org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod;
 
@@ -55,8 +48,7 @@ public class WebExceptionHandlerTest {
   @Parameter(1)
   public Exception exception;
 
-  @Mock ServerWebExchange exchange;
-  @Mock ServerHttpRequest request;
+  @Mock HttpServletRequest request;
   @Mock MrAndersonClient mrAnderson;
   @Mock PatientController.Transformer tx;
   @Mock RequestPath requestPath;
@@ -93,24 +85,6 @@ public class WebExceptionHandlerTest {
     exceptionHandler = new WebExceptionHandler();
   }
 
-  private HandlerMethodArgumentResolver argumentResolver() {
-    return new HandlerMethodArgumentResolver() {
-      @Override
-      public Object resolveArgument(
-          MethodParameter parameter,
-          ModelAndViewContainer mavContainer,
-          NativeWebRequest webRequest,
-          WebDataBinderFactory binderFactory) {
-        return exchange;
-      }
-
-      @Override
-      public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.getParameterType() == ServerWebExchange.class;
-      }
-    };
-  }
-
   private ExceptionHandlerExceptionResolver createExceptionResolver() {
     ExceptionHandlerExceptionResolver exceptionResolver =
         new ExceptionHandlerExceptionResolver() {
@@ -124,9 +98,6 @@ public class WebExceptionHandlerTest {
             ServletInvocableHandlerMethod invocable =
                 new ServletInvocableHandlerMethod(exceptionHandler, method);
 
-            invocable.setHandlerMethodArgumentResolvers(
-                new HandlerMethodArgumentResolverComposite().addResolvers(argumentResolver()));
-
             return invocable;
           }
         };
@@ -134,7 +105,6 @@ public class WebExceptionHandlerTest {
         .getMessageConverters()
         .add(new MappingJackson2HttpMessageConverter(JacksonConfig.createMapper()));
     exceptionResolver.afterPropertiesSet();
-    exceptionResolver.getArgumentResolvers().addResolvers(argumentResolver());
     return exceptionResolver;
   }
 
@@ -143,13 +113,10 @@ public class WebExceptionHandlerTest {
   public void expectStatus() {
 
     when(mrAnderson.search(Mockito.any())).thenThrow(exception);
-    when(exchange.getRequest()).thenReturn(request);
-    when(request.getQueryParams()).thenReturn(Parameters.forIdentity("1"));
-    when(request.getPath()).thenReturn(requestPath);
-    when(requestPath.toString()).thenReturn("/api/Patient/123");
+    when(request.getRequestURI()).thenReturn("/api/Patient/123");
+
     MockMvc mvc =
         MockMvcBuilders.standaloneSetup(controller)
-            .setCustomArgumentResolvers(argumentResolver())
             .setHandlerExceptionResolvers(createExceptionResolver())
             .setMessageConverters()
             .build();

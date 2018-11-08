@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.MultiValueMap;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
@@ -19,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ServerWebExchange;
 
 @RestController
 @Validated
@@ -62,7 +62,7 @@ public class MrAndersonV1ApiController {
       @Valid @RequestParam(value = "page", required = false, defaultValue = "1") @Min(1) int page,
       @Valid @RequestParam(value = "_count", required = false, defaultValue = "15") @Min(0)
           int count,
-      ServerWebExchange exchange) {
+      @RequestParam MultiValueMap<String, String> allQueryParams) {
 
     String xml =
         resources.search(
@@ -72,7 +72,7 @@ public class MrAndersonV1ApiController {
                 .version(resourceVersion)
                 .page(page)
                 .count(count)
-                .parameters(exchange.getRequest().getQueryParams())
+                .parameters(allQueryParams)
                 .build());
 
     return ResponseEntity.ok().body(xml);

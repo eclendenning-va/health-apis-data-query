@@ -13,15 +13,11 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.http.server.reactive.ServerHttpRequest;
-import org.springframework.web.server.ServerWebExchange;
+import org.springframework.util.MultiValueMap;
 
 public class MrAndersonV1ApiControllerTest {
 
   @Mock Resources resources;
-
-  @Mock ServerWebExchange exchange;
-  @Mock ServerHttpRequest request;
 
   MrAndersonV1ApiController controller;
 
@@ -45,9 +41,8 @@ public class MrAndersonV1ApiControllerTest {
   @Test
   public void searchesAreForwardedToResourceRepository() {
     when(resources.search(Mockito.any())).thenReturn(Samples.create().patient());
-    when(exchange.getRequest()).thenReturn(request);
-    when(request.getQueryParams()).thenReturn(Parameters.builder().add("identity", "123").build());
-    controller.queryResourceVersion(Profile.ARGONAUT, "Patient", "1.01", 1, 15, exchange);
+    MultiValueMap<String, String> params = Parameters.builder().add("identity", "123").build();
+    controller.queryResourceVersion(Profile.ARGONAUT, "Patient", "1.01", 1, 15, params);
     verify(resources).search(query());
   }
 }
