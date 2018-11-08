@@ -9,7 +9,7 @@ import gov.va.api.health.argonaut.api.ContactPoint.ContactPointUse;
 import gov.va.api.health.argonaut.api.HumanName.NameUse;
 import gov.va.api.health.argonaut.api.Identifier.IdentifierUse;
 import gov.va.api.health.argonaut.api.Issue.IssueSeverity;
-import gov.va.api.health.argonaut.api.Narrative.NarrativeStatus;
+import gov.va.api.health.argonaut.api.Patient.Gender;
 import java.util.Arrays;
 import lombok.NoArgsConstructor;
 
@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
  * serialization.
  */
 @NoArgsConstructor(staticName = "get")
-class SampleData {
+class PatientSampleData extends CommonSampleData {
 
   Address address() {
     return Address.builder()
@@ -34,16 +34,6 @@ class SampleData {
         .postalCode("12345")
         .country("Hello Country")
         .period(period())
-        .build();
-  }
-
-  Coding coding() {
-    return Coding.builder()
-        .system("http://HelloSystem.com")
-        .version("Hello Version")
-        .code("Hello Code")
-        .display("Hello Display")
-        .userSelected(true)
         .build();
   }
 
@@ -74,36 +64,6 @@ class SampleData {
 
   CodeableConcept details() {
     return CodeableConcept.builder().coding(singletonList(coding())).text("HelloText").build();
-  }
-
-  Extension extension() {
-    return Extension.builder().url("http://HelloUrl.com").valueInteger(1).build();
-  }
-
-  Extension extensionWithQuantity() {
-    return Extension.builder()
-        .url("http://HelloUrl.com")
-        .valueQuantity(
-            Quantity.builder()
-                .code("Q")
-                .comparator(">=")
-                .id("Q1")
-                .unit("things")
-                .value(1.0)
-                .build())
-        .build();
-  }
-
-  Extension extensionWithRatio() {
-    return Extension.builder()
-        .url("http://HelloUrl.com")
-        .valueRatio(
-            Ratio.builder()
-                .id("R1")
-                .denominator(Quantity.builder().value(1.0).build())
-                .numerator(Quantity.builder().value(2.0).build())
-                .build())
-        .build();
   }
 
   Identifier identifier() {
@@ -143,16 +103,6 @@ class SampleData {
     return CodeableConcept.builder().coding(singletonList(coding())).text("HelloText").build();
   }
 
-  Meta meta() {
-    return Meta.builder()
-        .versionId("1111")
-        .lastUpdated("2000-01-01T00:00:00-00:00")
-        .profile(singletonList("http://HelloProfile.com"))
-        .security(singletonList(coding()))
-        .tag(singletonList(coding()))
-        .build();
-  }
-
   HumanName name() {
     return HumanName.builder()
         .use(NameUse.anonymous)
@@ -165,16 +115,43 @@ class SampleData {
         .build();
   }
 
-  Narrative narrative() {
-    return Narrative.builder().status(NarrativeStatus.additional).div("<p>HelloDiv<p>").build();
-  }
-
   Period period() {
     return Period.builder()
         .id("5678")
         .extension(singletonList(Extension.builder().url("http://wtf.com").valueInteger(1).build()))
         .start("2000-01-01T00:00:00-00:00")
         .end("2001-01-01T00:00:00-00:00")
+        .build();
+  }
+
+  Patient patient() {
+    return Patient.builder()
+        .id("1234")
+        .resourceType("Patient")
+        .meta(meta())
+        .implicitRules("http://HelloRules.com")
+        .language("Hello Language")
+        .text(narrative())
+        .contained(singletonList(resource()))
+        .extension(Arrays.asList(extension(), extension()))
+        .modifierExtension(
+            Arrays.asList(extension(), extensionWithQuantity(), extensionWithRatio()))
+        .identifier(singletonList(identifier()))
+        .active(true)
+        .name(singletonList(name()))
+        .telecom(singletonList(telecom()))
+        .gender(Gender.unknown)
+        .birthDate("2000-01-01")
+        .deceasedBoolean(false)
+        .address(singletonList(address()))
+        .maritalStatus(maritalStatus())
+        .multipleBirthBoolean(false)
+        .photo(singletonList(photo()))
+        .contact(singletonList(contact()))
+        .communication(singletonList(communication()))
+        .careProvider(singletonList(reference()))
+        .managingOrganization(reference())
+        .link(singletonList(link()))
         .build();
   }
 
@@ -201,19 +178,6 @@ class SampleData {
 
   CodeableConcept relationship() {
     return CodeableConcept.builder().coding(singletonList(coding())).text("HelloText").build();
-  }
-
-  SimpleResource resource() {
-    return SimpleResource.builder()
-        .id("1111")
-        .meta(meta())
-        .implicitRules("http://HelloRules.com")
-        .language("Hello Language")
-        .build();
-  }
-
-  SimpleQuantity simpleQuantity() {
-    return SimpleQuantity.builder().value(11.11).unit("HelloUnit").build();
   }
 
   ContactPoint telecom() {

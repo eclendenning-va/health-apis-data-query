@@ -6,7 +6,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.va.api.health.argonaut.api.ArgonautService.SearchFailed;
 import gov.va.api.health.argonaut.api.ArgonautService.UnknownResource;
-import gov.va.api.health.argonaut.api.Patient.Gender;
 import gov.va.api.health.autoconfig.configuration.JacksonConfig;
 import java.util.Arrays;
 import lombok.SneakyThrows;
@@ -16,7 +15,8 @@ import org.junit.Test;
 @Slf4j
 public class ModelTest {
 
-  private final SampleData data = SampleData.get();
+  private final PatientSampleData patientData = PatientSampleData.get();
+  // private final MedicationSampleData medicationData = MedicationSampleData.get();
 
   @SuppressWarnings("ThrowableNotThrown")
   @Test
@@ -30,55 +30,33 @@ public class ModelTest {
     roundTrip(
         OperationOutcome.builder()
             .id("4321")
-            .meta(data.meta())
+            .meta(patientData.meta())
             .implicitRules("http://HelloRules.com")
             .language("Hello Language")
-            .text(data.narrative())
-            .contained(singletonList(data.resource()))
+            .text(patientData.narrative())
+            .contained(singletonList(patientData.resource()))
             .modifierExtension(
                 Arrays.asList(
-                    data.extension(), data.extensionWithQuantity(), data.extensionWithRatio()))
-            .issue(singletonList(data.issue()))
+                    patientData.extension(),
+                    patientData.extensionWithQuantity(),
+                    patientData.extensionWithRatio()))
+            .issue(singletonList(patientData.issue()))
             .build());
   }
 
   @Test
   public void patient() {
-    roundTrip(
-        Patient.builder()
-            .id("1234")
-            .resourceType("Patient")
-            .meta(data.meta())
-            .implicitRules("http://HelloRules.com")
-            .language("Hello Language")
-            .text(data.narrative())
-            .contained(singletonList(data.resource()))
-            .extension(Arrays.asList(data.extension(), data.extension()))
-            .modifierExtension(
-                Arrays.asList(
-                    data.extension(), data.extensionWithQuantity(), data.extensionWithRatio()))
-            .identifier(singletonList(data.identifier()))
-            .active(true)
-            .name(singletonList(data.name()))
-            .telecom(singletonList(data.telecom()))
-            .gender(Gender.unknown)
-            .birthDate("2000-01-01")
-            .deceasedBoolean(false)
-            .address(singletonList(data.address()))
-            .maritalStatus(data.maritalStatus())
-            .multipleBirthBoolean(false)
-            .photo(singletonList(data.photo()))
-            .contact(singletonList(data.contact()))
-            .communication(singletonList(data.communication()))
-            .careProvider(singletonList(data.reference()))
-            .managingOrganization(data.reference())
-            .link(singletonList(data.link()))
-            .build());
+    roundTrip(patientData.patient());
   }
+
+  /*@Test
+  public void medication() {
+    roundTrip(medicationData.medication());
+  }*/
 
   @Test
   public void range() {
-    roundTrip(data.range());
+    roundTrip(patientData.range());
   }
 
   @SneakyThrows

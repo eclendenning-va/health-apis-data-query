@@ -36,7 +36,7 @@ public class Medication {
   @Valid List<Extension> extension;
   @Valid List<Extension> modifierExtension;
   @Valid @NotBlank CodeableConcept code;
-  Boolean isBrand;
+  // @Valid Boolean isBrand;
 
   @Valid Reference manufacturer;
 

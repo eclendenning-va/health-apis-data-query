@@ -1,10 +1,16 @@
 package gov.va.api.health.argonaut.api;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.Pattern;
+import lombok.Builder;
+import lombok.Data;
 
-public class Product {
+@Data
+@Builder
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+public class Product implements BackboneElement {
   @Pattern(regexp = Fhir.ID)
   String id;
 
