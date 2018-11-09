@@ -123,4 +123,36 @@ public class Patient {
     }
     return ombExtensionCount <= 1 && textExtensionCount == 1;
   }
+
+  @JsonIgnore
+  @AssertTrue(message = "Argo-Race extension is not valid")
+  private boolean isValidRaceExtension() {
+    if (extension == null) {
+      return true;
+    }
+    Optional<Extension> raceExtension =
+        extension
+            .stream()
+            .filter(
+                e -> "http://fhir.org/guides/argonaut/StructureDefinition/argo-race".equals(e.url))
+            .findFirst();
+    if (!raceExtension.isPresent()) {
+      return true;
+    }
+    int ombExtensionCount = 0;
+    int textExtensionCount = 0;
+    for (Extension e : raceExtension.get().extension) {
+      switch (e.url) {
+        case "ombCategory":
+          ombExtensionCount++;
+          break;
+        case "text":
+          textExtensionCount++;
+          break;
+        default:
+          break;
+      }
+    }
+    return ombExtensionCount <= 5 && textExtensionCount == 1;
+  }
 }

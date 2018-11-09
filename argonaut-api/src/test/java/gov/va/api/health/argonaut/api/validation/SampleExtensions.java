@@ -10,10 +10,70 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(staticName = "get")
 class SampleExtensions {
 
-  Patient patientWithSingleRequiredEthnicityExtension() {
+  Patient patientWithNullRaceExtension() {
     return Patient.builder()
         .resourceType("Patient")
-        .extension(singleRequiredEthnicityExtension())
+        .extension(nullRaceExtension())
+        .identifier(identifier())
+        .gender(Patient.Gender.unknown)
+        .name(name())
+        .build();
+  }
+
+  Patient patientWithSingleRequiredRaceExtension() {
+    return Patient.builder()
+        .resourceType("Patient")
+        .extension(singleRequiredRaceExtension())
+        .identifier(identifier())
+        .gender(Patient.Gender.unknown)
+        .name(name())
+        .build();
+  }
+
+  Patient patientWithSingleOptionalRaceExtension() {
+    return Patient.builder()
+        .resourceType("Patient")
+        .extension(singleOptionalRaceExtension())
+        .identifier(identifier())
+        .gender(Patient.Gender.unknown)
+        .name(name())
+        .build();
+  }
+
+  Patient patientWithMultipleOptionalRaceExtension() {
+    return Patient.builder()
+        .resourceType("Patient")
+        .extension(multipleOptionalRaceExtension())
+        .identifier(identifier())
+        .gender(Patient.Gender.unknown)
+        .name(name())
+        .build();
+  }
+
+  Patient patientWithTooManyOptionalRaceExtension() {
+    return Patient.builder()
+        .resourceType("Patient")
+        .extension(tooManyOptionalRaceExtension())
+        .identifier(identifier())
+        .gender(Patient.Gender.unknown)
+        .name(name())
+        .build();
+  }
+
+  Patient patientWithTooManyRequiredRaceExtension() {
+    return Patient.builder()
+        .resourceType("Patient")
+        .extension(tooManyRequiredRaceExtension())
+        .identifier(identifier())
+        .gender(Patient.Gender.unknown)
+        .name(name())
+        .build();
+  }
+
+  Patient patientWithNoRequiredRaceExtension() {
+    return Patient.builder()
+        .resourceType("Patient")
+        .extension(noRequiredRaceExtension())
         .identifier(identifier())
         .gender(Patient.Gender.unknown)
         .name(name())
@@ -24,6 +84,16 @@ class SampleExtensions {
     return Patient.builder()
         .resourceType("Patient")
         .extension(nullEthnicityExtension())
+        .identifier(identifier())
+        .gender(Patient.Gender.unknown)
+        .name(name())
+        .build();
+  }
+
+  Patient patientWithSingleRequiredEthnicityExtension() {
+    return Patient.builder()
+        .resourceType("Patient")
+        .extension(singleRequiredEthnicityExtension())
         .identifier(identifier())
         .gender(Patient.Gender.unknown)
         .name(name())
@@ -80,6 +150,284 @@ class SampleExtensions {
         .build();
   }
 
+  List<Extension> nullRaceExtension() {
+    List<Extension> extensions = new ArrayList<>(3);
+
+    List<Extension> ethnicityExtensions = new LinkedList<>();
+    ethnicityExtensions.add(
+        Extension.builder()
+            .url("ombCategory")
+            .valueCoding(
+                Coding.builder()
+                    .system("http://hl7.org/fhir/ValueSet/v3-Ethnicity")
+                    .code("2135-2")
+                    .display("Hispanic or Latino")
+                    .build())
+            .build());
+    ethnicityExtensions.add(Extension.builder().url("text").valueString("Spaniard").build());
+    extensions.add(
+        Extension.builder()
+            .url("http://fhir.org/guides/argonaut/StructureDefinition/argo-ethnicity")
+            .extension(ethnicityExtensions)
+            .build());
+    extensions.add(Extension.builder().url("http://test-birthsex").valueCode("M").build());
+    return extensions;
+  }
+
+  List<Extension> singleRequiredRaceExtension() {
+    List<Extension> extensions = new ArrayList<>(3);
+
+    List<Extension> raceExtensions = new LinkedList<>();
+    raceExtensions.add(
+        Extension.builder().url("text").valueString("American Indian or Alaska Native").build());
+
+    List<Extension> ethnicityExtensions = new LinkedList<>();
+    ethnicityExtensions.add(Extension.builder().url("text").valueString("Spaniard").build());
+
+    extensions.add(
+        Extension.builder()
+            .url("http://fhir.org/guides/argonaut/StructureDefinition/argo-race")
+            .extension(raceExtensions)
+            .build());
+    extensions.add(
+        Extension.builder()
+            .url("http://fhir.org/guides/argonaut/StructureDefinition/argo-ethnicity")
+            .extension(ethnicityExtensions)
+            .build());
+    extensions.add(Extension.builder().url("http://test-birthsex").valueCode("M").build());
+    return extensions;
+  }
+
+  List<Extension> singleOptionalRaceExtension() {
+    List<Extension> extensions = new ArrayList<>(3);
+
+    List<Extension> raceExtensions = new LinkedList<>();
+    raceExtensions.add(
+        Extension.builder()
+            .url("ombCategory")
+            .valueCoding(
+                Coding.builder()
+                    .system("http://hl7.org/fhir/v3/Race")
+                    .code("1002-5")
+                    .display("American Indian or Alaska Native")
+                    .build())
+            .build());
+    raceExtensions.add(
+        Extension.builder()
+            .url("detailed")
+            .valueCoding(
+                Coding.builder()
+                    .system("http://hl7.org/fhir/v3/Race")
+                    .code("1004-1")
+                    .display("American Indian")
+                    .build())
+            .build());
+    raceExtensions.add(Extension.builder().url("text").valueString("testa").build());
+
+    extensions.add(
+        Extension.builder()
+            .url("http://fhir.org/guides/argonaut/StructureDefinition/argo-race")
+            .extension(raceExtensions)
+            .build());
+    return extensions;
+  }
+
+  List<Extension> multipleOptionalRaceExtension() {
+    List<Extension> extensions = new ArrayList<>(3);
+
+    List<Extension> raceExtensions = new LinkedList<>();
+    raceExtensions.add(
+        Extension.builder()
+            .url("ombCategory")
+            .valueCoding(
+                Coding.builder()
+                    .system("http://hl7.org/fhir/v3/Race")
+                    .code("1002-5")
+                    .display("American Indian or Alaska Native")
+                    .build())
+            .build());
+    raceExtensions.add(
+        Extension.builder()
+            .url("ombCategory")
+            .valueCoding(
+                Coding.builder()
+                    .system("http://hl7.org/fhir/v3/Race")
+                    .code("2028-9")
+                    .display("Asian")
+                    .build())
+            .build());
+    raceExtensions.add(
+        Extension.builder()
+            .url("ombCategory")
+            .valueCoding(
+                Coding.builder()
+                    .system("http://hl7.org/fhir/v3/Race")
+                    .code("2054-5")
+                    .display("Black or African American")
+                    .build())
+            .build());
+    raceExtensions.add(
+        Extension.builder()
+            .url("detailed")
+            .valueCoding(
+                Coding.builder()
+                    .system("http://hl7.org/fhir/v3/Race")
+                    .code("1004-1")
+                    .display("American Indian")
+                    .build())
+            .build());
+    raceExtensions.add(
+        Extension.builder()
+            .url("detailed")
+            .valueCoding(
+                Coding.builder()
+                    .system("http://hl7.org/fhir/v3/Race")
+                    .code("1006-6")
+                    .display("Abenaki")
+                    .build())
+            .build());
+    raceExtensions.add(
+        Extension.builder()
+            .url("detailed")
+            .valueCoding(
+                Coding.builder()
+                    .system("http://hl7.org/fhir/v3/Race")
+                    .code("1008-2")
+                    .display("Algonquian")
+                    .build())
+            .build());
+    raceExtensions.add(Extension.builder().url("text").valueString("testa").build());
+
+    extensions.add(
+        Extension.builder()
+            .url("http://fhir.org/guides/argonaut/StructureDefinition/argo-race")
+            .extension(raceExtensions)
+            .build());
+    return extensions;
+  }
+
+  List<Extension> noRequiredRaceExtension() {
+    List<Extension> extensions = new ArrayList<>(3);
+
+    List<Extension> raceExtensions = new LinkedList<>();
+    extensions.add(
+        Extension.builder()
+            .url("http://fhir.org/guides/argonaut/StructureDefinition/argo-race")
+            .extension(raceExtensions)
+            .build());
+    return extensions;
+  }
+
+  List<Extension> tooManyRequiredRaceExtension() {
+    List<Extension> extensions = new ArrayList<>(3);
+
+    List<Extension> raceExtensions = new LinkedList<>();
+    raceExtensions.add(Extension.builder().url("text").valueString("American Indian").build());
+    raceExtensions.add(Extension.builder().url("text").valueString("Abenaki").build());
+
+    extensions.add(
+        Extension.builder()
+            .url("http://fhir.org/guides/argonaut/StructureDefinition/argo-ethnicity")
+            .extension(raceExtensions)
+            .build());
+    return extensions;
+  }
+
+  List<Extension> tooManyOptionalRaceExtension() {
+    List<Extension> extensions = new ArrayList<>(3);
+    List<Extension> raceExtensions = new LinkedList<>();
+    raceExtensions.add(
+        Extension.builder()
+            .url("ombCategory")
+            .valueCoding(
+                Coding.builder()
+                    .system("http://hl7.org/fhir/v3/Race")
+                    .code("1002-5")
+                    .display("American Indian or Alaska Native")
+                    .build())
+            .build());
+    raceExtensions.add(
+        Extension.builder()
+            .url("ombCategory")
+            .valueCoding(
+                Coding.builder()
+                    .system("http://hl7.org/fhir/v3/Race")
+                    .code("2028-9")
+                    .display("Asian")
+                    .build())
+            .build());
+    raceExtensions.add(
+        Extension.builder()
+            .url("ombCategory")
+            .valueCoding(
+                Coding.builder()
+                    .system("http://hl7.org/fhir/v3/Race")
+                    .code("2054-5")
+                    .display("Black or African American")
+                    .build())
+            .build());
+    raceExtensions.add(
+        Extension.builder()
+            .url("ombCategory")
+            .valueCoding(
+                Coding.builder()
+                    .system("http://hl7.org/fhir/v3/Race")
+                    .code("2076-8")
+                    .display("Native Hawaiian or Other Pacific Islander")
+                    .build())
+            .build());
+    raceExtensions.add(
+        Extension.builder()
+            .url("ombCategory")
+            .valueCoding(
+                Coding.builder()
+                    .system("http://hl7.org/fhir/v3/Race")
+                    .code("2106-3")
+                    .display("White")
+                    .build())
+            .build());
+    raceExtensions.add(
+        Extension.builder()
+            .url("ombCategory")
+            .valueCoding(
+                Coding.builder()
+                    .system("http://hl7.org/fhir/v3/NullFlavor")
+                    .code("UNK")
+                    .display("Unknown")
+                    .build())
+            .build());
+
+    raceExtensions.add(Extension.builder().url("text").valueString("American Indian").build());
+
+    extensions.add(
+        Extension.builder()
+            .url("http://fhir.org/guides/argonaut/StructureDefinition/argo-race")
+            .extension(raceExtensions)
+            .build());
+
+    return extensions;
+  }
+
+  List<Extension> nullEthnicityExtension() {
+    List<Extension> extensions = new ArrayList<>(3);
+
+    List<Extension> raceExtensions = new LinkedList<>();
+    raceExtensions.add(
+        Extension.builder()
+            .url("ombCategory")
+            .valueCoding(
+                Coding.builder()
+                    .system("http://hl7.org/fhir/ValueSet/v3-Ethnicity")
+                    .code("2135-2")
+                    .display("Hispanic or Latino")
+                    .build())
+            .build());
+    raceExtensions.add(Extension.builder().url("text").valueString("tester").build());
+    extensions.add(Extension.builder().url("http://test-race").extension(raceExtensions).build());
+    extensions.add(Extension.builder().url("http://test-birthsex").valueCode("M").build());
+    return extensions;
+  }
+
   List<Extension> singleRequiredEthnicityExtension() {
     List<Extension> extensions = new ArrayList<>(3);
 
@@ -105,26 +453,6 @@ class SampleExtensions {
             .url("http://fhir.org/guides/argonaut/StructureDefinition/argo-ethnicity")
             .extension(ethnicityExtensions)
             .build());
-    extensions.add(Extension.builder().url("http://test-birthsex").valueCode("M").build());
-    return extensions;
-  }
-
-  List<Extension> nullEthnicityExtension() {
-    List<Extension> extensions = new ArrayList<>(3);
-
-    List<Extension> raceExtensions = new LinkedList<>();
-    raceExtensions.add(
-        Extension.builder()
-            .url("ombCategory")
-            .valueCoding(
-                Coding.builder()
-                    .system("http://hl7.org/fhir/ValueSet/v3-Ethnicity")
-                    .code("2135-2")
-                    .display("Hispanic or Latino")
-                    .build())
-            .build());
-    raceExtensions.add(Extension.builder().url("text").valueString("tester").build());
-    extensions.add(Extension.builder().url("http://test-race").extension(raceExtensions).build());
     extensions.add(Extension.builder().url("http://test-birthsex").valueCode("M").build());
     return extensions;
   }
