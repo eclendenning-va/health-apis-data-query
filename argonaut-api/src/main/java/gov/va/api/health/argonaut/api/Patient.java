@@ -73,22 +73,14 @@ public class Patient {
   String deceasedDateTime;
 
   @Valid List<Address> address;
-
   @Valid CodeableConcept maritalStatus;
-
   Boolean multipleBirthBoolean;
   Integer multipleBirthInteger;
-
   @Valid List<Attachment> photo;
-
   @Valid List<Contact> contact;
-
   @Valid List<Communication> communication;
-
   @Valid List<Reference> careProvider;
-
   @Valid Reference managingOrganization;
-
   @Valid List<Link> link;
 
   public enum Gender {
