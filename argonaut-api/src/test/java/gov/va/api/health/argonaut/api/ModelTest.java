@@ -7,8 +7,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.va.api.health.argonaut.api.ArgonautService.SearchFailed;
 import gov.va.api.health.argonaut.api.ArgonautService.UnknownResource;
 import gov.va.api.health.argonaut.api.Patient.Gender;
+import gov.va.api.health.argonaut.api.bundle.Bundle;
 import gov.va.api.health.autoconfig.configuration.JacksonConfig;
 import java.util.Arrays;
+import java.util.LinkedList;
+
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
