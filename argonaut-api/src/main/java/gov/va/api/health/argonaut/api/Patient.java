@@ -1,12 +1,15 @@
 package gov.va.api.health.argonaut.api;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import gov.va.api.health.argonaut.api.validation.RelatedFields;
 import gov.va.api.health.argonaut.api.validation.ZeroOrOneOf;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
+import java.util.Optional;
 import javax.validation.Valid;
+import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -33,7 +36,6 @@ import lombok.Value;
 })
 public class Patient {
 
-  @NotBlank
   @Pattern(regexp = Fhir.ID)
   String id;
 
@@ -86,5 +88,39 @@ public class Patient {
     female,
     other,
     unknown
+  }
+
+  @JsonIgnore
+  @AssertTrue(message = "Argo-Ethnicity extension is not valid")
+  private boolean isValidEthnicityExtension() {
+    if (extension == null) {
+      return true;
+    }
+    Optional<Extension> ethnicityExtension =
+        extension
+            .stream()
+            .filter(
+                e ->
+                    "http://fhir.org/guides/argonaut/StructureDefinition/argo-ethnicity"
+                        .equals(e.url))
+            .findFirst();
+    if (!ethnicityExtension.isPresent()) {
+      return true;
+    }
+    int ombExtensionCount = 0;
+    int textExtensionCount = 0;
+    for (Extension e : ethnicityExtension.get().extension) {
+      switch (e.url) {
+        case "ombCategory":
+          ombExtensionCount++;
+          break;
+        case "text":
+          textExtensionCount++;
+          break;
+        default:
+          break;
+      }
+    }
+    return ombExtensionCount <= 1 && textExtensionCount == 1;
   }
 }
