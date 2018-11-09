@@ -10,7 +10,7 @@
   </parent>
   <groupId>gov.va.api.health</groupId>
   <artifactId>health-apis-parent</artifactId>
-  <version>1.0.24-SNAPSHOT</version>
+  <version>1.0.24</version>
   <packaging>pom</packaging>
   <properties>
     <fmt-maven-plugin.version>2.3.0</fmt-maven-plugin.version>
