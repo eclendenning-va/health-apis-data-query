@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ServerWebExchange;
 
 /**
  * Request Mappings for the Argonaut Patient Profile, see
@@ -37,7 +36,7 @@ public class PatientController {
 
   /** Read by id. */
   @GetMapping(value = {"/{publicId}"})
-  public Patient read(@PathVariable("publicId") String publicId, ServerWebExchange exchange) {
+  public Patient read(@PathVariable("publicId") String publicId) {
 
     Query<Patient103Root> query =
         Query.forType(Patient103Root.class)

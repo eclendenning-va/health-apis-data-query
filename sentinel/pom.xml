@@ -340,7 +340,7 @@
       <id>jenkins-config</id>
       <activation>
         <property>
-          <name>env.HEALTH_API_CERTIFICATE_PASSWORD</name>
+          <name>env.BUILD_ID</name>
         </property>
       </activation>
       <build>

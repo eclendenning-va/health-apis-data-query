@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ServerWebExchange;
 
 @RestController
 @Validated
@@ -46,8 +45,7 @@ public class IdServiceV1ApiController {
   )
   @SneakyThrows
   public ResponseEntity<List<ResourceIdentity>> lookup(
-      @Valid @PathVariable("publicId") @Pattern(regexp = "[-A-Za-z0-9]+") String publicId,
-      ServerWebExchange exchange) {
+      @Valid @PathVariable("publicId") @Pattern(regexp = "[-A-Za-z0-9]+") String publicId) {
 
     List<ResourceIdentity> identities =
         repository
@@ -83,6 +81,7 @@ public class IdServiceV1ApiController {
             .filter(this::isNotRegistered)
             .map(this::toDatabaseEntry)
             .collect(Collectors.toList());
+    newRegistrations.forEach(x -> log.info("{}", x));
     log.info("Register {} entries ({} are new)", identities.size(), newRegistrations.size());
     repository.saveAll(newRegistrations);
 
