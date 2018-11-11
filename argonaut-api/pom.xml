@@ -29,7 +29,7 @@
   </parent>
   <artifactId>argonaut-api</artifactId>
   <packaging>jar</packaging>
-    <build>
+  <build>
     <plugins>
       <plugin>
         <groupId>io.swagger.core.v3</groupId>
@@ -75,6 +75,18 @@
                 </artifact>
               </artifacts>
             </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-jar-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>test-jar</id>
+            <phase>package</phase>
+            <goals>
+              <goal>test-jar</goal>
+            </goals>
           </execution>
         </executions>
       </plugin>
