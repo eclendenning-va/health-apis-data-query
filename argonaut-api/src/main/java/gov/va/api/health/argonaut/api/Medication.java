@@ -20,10 +20,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor
 @JsonAutoDetect(
-    fieldVisibility = JsonAutoDetect.Visibility.ANY,
-    isGetterVisibility = Visibility.NONE)
+  fieldVisibility = JsonAutoDetect.Visibility.ANY,
+  isGetterVisibility = Visibility.NONE
+)
 @Schema(
-    description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-medication.html")
+  description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-medication.html"
+)
 public class Medication {
 
   @NotBlank
