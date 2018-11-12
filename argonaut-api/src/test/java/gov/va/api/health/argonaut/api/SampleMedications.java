@@ -2,14 +2,17 @@ package gov.va.api.health.argonaut.api;
 
 import static java.util.Collections.singletonList;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Arrays;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Delegate;
 
+@SuppressWarnings("WeakerAccess")
 @NoArgsConstructor(staticName = "get")
-public class MedicationSampleData extends CommonSampleData {
+public class SampleMedications {
 
-  Medication.Batch batch() {
+  @Delegate SampleDataTypes dataTypes = SampleDataTypes.get();
+
+  public Medication.Batch batch() {
     return Medication.Batch.builder()
         .id("8888")
         .extension(singletonList(extension()))
@@ -19,15 +22,15 @@ public class MedicationSampleData extends CommonSampleData {
         .build();
   }
 
-  CodeableConcept code() {
+  public CodeableConcept code() {
     return CodeableConcept.builder().coding(singletonList(coding())).text("HelloText").build();
   }
 
-  CodeableConcept container() {
+  public CodeableConcept container() {
     return CodeableConcept.builder().coding(singletonList(coding())).text("HelloText").build();
   }
 
-  Content content() {
+  public Content content() {
     return Content.builder()
         .id("8888")
         .extension(singletonList(extension()))
@@ -37,11 +40,11 @@ public class MedicationSampleData extends CommonSampleData {
         .build();
   }
 
-  CodeableConcept form() {
+  public CodeableConcept form() {
     return CodeableConcept.builder().coding(singletonList(coding())).text("HelloText").build();
   }
 
-  Medication.Ingredient ingredient() {
+  public Medication.Ingredient ingredient() {
     return Medication.Ingredient.builder()
         .id("8888")
         .extension(singletonList(extension()))
@@ -51,7 +54,7 @@ public class MedicationSampleData extends CommonSampleData {
         .build();
   }
 
-  Medication medication() {
+  public Medication medication() {
     return Medication.builder()
         .id("1234")
         .resourceType("Medication")
@@ -71,8 +74,7 @@ public class MedicationSampleData extends CommonSampleData {
         .build();
   }
 
-  @JsonProperty("package")
-  Medication.MedicationPackage medicationPackage() {
+  public Medication.MedicationPackage medicationPackage() {
     return Medication.MedicationPackage.builder()
         .id("8888")
         .extension(singletonList(extension()))
@@ -82,7 +84,7 @@ public class MedicationSampleData extends CommonSampleData {
         .build();
   }
 
-  Medication.Product product() {
+  public Medication.Product product() {
     return Medication.Product.builder()
         .id("8888")
         .extension(singletonList(extension()))
@@ -91,9 +93,5 @@ public class MedicationSampleData extends CommonSampleData {
         .ingredient(ingredient())
         .batch(batch())
         .build();
-  }
-
-  Ratio ratio() {
-    return Ratio.builder().numerator(quantity()).denominator(quantity()).build();
   }
 }

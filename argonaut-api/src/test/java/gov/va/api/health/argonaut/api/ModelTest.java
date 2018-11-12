@@ -15,8 +15,8 @@ import org.junit.Test;
 @Slf4j
 public class ModelTest {
 
-  private final PatientSampleData patientData = PatientSampleData.get();
-  private final MedicationSampleData medicationData = MedicationSampleData.get();
+  private final SamplePatients patientData = SamplePatients.get();
+  private final SampleMedications medicationData = SampleMedications.get();
 
   @SuppressWarnings("ThrowableNotThrown")
   @Test

@@ -3,10 +3,13 @@ package gov.va.api.health.argonaut.api;
 import static java.util.Collections.singletonList;
 
 import gov.va.api.health.argonaut.api.Narrative.NarrativeStatus;
+import lombok.NoArgsConstructor;
 
-public class CommonSampleData {
+@SuppressWarnings("WeakerAccess")
+@NoArgsConstructor(staticName = "get")
+public final class SampleDataTypes {
 
-  Coding coding() {
+  public Coding coding() {
     return Coding.builder()
         .system("http://HelloSystem.com")
         .version("Hello Version")
@@ -16,11 +19,11 @@ public class CommonSampleData {
         .build();
   }
 
-  Extension extension() {
+  public Extension extension() {
     return Extension.builder().url("http://HelloUrl.com").valueInteger(1).build();
   }
 
-  Extension extensionWithQuantity() {
+  public Extension extensionWithQuantity() {
     return Extension.builder()
         .url("http://HelloUrl.com")
         .valueQuantity(
@@ -34,7 +37,7 @@ public class CommonSampleData {
         .build();
   }
 
-  Extension extensionWithRatio() {
+  public Extension extensionWithRatio() {
     return Extension.builder()
         .url("http://HelloUrl.com")
         .valueRatio(
@@ -46,7 +49,7 @@ public class CommonSampleData {
         .build();
   }
 
-  Meta meta() {
+  public Meta meta() {
     return Meta.builder()
         .versionId("1111")
         .lastUpdated("2000-01-01T00:00:00-00:00")
@@ -56,19 +59,23 @@ public class CommonSampleData {
         .build();
   }
 
-  Narrative narrative() {
+  public Narrative narrative() {
     return Narrative.builder().status(NarrativeStatus.additional).div("<p>HelloDiv<p>").build();
   }
 
-  Quantity quantity() {
+  public Quantity quantity() {
     return Quantity.builder().value(11.11).unit("HelloUnit").build();
   }
 
-  Reference reference() {
+  public Ratio ratio() {
+    return Ratio.builder().numerator(quantity()).denominator(quantity()).build();
+  }
+
+  public Reference reference() {
     return Reference.builder().reference("HelloReference").display("HelloDisplay").build();
   }
 
-  SimpleResource resource() {
+  public SimpleResource resource() {
     return SimpleResource.builder()
         .id("1111")
         .meta(meta())
@@ -77,7 +84,7 @@ public class CommonSampleData {
         .build();
   }
 
-  SimpleQuantity simpleQuantity() {
+  public SimpleQuantity simpleQuantity() {
     return SimpleQuantity.builder().value(11.11).unit("HelloUnit").build();
   }
 }

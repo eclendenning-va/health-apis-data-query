@@ -12,15 +12,19 @@ import gov.va.api.health.argonaut.api.Issue.IssueSeverity;
 import gov.va.api.health.argonaut.api.Patient.Gender;
 import java.util.Arrays;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Delegate;
 
 /**
  * This class provides data structures that are populated with dummy values, suitable for testing
  * serialization.
  */
+@SuppressWarnings("WeakerAccess")
 @NoArgsConstructor(staticName = "get")
-class PatientSampleData extends CommonSampleData {
+public class SamplePatients {
 
-  Address address() {
+  @Delegate SampleDataTypes dataTypes = SampleDataTypes.get();
+
+  public Address address() {
     return Address.builder()
         .id("1234")
         .extension(singletonList(extension()))
@@ -37,7 +41,7 @@ class PatientSampleData extends CommonSampleData {
         .build();
   }
 
-  Communication communication() {
+  public Communication communication() {
     return Communication.builder()
         .id("8888")
         .extension(singletonList(extension()))
@@ -62,11 +66,11 @@ class PatientSampleData extends CommonSampleData {
         .build();
   }
 
-  CodeableConcept details() {
+  public CodeableConcept details() {
     return CodeableConcept.builder().coding(singletonList(coding())).text("HelloText").build();
   }
 
-  Identifier identifier() {
+  public Identifier identifier() {
     return Identifier.builder()
         .id("5678")
         .use(IdentifierUse.official)
@@ -74,7 +78,7 @@ class PatientSampleData extends CommonSampleData {
         .build();
   }
 
-  Issue issue() {
+  public Issue issue() {
     return Issue.builder()
         .severity(IssueSeverity.error)
         .code("HelloCode")
@@ -85,11 +89,11 @@ class PatientSampleData extends CommonSampleData {
         .build();
   }
 
-  CodeableConcept language() {
+  public CodeableConcept language() {
     return CodeableConcept.builder().coding(singletonList(coding())).text("HelloText").build();
   }
 
-  Link link() {
+  public Link link() {
     return Link.builder()
         .id("7777")
         .extension(singletonList(extension()))
@@ -99,11 +103,11 @@ class PatientSampleData extends CommonSampleData {
         .build();
   }
 
-  CodeableConcept maritalStatus() {
+  public CodeableConcept maritalStatus() {
     return CodeableConcept.builder().coding(singletonList(coding())).text("HelloText").build();
   }
 
-  HumanName name() {
+  public HumanName name() {
     return HumanName.builder()
         .use(NameUse.anonymous)
         .text("HelloText")
@@ -115,16 +119,7 @@ class PatientSampleData extends CommonSampleData {
         .build();
   }
 
-  Period period() {
-    return Period.builder()
-        .id("5678")
-        .extension(singletonList(Extension.builder().url("http://wtf.com").valueInteger(1).build()))
-        .start("2000-01-01T00:00:00-00:00")
-        .end("2001-01-01T00:00:00-00:00")
-        .build();
-  }
-
-  Patient patient() {
+  public Patient patient() {
     return Patient.builder()
         .id("1234")
         .resourceType("Patient")
@@ -155,7 +150,16 @@ class PatientSampleData extends CommonSampleData {
         .build();
   }
 
-  Attachment photo() {
+  public Period period() {
+    return Period.builder()
+        .id("5678")
+        .extension(singletonList(Extension.builder().url("http://wtf.com").valueInteger(1).build()))
+        .start("2000-01-01T00:00:00-00:00")
+        .end("2001-01-01T00:00:00-00:00")
+        .build();
+  }
+
+  public Attachment photo() {
     return Attachment.builder()
         .contentType("HelloType")
         .language("HelloLanguage")
@@ -168,19 +172,15 @@ class PatientSampleData extends CommonSampleData {
         .build();
   }
 
-  Range range() {
+  public Range range() {
     return Range.builder().low(simpleQuantity()).high(simpleQuantity()).build();
   }
 
-  Reference reference() {
-    return Reference.builder().reference("HelloReference").display("HelloDisplay").build();
-  }
-
-  CodeableConcept relationship() {
+  public CodeableConcept relationship() {
     return CodeableConcept.builder().coding(singletonList(coding())).text("HelloText").build();
   }
 
-  ContactPoint telecom() {
+  public ContactPoint telecom() {
     return ContactPoint.builder()
         .system(ContactPointSystem.other)
         .value("HelloValue")
