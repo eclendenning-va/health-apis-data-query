@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(staticName = "get")
 public class MedicationSampleData extends CommonSampleData {
 
-  Batch batch() {
-    return Batch.builder()
+  Medication.Batch batch() {
+    return Medication.Batch.builder()
         .id("8888")
         .extension(singletonList(extension()))
         .modifierExtension(singletonList(extension()))
@@ -41,8 +41,8 @@ public class MedicationSampleData extends CommonSampleData {
     return CodeableConcept.builder().coding(singletonList(coding())).text("HelloText").build();
   }
 
-  Ingredient ingredient() {
-    return Ingredient.builder()
+  Medication.Ingredient ingredient() {
+    return Medication.Ingredient.builder()
         .id("8888")
         .extension(singletonList(extension()))
         .modifierExtension(singletonList(extension()))
@@ -72,8 +72,8 @@ public class MedicationSampleData extends CommonSampleData {
   }
 
   @JsonProperty("package")
-  MedicationPackage medicationPackage() {
-    return MedicationPackage.builder()
+  Medication.MedicationPackage medicationPackage() {
+    return Medication.MedicationPackage.builder()
         .id("8888")
         .extension(singletonList(extension()))
         .modifierExtension(singletonList(extension()))
@@ -82,8 +82,8 @@ public class MedicationSampleData extends CommonSampleData {
         .build();
   }
 
-  Product product() {
-    return Product.builder()
+  Medication.Product product() {
+    return Medication.Product.builder()
         .id("8888")
         .extension(singletonList(extension()))
         .modifierExtension(singletonList(extension()))

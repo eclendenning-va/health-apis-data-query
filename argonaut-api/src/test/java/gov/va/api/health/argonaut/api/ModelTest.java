@@ -50,10 +50,10 @@ public class ModelTest {
   }
 
   /*
-    Believe this test to be failing due to a java bean property.
-    it is viewing the "isBrand" variable as a method and creating its own "brand" field
-    This may be fixed with a JsonProperty similar to "package" - however, package is not completely ironed out either
-   */
+   Believe this test to be failing due to a java bean property.
+   it is viewing the "isBrand" variable as a method and creating its own "brand" field
+   This may be fixed with a JsonProperty similar to "package" - however, package is not completely ironed out either
+  */
 
   @Test
   public void medication() {
