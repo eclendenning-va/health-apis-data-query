@@ -30,8 +30,8 @@ public class SampleMedications {
     return CodeableConcept.builder().coding(singletonList(coding())).text("HelloText").build();
   }
 
-  public Content content() {
-    return Content.builder()
+  public Medication.Content content() {
+    return Medication.Content.builder()
         .id("8888")
         .extension(singletonList(extension()))
         .modifierExtension(singletonList(extension()))

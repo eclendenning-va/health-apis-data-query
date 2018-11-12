@@ -20,12 +20,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor
 @JsonAutoDetect(
-  fieldVisibility = JsonAutoDetect.Visibility.ANY,
-  isGetterVisibility = Visibility.NONE
-)
+    fieldVisibility = JsonAutoDetect.Visibility.ANY,
+    isGetterVisibility = Visibility.NONE)
 @Schema(
-  description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-medication.html"
-)
+    description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-medication.html")
 public class Medication {
 
   @NotBlank
@@ -59,6 +57,8 @@ public class Medication {
 
   @Data
   @Builder
+  @NoArgsConstructor(access = AccessLevel.PRIVATE)
+  @AllArgsConstructor
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
   public static class Batch implements BackboneElement {
     @Pattern(regexp = Fhir.ID)
@@ -74,6 +74,25 @@ public class Medication {
 
   @Data
   @Builder
+  @NoArgsConstructor(access = AccessLevel.PRIVATE)
+  @AllArgsConstructor
+  @JsonAutoDetect(fieldVisibility = Visibility.ANY)
+  public static class Content implements BackboneElement {
+    @Pattern(regexp = Fhir.ID)
+    String id;
+
+    @Valid List<Extension> extension;
+    @Valid List<Extension> modifierExtension;
+
+    @NotBlank @Valid Reference item;
+
+    @Valid SimpleQuantity amount;
+  }
+
+  @Data
+  @Builder
+  @NoArgsConstructor(access = AccessLevel.PRIVATE)
+  @AllArgsConstructor
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
   public static class Ingredient implements BackboneElement {
     @Pattern(regexp = Fhir.ID)
@@ -88,6 +107,8 @@ public class Medication {
 
   @Data
   @Builder
+  @NoArgsConstructor(access = AccessLevel.PRIVATE)
+  @AllArgsConstructor
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
   public static class MedicationPackage implements BackboneElement {
     @Pattern(regexp = Fhir.ID)
@@ -103,6 +124,8 @@ public class Medication {
 
   @Data
   @Builder
+  @NoArgsConstructor(access = AccessLevel.PRIVATE)
+  @AllArgsConstructor
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
   public static class Product implements BackboneElement {
     @Pattern(regexp = Fhir.ID)
