@@ -3,6 +3,7 @@ package gov.va.health.api.sentinel;
 import gov.va.api.health.ids.api.Registration;
 import gov.va.api.health.ids.api.ResourceIdentity;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,12 +23,12 @@ public class IdRegistrar {
   @Getter(lazy = true)
   TestIds registeredIds = registerCdwIds();
 
-  private String findUuid(List<Registration> registrations, ResourceIdentity patient) {
+  private String findUuid(List<Registration> registrations, ResourceIdentity resource) {
     return registrations
         .stream()
-        .filter(r -> r.resourceIdentities().contains(patient))
+        .filter(r -> r.resourceIdentities().contains(resource))
         .findFirst()
-        .orElseThrow(() -> new AssertionError("Failed to register: " + patient))
+        .orElseThrow(() -> new AssertionError("Failed to register: " + resource))
         .uuid();
   }
 
@@ -54,7 +55,15 @@ public class IdRegistrar {
             .resource("PATIENT")
             .identifier(cdwIds.patient())
             .build();
-    List<ResourceIdentity> identities = Arrays.asList(patient);
+    List<ResourceIdentity> identities = new LinkedList<>();
+    identities.add(patient);
+    ResourceIdentity medication =
+        ResourceIdentity.builder()
+            .system("CDW")
+            .resource("MEDICATION")
+            .identifier(cdwIds.medication())
+            .build();
+    identities.add(medication);
     log.info("Registering {}", identities);
     List<Registration> registrations =
         system()
@@ -67,6 +76,7 @@ public class IdRegistrar {
         TestIds.builder()
             .unknown(cdwIds.unknown())
             .patient(findUuid(registrations, patient))
+            .medication(findUuid(registrations, medication))
             .build();
     log.info("Using {}", publicIds);
     return publicIds;

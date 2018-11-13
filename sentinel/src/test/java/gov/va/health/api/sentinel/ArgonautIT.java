@@ -1,5 +1,6 @@
 package gov.va.health.api.sentinel;
 
+import gov.va.api.health.argonaut.api.Medication;
 import gov.va.api.health.argonaut.api.OperationOutcome;
 import gov.va.api.health.argonaut.api.Patient;
 import lombok.extern.slf4j.Slf4j;
@@ -24,9 +25,25 @@ public class ArgonautIT {
   }
 
   @Test
+  public void medicationRead() {
+    argonaut()
+        .get("/api/Medication/{id}", ids().medication())
+        .expect(200)
+        .expectValid(Medication.class);
+  }
+
+  @Test
   public void patientReadUnknown() {
     argonaut()
         .get("/api/Patient/{id}", ids().unknown())
+        .expect(404)
+        .expectValid(OperationOutcome.class);
+  }
+
+  @Test
+  public void medicationReadUnknown() {
+    argonaut()
+        .get("/api/Medication/{id}", ids().unknown())
         .expect(404)
         .expectValid(OperationOutcome.class);
   }

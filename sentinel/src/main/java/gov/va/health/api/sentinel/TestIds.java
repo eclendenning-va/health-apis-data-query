@@ -9,5 +9,6 @@ import lombok.Value;
 @Value
 public class TestIds {
   @NonNull String patient;
+  @NonNull String medication;
   @NonNull String unknown;
 }
