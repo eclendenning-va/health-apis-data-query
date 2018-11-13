@@ -93,23 +93,29 @@ public class Patient {
   @JsonIgnore
   @AssertTrue(message = "Argo-Ethnicity extension is not valid")
   private boolean isValidEthnicityExtension() {
+    return isValidArgonautExtensionCount(
+        "http://fhir.org/guides/argonaut/StructureDefinition/argo-ethnicity", 1);
+  }
+
+  @JsonIgnore
+  @AssertTrue(message = "Argo-Race extension is not valid")
+  private boolean isValidRaceExtension() {
+    return isValidArgonautExtensionCount(
+        "http://fhir.org/guides/argonaut/StructureDefinition/argo-race", 5);
+  }
+
+  private boolean isValidArgonautExtensionCount(String url, int maxAllowedOmbExtensionCount) {
     if (extension == null) {
       return true;
     }
-    Optional<Extension> ethnicityExtension =
-        extension
-            .stream()
-            .filter(
-                e ->
-                    "http://fhir.org/guides/argonaut/StructureDefinition/argo-ethnicity"
-                        .equals(e.url))
-            .findFirst();
-    if (!ethnicityExtension.isPresent()) {
+    Optional<Extension> argonautExtension =
+        extension.stream().filter(e -> url.equals(e.url)).findFirst();
+    if (!argonautExtension.isPresent()) {
       return true;
     }
     int ombExtensionCount = 0;
     int textExtensionCount = 0;
-    for (Extension e : ethnicityExtension.get().extension) {
+    for (Extension e : argonautExtension.get().extension) {
       switch (e.url) {
         case "ombCategory":
           ombExtensionCount++;
@@ -121,6 +127,6 @@ public class Patient {
           break;
       }
     }
-    return ombExtensionCount <= 1 && textExtensionCount == 1;
+    return ombExtensionCount <= maxAllowedOmbExtensionCount && textExtensionCount == 1;
   }
 }
