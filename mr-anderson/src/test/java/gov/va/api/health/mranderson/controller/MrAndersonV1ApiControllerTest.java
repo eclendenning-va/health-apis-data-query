@@ -8,32 +8,23 @@ import gov.va.api.health.mranderson.cdw.Profile;
 import gov.va.api.health.mranderson.cdw.Query;
 import gov.va.api.health.mranderson.cdw.Resources;
 import gov.va.api.health.mranderson.util.Parameters;
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.reactive.server.WebTestClient;
+import org.mockito.MockitoAnnotations;
+import org.springframework.util.MultiValueMap;
 
-@RunWith(SpringRunner.class)
-@WebFluxTest
 public class MrAndersonV1ApiControllerTest {
 
-  @MockBean Resources resources;
-  @Autowired private WebTestClient client;
+  @Mock Resources resources;
 
-  @Test
-  public void searchesAreForwardedToResourceRepository() {
-    when(resources.search(Mockito.any())).thenReturn(Samples.create().patient());
-    client
-        .get()
-        .uri("/api/v1/resources/argonaut/Patient/1.01?identity=123")
-        .exchange()
-        .expectStatus()
-        .isOk();
-    verify(resources).search(query());
+  MrAndersonV1ApiController controller;
+
+  @Before
+  public void _init() {
+    MockitoAnnotations.initMocks(this);
+    controller = new MrAndersonV1ApiController(resources);
   }
 
   private Query query() {
@@ -45,5 +36,13 @@ public class MrAndersonV1ApiControllerTest {
         .page(1)
         .parameters(Parameters.builder().add("identity", "123").build())
         .build();
+  }
+
+  @Test
+  public void searchesAreForwardedToResourceRepository() {
+    when(resources.search(Mockito.any())).thenReturn(Samples.create().patient());
+    MultiValueMap<String, String> params = Parameters.builder().add("identity", "123").build();
+    controller.queryResourceVersion(Profile.ARGONAUT, "Patient", "1.01", 1, 15, params);
+    verify(resources).search(query());
   }
 }

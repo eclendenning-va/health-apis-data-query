@@ -31,7 +31,7 @@ exit 1
 startApp() {
   local app=$1
   local pid=$(pidOf $app)
-  [ -n $pid ] && echo "$app appears to already be running" && return
+  [ -n "$pid" ] && echo "$app appears to already be running ($pid)" && return
   echo "Starting $app"
   cd $REPO/$app
   local jar=$(find target -maxdepth 1 -name "$app-*.jar" | head -1)

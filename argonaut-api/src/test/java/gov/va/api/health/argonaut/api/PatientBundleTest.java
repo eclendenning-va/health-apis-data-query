@@ -21,7 +21,7 @@ import org.junit.Test;
 @Slf4j
 public class PatientBundleTest {
 
-  private SampleData data = SampleData.get();
+  private SamplePatients data = SamplePatients.get();
 
   private Patient deleteMeAndReplaceWithProperSampleData() {
     return Patient.builder()

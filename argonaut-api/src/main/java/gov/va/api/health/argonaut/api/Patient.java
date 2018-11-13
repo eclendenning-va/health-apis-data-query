@@ -5,24 +5,32 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import gov.va.api.health.argonaut.api.bundle.AbstractBundle;
 import gov.va.api.health.argonaut.api.bundle.AbstractEntry;
 import gov.va.api.health.argonaut.api.bundle.BundleLink;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.va.api.health.argonaut.api.validation.RelatedFields;
 import gov.va.api.health.argonaut.api.validation.ZeroOrOneOf;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
+import java.util.Optional;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Value
+@Data
 @Builder
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-@JsonDeserialize(builder = Patient.PatientBuilder.class)
 @Schema(
   description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-patient.html"
 )
@@ -38,7 +46,6 @@ import lombok.Value;
 })
 public class Patient {
 
-  @NotBlank
   @Pattern(regexp = Fhir.ID)
   String id;
 
@@ -46,7 +53,6 @@ public class Patient {
   @Valid Meta meta;
 
   @Pattern(regexp = Fhir.URI)
-  @Schema()
   String implicitRules;
 
   @Pattern(regexp = Fhir.CODE)
@@ -128,5 +134,45 @@ public class Patient {
         @Valid Response response) {
       super(id, extension, modifierExtension, link, fullUrl, resource, search, request, response);
     }
+  }
+
+  @JsonIgnore
+  @AssertTrue(message = "Argo-Ethnicity extension is not valid")
+  private boolean isValidEthnicityExtension() {
+    return isValidArgonautExtensionCount(
+        "http://fhir.org/guides/argonaut/StructureDefinition/argo-ethnicity", 1);
+  }
+
+  @JsonIgnore
+  @AssertTrue(message = "Argo-Race extension is not valid")
+  private boolean isValidRaceExtension() {
+    return isValidArgonautExtensionCount(
+        "http://fhir.org/guides/argonaut/StructureDefinition/argo-race", 5);
+  }
+
+  private boolean isValidArgonautExtensionCount(String url, int maxAllowedOmbExtensionCount) {
+    if (extension == null) {
+      return true;
+    }
+    Optional<Extension> argonautExtension =
+        extension.stream().filter(e -> url.equals(e.url)).findFirst();
+    if (!argonautExtension.isPresent()) {
+      return true;
+    }
+    int ombExtensionCount = 0;
+    int textExtensionCount = 0;
+    for (Extension e : argonautExtension.get().extension) {
+      switch (e.url) {
+        case "ombCategory":
+          ombExtensionCount++;
+          break;
+        case "text":
+          textExtensionCount++;
+          break;
+        default:
+          break;
+      }
+    }
+    return ombExtensionCount <= maxAllowedOmbExtensionCount && textExtensionCount == 1;
   }
 }

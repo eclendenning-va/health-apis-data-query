@@ -4,7 +4,7 @@
   <parent>
     <groupId>gov.va.api.health</groupId>
     <artifactId>health-apis-parent</artifactId>
-    <version>1.0.24-SNAPSHOT</version>
+    <version>1.0.25-SNAPSHOT</version>
   </parent>
   <artifactId>sentinel</artifactId>
   <packaging>jar</packaging>
@@ -340,7 +340,7 @@
       <id>jenkins-config</id>
       <activation>
         <property>
-          <name>env.HEALTH_API_CERTIFICATE_PASSWORD</name>
+          <name>env.BUILD_ID</name>
         </property>
       </activation>
       <build>
