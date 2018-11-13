@@ -29,6 +29,8 @@ import org.springframework.context.annotation.Configuration;
  *   <li>Lombok &#64;Value &#64;Builder with out needing to specify Jackson annotations
  * </ul>
  *
+ * Note: The builder will only be used of your class does not have a default constructor.
+ *
  * <p>Your classes should look like one of these:
  *
  * <p>No additional Jackson annotations needed!
@@ -115,6 +117,9 @@ public class JacksonConfig {
       if (pojoBuilder != null) {
         return pojoBuilder;
       }
+      if (hasDefaultConstructor(ac.getAnnotated())) {
+        return null;
+      }
       String className = ac.getAnnotated().getSimpleName();
       String lombokBuilder = ac.getAnnotated().getName() + "$" + className + "Builder";
       try {
@@ -131,6 +136,14 @@ public class JacksonConfig {
         return super.findPOJOBuilderConfig(ac);
       }
       return new JsonPOJOBuilder.Value("build", "");
+    }
+
+    private boolean hasDefaultConstructor(Class<?> ac) {
+      try {
+        return ac.getDeclaredConstructor() != null;
+      } catch (NoSuchMethodException e) {
+        return false;
+      }
     }
   }
 }

@@ -2,7 +2,6 @@ package gov.va.api.health.argonaut.api;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import gov.va.api.health.argonaut.api.validation.RelatedFields;
 import gov.va.api.health.argonaut.api.validation.ZeroOrOneOf;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -14,13 +13,17 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Value;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Value
+@Data
 @Builder
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-@JsonDeserialize(builder = Patient.PatientBuilder.class)
 @Schema(
   description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-patient.html"
 )
@@ -43,7 +46,6 @@ public class Patient {
   @Valid Meta meta;
 
   @Pattern(regexp = Fhir.URI)
-  @Schema()
   String implicitRules;
 
   @Pattern(regexp = Fhir.CODE)

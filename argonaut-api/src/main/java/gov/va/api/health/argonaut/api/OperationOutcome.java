@@ -1,19 +1,22 @@
 package gov.va.api.health.argonaut.api;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Value;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Value
+@Data
 @Builder
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-@JsonDeserialize(builder = OperationOutcome.OperationOutcomeBuilder.class)
 @Schema(description = "https://www.hl7.org/fhir/operationoutcome.html")
 public class OperationOutcome implements DomainResource {
 
