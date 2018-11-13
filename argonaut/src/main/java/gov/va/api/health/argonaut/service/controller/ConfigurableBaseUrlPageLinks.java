@@ -37,7 +37,7 @@ public class ConfigurableBaseUrlPageLinks implements PageLinks {
     List<BundleLink> links = new LinkedList<>();
     links.add(context.first());
     if (context.hasPrevious()) {
-      links.add((context.previous()));
+      links.add(context.previous());
     }
     links.add(context.self());
     if (context.hasNext()) {
