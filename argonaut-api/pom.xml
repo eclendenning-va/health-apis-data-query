@@ -15,11 +15,6 @@
       <artifactId>spring-beans</artifactId>
       <scope>compile</scope>
     </dependency>
-    <dependency>
-      <groupId>gov.va.dvp</groupId>
-      <artifactId>cdw-schemas</artifactId>
-      <version>${cdw-schemas.version}</version>
-    </dependency>
   </dependencies>
   <parent>
     <groupId>gov.va.api.health</groupId>
