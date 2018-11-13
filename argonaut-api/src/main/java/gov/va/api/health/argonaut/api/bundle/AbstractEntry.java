@@ -89,7 +89,7 @@ public abstract class AbstractEntry<T> implements BackboneElement {
     @NotBlank String status;
 
     @Pattern(regexp = Fhir.URI)
-    String locaiton;
+    String location;
 
     String etag;
 

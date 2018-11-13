@@ -9,9 +9,15 @@ import gov.va.api.health.argonaut.api.Patient.Entry;
 import gov.va.api.health.argonaut.api.Patient.Gender;
 import gov.va.api.health.argonaut.api.bundle.AbstractBundle.BundleType;
 import gov.va.api.health.argonaut.api.bundle.AbstractEntry;
+import gov.va.api.health.argonaut.api.bundle.AbstractEntry.HttpVerb;
+import gov.va.api.health.argonaut.api.bundle.AbstractEntry.Request;
+import gov.va.api.health.argonaut.api.bundle.AbstractEntry.Response;
+import gov.va.api.health.argonaut.api.bundle.AbstractEntry.Search;
+import gov.va.api.health.argonaut.api.bundle.AbstractEntry.SearchMode;
 import gov.va.api.health.argonaut.api.bundle.BundleLink;
 import gov.va.api.health.argonaut.api.bundle.BundleLink.LinkRelation;
 import gov.va.api.health.autoconfig.configuration.JacksonConfig;
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collections;
 import lombok.SneakyThrows;
@@ -69,6 +75,36 @@ public class PatientBundleTest {
                         .url(("http://patient.com/1"))
                         .build()))
             .resource(deleteMeAndReplaceWithProperSampleData())
+            .search(
+                Search.builder()
+                    .id("s1")
+                    .mode(SearchMode.match)
+                    .extension(singletonList(data.extension()))
+                    .modifierExtension(singletonList(data.extension()))
+                    .rank(new BigDecimal(0.5))
+                    .build())
+            .request(
+                Request.builder()
+                    .id("request1")
+                    .extension(singletonList(data.extension()))
+                    .modifierExtension(singletonList(data.extension()))
+                    .method(HttpVerb.GET)
+                    .url("http://example.com")
+                    .ifNoneMatch("ok")
+                    .ifModifiedSince("also ok")
+                    .ifMatch("really ok")
+                    .ifNoneExist("meh, ok.")
+                    .build())
+            .response(
+                Response.builder()
+                    .id("request1")
+                    .extension(singletonList(data.extension()))
+                    .modifierExtension(singletonList(data.extension()))
+                    .status("single")
+                    .location("http://example.com")
+                    .etag("you're it")
+                    .lastModified("2005-01-21T07:57:00Z")
+                    .build())
             .build();
 
     Bundle bundle =
