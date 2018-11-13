@@ -104,7 +104,7 @@ public class Patient {
         "http://fhir.org/guides/argonaut/StructureDefinition/argo-race", 5);
   }
 
-  private boolean isValidArgonautExtensionCount(String url, int count) {
+  private boolean isValidArgonautExtensionCount(String url, int maxAllowedOmbExtensionCount) {
     if (extension == null) {
       return true;
     }
@@ -127,6 +127,6 @@ public class Patient {
           break;
       }
     }
-    return ombExtensionCount <= count && textExtensionCount == 1;
+    return ombExtensionCount <= maxAllowedOmbExtensionCount && textExtensionCount == 1;
   }
 }
