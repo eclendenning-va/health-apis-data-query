@@ -103,6 +103,7 @@ public class Patient {
     @Builder
     public Bundle(
         @Pattern(regexp = Fhir.ID) String id,
+        @NotBlank String resourceType,
         @Valid Meta meta,
         @Pattern(regexp = Fhir.URI) String implicitRules,
         @Pattern(regexp = Fhir.CODE) String language,
@@ -111,7 +112,7 @@ public class Patient {
         @Valid List<BundleLink> link,
         @Valid List<Entry> entry,
         @Valid Signature signature) {
-      super(id, meta, implicitRules, language, type, total, link, entry, signature);
+      super(id, resourceType, meta, implicitRules, language, type, total, link, entry, signature);
     }
   }
 

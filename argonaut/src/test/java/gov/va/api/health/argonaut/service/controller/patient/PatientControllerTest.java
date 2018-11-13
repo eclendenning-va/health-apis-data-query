@@ -25,12 +25,14 @@ public class PatientControllerTest {
 
   @Mock PatientController.Transformer tx;
 
+  @Mock PatientController.Bundler bundler;
+
   PatientController controller;
 
   @Before
   public void _init() {
     MockitoAnnotations.initMocks(this);
-    controller = new PatientController(tx, client);
+    controller = new PatientController(tx, client, bundler);
   }
 
   @Test

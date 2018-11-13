@@ -51,6 +51,7 @@ public class WebExceptionHandlerTest {
   @Mock HttpServletRequest request;
   @Mock MrAndersonClient mrAnderson;
   @Mock PatientController.Transformer tx;
+  @Mock PatientController.Bundler bundler;
   @Mock RequestPath requestPath;
   private PatientController controller;
   private WebExceptionHandler exceptionHandler;
@@ -81,7 +82,7 @@ public class WebExceptionHandlerTest {
   @Before
   public void _init() {
     MockitoAnnotations.initMocks(this);
-    controller = new PatientController(tx, mrAnderson);
+    controller = new PatientController(tx, mrAnderson, bundler);
     exceptionHandler = new WebExceptionHandler();
   }
 
