@@ -10,144 +10,70 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(staticName = "get")
 class SampleExtensions {
 
-  Patient patientWithNullRaceExtension() {
+  private Patient patientWith(List<Extension> extension) {
     return Patient.builder()
         .resourceType("Patient")
-        .extension(nullRaceExtension())
+        .extension(extension)
         .identifier(identifier())
         .gender(Patient.Gender.unknown)
         .name(name())
         .build();
+  }
+
+  Patient patientWithNullRaceExtension() {
+    return patientWith(nullRaceExtension());
   }
 
   Patient patientWithSingleRequiredRaceExtension() {
-    return Patient.builder()
-        .resourceType("Patient")
-        .extension(singleRequiredRaceExtension())
-        .identifier(identifier())
-        .gender(Patient.Gender.unknown)
-        .name(name())
-        .build();
+    return patientWith(singleRequiredRaceExtension());
   }
 
   Patient patientWithSingleOptionalRaceExtension() {
-    return Patient.builder()
-        .resourceType("Patient")
-        .extension(singleOptionalRaceExtension())
-        .identifier(identifier())
-        .gender(Patient.Gender.unknown)
-        .name(name())
-        .build();
+    return patientWith(singleOptionalRaceExtension());
   }
 
   Patient patientWithMultipleOptionalRaceExtension() {
-    return Patient.builder()
-        .resourceType("Patient")
-        .extension(multipleOptionalRaceExtension())
-        .identifier(identifier())
-        .gender(Patient.Gender.unknown)
-        .name(name())
-        .build();
+    return patientWith(multipleOptionalRaceExtension());
   }
 
   Patient patientWithTooManyOptionalRaceExtension() {
-    return Patient.builder()
-        .resourceType("Patient")
-        .extension(tooManyOptionalRaceExtension())
-        .identifier(identifier())
-        .gender(Patient.Gender.unknown)
-        .name(name())
-        .build();
+    return patientWith(tooManyOptionalRaceExtension());
   }
 
   Patient patientWithTooManyRequiredRaceExtension() {
-    return Patient.builder()
-        .resourceType("Patient")
-        .extension(tooManyRequiredRaceExtension())
-        .identifier(identifier())
-        .gender(Patient.Gender.unknown)
-        .name(name())
-        .build();
+    return patientWith(tooManyRequiredRaceExtension());
   }
 
   Patient patientWithNoRequiredRaceExtension() {
-    return Patient.builder()
-        .resourceType("Patient")
-        .extension(noRequiredRaceExtension())
-        .identifier(identifier())
-        .gender(Patient.Gender.unknown)
-        .name(name())
-        .build();
+    return patientWith(noRequiredRaceExtension());
   }
 
   Patient patientWithNullEthnicityExtension() {
-    return Patient.builder()
-        .resourceType("Patient")
-        .extension(nullEthnicityExtension())
-        .identifier(identifier())
-        .gender(Patient.Gender.unknown)
-        .name(name())
-        .build();
+    return patientWith(nullEthnicityExtension());
   }
 
   Patient patientWithSingleRequiredEthnicityExtension() {
-    return Patient.builder()
-        .resourceType("Patient")
-        .extension(singleRequiredEthnicityExtension())
-        .identifier(identifier())
-        .gender(Patient.Gender.unknown)
-        .name(name())
-        .build();
+    return patientWith(singleRequiredEthnicityExtension());
   }
 
   Patient patientWithSingleOptionalEthnicityExtension() {
-    return Patient.builder()
-        .resourceType("Patient")
-        .extension(singleOptionalEthnicityExtension())
-        .identifier(identifier())
-        .gender(Patient.Gender.unknown)
-        .name(name())
-        .build();
+    return patientWith(singleOptionalEthnicityExtension());
   }
 
   Patient patientWithMultipleOptionalEthnicityExtension() {
-    return Patient.builder()
-        .resourceType("Patient")
-        .extension(multipleOptionalEthnicityExtension())
-        .identifier(identifier())
-        .gender(Patient.Gender.unknown)
-        .name(name())
-        .build();
+    return patientWith(multipleOptionalEthnicityExtension());
   }
 
   Patient patientWithNoRequiredEthnicityExtension() {
-    return Patient.builder()
-        .resourceType("Patient")
-        .extension(noRequiredEthnicityExtension())
-        .identifier(identifier())
-        .gender(Patient.Gender.unknown)
-        .name(name())
-        .build();
+    return patientWith(noRequiredEthnicityExtension());
   }
 
   Patient patientWithTooManyRequiredEthnicityExtension() {
-    return Patient.builder()
-        .resourceType("Patient")
-        .extension(tooManyRequiredEthnicityExtension())
-        .identifier(identifier())
-        .gender(Patient.Gender.unknown)
-        .name(name())
-        .build();
+    return patientWith(tooManyRequiredEthnicityExtension());
   }
 
   Patient patientWithTooManyOptionalEthnicityExtension() {
-    return Patient.builder()
-        .resourceType("Patient")
-        .extension(tooManyOptionalEthnicityExtension())
-        .identifier(identifier())
-        .gender(Patient.Gender.unknown)
-        .name(name())
-        .build();
+    return patientWith(tooManyOptionalEthnicityExtension());
   }
 
   List<Extension> nullRaceExtension() {

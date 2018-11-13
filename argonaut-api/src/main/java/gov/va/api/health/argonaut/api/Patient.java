@@ -93,17 +93,23 @@ public class Patient {
   @JsonIgnore
   @AssertTrue(message = "Argo-Ethnicity extension is not valid")
   private boolean isValidEthnicityExtension() {
+    return isValidArgonautExtensionCount(
+        "http://fhir.org/guides/argonaut/StructureDefinition/argo-ethnicity", 1);
+  }
+
+  @JsonIgnore
+  @AssertTrue(message = "Argo-Race extension is not valid")
+  private boolean isValidRaceExtension() {
+    return isValidArgonautExtensionCount(
+        "http://fhir.org/guides/argonaut/StructureDefinition/argo-race", 5);
+  }
+
+  private boolean isValidArgonautExtensionCount(String url, int count) {
     if (extension == null) {
       return true;
     }
     Optional<Extension> ethnicityExtension =
-        extension
-            .stream()
-            .filter(
-                e ->
-                    "http://fhir.org/guides/argonaut/StructureDefinition/argo-ethnicity"
-                        .equals(e.url))
-            .findFirst();
+        extension.stream().filter(e -> url.equals(e.url)).findFirst();
     if (!ethnicityExtension.isPresent()) {
       return true;
     }
@@ -121,38 +127,6 @@ public class Patient {
           break;
       }
     }
-    return ombExtensionCount <= 1 && textExtensionCount == 1;
-  }
-
-  @JsonIgnore
-  @AssertTrue(message = "Argo-Race extension is not valid")
-  private boolean isValidRaceExtension() {
-    if (extension == null) {
-      return true;
-    }
-    Optional<Extension> raceExtension =
-        extension
-            .stream()
-            .filter(
-                e -> "http://fhir.org/guides/argonaut/StructureDefinition/argo-race".equals(e.url))
-            .findFirst();
-    if (!raceExtension.isPresent()) {
-      return true;
-    }
-    int ombExtensionCount = 0;
-    int textExtensionCount = 0;
-    for (Extension e : raceExtension.get().extension) {
-      switch (e.url) {
-        case "ombCategory":
-          ombExtensionCount++;
-          break;
-        case "text":
-          textExtensionCount++;
-          break;
-        default:
-          break;
-      }
-    }
-    return ombExtensionCount <= 5 && textExtensionCount == 1;
+    return ombExtensionCount <= count && textExtensionCount == 1;
   }
 }
