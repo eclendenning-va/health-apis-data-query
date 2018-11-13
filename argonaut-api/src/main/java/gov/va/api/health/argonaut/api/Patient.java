@@ -108,14 +108,14 @@ public class Patient {
     if (extension == null) {
       return true;
     }
-    Optional<Extension> ethnicityExtension =
+    Optional<Extension> argonautExtension =
         extension.stream().filter(e -> url.equals(e.url)).findFirst();
-    if (!ethnicityExtension.isPresent()) {
+    if (!argonautExtension.isPresent()) {
       return true;
     }
     int ombExtensionCount = 0;
     int textExtensionCount = 0;
-    for (Extension e : ethnicityExtension.get().extension) {
+    for (Extension e : argonautExtension.get().extension) {
       switch (e.url) {
         case "ombCategory":
           ombExtensionCount++;
