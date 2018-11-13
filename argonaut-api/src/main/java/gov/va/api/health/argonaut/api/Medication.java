@@ -28,7 +28,6 @@ import lombok.NoArgsConstructor;
 )
 public class Medication {
 
-  @NotBlank
   @Pattern(regexp = Fhir.ID)
   String id;
 
@@ -36,6 +35,7 @@ public class Medication {
   @Valid Meta meta;
 
   @Pattern(regexp = Fhir.URI)
+  @Schema()
   String implicitRules;
 
   @Pattern(regexp = Fhir.CODE)
