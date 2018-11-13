@@ -80,7 +80,7 @@ public class SampleMedications {
         .extension(singletonList(extension()))
         .modifierExtension(singletonList(extension()))
         .container(container())
-        .content(content())
+        .content(singletonList(content()))
         .build();
   }
 
@@ -91,7 +91,7 @@ public class SampleMedications {
         .modifierExtension(singletonList(extension()))
         .form(form())
         .ingredient(ingredient())
-        .batch(batch())
+        .batch(singletonList(batch()))
         .build();
   }
 }

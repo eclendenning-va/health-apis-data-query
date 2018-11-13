@@ -121,7 +121,7 @@ public class Medication {
 
     @Valid CodeableConcept container;
 
-    @Valid Content content;
+    @Valid List<Content> content;
   }
 
   @Data
@@ -138,6 +138,6 @@ public class Medication {
     @Valid CodeableConcept form;
 
     @Valid Ingredient ingredient;
-    @Valid Batch batch;
+    @Valid List<Batch> batch;
   }
 }
