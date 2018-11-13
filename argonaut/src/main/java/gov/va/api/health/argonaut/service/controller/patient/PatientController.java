@@ -51,5 +51,61 @@ public class PatientController {
     return patientTransformer.apply(firstPayloadItem(hasPayload(root.getPatients()).getPatient()));
   }
 
+  //  /** Search by Family+Gender. */
+  //  @GetMapping(params = {"family", "gender"})
+  //  public Patient searchByFamilyAndGender(
+  //      @RequestParam("family") String family, @RequestParam("gender") String gender) {
+  //    MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+  //    params.put("family", Arrays.asList(family));
+  //    params.put("gender", Arrays.asList(gender));
+  //    return null;
+  //  }
+  //
+  //  /** Search by Given+Gender. */
+  //  @GetMapping(params = {"given", "gender"})
+  //  public Patient searchByGivenAndGender(
+  //      @RequestParam("given") String given, @RequestParam("gender") String gender) {
+  //    MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+  //    params.put("given", Arrays.asList(given));
+  //    params.put("gender", Arrays.asList(gender));
+  //    return null;
+  //  }
+  //
+  //  /** Search by _id. */
+  //  @GetMapping(params = {"_id"})
+  //  public Patient.Bundle searchById(@RequestParam("_id") String id) {
+  //    MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+  //    params.put("_id", Arrays.asList(id));
+  //    return null;
+  //  }
+  //
+  //  /** Search by Identifier. */
+  //  @GetMapping(params = {"identifier"})
+  //  public Patient.Bundle searchByIdentifier(@RequestParam("identifier") String identifier) {
+  //    MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+  //    params.put("identifier", Arrays.asList(identifier));
+  //    return null;
+  //  }
+  //
+  //  /** Search by Name+Birthdate. */
+  //  @GetMapping(params = {"name", "birthdate"})
+  //  public Patient.Bundle searchByNameAndBirthdate(
+  //      @RequestParam("name") String name, @RequestParam("birthdate") String[] birthdate) {
+  //    MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+  //    params.put("name", Arrays.asList(name));
+  //    params.put("birthdate", Arrays.asList(birthdate));
+  //    return null;
+  //  }
+  //
+  //  /** Search by Name+Gender. */
+  //  @GetMapping(params = {"name", "gender"})
+  //  public Patient.Bundle searchByNameAndGender(
+  //      @RequestParam("name") String name, @RequestParam("gender") String gender) {
+  //    MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+  //    params.put("name", Arrays.asList(name));
+  //    params.put("gender", Arrays.asList(gender));
+  //    return null;
+  //  }
+
   public interface Transformer extends Function<Patient103Root.Patients.Patient, Patient> {}
 }
