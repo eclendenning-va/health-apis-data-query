@@ -9,9 +9,7 @@ import gov.va.api.health.argonaut.service.controller.Parameters;
 import gov.va.api.health.argonaut.service.mranderson.client.MrAndersonClient;
 import gov.va.api.health.argonaut.service.mranderson.client.Query;
 import gov.va.dvp.cdw.xsd.model.CdwMedication101Root;
-import gov.va.dvp.cdw.xsd.model.CdwMedication101Root.Medications;
-/** import gov.va.dvp.cdw.xsd.pojos.Medication101Root;
-import gov.va.dvp.cdw.xsd.pojos.Medication101Root.Medications; **/
+import gov.va.dvp.cdw.xsd.model.CdwMedication101Root.CdwMedications;
 import java.util.List;
 import java.util.Map.Entry;
 import org.junit.Before;
@@ -37,9 +35,9 @@ public class MedicationControllerTest {
   @Test
   public void read() {
     CdwMedication101Root root = new CdwMedication101Root();
-    root.setMedications(new Medications());
-    CdwMedication101Root.Medications.Medication xmlMedication =
-        new CdwMedication101Root.Medications.Medication();
+    root.setMedications(new CdwMedications());
+    CdwMedication101Root.CdwMedications.CdwMedication xmlMedication =
+        new CdwMedication101Root.CdwMedications.CdwMedication();
     root.getMedications().getMedication().add(xmlMedication);
     Medication medication = Medication.builder().build();
     when(client.search(Mockito.any())).thenReturn(root);

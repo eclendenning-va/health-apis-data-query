@@ -53,5 +53,5 @@ public class MedicationController {
   }
 
   public interface Transformer
-      extends Function<CdwMedication101Root.Medications.Medication, Medication> {}
+      extends Function<CdwMedication101Root.CdwMedications.CdwMedication, Medication> {}
 }
