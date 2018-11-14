@@ -94,4 +94,10 @@ public class ConfigurableBaseUrlPageLinksTest {
             link(LinkRelation.next, 2, 3),
             link(LinkRelation.last, 5, 3));
   }
+
+  @Test
+  public void readLinkCombinesConfiguredUrl() {
+    assertThat(links.readLink("/api/Whatever", "123"))
+        .isEqualTo("https://awesome.com/api/Whatever/123");
+  }
 }

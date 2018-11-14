@@ -15,34 +15,34 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Data
-@Getter
+@NoArgsConstructor
 @AllArgsConstructor
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @Schema(description = "http://hl7.org/fhir/DSTU2/bundle.html")
-public abstract class AbstractBundle<E extends AbstractEntry<?>> implements Resource {
+public abstract class AbstractBundle<N extends AbstractEntry<?>> implements Resource {
   @Pattern(regexp = Fhir.ID)
-  protected final String id;
+  protected String id;
 
-  @NotBlank String resourceType;
-  @Valid protected final Meta meta;
+  @Valid protected Meta meta;
 
   @Pattern(regexp = Fhir.URI)
-  protected final String implicitRules;
+  protected String implicitRules;
 
   @Pattern(regexp = Fhir.CODE)
-  protected final String language;
+  protected String language;
 
-  @NotNull protected final BundleType type;
+  @NotNull protected BundleType type;
 
   @Min(0)
-  protected final Integer total;
+  protected Integer total;
 
-  @Valid protected final List<BundleLink> link;
-  @Valid protected final List<E> entry;
-  @Valid Signature signature;
+  @Valid protected List<BundleLink> link;
+  @Valid protected List<N> entry;
+  @NotBlank protected String resourceType;
+  @Valid protected Signature signature;
 
   public enum BundleType {
     document,

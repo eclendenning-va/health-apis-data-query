@@ -10,8 +10,8 @@ import gov.va.api.health.argonaut.service.mranderson.client.Query;
 import gov.va.dvp.cdw.xsd.pojos.Patient103Root;
 import java.util.Arrays;
 import java.util.function.Function;
-
-import lombok.*;
+import javax.servlet.http.HttpServletRequest;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.LinkedMultiValueMap;
@@ -21,8 +21,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * Request Mappings for the Argonaut Patient Profile, see
@@ -64,7 +62,9 @@ public class PatientController {
   /** Search by Family+Gender. */
   @GetMapping(params = {"family", "gender"})
   public Patient.Bundle searchByFamilyAndGender(
-          @RequestParam("family") String family, @RequestParam("gender") String gender, HttpServletRequest servletRequest) {
+      @RequestParam("family") String family,
+      @RequestParam("gender") String gender,
+      HttpServletRequest servletRequest) {
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
     params.put("family", Arrays.asList(family));
     params.put("gender", Arrays.asList(gender));

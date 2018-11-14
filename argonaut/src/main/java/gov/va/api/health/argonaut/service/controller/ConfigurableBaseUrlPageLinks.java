@@ -47,6 +47,11 @@ public class ConfigurableBaseUrlPageLinks implements PageLinks {
     return links;
   }
 
+  @Override
+  public String readLink(String resourcePath, String id) {
+    return baseUrl + resourcePath + "/" + id;
+  }
+
   /** This context wraps the link state to allow link creation to be clearly described. */
   @RequiredArgsConstructor
   private class LinkContext {
