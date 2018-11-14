@@ -78,7 +78,7 @@ public class IdsIT {
   }
 
   @Test
-  public void registerPatientFlowUsesPatientProvidedIdentitier() {
+  public void registerPatientFlowUsesPatientProvidedIdentifier() {
     String icn = "185601V825290";
     ResourceIdentity identity =
         ResourceIdentity.builder().system("CDW").resource("PATIENT").identifier(icn).build();
