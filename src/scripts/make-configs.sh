@@ -128,7 +128,8 @@ configValue mr-anderson $PROFILE identityservice.url https://localhost:8089
 checkForUnsetValues mr-anderson $PROFILE
 
 makeConfig argonaut $PROFILE
-configValue argonaut $PROFILE mranderson.url https://localhost:8088 
+configValue argonaut $PROFILE mranderson.url https://localhost:8088
+configValue argonaut $PROFILE argonaut.url https://localhost:8090 
 checkForUnsetValues argonaut $PROFILE
 
 makeSentinelSecrets
