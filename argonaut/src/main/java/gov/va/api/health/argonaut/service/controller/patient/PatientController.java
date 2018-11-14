@@ -33,7 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(
   value = {"/api/Patient"},
-  produces = {"application/json"}
+  produces = {"application/json", "application/json+fhir", "application/fhir+json"}
 )
 @AllArgsConstructor(onConstructor = @__({@Autowired}))
 @Slf4j
