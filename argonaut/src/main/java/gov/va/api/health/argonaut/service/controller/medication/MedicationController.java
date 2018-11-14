@@ -7,7 +7,7 @@ import gov.va.api.health.argonaut.api.Medication;
 import gov.va.api.health.argonaut.service.controller.Parameters;
 import gov.va.api.health.argonaut.service.mranderson.client.MrAndersonClient;
 import gov.va.api.health.argonaut.service.mranderson.client.Query;
-import gov.va.dvp.cdw.xsd.pojos.Medication101Root;
+import gov.va.dvp.cdw.xsd.model.CdwMedication101Root;
 import java.util.function.Function;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,20 +38,20 @@ public class MedicationController {
   @GetMapping(value = {"/{publicId}"})
   public Medication read(@PathVariable("publicId") String publicId) {
 
-    Query<Medication101Root> query =
-        Query.forType(Medication101Root.class)
+    Query<CdwMedication101Root> query =
+        Query.forType(CdwMedication101Root.class)
             .profile(Query.Profile.ARGONAUT)
             .resource("Medication")
             .version("1.01")
             .parameters(Parameters.forIdentity(publicId))
             .build();
 
-    Medication101Root root = client.search(query);
+    CdwMedication101Root root = client.search(query);
 
     return medicationTransformer.apply(
         firstPayloadItem(hasPayload(root.getMedications()).getMedication()));
   }
 
   public interface Transformer
-      extends Function<Medication101Root.Medications.Medication, Medication> {}
+      extends Function<CdwMedication101Root.Medications.Medication, Medication> {}
 }
