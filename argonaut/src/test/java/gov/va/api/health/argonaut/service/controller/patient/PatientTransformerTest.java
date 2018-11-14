@@ -12,19 +12,23 @@ import gov.va.api.health.argonaut.api.HumanName;
 import gov.va.api.health.argonaut.api.Identifier;
 import gov.va.api.health.argonaut.api.Reference;
 import gov.va.api.health.argonaut.service.controller.Transformers;
-import gov.va.dvp.cdw.xsd.pojos.AdministrativeGenderCodes;
-import gov.va.dvp.cdw.xsd.pojos.BirthSexCodes;
-import gov.va.dvp.cdw.xsd.pojos.BirthsexExtension;
-import gov.va.dvp.cdw.xsd.pojos.ContactPointSystemCodes;
-import gov.va.dvp.cdw.xsd.pojos.ContactPointUseCodes;
-import gov.va.dvp.cdw.xsd.pojos.Extensions;
-import gov.va.dvp.cdw.xsd.pojos.IdentifierUseCodes;
-import gov.va.dvp.cdw.xsd.pojos.MaritalStatusCodes;
-import gov.va.dvp.cdw.xsd.pojos.MaritalStatusSystems;
-import gov.va.dvp.cdw.xsd.pojos.Patient103Root;
-import gov.va.dvp.cdw.xsd.pojos.Patient103Root.Patients.Patient;
-import gov.va.dvp.cdw.xsd.pojos.PatientContactRelationshipCodes;
-import gov.va.dvp.cdw.xsd.pojos.PatientContactRelationshipSystem;
+import gov.va.dvp.cdw.xsd.model.CdwAdministrativeGenderCodes;
+import gov.va.dvp.cdw.xsd.model.CdwBirthSexCodes;
+import gov.va.dvp.cdw.xsd.model.CdwBirthsexExtension;
+import gov.va.dvp.cdw.xsd.model.CdwContactPointSystemCodes;
+import gov.va.dvp.cdw.xsd.model.CdwContactPointUseCodes;
+import gov.va.dvp.cdw.xsd.model.CdwExtensions;
+import gov.va.dvp.cdw.xsd.model.CdwExtensions.CdwExtension;
+import gov.va.dvp.cdw.xsd.model.CdwIdentifierUseCodes;
+import gov.va.dvp.cdw.xsd.model.CdwMaritalStatusCodes;
+import gov.va.dvp.cdw.xsd.model.CdwMaritalStatusSystems;
+import gov.va.dvp.cdw.xsd.model.CdwPatient103Root.CdwPatients.CdwPatient;
+import gov.va.dvp.cdw.xsd.model.CdwPatient103Root.CdwPatients.CdwPatient.CdwAddresses;
+import gov.va.dvp.cdw.xsd.model.CdwPatient103Root.CdwPatients.CdwPatient.CdwAddresses.CdwAddress;
+import gov.va.dvp.cdw.xsd.model.CdwPatient103Root.CdwPatients.CdwPatient.CdwContacts;
+import gov.va.dvp.cdw.xsd.model.CdwPatient103Root.CdwPatients.CdwPatient.CdwContacts.CdwContact;
+import gov.va.dvp.cdw.xsd.model.CdwPatientContactRelationshipCodes;
+import gov.va.dvp.cdw.xsd.model.CdwPatientContactRelationshipSystem;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -102,23 +106,23 @@ public class PatientTransformerTest {
   }
 
   @Test
-  public void argoPatientExtensionsMissingTransformsToEmptyExtensionList() {
-    List<Extension> testPatientExtensions =
+  public void argoPatientCdwExtensionsMissingTransformsToEmptyExtensionList() {
+    List<Extension> testPatientCdwExtensions =
         transformer().extensions(Optional.empty(), Optional.empty(), Optional.empty());
-    List<Extension> expectedPatientExtensions = new LinkedList<>();
-    assertThat(testPatientExtensions).isEqualTo(expectedPatientExtensions);
+    List<Extension> expectedPatientCdwExtensions = new LinkedList<>();
+    assertThat(testPatientCdwExtensions).isEqualTo(expectedPatientCdwExtensions);
   }
 
   @Test
-  public void argoPatientExtensionsTransformToExtensionList() {
-    List<Extension> testPatientExtensions =
+  public void argoPatientCdwExtensionsTransformToExtensionList() {
+    List<Extension> testPatientCdwExtensions =
         transformer()
             .extensions(
                 transformer().argoRace(data.alivePatient().getArgoRace()),
                 transformer().argoEthnicity(data.alivePatient().getArgoEthnicity()),
                 transformer().argoBirthSex(data.alivePatient().getArgoBirthsex()));
-    List<Extension> expectedPatientExtensions = patient.alivePatient().extension();
-    assertThat(testPatientExtensions).isEqualTo(expectedPatientExtensions);
+    List<Extension> expectedPatientCdwExtensions = patient.alivePatient().extension();
+    assertThat(testPatientCdwExtensions).isEqualTo(expectedPatientCdwExtensions);
   }
 
   @Test
@@ -297,9 +301,9 @@ public class PatientTransformerTest {
 
   @Test
   public void maritalStatusTransformsToCodeableConcept() {
-    CodeableConcept testMaritalStatus = transformer().maritalStatus(data.maritalStatus());
-    CodeableConcept expectedMaritalStatus = patient.alivePatient().maritalStatus();
-    assertThat(testMaritalStatus).isEqualTo(expectedMaritalStatus);
+    CodeableConcept testCdwMaritalStatus = transformer().maritalStatus(data.maritalStatus());
+    CodeableConcept expectedCdwMaritalStatus = patient.alivePatient().maritalStatus();
+    assertThat(testCdwMaritalStatus).isEqualTo(expectedCdwMaritalStatus);
   }
 
   @Test
@@ -391,7 +395,7 @@ public class PatientTransformerTest {
       return gov.va.api.health.argonaut.api.Patient.builder()
           .resourceType("Patient")
           .id("123456789")
-          .extension(argoExtensions())
+          .extension(argoCdwExtensions())
           .identifier(identifier())
           .name(name())
           .telecom(telecom())
@@ -404,11 +408,11 @@ public class PatientTransformerTest {
           .build();
     }
 
-    List<Extension> argoExtensions() {
-      List<Extension> extensions = new ArrayList<>(3);
+    List<Extension> argoCdwExtensions() {
+      List<Extension> CdwExtensions = new ArrayList<>(3);
 
-      List<Extension> raceExtensions = new LinkedList<>();
-      raceExtensions.add(
+      List<Extension> raceCdwExtensions = new LinkedList<>();
+      raceCdwExtensions.add(
           Extension.builder()
               .url("ombTest")
               .valueCoding(
@@ -418,10 +422,10 @@ public class PatientTransformerTest {
                       .display("tester")
                       .build())
               .build());
-      raceExtensions.add(Extension.builder().url("text").valueString("tester").build());
+      raceCdwExtensions.add(Extension.builder().url("text").valueString("tester").build());
 
-      List<Extension> ethnicityExtensions = new LinkedList<>();
-      ethnicityExtensions.add(
+      List<Extension> ethnicityCdwExtensions = new LinkedList<>();
+      ethnicityCdwExtensions.add(
           Extension.builder()
               .url("ombTest")
               .valueCoding(
@@ -431,13 +435,17 @@ public class PatientTransformerTest {
                       .display("testa")
                       .build())
               .build());
-      ethnicityExtensions.add(Extension.builder().url("text").valueString("testa").build());
+      ethnicityCdwExtensions.add(Extension.builder().url("text").valueString("testa").build());
 
-      extensions.add(Extension.builder().url("http://test-race").extension(raceExtensions).build());
-      extensions.add(
-          Extension.builder().url("http://test-ethnicity").extension(ethnicityExtensions).build());
-      extensions.add(Extension.builder().url("http://test-birthsex").valueCode("M").build());
-      return extensions;
+      CdwExtensions.add(
+          Extension.builder().url("http://test-race").extension(raceCdwExtensions).build());
+      CdwExtensions.add(
+          Extension.builder()
+              .url("http://test-ethnicity")
+              .extension(ethnicityCdwExtensions)
+              .build());
+      CdwExtensions.add(Extension.builder().url("http://test-birthsex").valueCode("M").build());
+      return CdwExtensions;
     }
 
     List<Contact> contact() {
@@ -497,7 +505,7 @@ public class PatientTransformerTest {
     gov.va.api.health.argonaut.api.Patient deceasedPatient() {
       return gov.va.api.health.argonaut.api.Patient.builder()
           .id("123456789")
-          .extension(argoExtensions())
+          .extension(argoCdwExtensions())
           .identifier(identifier())
           .name(name())
           .telecom(telecom())
@@ -594,17 +602,22 @@ public class PatientTransformerTest {
       datatypeFactory = DatatypeFactory.newInstance();
     }
 
-    Patient103Root.Patients.Patient.Addresses addresses() {
+    CdwBirthsexExtension CdwBirthsexExtension() {
+      CdwBirthsexExtension testCdwBirthsexExtension = new CdwBirthsexExtension();
+      testCdwBirthsexExtension.setValueCode(CdwBirthSexCodes.M);
+      testCdwBirthsexExtension.setUrl("http://test-birthsex");
+      return testCdwBirthsexExtension;
+    }
 
-      Patient103Root.Patients.Patient.Addresses addresses =
-          new Patient103Root.Patients.Patient.Addresses();
+    CdwAddresses addresses() {
 
-      Patient103Root.Patients.Patient.Addresses.Address address =
-          new Patient103Root.Patients.Patient.Addresses.Address();
+      CdwAddresses addresses = new CdwAddresses();
+
+      CdwAddress address = new CdwAddress();
       address.setState("Missing*");
       addresses.getAddress().add(address);
 
-      address = new Patient103Root.Patients.Patient.Addresses.Address();
+      address = new CdwAddress();
       address.setStreetAddress1("1234 Test Road");
       address.setStreetAddress2("Testland");
       address.setStreetAddress3("Test POSTGRES");
@@ -613,7 +626,7 @@ public class PatientTransformerTest {
       address.setPostalCode("12345");
       addresses.getAddress().add(address);
 
-      address = new Patient103Root.Patients.Patient.Addresses.Address();
+      address = new CdwAddress();
       address.setStreetAddress1("9876 Fake Lane");
       address.setCity("Fooville");
       address.setState("Foolina");
@@ -623,30 +636,23 @@ public class PatientTransformerTest {
       return addresses;
     }
 
-    Patient alivePatient() {
-      Patient103Root.Patients.Patient patient = new Patient103Root.Patients.Patient();
+    CdwPatient alivePatient() {
+      CdwPatient patient = new CdwPatient();
       patient.setRowNumber(new BigInteger("1"));
       patient.setCdwId("123456789");
-      patient.getArgoRace().add(raceExtensions());
-      patient.getArgoEthnicity().add(ethnicityExtensions());
-      patient.setArgoBirthsex(birthSexExtension());
+      patient.getArgoRace().add(raceCdwExtensions());
+      patient.getArgoEthnicity().add(ethnicityCdwExtensions());
+      patient.setArgoBirthsex(CdwBirthsexExtension());
       patient.getIdentifier().add(identifier());
       patient.setName(name());
       patient.setTelecoms(telecoms());
       patient.setAddresses(addresses());
-      patient.setGender(AdministrativeGenderCodes.MALE);
+      patient.setGender(CdwAdministrativeGenderCodes.MALE);
       patient.setBirthDate(birthdate());
       patient.setDeceasedBoolean(false);
       patient.setMaritalStatus(maritalStatus());
       patient.setContacts(contacts());
       return patient;
-    }
-
-    BirthsexExtension birthSexExtension() {
-      BirthsexExtension testBirthSexExtension = new BirthsexExtension();
-      testBirthSexExtension.setValueCode(BirthSexCodes.M);
-      testBirthSexExtension.setUrl("http://test-birthsex");
-      return testBirthSexExtension;
     }
 
     @SneakyThrows
@@ -658,21 +664,18 @@ public class PatientTransformerTest {
       return birthdate;
     }
 
-    Patient103Root.Patients.Patient.Contacts contacts() {
-      Patient103Root.Patients.Patient.Contacts contacts =
-          new Patient103Root.Patients.Patient.Contacts();
+    CdwContacts contacts() {
+      CdwContacts contacts = new CdwContacts();
 
-      Patient103Root.Patients.Patient.Contacts.Contact contact1 =
-          new Patient103Root.Patients.Patient.Contacts.Contact();
+      CdwContact contact1 = new CdwContact();
 
-      Patient103Root.Patients.Patient.Contacts.Contact.Relationship relationship1 =
-          new Patient103Root.Patients.Patient.Contacts.Contact.Relationship();
+      CdwContact.CdwRelationship relationship1 = new CdwContact.CdwRelationship();
 
-      Patient103Root.Patients.Patient.Contacts.Contact.Relationship.Coding relationshipCoding1 =
-          new Patient103Root.Patients.Patient.Contacts.Contact.Relationship.Coding();
+      CdwContact.CdwRelationship.CdwCoding relationshipCoding1 =
+          new CdwContact.CdwRelationship.CdwCoding();
       relationshipCoding1.setSystem(
-          PatientContactRelationshipSystem.HTTP_HL_7_ORG_FHIR_PATIENT_CONTACT_RELATIONSHIP);
-      relationshipCoding1.setCode(PatientContactRelationshipCodes.EMERGENCY);
+          CdwPatientContactRelationshipSystem.HTTP_HL_7_ORG_FHIR_PATIENT_CONTACT_RELATIONSHIP);
+      relationshipCoding1.setCode(CdwPatientContactRelationshipCodes.EMERGENCY);
       relationshipCoding1.setDisplay("Emergency");
 
       relationship1.setCoding(relationshipCoding1);
@@ -690,17 +693,15 @@ public class PatientTransformerTest {
       contact1.setCountry("USA");
       contacts.getContact().add(contact1);
 
-      Patient103Root.Patients.Patient.Contacts.Contact contact2 =
-          new Patient103Root.Patients.Patient.Contacts.Contact();
+      CdwContact contact2 = new CdwContact();
 
-      Patient103Root.Patients.Patient.Contacts.Contact.Relationship relationship2 =
-          new Patient103Root.Patients.Patient.Contacts.Contact.Relationship();
+      CdwContact.CdwRelationship relationship2 = new CdwContact.CdwRelationship();
 
-      Patient103Root.Patients.Patient.Contacts.Contact.Relationship.Coding relationshipCoding2 =
-          new Patient103Root.Patients.Patient.Contacts.Contact.Relationship.Coding();
+      CdwContact.CdwRelationship.CdwCoding relationshipCoding2 =
+          new CdwContact.CdwRelationship.CdwCoding();
       relationshipCoding2.setSystem(
-          PatientContactRelationshipSystem.HTTP_HL_7_ORG_FHIR_PATIENT_CONTACT_RELATIONSHIP);
-      relationshipCoding2.setCode(PatientContactRelationshipCodes.EMERGENCY);
+          CdwPatientContactRelationshipSystem.HTTP_HL_7_ORG_FHIR_PATIENT_CONTACT_RELATIONSHIP);
+      relationshipCoding2.setCode(CdwPatientContactRelationshipCodes.EMERGENCY);
       relationshipCoding2.setDisplay("Emergency");
 
       relationship2.setCoding(relationshipCoding2);
@@ -721,8 +722,8 @@ public class PatientTransformerTest {
       return contacts;
     }
 
-    Patient deadPatient() {
-      Patient103Root.Patients.Patient patient = new Patient103Root.Patients.Patient();
+    CdwPatient deadPatient() {
+      CdwPatient patient = new CdwPatient();
       patient.setDeceasedBoolean(true);
       patient.setDeceasedDateTime(deceasedDateTime());
       return patient;
@@ -736,14 +737,14 @@ public class PatientTransformerTest {
       return deceasedDate;
     }
 
-    Extensions ethnicityExtensions() {
-      Extensions extensions = new Extensions();
+    CdwExtensions ethnicityCdwExtensions() {
+      CdwExtensions extensions = new CdwExtensions();
       extensions.setUrl("http://test-ethnicity");
 
-      Extensions.Extension extension1 = new Extensions.Extension();
+      CdwExtension extension1 = new CdwExtension();
       extension1.setUrl("ombTest");
 
-      Extensions.Extension.ValueCoding valueCoding = new Extensions.Extension.ValueCoding();
+      CdwExtension.CdwValueCoding valueCoding = new CdwExtension.CdwValueCoding();
       valueCoding.setSystem("http://test-ethnicity");
       valueCoding.setCode("3THN1C1TY");
       valueCoding.setDisplay("testa");
@@ -751,7 +752,7 @@ public class PatientTransformerTest {
 
       extensions.getExtension().add(extension1);
 
-      Extensions.Extension extension2 = new Extensions.Extension();
+      CdwExtension extension2 = new CdwExtension();
       extension2.setUrl("text");
       extension2.setValueString("testa");
 
@@ -759,42 +760,37 @@ public class PatientTransformerTest {
       return extensions;
     }
 
-    Patient103Root.Patients.Patient.Identifier identifier() {
-      Patient103Root.Patients.Patient.Identifier identifier =
-          new Patient103Root.Patients.Patient.Identifier();
-      identifier.setUse(IdentifierUseCodes.USUAL);
-      Patient103Root.Patients.Patient.Identifier.Type type =
-          new Patient103Root.Patients.Patient.Identifier.Type();
-      Patient103Root.Patients.Patient.Identifier.Type.Coding coding =
-          new Patient103Root.Patients.Patient.Identifier.Type.Coding();
+    CdwPatient.CdwIdentifier identifier() {
+      CdwPatient.CdwIdentifier identifier = new CdwPatient.CdwIdentifier();
+      identifier.setUse(CdwIdentifierUseCodes.USUAL);
+      CdwPatient.CdwIdentifier.CdwType type = new CdwPatient.CdwIdentifier.CdwType();
+      CdwPatient.CdwIdentifier.CdwType.CdwCoding coding =
+          new CdwPatient.CdwIdentifier.CdwType.CdwCoding();
       coding.setSystem("http://test-code");
       coding.setCode("C0D3");
       type.getCoding().add(coding);
       identifier.setType(type);
       identifier.setSystem("http://test-system");
       identifier.setValue("123456789");
-      Patient103Root.Patients.Patient.Identifier.Assigner assigner =
-          new Patient103Root.Patients.Patient.Identifier.Assigner();
+      CdwPatient.CdwIdentifier.CdwAssigner assigner = new CdwPatient.CdwIdentifier.CdwAssigner();
       assigner.setDisplay("tester-test-index");
       identifier.setAssigner(assigner);
       return identifier;
     }
 
-    Patient103Root.Patients.Patient.MaritalStatus maritalStatus() {
-      Patient103Root.Patients.Patient.MaritalStatus maritalStatus =
-          new Patient103Root.Patients.Patient.MaritalStatus();
+    CdwPatient.CdwMaritalStatus maritalStatus() {
+      CdwPatient.CdwMaritalStatus maritalStatus = new CdwPatient.CdwMaritalStatus();
       maritalStatus.setText("testMarriage");
-      Patient103Root.Patients.Patient.MaritalStatus.Coding coding =
-          new Patient103Root.Patients.Patient.MaritalStatus.Coding();
-      coding.setSystem(MaritalStatusSystems.HTTP_HL_7_ORG_FHIR_MARITAL_STATUS);
-      coding.setCode(MaritalStatusCodes.M);
+      CdwPatient.CdwMaritalStatus.CdwCoding coding = new CdwPatient.CdwMaritalStatus.CdwCoding();
+      coding.setSystem(CdwMaritalStatusSystems.HTTP_HL_7_ORG_FHIR_MARITAL_STATUS);
+      coding.setCode(CdwMaritalStatusCodes.M);
       coding.setDisplay("Married");
       maritalStatus.getCoding().add(coding);
       return maritalStatus;
     }
 
-    Patient103Root.Patients.Patient.Name name() {
-      Patient103Root.Patients.Patient.Name name = new Patient103Root.Patients.Patient.Name();
+    CdwPatient.CdwName name() {
+      CdwPatient.CdwName name = new CdwPatient.CdwName();
       name.setUse("usual");
       name.setText("FOOMAN FOO");
       name.setFamily("FOO");
@@ -802,45 +798,42 @@ public class PatientTransformerTest {
       return name;
     }
 
-    Extensions raceExtensions() {
-      Extensions extensions = new Extensions();
-      extensions.setUrl("http://test-race");
+    CdwExtensions raceCdwExtensions() {
+      CdwExtensions CdwExtensions = new CdwExtensions();
+      CdwExtensions.setUrl("http://test-race");
 
-      Extensions.Extension extension1 = new Extensions.Extension();
+      CdwExtension extension1 = new CdwExtension();
       extension1.setUrl("ombTest");
 
-      Extensions.Extension.ValueCoding valueCoding = new Extensions.Extension.ValueCoding();
+      CdwExtension.CdwValueCoding valueCoding = new CdwExtension.CdwValueCoding();
       valueCoding.setSystem("http://test-race");
       valueCoding.setCode("R4C3");
       valueCoding.setDisplay("tester");
       extension1.setValueCoding(valueCoding);
 
-      extensions.getExtension().add(extension1);
+      CdwExtensions.getExtension().add(extension1);
 
-      Extensions.Extension extension2 = new Extensions.Extension();
+      CdwExtension extension2 = new CdwExtension();
       extension2.setUrl("text");
       extension2.setValueString("tester");
 
-      extensions.getExtension().add(extension2);
-      return extensions;
+      CdwExtensions.getExtension().add(extension2);
+      return CdwExtensions;
     }
 
-    Patient103Root.Patients.Patient.Telecoms telecoms() {
-      Patient103Root.Patients.Patient.Telecoms testTelecoms =
-          new Patient103Root.Patients.Patient.Telecoms();
+    CdwPatient.CdwTelecoms telecoms() {
+      CdwPatient.CdwTelecoms testTelecoms = new CdwPatient.CdwTelecoms();
 
-      Patient103Root.Patients.Patient.Telecoms.Telecom telecom1 =
-          new Patient103Root.Patients.Patient.Telecoms.Telecom();
-      telecom1.setSystem(ContactPointSystemCodes.PHONE);
+      CdwPatient.CdwTelecoms.CdwTelecom telecom1 = new CdwPatient.CdwTelecoms.CdwTelecom();
+      telecom1.setSystem(CdwContactPointSystemCodes.PHONE);
       telecom1.setValue("9998886666");
-      telecom1.setUse(ContactPointUseCodes.HOME);
+      telecom1.setUse(CdwContactPointUseCodes.HOME);
       testTelecoms.getTelecom().add(telecom1);
 
-      Patient103Root.Patients.Patient.Telecoms.Telecom telecom2 =
-          new Patient103Root.Patients.Patient.Telecoms.Telecom();
-      telecom2.setSystem(ContactPointSystemCodes.PHONE);
+      CdwPatient.CdwTelecoms.CdwTelecom telecom2 = new CdwPatient.CdwTelecoms.CdwTelecom();
+      telecom2.setSystem(CdwContactPointSystemCodes.PHONE);
       telecom2.setValue("1112224444");
-      telecom2.setUse(ContactPointUseCodes.WORK);
+      telecom2.setUse(CdwContactPointUseCodes.WORK);
       testTelecoms.getTelecom().add(telecom2);
       return testTelecoms;
     }
