@@ -105,52 +105,94 @@ public class PatientController {
         count,
         servletRequest);
   }
-  //
-  //  /** Search by Given+Gender. */
-  //  @GetMapping(params = {"given", "gender"})
-  //  public Patient.Bundle searchByGivenAndGender(
-  //      @RequestParam("given") String given, @RequestParam("gender") String gender) {
-  //    MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-  //    params.put("given", Arrays.asList(given));
-  //    params.put("gender", Arrays.asList(gender));
-  //    return bundler.apply(search(params));
-  //  }
-  //
-  //  /** Search by _id. */
-  //  @GetMapping(params = {"_id"})
-  //  public Patient.Bundle searchById(@RequestParam("_id") String id) {
-  //    MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-  //    params.put("_id", Arrays.asList(id));
-  //    return bundler.apply(search(params));
-  //  }
-  //
-  //  /** Search by Identifier. */
-  //  @GetMapping(params = {"identifier"})
-  //  public Patient.Bundle searchByIdentifier(@RequestParam("identifier") String identifier) {
-  //    MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-  //    params.put("identifier", Arrays.asList(identifier));
-  //    return bundler.apply(search(params));
-  //  }
-  //
-  //  /** Search by Name+Birthdate. */
-  //  @GetMapping(params = {"name", "birthdate"})
-  //  public Patient.Bundle searchByNameAndBirthdate(
-  //      @RequestParam("name") String name, @RequestParam("birthdate") String[] birthdate) {
-  //    MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-  //    params.put("name", Arrays.asList(name));
-  //    params.put("birthdate", Arrays.asList(birthdate));
-  //    return bundler.apply(search(params));
-  //  }
-  //
-  //  /** Search by Name+Gender. */
-  //  @GetMapping(params = {"name", "gender"})
-  //  public Patient.Bundle searchByNameAndGender(
-  //      @RequestParam("name") String name, @RequestParam("gender") String gender) {
-  //    MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-  //    params.put("name", Arrays.asList(name));
-  //    params.put("gender", Arrays.asList(gender));
-  //    return bundler.apply(search(params));
-  //  }
+
+  /** Search by Given+Gender. */
+  @GetMapping(params = {"given", "gender"})
+  public Patient.Bundle searchByGivenAndGender(
+      @RequestParam("given") String given,
+      @RequestParam("gender") String gender,
+      @RequestParam(value = "page", defaultValue = "1") int page,
+      @RequestParam(value = "_count", defaultValue = "15") int count,
+      HttpServletRequest servletRequest) {
+    return bundle(
+        Parameters.builder()
+            .add("given", given)
+            .add("gender", gender)
+            .add("page", page)
+            .add("_count", count)
+            .build(),
+        page,
+        count,
+        servletRequest);
+  }
+
+  /** Search by _id. */
+  @GetMapping(params = {"_id"})
+  public Patient.Bundle searchById(
+      @RequestParam("_id") String id,
+      @RequestParam(value = "page", defaultValue = "1") int page,
+      @RequestParam(value = "_count", defaultValue = "15") int count,
+      HttpServletRequest servletRequest) {
+    return bundle(
+        Parameters.builder().add("_id", id).add("page", page).add("_count", count).build(),
+        page,
+        count,
+        servletRequest);
+  }
+
+  /** Search by Identifier. */
+  @GetMapping(params = {"identifier"})
+  public Patient.Bundle searchByIdentifier(
+      @RequestParam("identifier") String id,
+      @RequestParam(value = "page", defaultValue = "1") int page,
+      @RequestParam(value = "_count", defaultValue = "15") int count,
+      HttpServletRequest servletRequest) {
+    return bundle(
+        Parameters.builder().add("identifier", id).add("page", page).add("_count", count).build(),
+        page,
+        count,
+        servletRequest);
+  }
+
+  /** Search by Name+Birthdate. */
+  @GetMapping(params = {"name", "birthdate"})
+  public Patient.Bundle searchByNameAndBirthdate(
+      @RequestParam("name") String name,
+      @RequestParam("birthdate") String[] birthdate,
+      @RequestParam(value = "page", defaultValue = "1") int page,
+      @RequestParam(value = "_count", defaultValue = "15") int count,
+      HttpServletRequest servletRequest) {
+    return bundle(
+        Parameters.builder()
+            .add("name", name)
+            .addAll("birthdate", birthdate)
+            .add("page", page)
+            .add("_count", count)
+            .build(),
+        page,
+        count,
+        servletRequest);
+  }
+
+  /** Search by Name+Gender. */
+  @GetMapping(params = {"name", "gender"})
+  public Patient.Bundle searchByNameAndGender(
+      @RequestParam("name") String name,
+      @RequestParam("gender") String gender,
+      @RequestParam(value = "page", defaultValue = "1") int page,
+      @RequestParam(value = "_count", defaultValue = "15") int count,
+      HttpServletRequest servletRequest) {
+    return bundle(
+        Parameters.builder()
+            .add("name", name)
+            .addAll("gender", gender)
+            .add("page", page)
+            .add("_count", count)
+            .build(),
+        page,
+        count,
+        servletRequest);
+  }
 
   public interface Transformer extends Function<CdwPatient, Patient> {}
 }

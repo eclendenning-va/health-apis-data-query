@@ -116,4 +116,56 @@ public class PatientControllerTest {
             .add("_count", 10)
             .build());
   }
+
+  @Test
+  public void searchByGivenAndGender() {
+    assertSearch(
+        () -> controller.searchByGivenAndGender("f", "g", 1, 10, servletRequest),
+        Parameters.builder()
+            .add("given", "f")
+            .add("gender", "g")
+            .add("page", 1)
+            .add("_count", 10)
+            .build());
+  }
+
+  @Test
+  public void searchById() {
+    assertSearch(
+        () -> controller.searchById("me", 1, 10, servletRequest),
+        Parameters.builder().add("_id", "me").add("page", 1).add("_count", 10).build());
+  }
+
+  @Test
+  public void searchByIdentifier() {
+    assertSearch(
+        () -> controller.searchByIdentifier("me", 1, 10, servletRequest),
+        Parameters.builder().add("identifier", "me").add("page", 1).add("_count", 10).build());
+  }
+
+  @Test
+  public void searchByNameAndBirthdate() {
+    assertSearch(
+        () ->
+            controller.searchByNameAndBirthdate(
+                "me", new String[] {"1975", "2005"}, 1, 10, servletRequest),
+        Parameters.builder()
+            .add("name", "me")
+            .addAll("birthdate", "1975", "2005")
+            .add("page", 1)
+            .add("_count", 10)
+            .build());
+  }
+
+  @Test
+  public void searchByNameAndGender() {
+    assertSearch(
+        () -> controller.searchByNameAndGender("f", "g", 1, 10, servletRequest),
+        Parameters.builder()
+            .add("name", "f")
+            .add("gender", "g")
+            .add("page", 1)
+            .add("_count", 10)
+            .build());
+  }
 }
