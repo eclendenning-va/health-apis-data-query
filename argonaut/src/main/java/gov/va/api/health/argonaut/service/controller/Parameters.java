@@ -27,6 +27,11 @@ public class Parameters {
     params.add(key, value);
     return this;
   }
+  /** Add a single key/value entry. */
+  public Parameters add(String key, int value) {
+    params.add(key, String.valueOf(value));
+    return this;
+  }
 
   /** Add a repeated key/value entry, where multiple values are associated to the given key. */
   public Parameters addAll(String key, List<String> values) {

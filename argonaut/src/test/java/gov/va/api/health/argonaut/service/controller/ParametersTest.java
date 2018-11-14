@@ -14,7 +14,7 @@ public class ParametersTest {
     MultiValueMap<String, String> expected = new LinkedMultiValueMap<>();
     expected.put("a", Arrays.asList("1", "2"));
     expected.set("b", "3");
-    assertThat(Parameters.builder().add("a", "1").add("a", "2").add("b", "3").build())
+    assertThat(Parameters.builder().add("a", "1").add("a", "2").add("b", 3).build())
         .isEqualTo(expected);
   }
 
