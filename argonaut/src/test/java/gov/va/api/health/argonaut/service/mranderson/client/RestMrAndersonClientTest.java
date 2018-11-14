@@ -9,7 +9,7 @@ import gov.va.api.health.argonaut.service.mranderson.client.MrAndersonClient.Bad
 import gov.va.api.health.argonaut.service.mranderson.client.MrAndersonClient.NotFound;
 import gov.va.api.health.argonaut.service.mranderson.client.MrAndersonClient.SearchFailed;
 import gov.va.api.health.argonaut.service.mranderson.client.Query.Profile;
-import gov.va.dvp.cdw.xsd.pojos.Patient103Root;
+import gov.va.dvp.cdw.xsd.model.CdwPatient103Root;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -45,7 +45,7 @@ public class RestMrAndersonClientTest {
     client.search(query());
   }
 
-  private void mockResponse(HttpStatus status, Patient103Root body) {
+  private void mockResponse(HttpStatus status, CdwPatient103Root body) {
     ResponseEntity response = mock(ResponseEntity.class);
     when(response.getStatusCode()).thenReturn(status);
     when(response.getBody()).thenReturn(body);
@@ -64,8 +64,8 @@ public class RestMrAndersonClientTest {
     client.search(query());
   }
 
-  private Query<Patient103Root> query() {
-    return Query.forType(Patient103Root.class)
+  private Query<CdwPatient103Root> query() {
+    return Query.forType(CdwPatient103Root.class)
         .resource("Patient")
         .profile(Profile.ARGONAUT)
         .version("123")
@@ -82,9 +82,9 @@ public class RestMrAndersonClientTest {
 
   @Test
   public void searchFailedIsThrownForNonOkStatus() {
-    Patient103Root root = new Patient103Root();
+    CdwPatient103Root root = new CdwPatient103Root();
     mockResponse(HttpStatus.OK, root);
-    Patient103Root actual = client.search(query());
+    CdwPatient103Root actual = client.search(query());
     assertThat(actual).isSameAs(root);
     query().hashCode();
     query().equals(query());

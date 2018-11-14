@@ -12,8 +12,9 @@ import gov.va.api.health.argonaut.service.controller.PageLinks.LinkConfig;
 import gov.va.api.health.argonaut.service.controller.Parameters;
 import gov.va.api.health.argonaut.service.mranderson.client.MrAndersonClient;
 import gov.va.api.health.argonaut.service.mranderson.client.Query;
-import gov.va.dvp.cdw.xsd.pojos.Patient103Root;
-import gov.va.dvp.cdw.xsd.pojos.Patient103Root.Patients;
+import gov.va.dvp.cdw.xsd.model.CdwPatient103Root;
+import gov.va.dvp.cdw.xsd.model.CdwPatient103Root.CdwPatients;
+import gov.va.dvp.cdw.xsd.model.CdwPatient103Root.CdwPatients.CdwPatient;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map.Entry;
@@ -43,14 +44,14 @@ public class PatientControllerTest {
   }
 
   private void assertSearch(Supplier<Bundle> invocation, MultiValueMap<String, String> params) {
-    Patient103Root root = new Patient103Root();
+    CdwPatient103Root root = new CdwPatient103Root();
     root.setPageNumber(1);
     root.setRecordsPerPage(10);
     root.setRecordCount(3);
-    root.setPatients(new Patients());
-    Patient103Root.Patients.Patient xmlPatient1 = new Patient103Root.Patients.Patient();
-    Patient103Root.Patients.Patient xmlPatient2 = new Patient103Root.Patients.Patient();
-    Patient103Root.Patients.Patient xmlPatient3 = new Patient103Root.Patients.Patient();
+    root.setPatients(new CdwPatients());
+    CdwPatient xmlPatient1 = new CdwPatient();
+    CdwPatient xmlPatient2 = new CdwPatient();
+    CdwPatient xmlPatient3 = new CdwPatient();
     root.getPatients().getPatient().addAll(Arrays.asList(xmlPatient1, xmlPatient2, xmlPatient3));
     Patient patient1 = Patient.builder().build();
     Patient patient2 = Patient.builder().build();
@@ -67,9 +68,8 @@ public class PatientControllerTest {
     Bundle actual = invocation.get();
 
     assertThat(actual).isSameAs(mockBundle);
-    ArgumentCaptor<
-            BundleContext<Patient103Root.Patients.Patient, Patient, Patient.Entry, Patient.Bundle>>
-        captor = ArgumentCaptor.forClass(BundleContext.class);
+    ArgumentCaptor<BundleContext<CdwPatient, Patient, Patient.Entry, Patient.Bundle>> captor =
+        ArgumentCaptor.forClass(BundleContext.class);
 
     verify(bundler).bundle(captor.capture());
 
@@ -90,16 +90,16 @@ public class PatientControllerTest {
 
   @Test
   public void read() {
-    Patient103Root root = new Patient103Root();
-    root.setPatients(new Patients());
-    Patient103Root.Patients.Patient xmlPatient = new Patient103Root.Patients.Patient();
+    CdwPatient103Root root = new CdwPatient103Root();
+    root.setPatients(new CdwPatients());
+    CdwPatient xmlPatient = new CdwPatient();
     root.getPatients().getPatient().add(xmlPatient);
     Patient patient = Patient.builder().build();
     when(client.search(Mockito.any())).thenReturn(root);
     when(tx.apply(xmlPatient)).thenReturn(patient);
     Patient actual = controller.read("hello");
     assertThat(actual).isSameAs(patient);
-    ArgumentCaptor<Query<Patient103Root>> captor = ArgumentCaptor.forClass(Query.class);
+    ArgumentCaptor<Query<CdwPatient103Root>> captor = ArgumentCaptor.forClass(Query.class);
     verify(client).search(captor.capture());
     Entry<? extends String, ? extends List<String>> e;
     assertThat(captor.getValue().parameters()).isEqualTo(Parameters.forIdentity("hello"));

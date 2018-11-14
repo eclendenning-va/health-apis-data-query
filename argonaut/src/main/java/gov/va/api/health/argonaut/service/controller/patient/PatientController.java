@@ -11,7 +11,8 @@ import gov.va.api.health.argonaut.service.controller.PageLinks.LinkConfig;
 import gov.va.api.health.argonaut.service.controller.Parameters;
 import gov.va.api.health.argonaut.service.mranderson.client.MrAndersonClient;
 import gov.va.api.health.argonaut.service.mranderson.client.Query;
-import gov.va.dvp.cdw.xsd.pojos.Patient103Root;
+import gov.va.dvp.cdw.xsd.model.CdwPatient103Root;
+import gov.va.dvp.cdw.xsd.model.CdwPatient103Root.CdwPatients.CdwPatient;
 import java.util.function.Function;
 import javax.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
@@ -31,8 +32,9 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping(
-    value = {"/api/Patient"},
-    produces = {"application/json"})
+  value = {"/api/Patient"},
+  produces = {"application/json"}
+)
 @AllArgsConstructor(onConstructor = @__({@Autowired}))
 @Slf4j
 public class PatientController {
@@ -46,7 +48,7 @@ public class PatientController {
       int page,
       int count,
       HttpServletRequest servletRequest) {
-    Patient103Root root = search(parameters);
+    CdwPatient103Root root = search(parameters);
     LinkConfig linkConfig =
         LinkConfig.builder()
             .path(servletRequest.getRequestURI())
@@ -72,9 +74,9 @@ public class PatientController {
             hasPayload(search(Parameters.forIdentity(publicId)).getPatients()).getPatient()));
   }
 
-  private Patient103Root search(MultiValueMap<String, String> params) {
-    Query<Patient103Root> query =
-        Query.forType(Patient103Root.class)
+  private CdwPatient103Root search(MultiValueMap<String, String> params) {
+    Query<CdwPatient103Root> query =
+        Query.forType(CdwPatient103Root.class)
             .profile(Query.Profile.ARGONAUT)
             .resource("Patient")
             .version("1.03")
@@ -150,5 +152,5 @@ public class PatientController {
   //    return bundler.apply(search(params));
   //  }
 
-  public interface Transformer extends Function<Patient103Root.Patients.Patient, Patient> {}
+  public interface Transformer extends Function<CdwPatient, Patient> {}
 }
