@@ -8,7 +8,6 @@ import io.restassured.http.Method;
 import io.restassured.response.Response;
 import io.restassured.response.ResponseBody;
 import java.util.function.Supplier;
-import javax.ws.rs.NotSupportedException;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
@@ -77,12 +76,17 @@ public class FhirTestClient implements TestClient {
     return service()
         .requestSpecification()
         .contentType(contentType)
-        .request()
         .request(Method.GET, path, params);
   }
 
   @Override
   public ExpectedResponse post(String path, Object body) {
-    throw new NotSupportedException();
+    return ExpectedResponse.of(
+        service()
+            .requestSpecification()
+            .contentType("application/fhir+json")
+            .accept("application/fhir+json")
+            .body(body)
+            .request(Method.POST, path));
   }
 }

@@ -356,7 +356,7 @@ public class PatientTransformerTest {
     return new PatientTransformer();
   }
 
-  private static class PatientSampleData {
+  static class PatientSampleData {
 
     private DatatypeFactory datatypeFactory;
 
