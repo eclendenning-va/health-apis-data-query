@@ -25,9 +25,8 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping(
-  value = {"/api/Medication"},
-  produces = {"application/json"}
-)
+    value = {"/api/Medication"},
+    produces = {"application/json", "application/json+fhir", "application/fhir+json"})
 @AllArgsConstructor(onConstructor = @__({@Autowired}))
 @Slf4j
 public class MedicationController {
