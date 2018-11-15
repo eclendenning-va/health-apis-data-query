@@ -10,7 +10,7 @@ testing tool.
 
 Enhancing Agent Smith is easiest through the GUI client of JMeter.
 
-![JMeter GUI](src/main/resources/jmeter-gui.png)
+![JMeter GUI](src/main/resources/jmeter-gui.PNG)
 
 
 ## Running
@@ -21,10 +21,10 @@ Enhancing Agent Smith is easiest through the GUI client of JMeter.
 
 3. From the same directory, run the docker image with: `docker run performance-test`
 
-![JMeter Docker Run](src/main/resources/docker-run)
+![JMeter Docker Run](src/main/resources/docker-run.PNG)
 
 4. Depending on the number of threads and the `max.depth` property, this may take quite a while.  Once completed, run a `docker ps`, identify the `CONTAINER ID` and run `docker cp {container_id}:/tmp/target/ ./{desired_local_path}`
 
 5. Open the ~/target/jmeter/reports/Agent-Smith_{run-date-time}/index.html for a graphical report and ~/target/jmeter/results/{date}-Agent-Smith
 
-![JMeter Results](src/main/resources/jmeter-results)
+![JMeter Results](src/main/resources/jmeter-results.PNG)
