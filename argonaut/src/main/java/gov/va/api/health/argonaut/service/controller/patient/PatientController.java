@@ -3,6 +3,12 @@ package gov.va.api.health.argonaut.service.controller.patient;
 import static gov.va.api.health.argonaut.service.controller.Transformers.firstPayloadItem;
 import static gov.va.api.health.argonaut.service.controller.Transformers.hasPayload;
 
+import gov.va.api.health.argonaut.api.CodeableConcept;
+import gov.va.api.health.argonaut.api.Issue;
+import gov.va.api.health.argonaut.api.Issue.IssueSeverity;
+import gov.va.api.health.argonaut.api.Narrative;
+import gov.va.api.health.argonaut.api.Narrative.NarrativeStatus;
+import gov.va.api.health.argonaut.api.OperationOutcome;
 import gov.va.api.health.argonaut.api.Patient;
 import gov.va.api.health.argonaut.api.Patient.Bundle;
 import gov.va.api.health.argonaut.service.controller.Bundler;
@@ -14,14 +20,20 @@ import gov.va.api.health.argonaut.service.mranderson.client.Query;
 import gov.va.dvp.cdw.xsd.model.CdwPatient103Root;
 import gov.va.dvp.cdw.xsd.model.CdwPatient103Root.CdwPatients.CdwPatient;
 import java.util.Collections;
+import java.util.Set;
 import java.util.function.Function;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import javax.validation.Validation;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -193,6 +205,36 @@ public class PatientController {
         page,
         count,
         servletRequest);
+  }
+
+  /** Hey, this is a validate endpoint. It validates. */
+  @PostMapping(
+    value = "/$validate",
+    consumes = {"application/json", "application/json+fhir", "application/fhir+json"}
+  )
+  public OperationOutcome validate(@RequestBody Bundle bundle) {
+    Set<ConstraintViolation<Bundle>> violations =
+        Validation.buildDefaultValidatorFactory().getValidator().validate(bundle);
+    if (!violations.isEmpty()) {
+      throw new ConstraintViolationException("Bundle is not valid", violations);
+    }
+
+    return OperationOutcome.builder()
+        .resourceType("OperationOutcome")
+        .id("allok")
+        .text(
+            Narrative.builder()
+                .status(NarrativeStatus.additional)
+                .div("<div xmlns=\"http://www.w3.org/1999/xhtml\"><p>ALL OK</p></div>")
+                .build())
+        .issue(
+            Collections.singletonList(
+                Issue.builder()
+                    .severity(IssueSeverity.information)
+                    .code("informational")
+                    .details(CodeableConcept.builder().text("ALL OK").build())
+                    .build()))
+        .build();
   }
 
   public interface Transformer extends Function<CdwPatient, Patient> {}

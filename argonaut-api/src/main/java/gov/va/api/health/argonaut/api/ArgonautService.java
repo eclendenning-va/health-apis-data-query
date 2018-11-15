@@ -7,8 +7,11 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 
 @OpenAPIDefinition(
@@ -61,6 +64,25 @@ public interface ArgonautService {
   @ApiResponse(responseCode = "400", description = "Not found")
   @ApiResponse(responseCode = "404", description = "Bad request")
   Patient patientRead(@Parameter(in = ParameterIn.PATH, name = "id", required = true) String id);
+
+  @Operation(
+    summary = "Patient validate",
+    description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-patient.html"
+  )
+  @POST
+  @Consumes("application/fhir+json")
+  @Path("Patient/$validate")
+  @ApiResponse(
+    responseCode = "200",
+    description = "Record found",
+    content =
+        @Content(
+          mediaType = "application/fhir+json",
+          schema = @Schema(implementation = OperationOutcome.class)
+        )
+  )
+  @ApiResponse(responseCode = "404", description = "Bad request")
+  Patient patientRead(@RequestBody(required = true) Patient.Bundle bundle);
 
   @Operation(
     summary = "Patient search",

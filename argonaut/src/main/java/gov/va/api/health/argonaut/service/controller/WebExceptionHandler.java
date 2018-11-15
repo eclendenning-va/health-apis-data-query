@@ -9,10 +9,14 @@ import gov.va.api.health.argonaut.service.mranderson.client.MrAndersonClient.Bad
 import gov.va.api.health.argonaut.service.mranderson.client.MrAndersonClient.NotFound;
 import java.time.Instant;
 import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -28,7 +32,7 @@ import org.springframework.web.client.HttpClientErrorException;
 @Slf4j
 public class WebExceptionHandler {
 
-  @ExceptionHandler({BadRequest.class, javax.validation.ConstraintViolationException.class})
+  @ExceptionHandler({BadRequest.class, BindException.class})
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   public OperationOutcome handleBadRequest(Exception e, HttpServletRequest request) {
     return responseFor("structure", e, request);
@@ -46,10 +50,43 @@ public class WebExceptionHandler {
     return responseFor("exception", e, request);
   }
 
+  /**
+   * For constraint violation exceptions, we want to add a little more information in the exception
+   * to present what exactly is wrong. We will distill which properties are wrong and why, but we
+   * will not leak any values.
+   */
+  @ExceptionHandler(ConstraintViolationException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  public OperationOutcome handleValidationException(
+      ConstraintViolationException e, HttpServletRequest request) {
+    List<String> problems =
+        e.getConstraintViolations()
+            .stream()
+            .map(v -> v.getPropertyPath() + " " + v.getMessage())
+            .collect(Collectors.toList());
+
+    return responseFor("structure", e, request, problems);
+  }
+
   private OperationOutcome responseFor(String code, Exception e, HttpServletRequest request) {
+    return responseFor(code, e, request, Collections.emptyList());
+  }
+
+  private OperationOutcome responseFor(
+      String code, Exception e, HttpServletRequest request, List<String> problems) {
+
+    StringBuilder diagnostics = new StringBuilder();
+    diagnostics
+        .append("Error: ")
+        .append(e.getClass().getSimpleName())
+        .append(" Timestamp:")
+        .append(Instant.now());
+    problems.stream().forEach(p -> diagnostics.append('\n').append(p));
+
     OperationOutcome response =
         OperationOutcome.builder()
             .id(UUID.randomUUID().toString())
+            .resourceType("OperationOutcome")
             .text(
                 Narrative.builder()
                     .status(NarrativeStatus.additional)
@@ -60,11 +97,7 @@ public class WebExceptionHandler {
                     Issue.builder()
                         .severity(IssueSeverity.fatal)
                         .code(code)
-                        .diagnostics(
-                            "Error: "
-                                + e.getClass().getSimpleName()
-                                + " Timestamp:"
-                                + Instant.now())
+                        .diagnostics(diagnostics.toString())
                         .build()))
             .build();
     log.error("Response {}", response, e);
