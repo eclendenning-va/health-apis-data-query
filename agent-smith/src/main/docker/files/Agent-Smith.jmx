@@ -70,6 +70,11 @@
             <stringProp name="Argument.value">${__P(num.threads)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
+          <elementProp name="MAX_DEPTH" elementType="Argument">
+            <stringProp name="Argument.name">MAX_DEPTH</stringProp>
+            <stringProp name="Argument.value">${__P(max.depth)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
         </collectionProp>
         <stringProp name="TestPlan.comments">Disabled, instead reference properties defined in user.properties file</stringProp>
       </Arguments>
@@ -81,7 +86,7 @@
           <stringProp name="LoopController.loops">1</stringProp>
         </elementProp>
         <stringProp name="ThreadGroup.num_threads">${NUM_THREADS}</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">15</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">60</stringProp>
         <boolProp name="ThreadGroup.scheduler">false</boolProp>
         <stringProp name="ThreadGroup.duration"></stringProp>
         <stringProp name="ThreadGroup.delay"></stringProp>
@@ -554,7 +559,7 @@ vars.put(&quot;reference_list_size&quot;, String.valueOf(referenceList.size()));
           </hashTree>
         </hashTree>
         <WhileController guiclass="WhileControllerGui" testclass="WhileController" testname="While Controller" enabled="true">
-          <stringProp name="WhileController.condition">${__javaScript((${reference_list_size} &gt; 0 &amp;&amp; ${loop_count} &lt; 10),)}</stringProp>
+          <stringProp name="WhileController.condition">${__javaScript((${reference_list_size} &gt; 0 &amp;&amp; ${loop_count} &lt; ${MAX_DEPTH}),)}</stringProp>
           <stringProp name="TestPlan.comments">Loop count protects against cycles in the data</stringProp>
         </WhileController>
         <hashTree>

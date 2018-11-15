@@ -13,7 +13,7 @@ RUN apt-get clean && \
                 telnet \
                 iputils-ping \
                 unzip \
-				maven
+                maven
 
 # Install JMeter
 RUN   mkdir /jmeter \
