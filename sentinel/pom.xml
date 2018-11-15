@@ -71,9 +71,19 @@
     <dependency>
       <groupId>gov.va.dvp</groupId>
       <artifactId>cdw-schemas</artifactId>
-      <version>${cdw-schemas.version}</version>
+      <version>${cdw-schemas.version}</version><!-- defined in parent -->
       <classifier>samples</classifier>
       <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>org.mule.modules</groupId>
+          <artifactId>mule-module-objectstore</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.mulesoft.security</groupId>
+          <artifactId>mule-module-security-property-placeholder</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>io.rest-assured</groupId>
