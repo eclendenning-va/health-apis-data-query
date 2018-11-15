@@ -24,15 +24,15 @@ public class MedicationTransformerTest {
   private MedicationSampleData expectedMedication = new MedicationSampleData();
 
   @Test
-  public void codeReturnsNullForNull() {
-    assertThat(transformer().code(null)).isNull();
-  }
-
-  @Test
   public void codeCodingListTransformsToCodingList() {
     List<Coding> testCodingList = transformer().code(cdw.code()).coding();
     List<Coding> expectedCodingList = expectedMedication.code().coding();
     assertThat(testCodingList).isEqualTo(expectedCodingList);
+  }
+
+  @Test
+  public void codeReturnsNullForNull() {
+    assertThat(transformer().code(null)).isNull();
   }
 
   @Test
@@ -43,15 +43,15 @@ public class MedicationTransformerTest {
   }
 
   @Test
+  public void codingReturnsNullForNull() {
+    assertThat(transformer().coding(null)).isNull();
+  }
+
+  @Test
   public void medication101TransformsToModelMedication() {
     gov.va.api.health.argonaut.api.Medication test = transformer().apply(cdw.medication());
     gov.va.api.health.argonaut.api.Medication expected = expectedMedication.medication();
     assertThat(test).isEqualTo(expected);
-  }
-
-  @Test
-  public void productReturnsNullForNull() {
-    assertThat(transformer().product(null)).isNull();
   }
 
   @Test
@@ -71,8 +71,13 @@ public class MedicationTransformerTest {
   }
 
   @Test
-  public void codingReturnsNullForNull() {
-    assertThat(transformer().coding(null)).isNull();
+  public void productReturnsNullForNull() {
+    assertThat(transformer().product(null)).isNull();
+  }
+
+  @Test
+  public void textNarrativeIsNullIfTextIsNull() {
+    assertThat(transformer().text(null)).isNull();
   }
 
   @Test
@@ -81,11 +86,6 @@ public class MedicationTransformerTest {
         Narrative.builder().div("<div>hello</div>").status(NarrativeStatus.additional).build();
     Narrative actual = transformer().text("hello");
     assertThat(actual).isEqualTo(expected);
-  }
-
-  @Test
-  public void textNarrativeIsNullIfTextIsNull() {
-    assertThat(transformer().text(null)).isNull();
   }
 
   private MedicationTransformer transformer() {
@@ -153,13 +153,6 @@ public class MedicationTransformerTest {
       datatypeFactory = DatatypeFactory.newInstance();
     }
 
-    CdwCodeableConcept form() {
-      CdwCodeableConcept form = new CdwCodeableConcept();
-      form.getCoding().add(coding());
-      form.setText("form text test");
-      return form;
-    }
-
     CdwCodeableConcept code() {
       CdwCodeableConcept code = new CdwCodeableConcept();
       code.getCoding().add(coding());
@@ -175,11 +168,11 @@ public class MedicationTransformerTest {
       return coding;
     }
 
-    CdwProduct product() {
-      CdwProduct product = new CdwProduct();
-      product.setId("1234");
-      product.setForm(form());
-      return product;
+    CdwCodeableConcept form() {
+      CdwCodeableConcept form = new CdwCodeableConcept();
+      form.getCoding().add(coding());
+      form.setText("form text test");
+      return form;
     }
 
     CdwMedication medication() {
@@ -190,6 +183,13 @@ public class MedicationTransformerTest {
       medication.setCode(code());
       medication.setProduct(product());
       return medication;
+    }
+
+    CdwProduct product() {
+      CdwProduct product = new CdwProduct();
+      product.setId("1234");
+      product.setForm(form());
+      return product;
     }
   }
 }
