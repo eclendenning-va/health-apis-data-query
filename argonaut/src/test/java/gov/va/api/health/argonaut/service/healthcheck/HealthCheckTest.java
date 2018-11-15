@@ -1,5 +1,8 @@
 package gov.va.api.health.argonaut.service.healthcheck;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
+
 import gov.va.api.health.argonaut.api.Medication;
 import gov.va.api.health.argonaut.service.controller.Parameters;
 import gov.va.api.health.argonaut.service.mranderson.client.MrAndersonClient;
@@ -10,13 +13,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Status;
-
-import javax.validation.constraints.AssertTrue;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
 
 public class HealthCheckTest {
   @Mock MrAndersonClient client;
@@ -35,7 +32,7 @@ public class HealthCheckTest {
     root.getMedications().getMedication().add(xmlMedication);
     SteelThreadSystemCheck test = new SteelThreadSystemCheck(client, "123");
     when(client.search(Mockito.any())).thenReturn(root);
-      assertThat(test.health().getStatus().equals(Status.UP));
+    assertThat(test.health().getStatus().equals(Status.UP));
   }
 
   @Test

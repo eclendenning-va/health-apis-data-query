@@ -28,14 +28,17 @@ public class SteelThreadSystemCheck implements HealthIndicator {
   public Health health() {
     try {
       client.search(query());
-      return Health.up().withDetail("Status", "JArgonaut, MR-Anderson, IDS, and DB Stored Procedure all working as expected").build();
+      return Health.up()
+          .withDetail(
+              "Status",
+              "JArgonaut, MR-Anderson, IDS, and DB Stored Procedure all working as expected")
+          .build();
     } catch (MrAndersonClient.MrAndersonServiceException e) {
       return Health.down().withDetail("Error", e).build();
     } catch (Exception e) {
-      log.error("Failed to complete health check.",e);
+      log.error("Failed to complete health check.", e);
       throw e;
     }
-
   }
 
   private Query<CdwMedication101Root> query() {
