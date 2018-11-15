@@ -41,7 +41,7 @@ public class BundlerTest {
   }
 
   @Test
-  public void deleteme() {
+  public void bundlerBuildsGenericTypeBundle() {
 
     List<BundleLink> links =
         Collections.singletonList(
@@ -79,9 +79,6 @@ public class BundlerTest {
         bundler.bundle(
             BundleContext.of(
                 linkConfig, xmlItems, FUGAZIMUS_PRIME, FugaziEntry::new, FugaziBundle::new));
-    //    FugaziBundle actual = bundler.bundle(BundleContext.of(linkConfig, xmlItems));
-    //  ,
-    //  FUGAZIMUS_PRIME, FugaziEntry::new, FugaziBundle::new));
 
     assertThat(actual).isEqualTo(expected);
   }
