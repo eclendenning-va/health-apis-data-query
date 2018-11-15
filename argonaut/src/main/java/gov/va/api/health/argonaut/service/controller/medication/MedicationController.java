@@ -48,8 +48,8 @@ public class MedicationController {
     Query<CdwMedication101Root> query =
         Query.forType(CdwMedication101Root.class)
             .profile(Query.Profile.ARGONAUT)
-            .resource("Patient")
-            .version("1.03")
+            .resource("Medication")
+            .version("1.01")
             .parameters(params)
             .build();
     return mrAndersonClient.search(query);

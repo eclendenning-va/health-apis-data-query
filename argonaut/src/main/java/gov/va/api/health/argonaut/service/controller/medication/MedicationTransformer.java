@@ -68,7 +68,7 @@ public class MedicationTransformer implements MedicationController.Transformer {
     if (product == null) {
       return null;
     }
-    return Product.builder().id(product.getId()).form(productForm(product.getForm())).build();  
+    return Product.builder().id(product.getId()).form(productForm(product.getForm())).build();
   }
 
   CodeableConcept productForm(gov.va.dvp.cdw.xsd.model.CdwCodeableConcept productForm) {
