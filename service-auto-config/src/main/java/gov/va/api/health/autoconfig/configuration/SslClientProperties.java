@@ -32,8 +32,8 @@ import org.springframework.context.annotation.Configuration;
 @AllArgsConstructor
 public class SslClientProperties {
 
-  private boolean enableClient = true;
-  private boolean verify = true;
+  @Builder.Default private boolean enableClient = true;
+  @Builder.Default private boolean verify = true;
   private String keyStore;
   private String keyStorePassword;
   private String clientKeyPassword;

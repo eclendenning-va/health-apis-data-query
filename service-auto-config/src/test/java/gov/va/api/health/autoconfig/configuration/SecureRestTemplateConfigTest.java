@@ -111,7 +111,7 @@ public class SecureRestTemplateConfigTest {
         makeOne(
             SslClientProperties.builder()
                 .enableClient(true)
-                .verify(true)
+                .verify(false)
                 .clientKeyPassword("secret")
                 .keyStore("classpath:test-keystore.jks")
                 .keyStorePassword("secret")

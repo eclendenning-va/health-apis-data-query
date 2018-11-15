@@ -24,7 +24,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.Value;
 
 @Data
 @Builder
@@ -44,7 +43,7 @@ import lombok.Value;
     message = "Only one multiple birth value may be specified"
   )
 })
-public class Patient {
+public class Patient implements Resource {
 
   @Pattern(regexp = Fhir.ID)
   String id;
@@ -87,69 +86,6 @@ public class Patient {
   @Valid Reference managingOrganization;
   @Valid List<Link> link;
 
-  public enum Gender {
-    male,
-    female,
-    other,
-    unknown
-  }
-
-  @Value
-  @EqualsAndHashCode(callSuper = true)
-  @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-  @JsonDeserialize(builder = Patient.Bundle.BundleBuilder.class)
-  public static class Bundle extends AbstractBundle<Patient.Entry> {
-
-    @Builder
-    public Bundle(
-        @Pattern(regexp = Fhir.ID) String id,
-        @Valid Meta meta,
-        @Pattern(regexp = Fhir.URI) String implicitRules,
-        @Pattern(regexp = Fhir.CODE) String language,
-        @NotNull BundleType type,
-        @Min(0) Integer total,
-        @Valid List<BundleLink> link,
-        @Valid List<Entry> entry,
-        @Valid Signature signature) {
-      super(id, meta, implicitRules, language, type, total, link, entry, signature);
-    }
-  }
-
-  @Value
-  @EqualsAndHashCode(callSuper = true)
-  @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-  @JsonDeserialize(builder = Patient.Entry.EntryBuilder.class)
-  public static class Entry extends AbstractEntry<Patient> {
-
-    @Builder
-    public Entry(
-        @Pattern(regexp = Fhir.ID) String id,
-        @Valid List<Extension> extension,
-        @Valid List<Extension> modifierExtension,
-        @Valid List<BundleLink> link,
-        @Pattern(regexp = Fhir.URI) String fullUrl,
-        @Valid Patient resource,
-        @Valid Search search,
-        @Valid Request request,
-        @Valid Response response) {
-      super(id, extension, modifierExtension, link, fullUrl, resource, search, request, response);
-    }
-  }
-
-  @JsonIgnore
-  @AssertTrue(message = "Argo-Ethnicity extension is not valid")
-  private boolean isValidEthnicityExtension() {
-    return isValidArgonautExtensionCount(
-        "http://fhir.org/guides/argonaut/StructureDefinition/argo-ethnicity", 1);
-  }
-
-  @JsonIgnore
-  @AssertTrue(message = "Argo-Race extension is not valid")
-  private boolean isValidRaceExtension() {
-    return isValidArgonautExtensionCount(
-        "http://fhir.org/guides/argonaut/StructureDefinition/argo-race", 5);
-  }
-
   private boolean isValidArgonautExtensionCount(String url, int maxAllowedOmbExtensionCount) {
     if (extension == null) {
       return true;
@@ -174,5 +110,71 @@ public class Patient {
       }
     }
     return ombExtensionCount <= maxAllowedOmbExtensionCount && textExtensionCount == 1;
+  }
+
+  @JsonIgnore
+  @AssertTrue(message = "Argo-Ethnicity extension is not valid")
+  private boolean isValidEthnicityExtension() {
+    return isValidArgonautExtensionCount(
+        "http://fhir.org/guides/argonaut/StructureDefinition/argo-ethnicity", 1);
+  }
+
+  @JsonIgnore
+  @AssertTrue(message = "Argo-Race extension is not valid")
+  private boolean isValidRaceExtension() {
+    return isValidArgonautExtensionCount(
+        "http://fhir.org/guides/argonaut/StructureDefinition/argo-race", 5);
+  }
+
+  public enum Gender {
+    male,
+    female,
+    other,
+    unknown
+  }
+
+  @Data
+  @NoArgsConstructor
+  @EqualsAndHashCode(callSuper = true)
+  @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+  @JsonDeserialize(builder = Patient.Bundle.BundleBuilder.class)
+  public static class Bundle extends AbstractBundle<Patient.Entry> {
+
+    @Builder
+    public Bundle(
+        @Pattern(regexp = Fhir.ID) String id,
+        @Valid Meta meta,
+        @Pattern(regexp = Fhir.URI) String implicitRules,
+        @Pattern(regexp = Fhir.CODE) String language,
+        @NotNull BundleType type,
+        @Min(0) Integer total,
+        @Valid List<BundleLink> link,
+        @Valid List<Entry> entry,
+        @NotBlank String resourceType,
+        @Valid Signature signature) {
+      super(id, meta, implicitRules, language, type, total, link, entry, resourceType, signature);
+    }
+  }
+
+  @Data
+  @NoArgsConstructor
+  @EqualsAndHashCode(callSuper = true)
+  @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+  @JsonDeserialize(builder = Patient.Entry.EntryBuilder.class)
+  public static class Entry extends AbstractEntry<Patient> {
+
+    @Builder
+    public Entry(
+        @Pattern(regexp = Fhir.ID) String id,
+        @Valid List<Extension> extension,
+        @Valid List<Extension> modifierExtension,
+        @Valid List<BundleLink> link,
+        @Pattern(regexp = Fhir.URI) String fullUrl,
+        @Valid Patient resource,
+        @Valid Search search,
+        @Valid Request request,
+        @Valid Response response) {
+      super(id, extension, modifierExtension, link, fullUrl, resource, search, request, response);
+    }
   }
 }

@@ -14,14 +14,26 @@ import gov.va.api.health.argonaut.api.HumanName;
 import gov.va.api.health.argonaut.api.Identifier;
 import gov.va.api.health.argonaut.api.Patient;
 import gov.va.api.health.argonaut.api.Reference;
-import gov.va.dvp.cdw.xsd.pojos.BirthSexCodes;
-import gov.va.dvp.cdw.xsd.pojos.BirthsexExtension;
-import gov.va.dvp.cdw.xsd.pojos.Extensions;
-import gov.va.dvp.cdw.xsd.pojos.MaritalStatusCodes;
-import gov.va.dvp.cdw.xsd.pojos.MaritalStatusSystems;
-import gov.va.dvp.cdw.xsd.pojos.Patient103Root;
-import gov.va.dvp.cdw.xsd.pojos.PatientContactRelationshipCodes;
-import gov.va.dvp.cdw.xsd.pojos.PatientContactRelationshipSystem;
+import gov.va.dvp.cdw.xsd.model.CdwBirthSexCodes;
+import gov.va.dvp.cdw.xsd.model.CdwBirthsexExtension;
+import gov.va.dvp.cdw.xsd.model.CdwExtensions;
+import gov.va.dvp.cdw.xsd.model.CdwExtensions.CdwExtension;
+import gov.va.dvp.cdw.xsd.model.CdwExtensions.CdwExtension.CdwValueCoding;
+import gov.va.dvp.cdw.xsd.model.CdwMaritalStatusCodes;
+import gov.va.dvp.cdw.xsd.model.CdwMaritalStatusSystems;
+import gov.va.dvp.cdw.xsd.model.CdwPatient103Root.CdwPatients.CdwPatient;
+import gov.va.dvp.cdw.xsd.model.CdwPatient103Root.CdwPatients.CdwPatient.CdwAddresses;
+import gov.va.dvp.cdw.xsd.model.CdwPatient103Root.CdwPatients.CdwPatient.CdwAddresses.CdwAddress;
+import gov.va.dvp.cdw.xsd.model.CdwPatient103Root.CdwPatients.CdwPatient.CdwContacts;
+import gov.va.dvp.cdw.xsd.model.CdwPatient103Root.CdwPatients.CdwPatient.CdwContacts.CdwContact;
+import gov.va.dvp.cdw.xsd.model.CdwPatient103Root.CdwPatients.CdwPatient.CdwContacts.CdwContact.CdwRelationship;
+import gov.va.dvp.cdw.xsd.model.CdwPatient103Root.CdwPatients.CdwPatient.CdwIdentifier;
+import gov.va.dvp.cdw.xsd.model.CdwPatient103Root.CdwPatients.CdwPatient.CdwIdentifier.CdwAssigner;
+import gov.va.dvp.cdw.xsd.model.CdwPatient103Root.CdwPatients.CdwPatient.CdwMaritalStatus;
+import gov.va.dvp.cdw.xsd.model.CdwPatient103Root.CdwPatients.CdwPatient.CdwName;
+import gov.va.dvp.cdw.xsd.model.CdwPatient103Root.CdwPatients.CdwPatient.CdwTelecoms;
+import gov.va.dvp.cdw.xsd.model.CdwPatientContactRelationshipCodes;
+import gov.va.dvp.cdw.xsd.model.CdwPatientContactRelationshipSystem;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -33,7 +45,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class PatientTransformer implements PatientController.Transformer {
 
-  Address address(Patient103Root.Patients.Patient.Contacts.Contact contact) {
+  Address address(CdwContact contact) {
     if (contact == null) {
       return null;
     }
@@ -46,7 +58,7 @@ public class PatientTransformer implements PatientController.Transformer {
         .build();
   }
 
-  List<String> addressLine(Patient103Root.Patients.Patient.Contacts.Contact contact) {
+  List<String> addressLine(CdwContact contact) {
     List<String> line = new LinkedList<>();
     if (StringUtils.isNotBlank(contact.getStreetAddress1())) {
       line.add(contact.getStreetAddress1());
@@ -60,7 +72,7 @@ public class PatientTransformer implements PatientController.Transformer {
     return line.isEmpty() ? null : line;
   }
 
-  List<String> addressLine(Patient103Root.Patients.Patient.Addresses.Address address) {
+  List<String> addressLine(CdwAddress address) {
     List<String> line = new LinkedList<>();
     if (StringUtils.isNotBlank(address.getStreetAddress1())) {
       line.add(address.getStreetAddress1());
@@ -74,12 +86,12 @@ public class PatientTransformer implements PatientController.Transformer {
     return line.isEmpty() ? null : line;
   }
 
-  List<Address> addresses(Patient103Root.Patients.Patient.Addresses addresses) {
+  List<Address> addresses(CdwAddresses addresses) {
     if (addresses == null) {
       return Collections.emptyList();
     }
     List<Address> argoAddresses = new LinkedList<>();
-    for (Patient103Root.Patients.Patient.Addresses.Address address : addresses.getAddress()) {
+    for (CdwAddress address : addresses.getAddress()) {
       argoAddresses.add(
           Address.builder()
               .line(addressLine(address))
@@ -92,23 +104,23 @@ public class PatientTransformer implements PatientController.Transformer {
   }
 
   @Override
-  public Patient apply(Patient103Root.Patients.Patient patient) {
+  public Patient apply(CdwPatient patient) {
 
     return patient(patient);
   }
 
-  Optional<Extension> argoBirthSex(BirthsexExtension argoBirthsex) {
+  Optional<Extension> argoBirthSex(CdwBirthsexExtension argoBirthsex) {
     if (argoBirthsex == null) {
       return Optional.empty();
     }
     return Optional.of(
         Extension.builder()
             .url(argoBirthsex.getUrl())
-            .valueCode(ifPresent(argoBirthsex.getValueCode(), BirthSexCodes::value))
+            .valueCode(ifPresent(argoBirthsex.getValueCode(), CdwBirthSexCodes::value))
             .build());
   }
 
-  Optional<Extension> argoEthnicity(List<Extensions> argoEthnicity) {
+  Optional<Extension> argoEthnicity(List<CdwExtensions> argoEthnicity) {
     if (argoEthnicity.isEmpty()) {
       return Optional.empty();
     }
@@ -119,7 +131,7 @@ public class PatientTransformer implements PatientController.Transformer {
             .build());
   }
 
-  Optional<Extension> argoRace(List<Extensions> argoRace) {
+  Optional<Extension> argoRace(List<CdwExtensions> argoRace) {
     if (argoRace.isEmpty()) {
       return Optional.empty();
     }
@@ -130,9 +142,9 @@ public class PatientTransformer implements PatientController.Transformer {
             .build());
   }
 
-  List<Extension> argonautExtensions(List<Extensions.Extension> argonautExtensions) {
+  List<Extension> argonautExtensions(List<CdwExtension> argonautExtensions) {
     List<Extension> extensions = new LinkedList<>();
-    for (Extensions.Extension extension : argonautExtensions) {
+    for (CdwExtension extension : argonautExtensions) {
       if ("text".equals(extension.getUrl())) {
         extensions.add(
             Extension.builder()
@@ -150,7 +162,7 @@ public class PatientTransformer implements PatientController.Transformer {
     return extensions;
   }
 
-  List<ContactPoint> contact(Patient103Root.Patients.Patient.Contacts.Contact contact) {
+  List<ContactPoint> contact(CdwContact contact) {
     if (contact == null || StringUtils.isBlank(contact.getPhone())) {
       return Collections.emptyList();
     }
@@ -161,8 +173,7 @@ public class PatientTransformer implements PatientController.Transformer {
             .build());
   }
 
-  List<CodeableConcept> contactRelationship(
-      Patient103Root.Patients.Patient.Contacts.Contact.Relationship relationship) {
+  List<CodeableConcept> contactRelationship(CdwRelationship relationship) {
     return Collections.singletonList(
         CodeableConcept.builder()
             .coding(contactRelationshipCoding(relationship.getCoding()))
@@ -170,22 +181,21 @@ public class PatientTransformer implements PatientController.Transformer {
             .build());
   }
 
-  List<Coding> contactRelationshipCoding(
-      Patient103Root.Patients.Patient.Contacts.Contact.Relationship.Coding relationship) {
+  List<Coding> contactRelationshipCoding(CdwRelationship.CdwCoding relationship) {
     return Collections.singletonList(
         Coding.builder()
-            .system(ifPresent(relationship.getSystem(), PatientContactRelationshipSystem::value))
-            .code(ifPresent(relationship.getCode(), PatientContactRelationshipCodes::value))
+            .system(ifPresent(relationship.getSystem(), CdwPatientContactRelationshipSystem::value))
+            .code(ifPresent(relationship.getCode(), CdwPatientContactRelationshipCodes::value))
             .display(relationship.getDisplay())
             .build());
   }
 
-  List<Contact> contacts(Patient103Root.Patients.Patient.Contacts contacts) {
+  List<Contact> contacts(CdwContacts contacts) {
     if (contacts == null) {
       return null;
     }
     List<Contact> argoContacts = new LinkedList<>();
-    for (Patient103Root.Patients.Patient.Contacts.Contact contact : contacts.getContact()) {
+    for (CdwContact contact : contacts.getContact()) {
       argoContacts.add(
           Contact.builder()
               .relationship(contactRelationship(contact.getRelationship()))
@@ -214,30 +224,29 @@ public class PatientTransformer implements PatientController.Transformer {
     return HumanName.builder().text(name).build();
   }
 
-  Reference identifierAssigner(Patient103Root.Patients.Patient.Identifier.Assigner assigner) {
+  Reference identifierAssigner(CdwAssigner assigner) {
     return Reference.builder().display(assigner.getDisplay()).build();
   }
 
-  CodeableConcept identifierType(Patient103Root.Patients.Patient.Identifier.Type type) {
+  CodeableConcept identifierType(CdwIdentifier.CdwType type) {
     return CodeableConcept.builder().coding(identifierTypeCodings(type.getCoding())).build();
   }
 
-  List<Coding> identifierTypeCodings(
-      List<Patient103Root.Patients.Patient.Identifier.Type.Coding> codings) {
+  List<Coding> identifierTypeCodings(List<CdwIdentifier.CdwType.CdwCoding> codings) {
     List<Coding> argoCodings = new LinkedList<>();
-    for (Patient103Root.Patients.Patient.Identifier.Type.Coding coding : codings) {
+    for (CdwIdentifier.CdwType.CdwCoding coding : codings) {
       argoCodings.add(Coding.builder().system(coding.getSystem()).code(coding.getCode()).build());
     }
     return argoCodings;
   }
 
-  Identifier.IdentifierUse identifierUse(Patient103Root.Patients.Patient.Identifier identifier) {
+  Identifier.IdentifierUse identifierUse(CdwIdentifier identifier) {
     return ifPresent(identifier.getUse(), use -> Identifier.IdentifierUse.valueOf(use.value()));
   }
 
-  List<Identifier> identifiers(List<Patient103Root.Patients.Patient.Identifier> identifiers) {
+  List<Identifier> identifiers(List<CdwIdentifier> identifiers) {
     List<Identifier> argoIdentifiers = new LinkedList<>();
-    for (Patient103Root.Patients.Patient.Identifier identifier : identifiers) {
+    for (CdwIdentifier identifier : identifiers) {
       argoIdentifiers.add(
           Identifier.builder()
               .use(identifierUse(identifier))
@@ -250,7 +259,7 @@ public class PatientTransformer implements PatientController.Transformer {
     return argoIdentifiers;
   }
 
-  CodeableConcept maritalStatus(Patient103Root.Patients.Patient.MaritalStatus maritalStatus) {
+  CodeableConcept maritalStatus(CdwMaritalStatus maritalStatus) {
     if (maritalStatus == null) {
       return null;
     }
@@ -260,21 +269,20 @@ public class PatientTransformer implements PatientController.Transformer {
         .build();
   }
 
-  List<Coding> maritalStatusCoding(
-      List<Patient103Root.Patients.Patient.MaritalStatus.Coding> codings) {
+  List<Coding> maritalStatusCoding(List<CdwMaritalStatus.CdwCoding> codings) {
     List<Coding> argoCodings = new LinkedList<>();
-    for (Patient103Root.Patients.Patient.MaritalStatus.Coding coding : codings) {
+    for (CdwMaritalStatus.CdwCoding coding : codings) {
       argoCodings.add(
           Coding.builder()
-              .system(ifPresent(coding.getSystem(), MaritalStatusSystems::value))
-              .code(ifPresent(coding.getCode(), MaritalStatusCodes::value))
+              .system(ifPresent(coding.getSystem(), CdwMaritalStatusSystems::value))
+              .code(ifPresent(coding.getCode(), CdwMaritalStatusCodes::value))
               .display(coding.getDisplay())
               .build());
     }
     return argoCodings;
   }
 
-  List<HumanName> names(Patient103Root.Patients.Patient.Name name) {
+  List<HumanName> names(CdwName name) {
     if (name == null) {
       return Collections.emptyList();
     }
@@ -287,7 +295,7 @@ public class PatientTransformer implements PatientController.Transformer {
             .build());
   }
 
-  private Patient patient(Patient103Root.Patients.Patient patient) {
+  private Patient patient(CdwPatient patient) {
     return Patient.builder()
         .id(patient.getCdwId())
         .resourceType("Patient")
@@ -309,12 +317,12 @@ public class PatientTransformer implements PatientController.Transformer {
         .build();
   }
 
-  List<ContactPoint> telecoms(Patient103Root.Patients.Patient.Telecoms telecoms) {
+  List<ContactPoint> telecoms(CdwTelecoms telecoms) {
     if (telecoms == null) {
       return Collections.emptyList();
     }
     List<ContactPoint> contactPoints = new LinkedList<>();
-    for (Patient103Root.Patients.Patient.Telecoms.Telecom telecom : telecoms.getTelecom()) {
+    for (CdwTelecoms.CdwTelecom telecom : telecoms.getTelecom()) {
       contactPoints.add(
           ContactPoint.builder()
               .system(
@@ -330,7 +338,7 @@ public class PatientTransformer implements PatientController.Transformer {
     return contactPoints;
   }
 
-  Coding valueCoding(Extensions.Extension.ValueCoding valueCoding) {
+  Coding valueCoding(CdwValueCoding valueCoding) {
     return Coding.builder()
         .display(valueCoding.getDisplay())
         .code(valueCoding.getCode())

@@ -31,6 +31,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.web.client.RestTemplate;
 
+@SuppressWarnings("unchecked")
 public class RestIdentityServiceClientTest {
 
   @Rule public ExpectedException thrown = ExpectedException.none();
@@ -41,44 +42,6 @@ public class RestIdentityServiceClientTest {
   public void _init() {
     MockitoAnnotations.initMocks(this);
     client = new RestIdentityServiceClient(restTemplate, "http://whatever.com");
-  }
-
-  @Test
-  public void lookupFailedExceptionIsThrownWhenBodyIsEmpty() {
-    thrown.expect(LookupFailed.class);
-    mockLookupResponse(HttpStatus.OK, Lists.emptyList());
-    client.lookup("x");
-  }
-
-  @Test
-  public void registrationFailedExceptionIsThrownWhenBodyIsEmpty() {
-    thrown.expect(RegistrationFailed.class);
-    mockRegisterResponse(HttpStatus.OK, Lists.emptyList());
-    client.register(identities());
-  }
-
-  private void mockLookupResponse(HttpStatus status, List<ResourceIdentity> body) {
-    when(restTemplate.exchange(
-            Mockito.anyString(),
-            Mockito.eq(HttpMethod.GET),
-            Mockito.any(HttpEntity.class),
-            Mockito.any(ParameterizedTypeReference.class),
-            Mockito.anyString()))
-        .thenReturn(new ResponseEntity<>(body, status));
-  }
-
-  private void mockRegisterResponse(HttpStatus status, List<Registration> body) {
-    when(restTemplate.exchange(
-            Mockito.anyString(),
-            Mockito.eq(HttpMethod.POST),
-            Mockito.any(HttpEntity.class),
-            Mockito.any(ParameterizedTypeReference.class)))
-        .thenReturn(new ResponseEntity<>(body, status));
-  }
-
-  @Test
-  public void unknownIdentityExceptionIsThrownWhenStatusIs404() {
-    assertLookupErrorHandler(UnknownIdentity.class, HttpStatus.NOT_FOUND);
   }
 
   @SneakyThrows
@@ -103,9 +66,19 @@ public class RestIdentityServiceClientTest {
     handler.handleError(response);
   }
 
+  private List<ResourceIdentity> identities() {
+    ResourceIdentity a =
+        ResourceIdentity.builder().identifier("a").system("CDW").resource("whatever").build();
+    ResourceIdentity b = a.toBuilder().identifier("b").build();
+    ResourceIdentity c = a.toBuilder().identifier("c").build();
+    return Arrays.asList(a, b, c);
+  }
+
   @Test
-  public void lookupFailedExceptionIsThrownWhenStatusIsNotOk() {
-    assertLookupErrorHandler(LookupFailed.class, HttpStatus.BAD_REQUEST);
+  public void lookupFailedExceptionIsThrownWhenBodyIsEmpty() {
+    thrown.expect(LookupFailed.class);
+    mockLookupResponse(HttpStatus.OK, Lists.emptyList());
+    client.lookup("x");
   }
 
   @Test
@@ -114,8 +87,8 @@ public class RestIdentityServiceClientTest {
   }
 
   @Test
-  public void registrationFailedExceptionIsThrownWhenStatusIsNotOk() {
-    assertRegisterErrorHandler(RegistrationFailed.class, HttpStatus.BAD_REQUEST);
+  public void lookupFailedExceptionIsThrownWhenStatusIsNotOk() {
+    assertLookupErrorHandler(LookupFailed.class, HttpStatus.BAD_REQUEST);
   }
 
   @Test
@@ -127,6 +100,37 @@ public class RestIdentityServiceClientTest {
     verify(restTemplate).setErrorHandler(Mockito.any(LookupErrorHandler.class));
   }
 
+  private void mockLookupResponse(HttpStatus status, List<ResourceIdentity> body) {
+    when(restTemplate.exchange(
+            Mockito.anyString(),
+            Mockito.eq(HttpMethod.GET),
+            Mockito.any(HttpEntity.class),
+            Mockito.any(ParameterizedTypeReference.class),
+            Mockito.anyString()))
+        .thenReturn(new ResponseEntity<>(body, status));
+  }
+
+  private void mockRegisterResponse(HttpStatus status, List<Registration> body) {
+    when(restTemplate.exchange(
+            Mockito.anyString(),
+            Mockito.eq(HttpMethod.POST),
+            Mockito.any(HttpEntity.class),
+            Mockito.any(ParameterizedTypeReference.class)))
+        .thenReturn(new ResponseEntity<>(body, status));
+  }
+
+  @Test
+  public void registrationFailedExceptionIsThrownWhenBodyIsEmpty() {
+    thrown.expect(RegistrationFailed.class);
+    mockRegisterResponse(HttpStatus.OK, Lists.emptyList());
+    client.register(identities());
+  }
+
+  @Test
+  public void registrationFailedExceptionIsThrownWhenStatusIsNotOk() {
+    assertRegisterErrorHandler(RegistrationFailed.class, HttpStatus.BAD_REQUEST);
+  }
+
   @Test
   public void registrationReturnsResourceIdentities() {
     List<Registration> expected = registrations();
@@ -134,14 +138,6 @@ public class RestIdentityServiceClientTest {
     List<Registration> actual = client.register(identities());
     assertThat(actual).isEqualTo(expected);
     verify(restTemplate).setErrorHandler(Mockito.any(RegisterErrorHandler.class));
-  }
-
-  private List<ResourceIdentity> identities() {
-    ResourceIdentity a =
-        ResourceIdentity.builder().identifier("a").system("CDW").resource("whatever").build();
-    ResourceIdentity b = a.toBuilder().identifier("b").build();
-    ResourceIdentity c = a.toBuilder().identifier("c").build();
-    return Arrays.asList(a, b, c);
   }
 
   private List<Registration> registrations() {
@@ -153,5 +149,10 @@ public class RestIdentityServiceClientTest {
     Registration y = Registration.builder().resourceIdentity(b).uuid("B").build();
     Registration z = Registration.builder().resourceIdentity(c).uuid("C").build();
     return Arrays.asList(x, y, z);
+  }
+
+  @Test
+  public void unknownIdentityExceptionIsThrownWhenStatusIs404() {
+    assertLookupErrorHandler(UnknownIdentity.class, HttpStatus.NOT_FOUND);
   }
 }

@@ -16,25 +16,25 @@ import javax.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Data
-@Getter
 @AllArgsConstructor
+@NoArgsConstructor
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @Schema(description = "http://hl7.org/fhir/DSTU2/bundle.html")
 public abstract class AbstractEntry<T> implements BackboneElement {
   @Pattern(regexp = Fhir.ID)
-  protected final String id;
+  protected String id;
 
-  @Valid protected final List<Extension> extension;
-  @Valid protected final List<Extension> modifierExtension;
-  @Valid protected final List<BundleLink> link;
+  @Valid protected List<Extension> extension;
+  @Valid protected List<Extension> modifierExtension;
+  @Valid protected List<BundleLink> link;
 
   @Pattern(regexp = Fhir.URI)
-  protected final String fullUrl;
+  protected String fullUrl;
 
-  @Valid protected final T resource;
+  @Valid protected T resource;
   @Valid Search search;
   @Valid Request request;
   @Valid Response response;

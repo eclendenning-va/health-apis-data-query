@@ -109,7 +109,7 @@ public class RestIdentityServiceClient implements IdentityService {
         throw new UnknownIdentity(id);
       }
       if (response.getStatusCode() != HttpStatus.OK) {
-        throw new LookupFailed(id, "Http Resoonse: " + response.getStatusCode());
+        throw new LookupFailed(id, "Http Response: " + response.getStatusCode());
       }
     }
   }
@@ -123,7 +123,7 @@ public class RestIdentityServiceClient implements IdentityService {
     @Override
     public void handleError(ClientHttpResponse response) throws IOException {
       if (response.getStatusCode() != HttpStatus.OK) {
-        throw new RegistrationFailed("Http Resoonse: " + response.getStatusCode());
+        throw new RegistrationFailed("Http Response: " + response.getStatusCode());
       }
     }
   }
