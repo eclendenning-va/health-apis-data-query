@@ -4,7 +4,7 @@
   <parent>
     <groupId>gov.va.api.health</groupId>
     <artifactId>health-apis-parent</artifactId>
-    <version>1.0.25-SNAPSHOT</version>
+    <version>1.0.25</version>
   </parent>
   <artifactId>sentinel</artifactId>
   <packaging>jar</packaging>
@@ -71,7 +71,8 @@
     <dependency>
       <groupId>gov.va.dvp</groupId>
       <artifactId>cdw-schemas</artifactId>
-      <version>${cdw-schemas.version}</version><!-- defined in parent -->
+      <version>${cdw-schemas.version}</version>
+      <!-- defined in parent -->
       <classifier>samples</classifier>
       <type>zip</type>
       <exclusions>
