@@ -3,7 +3,6 @@ package gov.va.health.api.sentinel;
 import gov.va.api.health.ids.api.Registration;
 import gov.va.api.health.ids.api.ResourceIdentity;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -55,15 +54,13 @@ public class IdRegistrar {
             .resource("PATIENT")
             .identifier(cdwIds.patient())
             .build();
-    List<ResourceIdentity> identities = new LinkedList<>();
-    identities.add(patient);
     ResourceIdentity medication =
         ResourceIdentity.builder()
             .system("CDW")
             .resource("MEDICATION")
             .identifier(cdwIds.medication())
             .build();
-    identities.add(medication);
+    List<ResourceIdentity> identities = Arrays.asList(patient, medication);
     log.info("Registering {}", identities);
     List<Registration> registrations =
         system()
