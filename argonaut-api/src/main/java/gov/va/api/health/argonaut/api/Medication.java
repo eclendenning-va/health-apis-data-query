@@ -35,7 +35,6 @@ public class Medication {
   @Valid Meta meta;
 
   @Pattern(regexp = Fhir.URI)
-  @Schema()
   String implicitRules;
 
   @Pattern(regexp = Fhir.CODE)

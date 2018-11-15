@@ -94,6 +94,7 @@ public class IdServiceV1ApiControllerTest {
     return Registration.builder().uuid(uuid).resourceIdentity(resourceIdentity).build();
   }
 
+  @SuppressWarnings("unchecked")
   @Test
   public void registrationReturn201AndRegistrationsForUnregisteredId() {
     ResourceIdentity id1 = resourceIdentity(1);
