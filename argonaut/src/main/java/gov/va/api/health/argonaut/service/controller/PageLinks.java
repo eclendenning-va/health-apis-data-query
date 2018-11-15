@@ -3,8 +3,7 @@ package gov.va.api.health.argonaut.service.controller;
 import gov.va.api.health.argonaut.api.bundle.BundleLink;
 import java.util.List;
 import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
+import lombok.Data;
 import org.springframework.util.MultiValueMap;
 
 /**
@@ -19,9 +18,8 @@ public interface PageLinks {
   /** Provides direct read link for a given id, e.g. /api/Patient/123. */
   String readLink(String resourcePath, String id);
 
-  @Getter
+  @Data
   @Builder
-  @EqualsAndHashCode
   class LinkConfig {
     /** The resource path without the base URL or port. E.g. /api/Patient/1234 */
     private final String path;

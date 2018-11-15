@@ -116,4 +116,85 @@ public class PatientControllerTest {
             .add("_count", 10)
             .build());
   }
+
+  @Test
+  public void searchByGivenAndGender() {
+    assertSearch(
+        () -> controller.searchByGivenAndGender("f", "g", 1, 10, servletRequest),
+        Parameters.builder()
+            .add("given", "f")
+            .add("gender", "g")
+            .add("page", 1)
+            .add("_count", 10)
+            .build());
+  }
+
+  @Test
+  public void searchById() {
+    assertSearch(
+        () -> controller.searchById("me", 1, 10, servletRequest),
+        Parameters.builder().add("_id", "me").add("page", 1).add("_count", 10).build());
+  }
+
+  @Test
+  public void searchByIdentifier() {
+    assertSearch(
+        () -> controller.searchByIdentifier("me", 1, 10, servletRequest),
+        Parameters.builder().add("identifier", "me").add("page", 1).add("_count", 10).build());
+  }
+
+  @Test
+  public void searchByNameAndBirthdate() {
+    assertSearch(
+        () ->
+            controller.searchByNameAndBirthdate(
+                "me", new String[] {"1975", "2005"}, 1, 10, servletRequest),
+        Parameters.builder()
+            .add("name", "me")
+            .addAll("birthdate", "1975", "2005")
+            .add("page", 1)
+            .add("_count", 10)
+            .build());
+  }
+
+  @Test
+  public void searchByNameAndGender() {
+    assertSearch(
+        () -> controller.searchByNameAndGender("f", "g", 1, 10, servletRequest),
+        Parameters.builder()
+            .add("name", "f")
+            .add("gender", "g")
+            .add("page", 1)
+            .add("_count", 10)
+            .build());
+  }
+
+  @Test
+  public void searchReturnsEmptyResults() {
+    CdwPatient103Root root = new CdwPatient103Root();
+    root.setPageNumber(1);
+    root.setRecordsPerPage(10);
+    root.setRecordCount(0);
+    when(client.search(Mockito.any())).thenReturn(root);
+    when(servletRequest.getRequestURI()).thenReturn("/api/Patient");
+    Bundle mockBundle = new Bundle();
+    when(bundler.bundle(Mockito.any())).thenReturn(mockBundle);
+    Bundle actual = controller.searchById("me", 1, 10, servletRequest);
+    assertThat(actual).isSameAs(mockBundle);
+    ArgumentCaptor<BundleContext<CdwPatient, Patient, Patient.Entry, Patient.Bundle>> captor =
+        ArgumentCaptor.forClass(BundleContext.class);
+
+    verify(bundler).bundle(captor.capture());
+    LinkConfig expectedLinkConfig =
+        LinkConfig.builder()
+            .page(1)
+            .recordsPerPage(10)
+            .totalRecords(0)
+            .path("/api/Patient")
+            .queryParams(
+                Parameters.builder().add("_id", "me").add("page", 1).add("_count", 10).build())
+            .build();
+    assertThat(captor.getValue().linkConfig()).isEqualTo(expectedLinkConfig);
+    assertThat(captor.getValue().xmlItems()).isEmpty();
+  }
 }

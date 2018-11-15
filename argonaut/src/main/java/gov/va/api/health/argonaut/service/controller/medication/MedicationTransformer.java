@@ -5,6 +5,7 @@ import gov.va.api.health.argonaut.api.Coding;
 import gov.va.api.health.argonaut.api.Medication;
 import gov.va.api.health.argonaut.api.Medication.Product;
 import gov.va.api.health.argonaut.api.Narrative;
+import gov.va.api.health.argonaut.api.Narrative.NarrativeStatus;
 import gov.va.dvp.cdw.xsd.model.CdwMedication101Root;
 import gov.va.dvp.cdw.xsd.model.CdwMedication101Root.CdwMedications.CdwMedication;
 import java.util.LinkedList;
@@ -53,7 +54,10 @@ public class MedicationTransformer implements MedicationController.Transformer {
   }
 
   Narrative narrative(String text) {
-    return Narrative.builder().div("<div>" + text + "</div>").build();
+    return Narrative.builder()
+        .status(NarrativeStatus.additional)
+        .div("<div>" + text + "</div>")
+        .build();
   }
 
   Product product(CdwMedication101Root.CdwMedications.CdwMedication.CdwProduct product) {

@@ -19,7 +19,16 @@ public class ParametersTest {
   }
 
   @Test
-  public void addAll() {
+  public void addAllWithArray() {
+    MultiValueMap<String, String> expected = new LinkedMultiValueMap<>();
+    expected.put("a", Arrays.asList("1", "2"));
+    expected.set("b", "3");
+    assertThat(Parameters.builder().addAll("a", "1", "2").add("b", "3").build())
+        .isEqualTo(expected);
+  }
+
+  @Test
+  public void addAllWithList() {
     MultiValueMap<String, String> expected = new LinkedMultiValueMap<>();
     expected.put("a", Arrays.asList("1", "2"));
     expected.set("b", "3");

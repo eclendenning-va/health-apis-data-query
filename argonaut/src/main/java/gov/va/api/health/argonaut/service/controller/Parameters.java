@@ -1,5 +1,6 @@
 package gov.va.api.health.argonaut.service.controller;
 
+import java.util.Arrays;
 import java.util.List;
 import lombok.NoArgsConstructor;
 import org.springframework.util.CollectionUtils;
@@ -37,6 +38,12 @@ public class Parameters {
   /** Add a repeated key/value entry, where multiple values are associated to the given key. */
   public Parameters addAll(String key, List<String> values) {
     params.addAll(key, values);
+    return this;
+  }
+
+  /** Add a repeated key/value entry, where multiple values are associated to the given key. */
+  public Parameters addAll(String key, String... values) {
+    params.addAll(key, Arrays.asList(values));
     return this;
   }
 

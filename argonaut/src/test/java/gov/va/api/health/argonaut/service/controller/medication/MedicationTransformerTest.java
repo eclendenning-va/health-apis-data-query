@@ -10,10 +10,8 @@ import gov.va.dvp.cdw.xsd.model.CdwCodeableConcept;
 import gov.va.dvp.cdw.xsd.model.CdwCoding;
 import gov.va.dvp.cdw.xsd.model.CdwMedication101Root.CdwMedications.CdwMedication;
 import gov.va.dvp.cdw.xsd.model.CdwMedication101Root.CdwMedications.CdwMedication.CdwProduct;
-import gov.va.api.health.argonaut.service.controller.Transformers;
 import java.math.BigInteger;
 import java.util.Collections;
-import java.util.List;
 import javax.xml.datatype.DatatypeFactory;
 import lombok.SneakyThrows;
 import org.junit.Test;
@@ -64,10 +62,10 @@ public class MedicationTransformerTest {
           .coding(
               Collections.singletonList(
                   Coding.builder()
-                    .system("system test")
-                    .code("code test")
-                    .display("display test")
-                    .build()))
+                      .system("system test")
+                      .code("code test")
+                      .display("display test")
+                      .build()))
           .text("code text test")
           .build();
     }
@@ -95,16 +93,11 @@ public class MedicationTransformerTest {
     }
 
     Product product() {
-      return Product.builder()
-          .id("1234")
-          .form(form())
-          .build();
+      return Product.builder().id("1234").form(form()).build();
     }
 
     Narrative text() {
-      return Narrative.builder()
-          .div("<div>text test</div>")
-          .build();
+      return Narrative.builder().div("<div>text test</div>").build();
     }
   }
 

@@ -8,7 +8,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import lombok.Builder;
 import lombok.Value;
 
@@ -19,16 +18,9 @@ class MockResponseSource {
   File baseDirectory;
   MockEntries entries;
 
-  private Predicate<Entry> forCall(MockCall call) {
-    return e ->
-        e.page() == call.page()
-            && e.count() == call.count()
-            && e.query().equals(call.fhirStringWithoutPaging());
-  }
-
   /** Return the XML sample contents for the call. */
   Optional<String> responseFor(MockCall call) {
-    return entries.entries().stream().filter(forCall(call)).findFirst().map(toFileContents());
+    return entries.entries().stream().filter(call::matches).findFirst().map(toFileContents());
   }
 
   private Function<Entry, String> toFileContents() {
