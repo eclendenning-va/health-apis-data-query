@@ -42,8 +42,8 @@ import org.junit.Test;
 
 public class PatientTransformerTest {
 
-  private XmlSampleData data = new XmlSampleData();
-  private PatientSampleData patient = new PatientSampleData();
+  private XmlSampleData cdw = new XmlSampleData();
+  private PatientSampleData expectedPatient = new PatientSampleData();
 
   @Test
   public void addressReturnsNullForNull() {
@@ -53,15 +53,15 @@ public class PatientTransformerTest {
   @Test
   public void addressTransformsToLine() {
     List<String> testLine =
-        transformer().addressLine(data.alivePatient().getAddresses().getAddress().get(0));
-    List<String> expectedLine = patient.alivePatient().address().get(0).line();
+        transformer().addressLine(cdw.alivePatient().getAddresses().getAddress().get(0));
+    List<String> expectedLine = expectedPatient.alivePatient().address().get(0).line();
     assertThat(testLine).isEqualTo(expectedLine);
   }
 
   @Test
   public void addressesTransformsToAddressList() {
-    List<Address> testAddresses = transformer().addresses(data.alivePatient().getAddresses());
-    List<Address> expectedAddresses = patient.alivePatient().address();
+    List<Address> testAddresses = transformer().addresses(cdw.alivePatient().getAddresses());
+    List<Address> expectedAddresses = expectedPatient.alivePatient().address();
     assertThat(testAddresses).isEqualTo(expectedAddresses);
   }
 
@@ -73,8 +73,8 @@ public class PatientTransformerTest {
   @Test
   public void argoBirthsex() {
     Optional<Extension> testArgoBirthsex =
-        transformer().argoBirthSex(data.alivePatient().getArgoBirthsex());
-    Extension expexctedArgoBirthsex = patient.alivePatient().extension().get(2);
+        transformer().argoBirthSex(cdw.alivePatient().getArgoBirthsex());
+    Extension expexctedArgoBirthsex = expectedPatient.alivePatient().extension().get(2);
     assertThat(testArgoBirthsex.get()).isEqualTo(expexctedArgoBirthsex);
   }
 
@@ -92,16 +92,17 @@ public class PatientTransformerTest {
   public void argoEthnicityTransformsToExtensionList() {
     List<Extension> testArgoEthnicity =
         transformer()
-            .argonautExtensions(data.alivePatient().getArgoEthnicity().get(0).getExtension());
-    List<Extension> expectedArgoEthnicity = patient.alivePatient().extension().get(1).extension();
+            .argonautExtensions(cdw.alivePatient().getArgoEthnicity().get(0).getExtension());
+    List<Extension> expectedArgoEthnicity =
+        expectedPatient.alivePatient().extension().get(1).extension();
     assertThat(testArgoEthnicity).isEqualTo(expectedArgoEthnicity);
   }
 
   @Test
   public void argoEthnicityTransformsToOptionalExtensionList() {
     Optional<Extension> testArgoEthnicity =
-        transformer().argoEthnicity(data.alivePatient().getArgoEthnicity());
-    Extension expectedArgoEthnicity = patient.alivePatient().extension().get(1);
+        transformer().argoEthnicity(cdw.alivePatient().getArgoEthnicity());
+    Extension expectedArgoEthnicity = expectedPatient.alivePatient().extension().get(1);
     assertThat(testArgoEthnicity.get()).isEqualTo(expectedArgoEthnicity);
   }
 
@@ -118,18 +119,19 @@ public class PatientTransformerTest {
     List<Extension> testPatientCdwExtensions =
         transformer()
             .extensions(
-                transformer().argoRace(data.alivePatient().getArgoRace()),
-                transformer().argoEthnicity(data.alivePatient().getArgoEthnicity()),
-                transformer().argoBirthSex(data.alivePatient().getArgoBirthsex()));
-    List<Extension> expectedPatientCdwExtensions = patient.alivePatient().extension();
+                transformer().argoRace(cdw.alivePatient().getArgoRace()),
+                transformer().argoEthnicity(cdw.alivePatient().getArgoEthnicity()),
+                transformer().argoBirthSex(cdw.alivePatient().getArgoBirthsex()));
+    List<Extension> expectedPatientCdwExtensions = expectedPatient.alivePatient().extension();
     assertThat(testPatientCdwExtensions).isEqualTo(expectedPatientCdwExtensions);
   }
 
   @Test
   public void argoRaceExtensionTransformsToExtensionList() {
     List<Extension> testRaceExtension =
-        transformer().argonautExtensions(data.alivePatient().getArgoRace().get(0).getExtension());
-    List<Extension> expectedRaceExtension = patient.alivePatient().extension().get(0).extension();
+        transformer().argonautExtensions(cdw.alivePatient().getArgoRace().get(0).getExtension());
+    List<Extension> expectedRaceExtension =
+        expectedPatient.alivePatient().extension().get(0).extension();
     assertThat(testRaceExtension).isEqualTo(expectedRaceExtension);
   }
 
@@ -140,15 +142,15 @@ public class PatientTransformerTest {
 
   @Test
   public void argoRaceTransformsToOptionalExtensionList() {
-    Optional<Extension> testArgoRace = transformer().argoRace(data.alivePatient().getArgoRace());
-    Extension expectedArgoRace = patient.alivePatient().extension().get(0);
+    Optional<Extension> testArgoRace = transformer().argoRace(cdw.alivePatient().getArgoRace());
+    Extension expectedArgoRace = expectedPatient.alivePatient().extension().get(0);
     assertThat(testArgoRace.get()).isEqualTo(expectedArgoRace);
   }
 
   @Test
   public void birthDateTransformsToSimpleDateString() {
-    String testSimpleDate = Transformers.asDateString(data.alivePatient().getBirthDate());
-    String expectedSimpleDate = patient.alivePatient().birthDate();
+    String testSimpleDate = Transformers.asDateString(cdw.alivePatient().getBirthDate());
+    String expectedSimpleDate = expectedPatient.alivePatient().birthDate();
     assertThat(testSimpleDate).isEqualTo(expectedSimpleDate);
   }
 
@@ -157,9 +159,9 @@ public class PatientTransformerTest {
     List<CodeableConcept> testRelationships =
         transformer()
             .contactRelationship(
-                data.alivePatient().getContacts().getContact().get(0).getRelationship());
+                cdw.alivePatient().getContacts().getContact().get(0).getRelationship());
     List<CodeableConcept> expectedRelationships =
-        patient.alivePatient().contact().get(0).relationship();
+        expectedPatient.alivePatient().contact().get(0).relationship();
     assertThat(testRelationships).isEqualTo(expectedRelationships);
   }
 
@@ -173,32 +175,32 @@ public class PatientTransformerTest {
     PatientTransformer patientTransformer = transformer();
     HumanName testName =
         patientTransformer.humanName(
-            data.alivePatient().getContacts().getContact().get(0).getName());
-    HumanName expectedName = patient.alivePatient().contact().get(0).name();
+            cdw.alivePatient().getContacts().getContact().get(0).getName());
+    HumanName expectedName = expectedPatient.alivePatient().contact().get(0).name();
     assertThat(testName).isEqualTo(expectedName);
   }
 
   @Test
   public void contactTelecomTranformsToContactPointList() {
     List<ContactPoint> testTelecoms =
-        transformer().contact(data.alivePatient().getContacts().getContact().get(0));
-    List<ContactPoint> expectedTelecoms = patient.contact().get(0).telecom();
+        transformer().contact(cdw.alivePatient().getContacts().getContact().get(0));
+    List<ContactPoint> expectedTelecoms = expectedPatient.contact().get(0).telecom();
     assertThat(testTelecoms).isEqualTo(expectedTelecoms);
   }
 
   @Test
   public void contactTransformsToAddress() {
     Address testAddress =
-        transformer().address(data.alivePatient().getContacts().getContact().get(0));
-    Address expectedAddress = patient.alivePatient().contact().get(0).address();
+        transformer().address(cdw.alivePatient().getContacts().getContact().get(0));
+    Address expectedAddress = expectedPatient.alivePatient().contact().get(0).address();
     assertThat(testAddress).isEqualTo(expectedAddress);
   }
 
   @Test
   public void contactTransformsToStringLine() {
     List<String> testLine =
-        transformer().addressLine(data.alivePatient().getContacts().getContact().get(0));
-    List<String> expectedLine = patient.alivePatient().contact().get(0).address().line();
+        transformer().addressLine(cdw.alivePatient().getContacts().getContact().get(0));
+    List<String> expectedLine = expectedPatient.alivePatient().contact().get(0).address().line();
     assertThat(testLine).isEqualTo(expectedLine);
   }
 
@@ -209,21 +211,21 @@ public class PatientTransformerTest {
 
   @Test
   public void contactsTransformsToContactList() {
-    List<Contact> testContacts = transformer().contacts(data.alivePatient().getContacts());
-    List<Contact> expectedContacts = patient.contact();
+    List<Contact> testContacts = transformer().contacts(cdw.alivePatient().getContacts());
+    List<Contact> expectedContacts = expectedPatient.contact();
     assertThat(testContacts).isEqualTo(expectedContacts);
   }
 
   @Test
   public void deceasedDateTimeMissingReturnsNull() {
-    String testDateTime = Transformers.asDateTimeString(data.alivePatient().getDeceasedDateTime());
+    String testDateTime = Transformers.asDateTimeString(cdw.alivePatient().getDeceasedDateTime());
     assertThat(testDateTime).isNull();
   }
 
   @Test
   public void deceasedDateTimeTransformsToString() {
-    String testDateTime = Transformers.asDateTimeString(data.deadPatient().getDeceasedDateTime());
-    String expectedDateTime = patient.deceasedPatient().deceasedDateTime();
+    String testDateTime = Transformers.asDateTimeString(cdw.deadPatient().getDeceasedDateTime());
+    String expectedDateTime = expectedPatient.deceasedPatient().deceasedDateTime();
     assertThat(testDateTime).isEqualTo(expectedDateTime);
   }
 
@@ -232,9 +234,9 @@ public class PatientTransformerTest {
     Coding testCoding =
         transformer()
             .valueCoding(
-                data.alivePatient().getArgoRace().get(0).getExtension().get(0).getValueCoding());
+                cdw.alivePatient().getArgoRace().get(0).getExtension().get(0).getValueCoding());
     Coding expectedCoding =
-        patient.alivePatient().extension().get(0).extension().get(0).valueCoding();
+        expectedPatient.alivePatient().extension().get(0).extension().get(0).valueCoding();
     assertThat(testCoding).isEqualTo(expectedCoding);
   }
 
@@ -246,17 +248,17 @@ public class PatientTransformerTest {
   @Test
   public void identifierAssignerTransformsToReference() {
     Reference testReference =
-        transformer().identifierAssigner(data.alivePatient().getIdentifier().get(0).getAssigner());
-    Reference expectedReference = patient.alivePatient().identifier().get(0).assigner();
+        transformer().identifierAssigner(cdw.alivePatient().getIdentifier().get(0).getAssigner());
+    Reference expectedReference = expectedPatient.alivePatient().identifier().get(0).assigner();
     assertThat(testReference).isEqualTo(expectedReference);
   }
 
   @Test
   public void identifierTransformsToIdentifierUse() {
     Identifier.IdentifierUse testIdentifierUse =
-        transformer().identifierUse(data.alivePatient().getIdentifier().get(0));
+        transformer().identifierUse(cdw.alivePatient().getIdentifier().get(0));
     Identifier.IdentifierUse expectedIdentifierUse =
-        patient.alivePatient().identifier().get(0).use();
+        expectedPatient.alivePatient().identifier().get(0).use();
     assertThat(testIdentifierUse).isEqualTo(expectedIdentifierUse);
   }
 
@@ -264,33 +266,33 @@ public class PatientTransformerTest {
   public void identifierTypeCodingListTransformsToCodingList() {
     List<Coding> testCodings =
         transformer()
-            .identifierTypeCodings(
-                data.alivePatient().getIdentifier().get(0).getType().getCoding());
-    List<Coding> expectedCodings = patient.identifier().get(0).type().coding();
+            .identifierTypeCodings(cdw.alivePatient().getIdentifier().get(0).getType().getCoding());
+    List<Coding> expectedCodings = expectedPatient.identifier().get(0).type().coding();
     assertThat(testCodings).isEqualTo(expectedCodings);
   }
 
   @Test
   public void identifierTypeTransfromsToCodeableConcept() {
     CodeableConcept testCodeableConcept =
-        transformer().identifierType(data.alivePatient().getIdentifier().get(0).getType());
-    CodeableConcept expectedCodeableConcept = patient.alivePatient().identifier().get(0).type();
+        transformer().identifierType(cdw.alivePatient().getIdentifier().get(0).getType());
+    CodeableConcept expectedCodeableConcept =
+        expectedPatient.alivePatient().identifier().get(0).type();
     assertThat(testCodeableConcept).isEqualTo(expectedCodeableConcept);
   }
 
   @Test
   public void identifiersTransformsToIdentifiersList() {
     List<Identifier> testIdentifiers =
-        transformer().identifiers(data.alivePatient().getIdentifier());
-    List<Identifier> expectedIdentifiers = patient.alivePatient().identifier();
+        transformer().identifiers(cdw.alivePatient().getIdentifier());
+    List<Identifier> expectedIdentifiers = expectedPatient.alivePatient().identifier();
     assertThat(testIdentifiers).isEqualTo(expectedIdentifiers);
   }
 
   @Test
   public void maritalStatusCodingListTransformsToCodingList() {
     List<Coding> testCodingList =
-        transformer().maritalStatusCoding(data.alivePatient().getMaritalStatus().getCoding());
-    List<Coding> expectedCodingList = patient.alivePatient().maritalStatus().coding();
+        transformer().maritalStatusCoding(cdw.alivePatient().getMaritalStatus().getCoding());
+    List<Coding> expectedCodingList = expectedPatient.alivePatient().maritalStatus().coding();
     assertThat(testCodingList).isEqualTo(expectedCodingList);
   }
 
@@ -301,8 +303,8 @@ public class PatientTransformerTest {
 
   @Test
   public void maritalStatusTransformsToCodeableConcept() {
-    CodeableConcept testCdwMaritalStatus = transformer().maritalStatus(data.maritalStatus());
-    CodeableConcept expectedCdwMaritalStatus = patient.alivePatient().maritalStatus();
+    CodeableConcept testCdwMaritalStatus = transformer().maritalStatus(cdw.maritalStatus());
+    CodeableConcept expectedCdwMaritalStatus = expectedPatient.alivePatient().maritalStatus();
     assertThat(testCdwMaritalStatus).isEqualTo(expectedCdwMaritalStatus);
   }
 
@@ -313,22 +315,22 @@ public class PatientTransformerTest {
 
   @Test
   public void patient103TransformsToModelPatient() {
-    gov.va.api.health.argonaut.api.Patient testPatient = transformer().apply(data.alivePatient());
-    gov.va.api.health.argonaut.api.Patient expectedPatient = patient.alivePatient();
-    assertThat(testPatient).isEqualTo(expectedPatient);
+    gov.va.api.health.argonaut.api.Patient test = transformer().apply(cdw.alivePatient());
+    gov.va.api.health.argonaut.api.Patient expected = expectedPatient.alivePatient();
+    assertThat(test).isEqualTo(expected);
   }
 
   @Test
   public void patientStringTransformsToHumanName() {
-    List<HumanName> testPatientName = transformer().names(data.alivePatient().getName());
-    List<HumanName> expectedPatientName = patient.alivePatient().name();
+    List<HumanName> testPatientName = transformer().names(cdw.alivePatient().getName());
+    List<HumanName> expectedPatientName = expectedPatient.alivePatient().name();
     assertThat(testPatientName).isEqualTo(expectedPatientName);
   }
 
   @Test
   public void patientTelecomsTransformsToContactPointList() {
-    List<ContactPoint> testTelecoms = transformer().telecoms(data.alivePatient().getTelecoms());
-    List<ContactPoint> expectedTelecoms = patient.telecom();
+    List<ContactPoint> testTelecoms = transformer().telecoms(cdw.alivePatient().getTelecoms());
+    List<ContactPoint> expectedTelecoms = expectedPatient.telecom();
     assertThat(testTelecoms).isEqualTo(expectedTelecoms);
   }
 
@@ -337,13 +339,8 @@ public class PatientTransformerTest {
     List<Coding> testCodings =
         transformer()
             .contactRelationshipCoding(
-                data.alivePatient()
-                    .getContacts()
-                    .getContact()
-                    .get(0)
-                    .getRelationship()
-                    .getCoding());
-    List<Coding> expectedCodings = patient.contact().get(0).relationship().get(0).coding();
+                cdw.alivePatient().getContacts().getContact().get(0).getRelationship().getCoding());
+    List<Coding> expectedCodings = expectedPatient.contact().get(0).relationship().get(0).coding();
     assertThat(testCodings).isEqualTo(expectedCodings);
   }
 
@@ -356,7 +353,7 @@ public class PatientTransformerTest {
     return new PatientTransformer();
   }
 
-  private static class PatientSampleData {
+  static class PatientSampleData {
 
     private DatatypeFactory datatypeFactory;
 

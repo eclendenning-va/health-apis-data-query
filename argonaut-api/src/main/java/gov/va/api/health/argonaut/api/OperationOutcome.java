@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 import lombok.AccessLevel;
@@ -23,6 +24,7 @@ public class OperationOutcome implements DomainResource {
   @Pattern(regexp = Fhir.ID)
   String id;
 
+  @NotBlank String resourceType;
   @Valid Meta meta;
 
   @Pattern(regexp = Fhir.URI)

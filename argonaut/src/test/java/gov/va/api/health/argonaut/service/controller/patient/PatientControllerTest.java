@@ -4,22 +4,33 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import gov.va.api.health.argonaut.api.CodeableConcept;
+import gov.va.api.health.argonaut.api.Issue;
+import gov.va.api.health.argonaut.api.Issue.IssueSeverity;
+import gov.va.api.health.argonaut.api.Narrative;
+import gov.va.api.health.argonaut.api.Narrative.NarrativeStatus;
+import gov.va.api.health.argonaut.api.OperationOutcome;
 import gov.va.api.health.argonaut.api.Patient;
 import gov.va.api.health.argonaut.api.Patient.Bundle;
+import gov.va.api.health.argonaut.api.bundle.AbstractBundle.BundleType;
 import gov.va.api.health.argonaut.service.controller.Bundler;
 import gov.va.api.health.argonaut.service.controller.Bundler.BundleContext;
 import gov.va.api.health.argonaut.service.controller.PageLinks.LinkConfig;
 import gov.va.api.health.argonaut.service.controller.Parameters;
 import gov.va.api.health.argonaut.service.mranderson.client.MrAndersonClient;
 import gov.va.api.health.argonaut.service.mranderson.client.Query;
+import gov.va.api.health.autoconfig.configuration.JacksonConfig;
 import gov.va.dvp.cdw.xsd.model.CdwPatient103Root;
 import gov.va.dvp.cdw.xsd.model.CdwPatient103Root.CdwPatients;
 import gov.va.dvp.cdw.xsd.model.CdwPatient103Root.CdwPatients.CdwPatient;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.function.Supplier;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.ConstraintViolationException;
+import lombok.SneakyThrows;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -196,5 +207,85 @@ public class PatientControllerTest {
             .build();
     assertThat(captor.getValue().linkConfig()).isEqualTo(expectedLinkConfig);
     assertThat(captor.getValue().xmlItems()).isEmpty();
+  }
+
+  @Test
+  @SneakyThrows
+  public void validateAcceptsValidBundle() {
+    OperationOutcome expected =
+        OperationOutcome.builder()
+            .resourceType("OperationOutcome")
+            .id("allok")
+            .text(
+                Narrative.builder()
+                    .status(NarrativeStatus.additional)
+                    .div("<div xmlns=\"http://www.w3.org/1999/xhtml\"><p>ALL OK</p></div>")
+                    .build())
+            .issue(
+                Collections.singletonList(
+                    Issue.builder()
+                        .severity(IssueSeverity.information)
+                        .code("informational")
+                        .details(CodeableConcept.builder().text("ALL OK").build())
+                        .build()))
+            .build();
+
+    Patient patient =
+        JacksonConfig.createMapper()
+            .readValue(getClass().getResourceAsStream("/cdw/old-patient-1.03.json"), Patient.class);
+
+    Bundle bundle =
+        Patient.Bundle.builder()
+            .type(BundleType.searchset)
+            .resourceType("Bundle")
+            .entry(
+                Collections.singletonList(
+                    Patient.Entry.builder()
+                        .fullUrl("http://example.com")
+                        .resource(patient)
+                        .build()))
+            .build();
+    OperationOutcome actual = controller.validate(bundle);
+    assertThat(actual).isEqualTo(expected);
+  }
+
+  @Test(expected = ConstraintViolationException.class)
+  @SneakyThrows
+  public void validateThrowsExceptionForInvalidBundle() {
+    OperationOutcome expected =
+        OperationOutcome.builder()
+            .resourceType("OperationOutcome")
+            .id("allok")
+            .text(
+                Narrative.builder()
+                    .status(NarrativeStatus.additional)
+                    .div("<div xmlns=\"http://www.w3.org/1999/xhtml\"><p>ALL OK</p></div>")
+                    .build())
+            .issue(
+                Collections.singletonList(
+                    Issue.builder()
+                        .severity(IssueSeverity.information)
+                        .code("informational")
+                        .details(CodeableConcept.builder().text("ALL OK").build())
+                        .build()))
+            .build();
+
+    Patient patient =
+        JacksonConfig.createMapper()
+            .readValue(getClass().getResourceAsStream("/cdw/old-patient-1.03.json"), Patient.class);
+    patient.resourceType(null);
+
+    Bundle bundle =
+        Patient.Bundle.builder()
+            .type(BundleType.searchset)
+            .resourceType("Bundle")
+            .entry(
+                Collections.singletonList(
+                    Patient.Entry.builder()
+                        .fullUrl("http://example.com")
+                        .resource(patient)
+                        .build()))
+            .build();
+    controller.validate(bundle);
   }
 }

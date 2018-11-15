@@ -18,6 +18,7 @@ public class SystemDefinitions {
               TestIds.builder()
                   .unknown("5555555555555")
                   .patient("185601V825290")
+                  .medication("212846")
                   .pii(
                       PersonallyIdentifiableInformation.builder()
                           .gender("male")

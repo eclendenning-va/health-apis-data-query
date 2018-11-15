@@ -22,12 +22,12 @@ public class IdRegistrar {
   @Getter(lazy = true)
   TestIds registeredIds = registerCdwIds();
 
-  private String findUuid(List<Registration> registrations, ResourceIdentity patient) {
+  private String findUuid(List<Registration> registrations, ResourceIdentity resource) {
     return registrations
         .stream()
-        .filter(r -> r.resourceIdentities().contains(patient))
+        .filter(r -> r.resourceIdentities().contains(resource))
         .findFirst()
-        .orElseThrow(() -> new AssertionError("Failed to register: " + patient))
+        .orElseThrow(() -> new AssertionError("Failed to register: " + resource))
         .uuid();
   }
 
@@ -54,7 +54,13 @@ public class IdRegistrar {
             .resource("PATIENT")
             .identifier(cdwIds.patient())
             .build();
-    List<ResourceIdentity> identities = Arrays.asList(patient);
+    ResourceIdentity medication =
+        ResourceIdentity.builder()
+            .system("CDW")
+            .resource("MEDICATION")
+            .identifier(cdwIds.medication())
+            .build();
+    List<ResourceIdentity> identities = Arrays.asList(patient, medication);
     log.info("Registering {}", identities);
     List<Registration> registrations =
         system()
@@ -67,6 +73,7 @@ public class IdRegistrar {
         TestIds.builder()
             .unknown(cdwIds.unknown())
             .patient(findUuid(registrations, patient))
+            .medication(findUuid(registrations, medication))
             .pii(cdwIds.pii())
             .build();
     log.info("Using {}", publicIds);
