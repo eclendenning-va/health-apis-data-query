@@ -26,13 +26,11 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.server.ServerWebExchange;
 
 public class IdServiceV1ApiControllerTest {
 
   @Rule public ExpectedException thrown = ExpectedException.none();
   @Mock ResourceIdentityDetailRepository repo;
-  @Mock ServerWebExchange exchange;
   @Mock UuidGenerator uuidGenerator;
   IdServiceV1ApiController controller;
 
@@ -40,14 +38,6 @@ public class IdServiceV1ApiControllerTest {
   public void _init() {
     MockitoAnnotations.initMocks(this);
     controller = new IdServiceV1ApiController(repo, uuidGenerator);
-  }
-
-  private ResourceIdentity resourceIdentity(int i) {
-    return ResourceIdentity.builder().identifier("i" + i).resource("r" + i).system("s" + i).build();
-  }
-
-  private Registration registration(String uuid, ResourceIdentity resourceIdentity) {
-    return Registration.builder().uuid(uuid).resourceIdentity(resourceIdentity).build();
   }
 
   /**
@@ -64,6 +54,28 @@ public class IdServiceV1ApiControllerTest {
         .build();
   }
 
+  @Test
+  public void lookupReturns200AndIdentitiesWhenFound() {
+    List<ResourceIdentityDetail> searchResults =
+        Arrays.asList(existingDetail("x", 3), existingDetail("x", 2), existingDetail("x", 1));
+    when(repo.findByUuid("x")).thenReturn(searchResults);
+
+    ResponseEntity<List<ResourceIdentity>> actual = controller.lookup("x");
+
+    assertThat(actual.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(actual.getBody())
+        .containsExactlyInAnyOrder(resourceIdentity(3), resourceIdentity(2), resourceIdentity(1));
+  }
+
+  @Test
+  public void lookupThrowsUnknownIdentityExceptionWhenNoIdentitiesAreFound() {
+    thrown.expect(UnknownIdentity.class);
+    List<ResourceIdentityDetail> searchResults = new ArrayList<>();
+    when(repo.findByUuid("x")).thenReturn(searchResults);
+
+    controller.lookup("x");
+  }
+
   /**
    * What a detail will look like if it does not exist in the database. The auto-incremented primary
    * key field 'pk' will be 0.
@@ -78,6 +90,11 @@ public class IdServiceV1ApiControllerTest {
         .build();
   }
 
+  private Registration registration(String uuid, ResourceIdentity resourceIdentity) {
+    return Registration.builder().uuid(uuid).resourceIdentity(resourceIdentity).build();
+  }
+
+  @SuppressWarnings("unchecked")
   @Test
   public void registrationReturn201AndRegistrationsForUnregisteredId() {
     ResourceIdentity id1 = resourceIdentity(1);
@@ -97,26 +114,8 @@ public class IdServiceV1ApiControllerTest {
     assertThat(saveArgs.getValue()).containsExactlyInAnyOrder(newDetail("1", 1), newDetail("2", 2));
   }
 
-  @Test
-  public void lookupReturns200AndIdentitiesWhenFound() {
-    List<ResourceIdentityDetail> searchResults =
-        Arrays.asList(existingDetail("x", 3), existingDetail("x", 2), existingDetail("x", 1));
-    when(repo.findByUuid("x")).thenReturn(searchResults);
-
-    ResponseEntity<List<ResourceIdentity>> actual = controller.lookup("x", exchange);
-
-    assertThat(actual.getStatusCode()).isEqualTo(HttpStatus.OK);
-    assertThat(actual.getBody())
-        .containsExactlyInAnyOrder(resourceIdentity(3), resourceIdentity(2), resourceIdentity(1));
-  }
-
-  @Test
-  public void lookupThrowsUnknownIdentityExceptionWhenNoIdentitiesAreFound() {
-    thrown.expect(UnknownIdentity.class);
-    List<ResourceIdentityDetail> searchResults = new ArrayList<>();
-    when(repo.findByUuid("x")).thenReturn(searchResults);
-
-    controller.lookup("x", exchange);
+  private ResourceIdentity resourceIdentity(int i) {
+    return ResourceIdentity.builder().identifier("i" + i).resource("r" + i).system("s" + i).build();
   }
 
   @Value

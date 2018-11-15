@@ -5,7 +5,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import java.util.function.Supplier;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.Value;
 import org.junit.Test;
@@ -21,6 +25,17 @@ public class JacksonConfigTest {
   }
 
   @Test
+  @SneakyThrows
+  public void defaultConstructorIsUsedWhenAvailable() {
+    ObjectMapper mapper = JacksonConfig.createMapper();
+    HasPrivateDefaultConstructor actual =
+        mapper.readValue("{\"ok\":\"hey yah\"}", HasPrivateDefaultConstructor.class);
+    HasPrivateDefaultConstructor expected =
+        HasPrivateDefaultConstructor.unconventional().ok("hey yah").build();
+    assertThat(actual).isEqualTo(expected);
+  }
+
+  @Test
   public void hasEasyToUseMapperSupplier() {
     Supplier<ObjectMapper> supplier = JacksonConfig::createMapper;
     assertThat(supplier.get()).isNotNull();
@@ -31,5 +46,13 @@ public class JacksonConfigTest {
   public static class CandyYaml {
     String ya;
     int ml;
+  }
+
+  @Data
+  @NoArgsConstructor(access = AccessLevel.PRIVATE)
+  @AllArgsConstructor
+  @Builder(builderClassName = "CannotAutoDetactMe", builderMethodName = "unconventional")
+  public static class HasPrivateDefaultConstructor {
+    String ok;
   }
 }

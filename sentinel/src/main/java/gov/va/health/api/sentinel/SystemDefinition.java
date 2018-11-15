@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 public class SystemDefinition {
   @NonNull ServiceDefinition ids;
   @NonNull ServiceDefinition mrAnderson;
+  @NonNull ServiceDefinition argonaut;
   @NonNull TestIds cdwIds;
 
   public TestClients clients() {

@@ -8,6 +8,11 @@ import lombok.SneakyThrows;
 import org.junit.Test;
 
 public class ErrorResponseTest {
+  @Test
+  public void errorResponse() {
+    roundTrip(ErrorResponse.of(new RuntimeException("fugazi")));
+  }
+
   @SneakyThrows
   private <T> T roundTrip(T object) {
     ObjectMapper mapper = new JacksonConfig().objectMapper();
@@ -15,10 +20,5 @@ public class ErrorResponseTest {
     Object evilTwin = mapper.readValue(json, object.getClass());
     assertThat(evilTwin).isEqualTo(object);
     return object;
-  }
-
-  @Test
-  public void errorResponse() {
-    roundTrip(ErrorResponse.of(new RuntimeException("fugazi")));
   }
 }

@@ -5,13 +5,17 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @Schema(description = "http://hl7.org/fhir/DSTU2/datatypes.html#ContactPoint")
 public class ContactPoint implements Element {
@@ -19,9 +23,9 @@ public class ContactPoint implements Element {
   String id;
 
   @Valid List<Extension> extension;
-  @NotBlank ContactPointSystem system;
+  ContactPointSystem system;
   String value;
-  @NotBlank ContactPointUse use;
+  ContactPointUse use;
 
   @Min(1)
   Integer rank;

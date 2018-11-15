@@ -67,6 +67,7 @@ public class IdRegistrar {
         TestIds.builder()
             .unknown(cdwIds.unknown())
             .patient(findUuid(registrations, patient))
+            .pii(cdwIds.pii())
             .build();
     log.info("Using {}", publicIds);
     return publicIds;

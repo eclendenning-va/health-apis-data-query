@@ -4,7 +4,7 @@
   <parent>
     <groupId>gov.va.api.health</groupId>
     <artifactId>health-apis-parent</artifactId>
-    <version>1.0.24-SNAPSHOT</version>
+    <version>1.0.25-SNAPSHOT</version>
   </parent>
   <artifactId>sentinel</artifactId>
   <packaging>jar</packaging>
@@ -13,7 +13,6 @@
     <jacoco.coverage>0.1</jacoco.coverage>
     <sentinel.skipLaunch>false</sentinel.skipLaunch>
     <process-exec-maven-plugin.version>0.7</process-exec-maven-plugin.version>
-    <cdw-schemas.version>1.0.25</cdw-schemas.version>
   </properties>
   <dependencies>
     <dependency>
@@ -53,6 +52,17 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>gov.va.api.health</groupId>
+      <artifactId>argonaut</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>gov.va.api.health</groupId>
+      <artifactId>argonaut-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId>
       <version>${h2.version}</version>
@@ -64,20 +74,26 @@
       <version>${cdw-schemas.version}</version>
       <classifier>samples</classifier>
       <type>zip</type>
-      <exclusions>
-        <exclusion>
-          <groupId>org.mule.modules</groupId>
-          <artifactId>mule-module-objectstore</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>com.mulesoft.security</groupId>
-          <artifactId>mule-module-security-property-placeholder</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>io.rest-assured</groupId>
       <artifactId>rest-assured</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.hibernate.validator</groupId>
+      <artifactId>hibernate-validator</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish</groupId>
+      <artifactId>javax.el</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
     </dependency>
   </dependencies>
   <build>
@@ -121,7 +137,7 @@
             </goals>
             <configuration>
               <outputDirectory>${project.build.directory}</outputDirectory>
-              <includeArtifactIds>h2,ids,mr-anderson</includeArtifactIds>
+              <includeArtifactIds>h2,ids,mr-anderson,argonaut</includeArtifactIds>
               <stripVersion>true</stripVersion>
             </configuration>
           </execution>
@@ -175,6 +191,7 @@
               <name>mr-anderson</name>
               <healthcheckUrl>https://localhost:8088/actuator/health</healthcheckUrl>
               <skip>${sentinel.skipLaunch}</skip>
+              <waitForInterrupt>false</waitForInterrupt>
               <arguments>
                 <argument>java</argument>
                 <argument>-cp</argument>
@@ -185,6 +202,34 @@
                 <argument>-Dspring.datasource.driver-class-name=gov.va.health.api.sentinel.mockcdw.MockEntityReturnDriver</argument>
                 <argument>-Dspring.datasource.url=jdbc:mockcdw://cdw/samples/index.yaml,${project.basedir}/src/test/resources/cdw/index.yaml</argument>
                 <argument>-Didentityservice.url=https://localhost:8089</argument>
+                <argument>-Dserver.ssl.key-store=file:certs/system/DVP-DVP-NONPROD.jks</argument>
+                <argument>-Dserver.ssl.key-alias=internal-sys-dev</argument>
+                <argument>-Dssl.verify=false</argument>
+                <argument>-Dssl.key-store=file:certs/system/DVP-DVP-NONPROD.jks</argument>
+                <argument>-Dssl.use-trust-store=false</argument>
+                <argument>-Dssl.trust-store=file:certs/system/DVP-NONPROD-truststore.jks</argument>
+                <argument>-Dspring.config.location=classpath:/application.properties,file:${project.basedir}/config/secrets.properties</argument>
+                <argument>org.springframework.boot.loader.PropertiesLauncher</argument>
+              </arguments>
+            </configuration>
+          </execution>
+          <execution>
+            <id>argonaut-process</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+              <goal>start</goal>
+            </goals>
+            <configuration>
+              <name>argonaut</name>
+              <healthcheckUrl>https://localhost:8090/actuator/health</healthcheckUrl>
+              <skip>${sentinel.skipLaunch}</skip>
+              <arguments>
+                <argument>java</argument>
+                <argument>-cp</argument>
+                <argument>argonaut.jar</argument>
+                <argument>-Dloader.path=sentinel-${project.version}.jar</argument>
+                <argument>-Dloader=gov.va.api.health.argonaut.service.Application</argument>
+                <argument>-Dmranderson.url=https://localhost:8088</argument>
                 <argument>-Dserver.ssl.key-store=file:certs/system/DVP-DVP-NONPROD.jks</argument>
                 <argument>-Dserver.ssl.key-alias=internal-sys-dev</argument>
                 <argument>-Dssl.verify=false</argument>
@@ -289,7 +334,7 @@
       <id>jenkins-config</id>
       <activation>
         <property>
-          <name>env.HEALTH_API_CERTIFICATE_PASSWORD</name>
+          <name>env.BUILD_ID</name>
         </property>
       </activation>
       <build>
