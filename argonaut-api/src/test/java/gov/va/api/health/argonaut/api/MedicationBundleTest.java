@@ -4,18 +4,9 @@ import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import gov.va.api.health.argonaut.api.Patient.Bundle;
-import gov.va.api.health.argonaut.api.Patient.Entry;
-import gov.va.api.health.argonaut.api.Patient.Gender;
-import gov.va.api.health.argonaut.api.bundle.AbstractBundle.BundleType;
+import gov.va.api.health.argonaut.api.bundle.AbstractBundle;
 import gov.va.api.health.argonaut.api.bundle.AbstractEntry;
-import gov.va.api.health.argonaut.api.bundle.AbstractEntry.HttpVerb;
-import gov.va.api.health.argonaut.api.bundle.AbstractEntry.Request;
-import gov.va.api.health.argonaut.api.bundle.AbstractEntry.Response;
-import gov.va.api.health.argonaut.api.bundle.AbstractEntry.Search;
-import gov.va.api.health.argonaut.api.bundle.AbstractEntry.SearchMode;
 import gov.va.api.health.argonaut.api.bundle.BundleLink;
-import gov.va.api.health.argonaut.api.bundle.BundleLink.LinkRelation;
 import gov.va.api.health.autoconfig.configuration.JacksonConfig;
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -25,70 +16,59 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 
 @Slf4j
-public class PatientBundleTest {
+public class MedicationBundleTest {
 
-  private SamplePatients data = SamplePatients.get();
+  private SampleMedications data = SampleMedications.get();
 
-  private Patient testPatient() {
-    return Patient.builder()
+  private Medication testMedication() {
+    return Medication.builder()
         .id("1234")
-        .resourceType("Patient")
+        .resourceType("Medication")
         .meta(data.meta())
-        .implicitRules("http://HelloRules.com")
-        .language("Hello Language")
+        .implicitRules("http://medicationRules.com")
+        .language("Medication Language")
         .text(data.narrative())
-        .contained(singletonList(data.resource()))
-        .extension(Arrays.asList(data.extension(), data.extension()))
+        .contained(Collections.singletonList(data.resource()))
+        .extension(Arrays.asList(data.extension(), data.extension(), data.extension()))
         .modifierExtension(
             Arrays.asList(
                 data.extension(), data.extensionWithQuantity(), data.extensionWithRatio()))
-        .identifier(singletonList(data.identifier()))
-        .active(true)
-        .name(singletonList(data.name()))
-        .telecom(singletonList(data.telecom()))
-        .gender(Gender.unknown)
-        .birthDate("2000-01-01")
-        .deceasedBoolean(false)
-        .address(singletonList(data.address()))
-        .maritalStatus(data.maritalStatus())
-        .multipleBirthBoolean(false)
-        .photo(singletonList(data.photo()))
-        .contact(singletonList(data.contact()))
-        .communication(singletonList(data.communication()))
-        .careProvider(singletonList(data.reference()))
-        .managingOrganization(data.reference())
-        .link(singletonList(data.link()))
+        .code(data.code())
+        .isBrand(false)
+        .manufacturer(data.reference())
+        .product(data.product())
+        .medicationPackage(data.medicationPackage())
         .build();
   }
 
   @Test
-  public void bundlerCanBuildPatientBundles() {
-    Entry entry =
-        Entry.builder()
+  public void bundlerCanBuildMedicationBundles() {
+    Medication.Entry entry =
+        Medication.Entry.builder()
             .extension(Collections.singletonList(data.extension()))
-            .fullUrl("http://patient.com")
+            .fullUrl("http://medication.com")
             .id("123")
             .link(
                 Collections.singletonList(
                     BundleLink.builder()
-                        .relation(LinkRelation.self)
-                        .url(("http://patient.com/1"))
+                        .relation(BundleLink.LinkRelation.self)
+                        .url(("http://medication.com/1"))
                         .build()))
-            .resource(testPatient())
+            .resource(testMedication())
             .search(
-                Search.builder()
+                AbstractEntry.Search.builder()
                     .id("s1")
-                    .mode(SearchMode.match)
+                    .mode(AbstractEntry.SearchMode.match)
                     .extension(singletonList(data.extension()))
                     .modifierExtension(singletonList(data.extension()))
                     .rank(new BigDecimal(0.5))
                     .build())
             .request(
-                Request.builder()
+                AbstractEntry.Request.builder()
                     .id("request1")
                     .extension(singletonList(data.extension()))
                     .modifierExtension(singletonList(data.extension()))
-                    .method(HttpVerb.GET)
+                    .method(AbstractEntry.HttpVerb.GET)
                     .url("http://example.com")
                     .ifNoneMatch("ok")
                     .ifModifiedSince("also ok")
@@ -96,7 +76,7 @@ public class PatientBundleTest {
                     .ifNoneExist("meh, ok.")
                     .build())
             .response(
-                Response.builder()
+                AbstractEntry.Response.builder()
                     .id("request1")
                     .extension(singletonList(data.extension()))
                     .modifierExtension(singletonList(data.extension()))
@@ -107,20 +87,19 @@ public class PatientBundleTest {
                     .build())
             .build();
 
-    Bundle bundle =
-        Bundle.builder()
+    Medication.Bundle bundle =
+        Medication.Bundle.builder()
             .entry(Collections.singletonList(entry))
             .link(
                 Collections.singletonList(
                     BundleLink.builder()
-                        .relation(LinkRelation.self)
-                        .url(("http://patient.com/2"))
+                        .relation(BundleLink.LinkRelation.self)
+                        .url(("http://medication.com/2"))
                         .build()))
-            .type(BundleType.searchset)
+            .type(AbstractBundle.BundleType.searchset)
             .build();
 
     roundTrip(bundle);
-
     AbstractEntry.Search.builder().build().id();
   }
 
