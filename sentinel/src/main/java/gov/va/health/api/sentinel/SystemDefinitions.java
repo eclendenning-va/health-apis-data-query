@@ -1,5 +1,6 @@
 package gov.va.health.api.sentinel;
 
+import gov.va.health.api.sentinel.TestIds.PersonallyIdentifiableInformation;
 import lombok.NoArgsConstructor;
 import lombok.Value;
 
@@ -17,11 +18,14 @@ public class SystemDefinitions {
               TestIds.builder()
                   .unknown("5555555555555")
                   .patient("185601V825290")
-                  .gender("male")
-                  .birthdate("1970-01-01")
-                  .given("JOHN Q")
-                  .name("VETERAN,JOHN")
-                  .family("VETERAN")
+                  .pii(
+                      PersonallyIdentifiableInformation.builder()
+                          .gender("male")
+                          .birthdate("1970-01-01")
+                          .given("JOHN Q")
+                          .name("VETERAN,JOHN")
+                          .family("VETERAN")
+                          .build())
                   .build())
           .build();
 }

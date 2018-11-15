@@ -13,6 +13,7 @@ import gov.va.api.health.argonaut.service.mranderson.client.MrAndersonClient;
 import gov.va.api.health.argonaut.service.mranderson.client.Query;
 import gov.va.dvp.cdw.xsd.model.CdwPatient103Root;
 import gov.va.dvp.cdw.xsd.model.CdwPatient103Root.CdwPatients.CdwPatient;
+import java.util.Collections;
 import java.util.function.Function;
 import javax.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
@@ -32,9 +33,8 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping(
-  value = {"/api/Patient"},
-  produces = {"application/json", "application/json+fhir", "application/fhir+json"}
-)
+    value = {"/api/Patient"},
+    produces = {"application/json", "application/json+fhir", "application/fhir+json"})
 @AllArgsConstructor(onConstructor = @__({@Autowired}))
 @Slf4j
 public class PatientController {
@@ -60,7 +60,7 @@ public class PatientController {
     return bundler.bundle(
         BundleContext.of(
             linkConfig,
-            root.getPatients().getPatient(),
+            root.getPatients() == null ? Collections.emptyList() : root.getPatients().getPatient(),
             patientTransformer,
             Patient.Entry::new,
             Patient.Bundle::new));

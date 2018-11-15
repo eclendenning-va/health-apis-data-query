@@ -168,4 +168,33 @@ public class PatientControllerTest {
             .add("_count", 10)
             .build());
   }
+
+  @Test
+  public void searchReturnsEmptyResults() {
+    CdwPatient103Root root = new CdwPatient103Root();
+    root.setPageNumber(1);
+    root.setRecordsPerPage(10);
+    root.setRecordCount(0);
+    when(client.search(Mockito.any())).thenReturn(root);
+    when(servletRequest.getRequestURI()).thenReturn("/api/Patient");
+    Bundle mockBundle = new Bundle();
+    when(bundler.bundle(Mockito.any())).thenReturn(mockBundle);
+    Bundle actual = controller.searchById("me", 1, 10, servletRequest);
+    assertThat(actual).isSameAs(mockBundle);
+    ArgumentCaptor<BundleContext<CdwPatient, Patient, Patient.Entry, Patient.Bundle>> captor =
+        ArgumentCaptor.forClass(BundleContext.class);
+
+    verify(bundler).bundle(captor.capture());
+    LinkConfig expectedLinkConfig =
+        LinkConfig.builder()
+            .page(1)
+            .recordsPerPage(10)
+            .totalRecords(0)
+            .path("/api/Patient")
+            .queryParams(
+                Parameters.builder().add("_id", "me").add("page", 1).add("_count", 10).build())
+            .build();
+    assertThat(captor.getValue().linkConfig()).isEqualTo(expectedLinkConfig);
+    assertThat(captor.getValue().xmlItems()).isEmpty();
+  }
 }
