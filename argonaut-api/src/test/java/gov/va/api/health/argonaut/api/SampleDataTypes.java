@@ -3,6 +3,8 @@ package gov.va.api.health.argonaut.api;
 import static java.util.Collections.singletonList;
 
 import gov.va.api.health.argonaut.api.Narrative.NarrativeStatus;
+import gov.va.api.health.argonaut.api.bundle.AbstractEntry;
+import java.math.BigDecimal;
 import lombok.NoArgsConstructor;
 
 @SuppressWarnings("WeakerAccess")
@@ -86,5 +88,41 @@ public final class SampleDataTypes {
 
   public SimpleQuantity simpleQuantity() {
     return SimpleQuantity.builder().value(11.11).unit("HelloUnit").build();
+  }
+
+  public AbstractEntry.Response response() {
+    return AbstractEntry.Response.builder()
+        .id("request1")
+        .extension(singletonList(extension()))
+        .modifierExtension(singletonList(extension()))
+        .status("single")
+        .location("http://example.com")
+        .etag("you're it")
+        .lastModified("2005-01-21T07:57:00Z")
+        .build();
+  }
+
+  public AbstractEntry.Request request() {
+    return AbstractEntry.Request.builder()
+        .id("request1")
+        .extension(singletonList(extension()))
+        .modifierExtension(singletonList(extension()))
+        .method(AbstractEntry.HttpVerb.GET)
+        .url("http://example.com")
+        .ifNoneMatch("ok")
+        .ifModifiedSince("also ok")
+        .ifMatch("really ok")
+        .ifNoneExist("meh, ok.")
+        .build();
+  }
+
+  public AbstractEntry.Search search() {
+    return AbstractEntry.Search.builder()
+        .id("s1")
+        .mode(AbstractEntry.SearchMode.match)
+        .extension(singletonList(extension()))
+        .modifierExtension(singletonList(extension()))
+        .rank(new BigDecimal(0.5))
+        .build();
   }
 }
