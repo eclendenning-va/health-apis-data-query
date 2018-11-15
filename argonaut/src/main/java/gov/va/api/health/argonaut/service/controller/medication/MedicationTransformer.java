@@ -5,6 +5,7 @@ import gov.va.api.health.argonaut.api.Coding;
 import gov.va.api.health.argonaut.api.Medication;
 import gov.va.api.health.argonaut.api.Medication.Product;
 import gov.va.api.health.argonaut.api.Narrative;
+import gov.va.api.health.argonaut.api.Narrative.NarrativeStatus;
 import gov.va.dvp.cdw.xsd.model.CdwMedication101Root;
 import gov.va.dvp.cdw.xsd.model.CdwMedication101Root.CdwMedications.CdwMedication;
 import java.util.LinkedList;
@@ -26,7 +27,7 @@ public class MedicationTransformer implements MedicationController.Transformer {
     return CodeableConcept.builder().text(code.getText()).coding(coding(code.getCoding())).build();
   }
 
-  private List<Coding> coding(List<gov.va.dvp.cdw.xsd.model.CdwCoding> coding) {
+  List<Coding> coding(List<gov.va.dvp.cdw.xsd.model.CdwCoding> coding) {
     if (coding == null) {
       return null;
     }
@@ -46,14 +47,17 @@ public class MedicationTransformer implements MedicationController.Transformer {
     return Medication.builder()
         .id(medication.getCdwId())
         .resourceType("Medication")
-        .text(narrative(medication.getText()))
+        .text(text(medication.getText()))
         .code(code(medication.getCode()))
         .product(product(medication.getProduct()))
         .build();
   }
 
-  Narrative narrative(String text) {
-    return Narrative.builder().div("<div>" + text + "</div>").build();
+  Narrative text(String text) {
+    return Narrative.builder()
+        .div("<div>" + text + "</div>")
+        .status(NarrativeStatus.additional)
+        .build();
   }
 
   Product product(CdwMedication101Root.CdwMedications.CdwMedication.CdwProduct product) {
