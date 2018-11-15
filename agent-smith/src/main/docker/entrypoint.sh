@@ -10,7 +10,6 @@ EOF
   exit 1
 }
 
-cd /tmp/src/test/jmeter
-#jmeter -n -t Agent-Smith.jmx -l /tmp/results/output.jtl -q user.properties
+cd /tmp
 mvn clean verify
 tail -f /dev/null
