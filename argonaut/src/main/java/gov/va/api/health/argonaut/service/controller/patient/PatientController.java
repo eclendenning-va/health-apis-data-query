@@ -13,6 +13,7 @@ import gov.va.api.health.argonaut.service.mranderson.client.MrAndersonClient;
 import gov.va.api.health.argonaut.service.mranderson.client.Query;
 import gov.va.dvp.cdw.xsd.model.CdwPatient103Root;
 import gov.va.dvp.cdw.xsd.model.CdwPatient103Root.CdwPatients.CdwPatient;
+import java.util.Collections;
 import java.util.function.Function;
 import javax.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
@@ -60,7 +61,7 @@ public class PatientController {
     return bundler.bundle(
         BundleContext.of(
             linkConfig,
-            root.getPatients().getPatient(),
+            root.getPatients() == null ? Collections.emptyList() : root.getPatients().getPatient(),
             patientTransformer,
             Patient.Entry::new,
             Patient.Bundle::new));
