@@ -72,8 +72,7 @@ public class MedicationTransformerTest {
 
   @Test
   public void codingReturnsNullForNull() {
-    MedicationTransformer medicationTransformer = new MedicationTransformer();
-    assertThat(medicationTransformer.coding(null)).isNull();
+    assertThat(transformer().coding(null)).isNull();
   }
 
   @Test
@@ -82,6 +81,11 @@ public class MedicationTransformerTest {
         Narrative.builder().div("<div>hello</div>").status(NarrativeStatus.additional).build();
     Narrative actual = transformer().text("hello");
     assertThat(actual).isEqualTo(expected);
+  }
+
+  @Test
+  public void textNarrativeIsNullIfTextIsNull() {
+    assertThat(transformer().text(null)).isNull();
   }
 
   private MedicationTransformer transformer() {
