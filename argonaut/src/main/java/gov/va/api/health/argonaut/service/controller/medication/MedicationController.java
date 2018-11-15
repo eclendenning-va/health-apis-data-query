@@ -12,6 +12,7 @@ import java.util.function.Function;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,31 +26,33 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(
   value = {"/api/Medication"},
-  produces = {"application/json"}
+  produces = {"application/json", "application/json+fhir", "application/fhir+json"}
 )
 @AllArgsConstructor(onConstructor = @__({@Autowired}))
 @Slf4j
 public class MedicationController {
 
   private Transformer medicationTransformer;
-  private MrAndersonClient client;
+  private MrAndersonClient mrAndersonClient;
 
   /** Read by id. */
   @GetMapping(value = {"/{publicId}"})
   public Medication read(@PathVariable("publicId") String publicId) {
 
+    return medicationTransformer.apply(
+        firstPayloadItem(
+            hasPayload(search(Parameters.forIdentity(publicId)).getMedications().getMedication())));
+  }
+
+  private CdwMedication101Root search(MultiValueMap<String, String> params) {
     Query<CdwMedication101Root> query =
         Query.forType(CdwMedication101Root.class)
             .profile(Query.Profile.ARGONAUT)
             .resource("Medication")
             .version("1.01")
-            .parameters(Parameters.forIdentity(publicId))
+            .parameters(params)
             .build();
-
-    CdwMedication101Root root = client.search(query);
-
-    return medicationTransformer.apply(
-        firstPayloadItem(hasPayload(root.getMedications()).getMedication()));
+    return mrAndersonClient.search(query);
   }
 
   public interface Transformer

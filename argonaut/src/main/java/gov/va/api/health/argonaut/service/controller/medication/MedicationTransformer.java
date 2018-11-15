@@ -10,6 +10,7 @@ import gov.va.dvp.cdw.xsd.model.CdwMedication101Root;
 import gov.va.dvp.cdw.xsd.model.CdwMedication101Root.CdwMedications.CdwMedication;
 import java.util.LinkedList;
 import java.util.List;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -27,7 +28,7 @@ public class MedicationTransformer implements MedicationController.Transformer {
     return CodeableConcept.builder().text(code.getText()).coding(coding(code.getCoding())).build();
   }
 
-  private List<Coding> coding(List<gov.va.dvp.cdw.xsd.model.CdwCoding> coding) {
+  List<Coding> coding(List<gov.va.dvp.cdw.xsd.model.CdwCoding> coding) {
     if (coding == null) {
       return null;
     }
@@ -47,16 +48,19 @@ public class MedicationTransformer implements MedicationController.Transformer {
     return Medication.builder()
         .id(medication.getCdwId())
         .resourceType("Medication")
-        .text(narrative(medication.getText()))
+        .text(text(medication.getText()))
         .code(code(medication.getCode()))
         .product(product(medication.getProduct()))
         .build();
   }
 
-  Narrative narrative(String text) {
+  Narrative text(String text) {
+    if (StringUtils.isEmpty(text)) {
+      return null;
+    }
     return Narrative.builder()
-        .status(NarrativeStatus.additional)
         .div("<div>" + text + "</div>")
+        .status(NarrativeStatus.additional)
         .build();
   }
 
