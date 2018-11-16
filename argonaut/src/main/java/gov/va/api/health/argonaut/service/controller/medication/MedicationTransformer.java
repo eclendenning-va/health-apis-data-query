@@ -29,7 +29,7 @@ public class MedicationTransformer implements MedicationController.Transformer {
   }
 
   List<Coding> coding(List<gov.va.dvp.cdw.xsd.model.CdwCoding> coding) {
-    if (coding == null) {
+    if (coding == null || coding.isEmpty()) {
       return null;
     }
     LinkedList<Coding> argoCodings = new LinkedList<>();

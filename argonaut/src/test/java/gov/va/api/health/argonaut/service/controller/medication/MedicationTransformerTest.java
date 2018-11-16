@@ -13,6 +13,7 @@ import gov.va.dvp.cdw.xsd.model.CdwMedication101Root.CdwMedications.CdwMedicatio
 import gov.va.dvp.cdw.xsd.model.CdwMedication101Root.CdwMedications.CdwMedication.CdwProduct;
 import java.math.BigInteger;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import javax.xml.datatype.DatatypeFactory;
 import lombok.SneakyThrows;
@@ -45,6 +46,12 @@ public class MedicationTransformerTest {
   @Test
   public void codingReturnsNullForNull() {
     assertThat(transformer().coding(null)).isNull();
+  }
+
+  @Test
+  public void codingReturnsNullForEmptyList() {
+    LinkedList<CdwCoding> emptyCodings = new LinkedList<>();
+    assertThat(transformer().coding(emptyCodings)).isNull();
   }
 
   @Test
