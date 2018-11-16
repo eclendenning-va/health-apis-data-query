@@ -17,7 +17,7 @@ Enhancing Agent Smith is easiest through the GUI client of JMeter.
 
 1. Obtain the user.properties file from a team member.
 
-2. From the ~/agent-smith/src/main/docker directory, build the docker image with: `run docker build -t agent-smith:latest .`
+2. From the ~/agent-smith/src/main/docker directory, build the docker image with: `docker build -t agent-smith:latest .`
 
 3. From the same directory, run the docker image with: `docker run performance-test`
 
