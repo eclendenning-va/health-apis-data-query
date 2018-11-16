@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.ResourceAccessException;
 
 @AllArgsConstructor(onConstructor = @__({@Autowired}))
 @Component
@@ -33,8 +35,10 @@ public class SteelThreadSystemCheck implements HealthIndicator {
               "Status",
               "JArgonaut, MR-Anderson, IDS, and DB Stored Procedure all working as expected")
           .build();
-    } catch (MrAndersonClient.MrAndersonServiceException e) {
-      return Health.down().withDetail("Error", e).build();
+    } catch (HttpServerErrorException.InternalServerError
+        | ResourceAccessException
+        | MrAndersonClient.MrAndersonServiceException e) {
+      return Health.down().withDetail("Error Message", e.getMessage()).build();
     } catch (Exception e) {
       log.error("Failed to complete health check.", e);
       throw e;
