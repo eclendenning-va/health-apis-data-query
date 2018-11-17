@@ -15,7 +15,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.actuate.health.Status;
 
-public class HealthCheckTest {
+public class SteelThreadHealthCheckTest {
   @Mock MrAndersonClient client;
 
   @Before

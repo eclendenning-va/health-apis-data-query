@@ -2,6 +2,7 @@ package gov.va.api.health.argonaut.service.healthcheck;
 
 import gov.va.api.health.argonaut.service.controller.Parameters;
 import gov.va.api.health.argonaut.service.mranderson.client.MrAndersonClient;
+import gov.va.api.health.argonaut.service.mranderson.client.MrAndersonClient.MrAndersonServiceException;
 import gov.va.api.health.argonaut.service.mranderson.client.Query;
 import gov.va.dvp.cdw.xsd.model.CdwMedication101Root;
 import lombok.AllArgsConstructor;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.ResourceAccessException;
 
@@ -22,23 +24,26 @@ public class SteelThreadSystemCheck implements HealthIndicator {
 
   private final MrAndersonClient client;
 
-  @Value("${health.id}")
+  @Value("${health-check.medication-id}")
   private final String id;
 
   @Override
   @SneakyThrows
   public Health health() {
+    if ("skip".equals(id)) {
+      return Health.up().withDetail("skipped", true).build();
+    }
     try {
       client.search(query());
-      return Health.up()
-          .withDetail(
-              "Status",
-              "JArgonaut, MR-Anderson, IDS, and DB Stored Procedure all working as expected")
-          .build();
-    } catch (HttpServerErrorException.InternalServerError
+      return Health.up().build();
+    } catch (HttpServerErrorException
+        | HttpClientErrorException
         | ResourceAccessException
-        | MrAndersonClient.MrAndersonServiceException e) {
-      return Health.down().withDetail("Error Message", e.getMessage()).build();
+        | MrAndersonServiceException e) {
+      return Health.down()
+          .withDetail("exception", e.getClass())
+          .withDetail("message", e.getMessage())
+          .build();
     } catch (Exception e) {
       log.error("Failed to complete health check.", e);
       throw e;

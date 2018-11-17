@@ -130,6 +130,7 @@ checkForUnsetValues mr-anderson $PROFILE
 makeConfig argonaut $PROFILE
 configValue argonaut $PROFILE mranderson.url https://localhost:8088
 configValue argonaut $PROFILE argonaut.url https://localhost:8090 
+configValue argonaut $PROFILE health-check.medication-id 2f773f73-ad7f-56ca-891e-8e364c913fe0
 checkForUnsetValues argonaut $PROFILE
 
 makeSentinelSecrets
