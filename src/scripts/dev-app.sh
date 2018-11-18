@@ -7,8 +7,11 @@ $0 [options] <command>
 Start and stop applications
 
 Commands
- s, start  Start applications
- k, stop   Stop applications
+ r, restart   Restart applications
+ s, start     Start applications
+ st, status   Report status of applications
+ k, stop      Stop applications
+
 
 Options
  -a, --argonaut      Include Argonaut   
@@ -50,6 +53,20 @@ stopApp() {
 pidOf() {
   local app=$1
   jps -l | grep -E "target/$app-.*\.jar" | cut -d ' ' -f 1
+}
+
+statusOf() {
+  local app=$1
+  local pid=$(pidOf $app)
+  local running="RUNNING"
+  [ -z "$pid" ] && running="NOT RUNNING"
+  printf "%-11s   %-11s   %s\n" $app "$running" $pid
+}
+
+doStatus() {
+  statusOf ids
+  statusOf mr-anderson
+  statusOf argonaut
 }
 
 doStart() {
@@ -96,6 +113,8 @@ COMMAND=$1
 
 case $COMMAND in
   s|start) doStart;;
+  st|status) doStatus;;
   k|stop) doStop;;
+  r|restart) doStop;doStart;;
   *) usage "Unknown command: $COMMAND";;
 esac
