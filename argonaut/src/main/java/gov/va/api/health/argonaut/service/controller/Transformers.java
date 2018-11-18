@@ -4,6 +4,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import javax.xml.datatype.XMLGregorianCalendar;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -72,6 +73,33 @@ public final class Transformers {
       return null;
     }
     return maybeDateTime.toString();
+  }
+
+  /**
+   * Return null if the source list is null or empty, otherwise convert the items in the list and
+   * return a new one.
+   */
+  public static <T, R> List<R> convertAll(List<T> source, Function<T, R> mapper) {
+    if (source == null || source.isEmpty()) {
+      return null;
+    }
+    return source.stream().map(mapper).collect(Collectors.toList());
+  }
+
+  /** Return null if the given object is null, otherwise return the converted value. */
+  public static <T, R> R convert(T source, Function<T, R> mapper) {
+    if (source == null) {
+      return null;
+    }
+    return mapper.apply(source);
+  }
+
+  /** Return null if the given object is null, otherwise return the converted value. */
+  public static <R> R convertString(String source, Function<String, R> mapper) {
+    if (source == null || source.isEmpty()) {
+      return null;
+    }
+    return mapper.apply(source);
   }
 
   /**
