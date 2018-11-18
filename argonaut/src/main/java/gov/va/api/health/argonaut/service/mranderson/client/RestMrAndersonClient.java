@@ -9,10 +9,11 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
 /** A rest implementation of the Mr. Anderson client. */
@@ -37,22 +38,23 @@ public class RestMrAndersonClient implements MrAndersonClient {
 
   @Override
   public <T> T search(Query<T> query) {
-    ResponseEntity<T> entity =
-        restTemplate.exchange(
-            urlOf(query),
-            HttpMethod.GET,
-            requestEntity(),
-            ParameterizedTypeReference.forType(query.type()));
-    if (entity.getStatusCode() == HttpStatus.NOT_FOUND) {
+    try {
+
+      ResponseEntity<T> entity =
+          restTemplate.exchange(
+              urlOf(query),
+              HttpMethod.GET,
+              requestEntity(),
+              ParameterizedTypeReference.forType(query.type()));
+      return entity.getBody();
+
+    } catch (HttpClientErrorException.NotFound e) {
       throw new NotFound(query);
-    }
-    if (entity.getStatusCode() == HttpStatus.BAD_REQUEST) {
+    } catch (HttpClientErrorException.BadRequest e) {
       throw new BadRequest(query);
-    }
-    if (entity.getStatusCode().isError()) {
+    } catch (HttpStatusCodeException e) {
       throw new SearchFailed(query);
     }
-    return entity.getBody();
   }
 
   private String urlOf(Query<?> query) {

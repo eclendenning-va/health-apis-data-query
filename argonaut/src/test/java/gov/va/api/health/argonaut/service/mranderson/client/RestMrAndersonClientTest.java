@@ -22,6 +22,8 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 public class RestMrAndersonClientTest {
@@ -41,26 +43,24 @@ public class RestMrAndersonClientTest {
   @Test
   public void badRequestIsThrownFor400Status() {
     thrown.expect(BadRequest.class);
-    mockResponse(HttpStatus.BAD_REQUEST, null);
+    mockErrorResponse(
+        HttpClientErrorException.create(HttpStatus.BAD_REQUEST, "x", null, null, null));
     client.search(query());
   }
 
-  private void mockResponse(HttpStatus status, CdwPatient103Root body) {
-    ResponseEntity response = mock(ResponseEntity.class);
-    when(response.getStatusCode()).thenReturn(status);
-    when(response.getBody()).thenReturn(body);
+  private void mockErrorResponse(Exception throwMe) {
     when(rt.exchange(
             Mockito.anyString(),
             Mockito.eq(HttpMethod.GET),
             Mockito.any(HttpEntity.class),
             Mockito.any(ParameterizedTypeReference.class)))
-        .thenReturn(response);
+        .thenThrow(throwMe);
   }
 
   @Test
   public void notFoundIsThrownFor404Status() {
     thrown.expect(NotFound.class);
-    mockResponse(HttpStatus.NOT_FOUND, null);
+    mockErrorResponse(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "x", null, null, null));
     client.search(query());
   }
 
@@ -75,18 +75,28 @@ public class RestMrAndersonClientTest {
 
   @Test
   public void responseBodyIsReturnedFor200Status() {
-    thrown.expect(SearchFailed.class);
-    mockResponse(HttpStatus.INTERNAL_SERVER_ERROR, null);
-    client.search(query());
-  }
-
-  @Test
-  public void searchFailedIsThrownForNonOkStatus() {
     CdwPatient103Root root = new CdwPatient103Root();
-    mockResponse(HttpStatus.OK, root);
+    ResponseEntity response = mock(ResponseEntity.class);
+    when(response.getStatusCode()).thenReturn(HttpStatus.OK);
+    when(response.getBody()).thenReturn(root);
+    when(rt.exchange(
+            Mockito.anyString(),
+            Mockito.eq(HttpMethod.GET),
+            Mockito.any(HttpEntity.class),
+            Mockito.any(ParameterizedTypeReference.class)))
+        .thenReturn(response);
     CdwPatient103Root actual = client.search(query());
     assertThat(actual).isSameAs(root);
     query().hashCode();
     query().equals(query());
+  }
+
+  @Test
+  public void searchFailedIsThrownForNonOkStatus() {
+    thrown.expect(SearchFailed.class);
+    mockErrorResponse(
+        HttpServerErrorException.create(HttpStatus.INTERNAL_SERVER_ERROR, "x", null, null, null));
+
+    client.search(query());
   }
 }
