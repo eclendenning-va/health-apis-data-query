@@ -1,6 +1,9 @@
 package gov.va.api.health.argonaut.api;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
+import gov.va.api.health.argonaut.api.elements.Element;
+import gov.va.api.health.argonaut.api.elements.Extension;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import javax.validation.Valid;
@@ -16,20 +19,28 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-@Schema(description = "http://hl7.org/fhir/DSTU2/datatypes.html#Quantity")
-public class Quantity implements Element {
+@Schema(description = "http://hl7.org/fhir/DSTU2/datatypes.html#Identifier")
+public class Identifier implements Element {
   @Pattern(regexp = Fhir.ID)
   String id;
 
   @Valid List<Extension> extension;
 
-  Double value;
+  IdentifierUse use;
 
-  @Pattern(regexp = "(<|<=|>=|>)")
-  String comparator;
+  @Valid CodeableConcept type;
 
-  String unit;
+  @Pattern(regexp = Fhir.URI)
+  String system;
 
-  @Pattern(regexp = Fhir.CODE)
-  String code;
+  String value;
+  @Valid Period period;
+  @Valid Reference assigner;
+
+  public enum IdentifierUse {
+    usual,
+    official,
+    temp,
+    secondary
+  }
 }

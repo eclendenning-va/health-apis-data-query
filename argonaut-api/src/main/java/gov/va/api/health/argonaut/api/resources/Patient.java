@@ -6,6 +6,16 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import gov.va.api.health.argonaut.api.bundle.AbstractBundle;
 import gov.va.api.health.argonaut.api.bundle.AbstractEntry;
 import gov.va.api.health.argonaut.api.bundle.BundleLink;
+import gov.va.api.health.argonaut.api.datatypes.Address;
+import gov.va.api.health.argonaut.api.datatypes.Attachment;
+import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
+import gov.va.api.health.argonaut.api.datatypes.ContactPoint;
+import gov.va.api.health.argonaut.api.datatypes.HumanName;
+import gov.va.api.health.argonaut.api.datatypes.Identifier;
+import gov.va.api.health.argonaut.api.elements.BackboneElement;
+import gov.va.api.health.argonaut.api.elements.Extension;
+import gov.va.api.health.argonaut.api.elements.Meta;
+import gov.va.api.health.argonaut.api.elements.Narrative;
 import gov.va.api.health.argonaut.api.validation.RelatedFields;
 import gov.va.api.health.argonaut.api.validation.ZeroOrOneOf;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -31,17 +41,14 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @Schema(
-  description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-patient.html"
-)
+    description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-patient.html")
 @RelatedFields({
   @ZeroOrOneOf(
-    fields = {"deceasedBoolean", "deceasedDateTime"},
-    message = "Only one deceased value may be specified"
-  ),
+      fields = {"deceasedBoolean", "deceasedDateTime"},
+      message = "Only one deceased value may be specified"),
   @ZeroOrOneOf(
-    fields = {"multipleBirthBoolean", "multipleBirthInteger"},
-    message = "Only one multiple birth value may be specified"
-  )
+      fields = {"multipleBirthBoolean", "multipleBirthInteger"},
+      message = "Only one multiple birth value may be specified")
 })
 public class Patient implements Resource {
 
@@ -84,21 +91,21 @@ public class Patient implements Resource {
   @Valid List<Communication> communication;
   @Valid List<Reference> careProvider;
   @Valid Reference managingOrganization;
-  @Valid List<Link> link;
+  @Valid List<PatientLink> link;
 
   private boolean isValidArgonautExtensionCount(String url, int maxAllowedOmbExtensionCount) {
     if (extension == null) {
       return true;
     }
     Optional<Extension> argonautExtension =
-        extension.stream().filter(e -> url.equals(e.url)).findFirst();
+        extension.stream().filter(e -> url.equals(e.url())).findFirst();
     if (!argonautExtension.isPresent()) {
       return true;
     }
     int ombExtensionCount = 0;
     int textExtensionCount = 0;
-    for (Extension e : argonautExtension.get().extension) {
-      switch (e.url) {
+    for (Extension e : argonautExtension.get().extension()) {
+      switch (e.url()) {
         case "ombCategory":
           ombExtensionCount++;
           break;
@@ -126,6 +133,7 @@ public class Patient implements Resource {
         "http://fhir.org/guides/argonaut/StructureDefinition/argo-race", 5);
   }
 
+  @SuppressWarnings("unused")
   public enum Gender {
     male,
     female,
@@ -157,6 +165,43 @@ public class Patient implements Resource {
   }
 
   @Data
+  @Builder
+  @NoArgsConstructor(access = AccessLevel.PRIVATE)
+  @AllArgsConstructor
+  @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+  public static class Communication implements BackboneElement {
+    @Pattern(regexp = Fhir.ID)
+    String id;
+
+    @Valid List<Extension> modifierExtension;
+    @Valid List<Extension> extension;
+    @NotBlank @Valid CodeableConcept language;
+    Boolean preferred;
+  }
+
+  @Data
+  @Builder
+  @NoArgsConstructor(access = AccessLevel.PRIVATE)
+  @AllArgsConstructor
+  @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+  public static class Contact implements BackboneElement {
+    @Pattern(regexp = Fhir.ID)
+    String id;
+
+    @Valid List<Extension> modifierExtension;
+    @Valid List<Extension> extension;
+    @Valid List<CodeableConcept> relationship;
+    @Valid HumanName name;
+    @Valid List<ContactPoint> telecom;
+    @Valid Address address;
+
+    Gender gender;
+
+    @Valid Reference organization;
+    @Valid Period period;
+  }
+
+  @Data
   @NoArgsConstructor
   @EqualsAndHashCode(callSuper = true)
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
@@ -176,5 +221,22 @@ public class Patient implements Resource {
         @Valid Response response) {
       super(id, extension, modifierExtension, link, fullUrl, resource, search, request, response);
     }
+  }
+
+  @Data
+  @Builder
+  @NoArgsConstructor(access = AccessLevel.PRIVATE)
+  @AllArgsConstructor
+  @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+  public static class PatientLink implements BackboneElement {
+    @Pattern(regexp = Fhir.ID)
+    String id;
+
+    @Valid List<Extension> modifierExtension;
+    @Valid List<Extension> extension;
+    @Valid Reference other;
+
+    @Pattern(regexp = Fhir.CODE)
+    String type;
   }
 }

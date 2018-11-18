@@ -1,6 +1,9 @@
 package gov.va.api.health.argonaut.api;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import gov.va.api.health.argonaut.api.elements.Element;
+import gov.va.api.health.argonaut.api.elements.Extension;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.Pattern;
@@ -15,26 +18,28 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-public class Contact implements BackboneElement {
+@Schema(description = "http://hl7.org/fhir/DSTU2/datatypes.html#HumanName")
+public class HumanName implements Element {
   @Pattern(regexp = Fhir.ID)
   String id;
 
-  @Valid List<Extension> modifierExtension;
   @Valid List<Extension> extension;
-  @Valid List<CodeableConcept> relationship;
-  @Valid HumanName name;
-  @Valid List<ContactPoint> telecom;
-  @Valid Address address;
 
-  Gender gender;
-
-  @Valid Reference organization;
+  NameUse use;
+  String text;
+  List<String> family;
+  List<String> given;
+  List<String> prefix;
+  List<String> suffix;
   @Valid Period period;
 
-  public enum Gender {
-    male,
-    female,
-    other,
-    unknown
+  public enum NameUse {
+    usual,
+    official,
+    temp,
+    nickname,
+    anonymous,
+    old,
+    maiden
   }
 }

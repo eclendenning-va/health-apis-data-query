@@ -1,8 +1,8 @@
 package gov.va.api.health.argonaut.api;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import gov.va.api.health.argonaut.api.elements.Meta;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.Pattern;
 import lombok.AccessLevel;
@@ -16,28 +16,17 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-@Schema(description = "http://hl7.org/fhir/DSTU2/datatypes.html#Identifier")
-public class Identifier implements Element {
+@Schema(description = "https://www.hl7.org/fhir/resource.html")
+public class SimpleResource implements Resource {
   @Pattern(regexp = Fhir.ID)
   String id;
 
-  @Valid List<Extension> extension;
-
-  IdentifierUse use;
-
-  @Valid CodeableConcept type;
+  @Valid Meta meta;
 
   @Pattern(regexp = Fhir.URI)
-  String system;
+  @Schema()
+  String implicitRules;
 
-  String value;
-  @Valid Period period;
-  @Valid Reference assigner;
-
-  public enum IdentifierUse {
-    usual,
-    official,
-    temp,
-    secondary
-  }
+  @Pattern(regexp = Fhir.CODE)
+  String language;
 }

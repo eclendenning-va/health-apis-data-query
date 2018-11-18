@@ -1,11 +1,11 @@
 package gov.va.api.health.argonaut.api;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import gov.va.api.health.argonaut.api.elements.Element;
+import gov.va.api.health.argonaut.api.elements.Extension;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -18,28 +18,16 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-@Schema(description = "https://www.hl7.org/fhir/operationoutcome.html")
-public class OperationOutcome implements DomainResource {
-
+@Schema(description = "http://hl7.org/fhir/DSTU2/datatypes.html#Period")
+public class Period implements Element {
   @Pattern(regexp = Fhir.ID)
   String id;
 
-  @NotBlank String resourceType;
-  @Valid Meta meta;
-
-  @Pattern(regexp = Fhir.URI)
-  String implicitRules;
-
-  @Pattern(regexp = Fhir.CODE)
-  String language;
-
-  @Valid Narrative text;
-
-  @Valid List<SimpleResource> contained;
-
-  @Valid List<Extension> modifierExtension;
-
   @Valid List<Extension> extension;
 
-  @NotEmpty @Valid List<Issue> issue;
+  @Pattern(regexp = Fhir.DATETIME)
+  String start;
+
+  @Pattern(regexp = Fhir.DATETIME)
+  String end;
 }

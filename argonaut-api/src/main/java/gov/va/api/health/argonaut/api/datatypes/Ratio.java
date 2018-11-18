@@ -1,6 +1,8 @@
 package gov.va.api.health.argonaut.api;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import gov.va.api.health.argonaut.api.elements.Element;
+import gov.va.api.health.argonaut.api.elements.Extension;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import javax.validation.Valid;
@@ -16,16 +18,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-@Schema(description = "http://hl7.org/fhir/DSTU2/datatypes.html#Period")
-public class Period implements Element {
+@Schema(description = "http://hl7.org/fhir/DSTU2/datatypes.html#Ratio")
+public class Ratio implements Element {
   @Pattern(regexp = Fhir.ID)
   String id;
 
   @Valid List<Extension> extension;
-
-  @Pattern(regexp = Fhir.DATETIME)
-  String start;
-
-  @Pattern(regexp = Fhir.DATETIME)
-  String end;
+  @Valid Quantity numerator;
+  @Valid Quantity denominator;
 }

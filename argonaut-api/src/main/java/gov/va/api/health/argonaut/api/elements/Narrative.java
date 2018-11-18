@@ -1,6 +1,8 @@
 package gov.va.api.health.argonaut.api;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import gov.va.api.health.argonaut.api.elements.Element;
+import gov.va.api.health.argonaut.api.elements.Extension;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import javax.validation.Valid;
@@ -18,36 +20,23 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-@Schema(
-  description = "https://www.hl7.org/fhir/operationoutcome-definitions.html#OperationOutcome.issue"
-)
-public class Issue implements BackboneElement {
+@Schema(description = "http://hl7.org/fhir/DSTU2/narrative.html")
+public class Narrative implements Element {
   @Pattern(regexp = Fhir.ID)
   String id;
 
-  @Valid List<Extension> modifierExtension;
-
   @Valid List<Extension> extension;
 
-  @NotNull IssueSeverity severity;
+  @NotNull NarrativeStatus status;
 
   @NotBlank
-  @Pattern(regexp = Fhir.CODE)
-  @Schema(description = "http://hl7.org/fhir/DSTU2/valueset-issue-type.html")
-  String code;
+  @Pattern(regexp = Fhir.XHTML)
+  String div;
 
-  @Valid CodeableConcept details;
-
-  String diagnostics;
-
-  List<String> location;
-
-  List<String> expression;
-
-  public enum IssueSeverity {
-    fatal,
-    error,
-    warning,
-    information
+  public enum NarrativeStatus {
+    generated,
+    extensions,
+    additional,
+    empty
   }
 }

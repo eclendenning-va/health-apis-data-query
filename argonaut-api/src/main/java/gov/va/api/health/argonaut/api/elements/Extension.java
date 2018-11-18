@@ -1,6 +1,12 @@
 package gov.va.api.health.argonaut.api;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import gov.va.api.health.argonaut.api.datatypes.Address;
+import gov.va.api.health.argonaut.api.datatypes.Attachment;
+import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
+import gov.va.api.health.argonaut.api.datatypes.Coding;
+import gov.va.api.health.argonaut.api.datatypes.ContactPoint;
+import gov.va.api.health.argonaut.api.elements.Element;
 import gov.va.api.health.argonaut.api.validation.ZeroOrOneOf;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
