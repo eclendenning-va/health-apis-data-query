@@ -2,7 +2,10 @@ package gov.va.api.health.argonaut.service.controller.patient;
 
 import static gov.va.api.health.argonaut.service.controller.Transformers.asDateString;
 import static gov.va.api.health.argonaut.service.controller.Transformers.asDateTimeString;
+import static gov.va.api.health.argonaut.service.controller.Transformers.convert;
+import static gov.va.api.health.argonaut.service.controller.Transformers.convertAll;
 import static gov.va.api.health.argonaut.service.controller.Transformers.ifPresent;
+import static java.util.Collections.singletonList;
 
 import gov.va.api.health.argonaut.api.datatypes.Address;
 import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
@@ -45,106 +48,96 @@ import org.springframework.stereotype.Service;
 @Service
 public class PatientTransformer implements PatientController.Transformer {
 
-  Address address(CdwContact contact) {
-    if (contact == null) {
-      return null;
-    }
-    return Address.builder()
-        .line(addressLine(contact))
-        .city(contact.getCity())
-        .state(contact.getState())
-        .country(contact.getCountry())
-        .postalCode(contact.getPostalCode())
-        .build();
+  Address address(CdwContact source) {
+    return convert(
+        source,
+        cdw ->
+            Address.builder()
+                .line(addressLine(cdw))
+                .city(cdw.getCity())
+                .state(cdw.getState())
+                .country(cdw.getCountry())
+                .postalCode(cdw.getPostalCode())
+                .build());
   }
 
-  List<String> addressLine(CdwContact contact) {
+  List<String> addressLine(CdwContact source) {
+    return addressLines(
+        source.getStreetAddress1(), source.getStreetAddress2(), source.getStreetAddress3());
+  }
+
+  List<String> addressLine(CdwAddress source) {
+    return addressLines(
+        source.getStreetAddress1(), source.getStreetAddress2(), source.getStreetAddress3());
+  }
+
+  private List<String> addressLines(String line1, String line2, String line3) {
     List<String> line = new LinkedList<>();
-    if (StringUtils.isNotBlank(contact.getStreetAddress1())) {
-      line.add(contact.getStreetAddress1());
+    if (StringUtils.isNotBlank(line1)) {
+      line.add(line1);
     }
-    if (StringUtils.isNotBlank(contact.getStreetAddress2())) {
-      line.add(contact.getStreetAddress2());
+    if (StringUtils.isNotBlank(line2)) {
+      line.add(line2);
     }
-    if (StringUtils.isNotBlank(contact.getStreetAddress3())) {
-      line.add(contact.getStreetAddress3());
+    if (StringUtils.isNotBlank(line3)) {
+      line.add(line3);
     }
     return line.isEmpty() ? null : line;
   }
 
-  List<String> addressLine(CdwAddress address) {
-    List<String> line = new LinkedList<>();
-    if (StringUtils.isNotBlank(address.getStreetAddress1())) {
-      line.add(address.getStreetAddress1());
-    }
-    if (StringUtils.isNotBlank(address.getStreetAddress2())) {
-      line.add(address.getStreetAddress2());
-    }
-    if (StringUtils.isNotBlank(address.getStreetAddress3())) {
-      line.add(address.getStreetAddress3());
-    }
-    return line.isEmpty() ? null : line;
-  }
-
-  List<Address> addresses(CdwAddresses addresses) {
-    if (addresses == null) {
-      return Collections.emptyList();
-    }
-    List<Address> argoAddresses = new LinkedList<>();
-    for (CdwAddress address : addresses.getAddress()) {
-      argoAddresses.add(
-          Address.builder()
-              .line(addressLine(address))
-              .city(address.getCity())
-              .state(address.getState())
-              .postalCode(address.getPostalCode())
-              .build());
-    }
-    return argoAddresses;
+  List<Address> addresses(CdwAddresses optionalSource) {
+    return convertAll(
+        ifPresent(optionalSource, CdwAddresses::getAddress),
+        cdw ->
+            Address.builder()
+                .line(addressLine(cdw))
+                .city(cdw.getCity())
+                .state(cdw.getState())
+                .postalCode(cdw.getPostalCode())
+                .build());
   }
 
   @Override
-  public Patient apply(CdwPatient patient) {
-
-    return patient(patient);
+  public Patient apply(CdwPatient source) {
+    return patient(source);
   }
 
-  Optional<Extension> argoBirthSex(CdwBirthsexExtension argoBirthsex) {
-    if (argoBirthsex == null) {
+  Optional<Extension> argoBirthSex(CdwBirthsexExtension optionalSource) {
+    if (optionalSource == null) {
       return Optional.empty();
     }
     return Optional.of(
         Extension.builder()
-            .url(argoBirthsex.getUrl())
-            .valueCode(ifPresent(argoBirthsex.getValueCode(), CdwBirthSexCodes::value))
+            .url(optionalSource.getUrl())
+            .valueCode(ifPresent(optionalSource.getValueCode(), CdwBirthSexCodes::value))
             .build());
   }
 
-  Optional<Extension> argoEthnicity(List<CdwExtensions> argoEthnicity) {
-    if (argoEthnicity.isEmpty()) {
+  Optional<Extension> argoEthnicity(List<CdwExtensions> optionalSource) {
+    if (optionalSource.isEmpty()) {
       return Optional.empty();
     }
     return Optional.of(
         Extension.builder()
-            .url(argoEthnicity.get(0).getUrl())
-            .extension(argonautExtensions(argoEthnicity.get(0).getExtension()))
+            .url(optionalSource.get(0).getUrl())
+            .extension(argonautExtensions(optionalSource.get(0).getExtension()))
             .build());
   }
 
-  Optional<Extension> argoRace(List<CdwExtensions> argoRace) {
-    if (argoRace.isEmpty()) {
+  Optional<Extension> argoRace(List<CdwExtensions> optionalSource) {
+    if (optionalSource.isEmpty()) {
       return Optional.empty();
     }
     return Optional.of(
         Extension.builder()
-            .url(argoRace.get(0).getUrl())
-            .extension(argonautExtensions(argoRace.get(0).getExtension()))
+            .url(optionalSource.get(0).getUrl())
+            .extension(argonautExtensions(optionalSource.get(0).getExtension()))
             .build());
   }
 
-  List<Extension> argonautExtensions(List<CdwExtension> argonautExtensions) {
+  List<Extension> argonautExtensions(List<CdwExtension> source) {
     List<Extension> extensions = new LinkedList<>();
-    for (CdwExtension extension : argonautExtensions) {
+    for (CdwExtension extension : source) {
       if ("text".equals(extension.getUrl())) {
         extensions.add(
             Extension.builder()
@@ -162,50 +155,44 @@ public class PatientTransformer implements PatientController.Transformer {
     return extensions;
   }
 
-  List<ContactPoint> contact(CdwContact contact) {
-    if (contact == null || StringUtils.isBlank(contact.getPhone())) {
+  List<ContactPoint> contact(CdwContact optionalSource) {
+    if (optionalSource == null || StringUtils.isBlank(optionalSource.getPhone())) {
       return Collections.emptyList();
     }
-    return Collections.singletonList(
+    return singletonList(
         ContactPoint.builder()
             .system(ContactPoint.ContactPointSystem.phone)
-            .value(contact.getPhone())
+            .value(optionalSource.getPhone())
             .build());
   }
 
-  List<CodeableConcept> contactRelationship(CdwRelationship relationship) {
-    return Collections.singletonList(
+  List<CodeableConcept> contactRelationship(CdwRelationship source) {
+    return singletonList(
         CodeableConcept.builder()
-            .coding(contactRelationshipCoding(relationship.getCoding()))
-            .text(relationship.getText())
+            .coding(contactRelationshipCoding(source.getCoding()))
+            .text(source.getText())
             .build());
   }
 
-  List<Coding> contactRelationshipCoding(CdwRelationship.CdwCoding relationship) {
-    return Collections.singletonList(
+  List<Coding> contactRelationshipCoding(CdwRelationship.CdwCoding source) {
+    return singletonList(
         Coding.builder()
-            .system(ifPresent(relationship.getSystem(), CdwPatientContactRelationshipSystem::value))
-            .code(ifPresent(relationship.getCode(), CdwPatientContactRelationshipCodes::value))
-            .display(relationship.getDisplay())
+            .system(ifPresent(source.getSystem(), CdwPatientContactRelationshipSystem::value))
+            .code(ifPresent(source.getCode(), CdwPatientContactRelationshipCodes::value))
+            .display(source.getDisplay())
             .build());
   }
 
-  List<Contact> contacts(CdwContacts contacts) {
-    if (contacts == null) {
-      return null;
-    }
-    List<Contact> argoContacts = new LinkedList<>();
-    for (CdwContact contact : contacts.getContact()) {
-      argoContacts.add(
-          Contact.builder()
-              .relationship(contactRelationship(contact.getRelationship()))
-              .name(humanName(contact.getName()))
-              .telecom(contact(contact))
-              .address(address(contact))
-              .build());
-    }
-
-    return argoContacts;
+  List<Contact> contacts(CdwContacts optionalSource) {
+    return convertAll(
+        ifPresent(optionalSource, CdwContacts::getContact),
+        cdw ->
+            Contact.builder()
+                .relationship(contactRelationship(cdw.getRelationship()))
+                .name(humanName(cdw.getName()))
+                .telecom(contact(cdw))
+                .address(address(cdw))
+                .build());
   }
 
   List<Extension> extensions(
@@ -217,132 +204,118 @@ public class PatientTransformer implements PatientController.Transformer {
     return extensions;
   }
 
-  HumanName humanName(String name) {
-    if (name == null) {
-      return null;
-    }
-    return HumanName.builder().text(name).build();
+  HumanName humanName(String optionalSource) {
+    return convert(optionalSource, cdw -> HumanName.builder().text(cdw).build());
   }
 
-  Reference identifierAssigner(CdwAssigner assigner) {
-    return Reference.builder().display(assigner.getDisplay()).build();
+  Reference identifierAssigner(CdwAssigner optionalSource) {
+    return Reference.builder().display(optionalSource.getDisplay()).build();
   }
 
-  CodeableConcept identifierType(CdwIdentifier.CdwType type) {
-    return CodeableConcept.builder().coding(identifierTypeCodings(type.getCoding())).build();
+  CodeableConcept identifierType(CdwIdentifier.CdwType source) {
+    return CodeableConcept.builder().coding(identifierTypeCodings(source.getCoding())).build();
   }
 
-  List<Coding> identifierTypeCodings(List<CdwIdentifier.CdwType.CdwCoding> codings) {
-    List<Coding> argoCodings = new LinkedList<>();
-    for (CdwIdentifier.CdwType.CdwCoding coding : codings) {
-      argoCodings.add(Coding.builder().system(coding.getSystem()).code(coding.getCode()).build());
-    }
-    return argoCodings;
+  List<Coding> identifierTypeCodings(List<CdwIdentifier.CdwType.CdwCoding> optionalSource) {
+    return convertAll(
+        optionalSource,
+        cdw -> Coding.builder().system(cdw.getSystem()).code(cdw.getCode()).build());
   }
 
-  Identifier.IdentifierUse identifierUse(CdwIdentifier identifier) {
-    return ifPresent(identifier.getUse(), use -> Identifier.IdentifierUse.valueOf(use.value()));
+  Identifier.IdentifierUse identifierUse(CdwIdentifier source) {
+    return ifPresent(source.getUse(), use -> Identifier.IdentifierUse.valueOf(use.value()));
   }
 
-  List<Identifier> identifiers(List<CdwIdentifier> identifiers) {
-    List<Identifier> argoIdentifiers = new LinkedList<>();
-    for (CdwIdentifier identifier : identifiers) {
-      argoIdentifiers.add(
-          Identifier.builder()
-              .use(identifierUse(identifier))
-              .type(identifierType(identifier.getType()))
-              .system(identifier.getSystem())
-              .value(identifier.getValue())
-              .assigner(identifierAssigner(identifier.getAssigner()))
-              .build());
-    }
-    return argoIdentifiers;
+  List<Identifier> identifiers(List<CdwIdentifier> optionalSource) {
+    return convertAll(
+        optionalSource,
+        cdw ->
+            Identifier.builder()
+                .use(identifierUse(cdw))
+                .type(identifierType(cdw.getType()))
+                .system(cdw.getSystem())
+                .value(cdw.getValue())
+                .assigner(identifierAssigner(cdw.getAssigner()))
+                .build());
   }
 
-  CodeableConcept maritalStatus(CdwMaritalStatus maritalStatus) {
-    if (maritalStatus == null) {
-      return null;
-    }
-    return CodeableConcept.builder()
-        .text(maritalStatus.getText())
-        .coding(maritalStatusCoding(maritalStatus.getCoding()))
-        .build();
+  CodeableConcept maritalStatus(CdwMaritalStatus optionalSource) {
+    return convert(
+        optionalSource,
+        cdw ->
+            CodeableConcept.builder()
+                .text(cdw.getText())
+                .coding(maritalStatusCoding(cdw.getCoding()))
+                .build());
   }
 
-  List<Coding> maritalStatusCoding(List<CdwMaritalStatus.CdwCoding> codings) {
-    List<Coding> argoCodings = new LinkedList<>();
-    for (CdwMaritalStatus.CdwCoding coding : codings) {
-      argoCodings.add(
-          Coding.builder()
-              .system(ifPresent(coding.getSystem(), CdwMaritalStatusSystems::value))
-              .code(ifPresent(coding.getCode(), CdwMaritalStatusCodes::value))
-              .display(coding.getDisplay())
-              .build());
-    }
-    return argoCodings;
+  List<Coding> maritalStatusCoding(List<CdwMaritalStatus.CdwCoding> optionalSource) {
+    return convertAll(
+        optionalSource,
+        cdw ->
+            Coding.builder()
+                .system(ifPresent(cdw.getSystem(), CdwMaritalStatusSystems::value))
+                .code(ifPresent(cdw.getCode(), CdwMaritalStatusCodes::value))
+                .display(cdw.getDisplay())
+                .build());
   }
 
-  List<HumanName> names(CdwName name) {
-    if (name == null) {
-      return Collections.emptyList();
-    }
-    return Collections.singletonList(
-        HumanName.builder()
-            .use(ifPresent(name.getUse(), HumanName.NameUse::valueOf))
-            .text(name.getText())
-            .family(Collections.singletonList(name.getFamily()))
-            .given(Collections.singletonList(name.getGiven()))
-            .build());
+  List<HumanName> names(CdwName optionalSource) {
+    return convert(
+        optionalSource,
+        cdw ->
+            singletonList(
+                HumanName.builder()
+                    .use(ifPresent(cdw.getUse(), HumanName.NameUse::valueOf))
+                    .text(cdw.getText())
+                    .family(singletonList(cdw.getFamily()))
+                    .given(singletonList(cdw.getGiven()))
+                    .build()));
   }
 
-  private Patient patient(CdwPatient patient) {
+  private Patient patient(CdwPatient source) {
     return Patient.builder()
-        .id(patient.getCdwId())
+        .id(source.getCdwId())
         .resourceType("Patient")
         .extension(
             extensions(
-                argoRace(patient.getArgoRace()),
-                argoEthnicity(patient.getArgoEthnicity()),
-                argoBirthSex(patient.getArgoBirthsex())))
-        .identifier(identifiers(patient.getIdentifier()))
-        .name(names(patient.getName()))
-        .telecom(telecoms(patient.getTelecoms()))
-        .address(addresses(patient.getAddresses()))
-        .gender(ifPresent(patient.getGender(), gender -> Patient.Gender.valueOf(gender.value())))
-        .birthDate(asDateString(patient.getBirthDate()))
-        .deceasedBoolean(patient.isDeceasedBoolean())
-        .deceasedDateTime(asDateTimeString(patient.getDeceasedDateTime()))
-        .maritalStatus(maritalStatus(patient.getMaritalStatus()))
-        .contact(contacts(patient.getContacts()))
+                argoRace(source.getArgoRace()),
+                argoEthnicity(source.getArgoEthnicity()),
+                argoBirthSex(source.getArgoBirthsex())))
+        .identifier(identifiers(source.getIdentifier()))
+        .name(names(source.getName()))
+        .telecom(telecoms(source.getTelecoms()))
+        .address(addresses(source.getAddresses()))
+        .gender(ifPresent(source.getGender(), gender -> Patient.Gender.valueOf(gender.value())))
+        .birthDate(asDateString(source.getBirthDate()))
+        .deceasedBoolean(source.isDeceasedBoolean())
+        .deceasedDateTime(asDateTimeString(source.getDeceasedDateTime()))
+        .maritalStatus(maritalStatus(source.getMaritalStatus()))
+        .contact(contacts(source.getContacts()))
         .build();
   }
 
-  List<ContactPoint> telecoms(CdwTelecoms telecoms) {
-    if (telecoms == null) {
-      return Collections.emptyList();
-    }
-    List<ContactPoint> contactPoints = new LinkedList<>();
-    for (CdwTelecoms.CdwTelecom telecom : telecoms.getTelecom()) {
-      contactPoints.add(
-          ContactPoint.builder()
-              .system(
-                  ifPresent(
-                      telecom.getSystem(),
-                      system -> ContactPoint.ContactPointSystem.valueOf(system.value())))
-              .value(telecom.getValue())
-              .use(
-                  ifPresent(
-                      telecom.getUse(), use -> ContactPoint.ContactPointUse.valueOf(use.value())))
-              .build());
-    }
-    return contactPoints;
+  List<ContactPoint> telecoms(CdwTelecoms optionalSource) {
+    return convertAll(
+        ifPresent(optionalSource, CdwTelecoms::getTelecom),
+        cdw ->
+            ContactPoint.builder()
+                .system(
+                    ifPresent(
+                        cdw.getSystem(),
+                        system -> ContactPoint.ContactPointSystem.valueOf(system.value())))
+                .value(cdw.getValue())
+                .use(
+                    ifPresent(
+                        cdw.getUse(), use -> ContactPoint.ContactPointUse.valueOf(use.value())))
+                .build());
   }
 
-  Coding valueCoding(CdwValueCoding valueCoding) {
+  Coding valueCoding(CdwValueCoding source) {
     return Coding.builder()
-        .display(valueCoding.getDisplay())
-        .code(valueCoding.getCode())
-        .system(valueCoding.getSystem())
+        .display(source.getDisplay())
+        .code(source.getCode())
+        .system(source.getSystem())
         .build();
   }
 }

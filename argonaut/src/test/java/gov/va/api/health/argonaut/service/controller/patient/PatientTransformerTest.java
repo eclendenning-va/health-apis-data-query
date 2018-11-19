@@ -69,8 +69,8 @@ public class PatientTransformerTest {
   }
 
   @Test
-  public void addressessReturnsEmptyListForNull() {
-    assertThat(transformer().addresses(null)).isEmpty();
+  public void addressessReturnsNullListForNull() {
+    assertThat(transformer().addresses(null)).isNull();
   }
 
   @SuppressWarnings("OptionalGetWithoutIsPresent")
@@ -315,8 +315,8 @@ public class PatientTransformerTest {
   }
 
   @Test
-  public void namesReturnsEmptyForNull() {
-    assertThat(transformer().names(null)).isEmpty();
+  public void namesReturnsNullForNull() {
+    assertThat(transformer().names(null)).isNull();
   }
 
   @Test
@@ -351,8 +351,8 @@ public class PatientTransformerTest {
   }
 
   @Test
-  public void telecomsReturnsEmptyForNull() {
-    assertThat(transformer().telecoms(null)).isEmpty();
+  public void telecomsReturnsNullForNull() {
+    assertThat(transformer().telecoms(null)).isNull();
   }
 
   private PatientTransformer transformer() {
