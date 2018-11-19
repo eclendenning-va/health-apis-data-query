@@ -37,8 +37,13 @@ public class ArgonautReadAndSearchIT {
   public static List<Object[]> parameters() {
     TestIds ids = IdRegistrar.of(Sentinel.get().system()).registeredIds();
     return Arrays.asList(
+        // Medication
         expect(200, Medication.class, "/api/Medication/{id}", ids.medication()),
         expect(404, OperationOutcome.class, "/api/Medication/{id}", ids.unknown()),
+        expect(200, Medication.Bundle.class, "/api/Medication?_id={id}", ids.medication()),
+        expect(200, Medication.Bundle.class, "/api/Medication?identifier={id}", ids.medication()),
+        expect(404, OperationOutcome.class, "/api/Medication?_id={id}", ids.unknown()),
+        // Patient
         expect(200, Patient.class, "/api/Patient/{id}", ids.patient()),
         expect(404, OperationOutcome.class, "/api/Patient/{id}", ids.unknown()),
         expect(200, Patient.Bundle.class, "/api/Patient?_id={id}", ids.patient()),

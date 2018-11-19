@@ -4,4 +4,4 @@ mvn \
   -P'!standard' \
   -DskipTests \
   -Dexec.waitForInterrupt=true \
-  clean pre-integration-test
+  clean package pre-integration-test

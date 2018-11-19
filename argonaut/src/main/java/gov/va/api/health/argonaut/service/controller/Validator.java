@@ -18,7 +18,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(staticName = "create")
 public class Validator {
 
-  private OperationOutcome ok() {
+  /**
+   * Return a new "all ok" validation response. This is the payload that indicates the validated
+   * bundle is valid.
+   */
+  public static OperationOutcome ok() {
     return OperationOutcome.builder()
         .resourceType("OperationOutcome")
         .id("allok")

@@ -15,11 +15,31 @@ class MockCall {
   private int count;
   private String fhirString;
 
+  private String aliasOf(String key) {
+    if ("_id".equals(key)) {
+      return "identifier";
+    }
+    return key;
+  }
+
   boolean matches(MockEntries.Entry e) {
-    return e.page() == page()
-        && e.count() == count()
-        && e.query().startsWith(resourceAndVersion())
-        && parametersOf(fhirString()).equals(parametersOf(e.query()));
+
+    if (!e.query().startsWith(resourceAndVersion())) {
+      return false;
+    }
+
+    MultiValueMap<String, String> entryParams = parametersOf(e.query());
+    if (!parametersOf(fhirString()).equals(entryParams)) {
+      return false;
+    }
+    if (entryParams.size() == 1 && entryParams.keySet().contains("identifier")) {
+      /*
+       * Page and count don't matter for read
+       */
+      return true;
+    }
+
+    return e.page() == page() && e.count() == count();
   }
 
   private MultiValueMap<String, String> parametersOf(String resourceVersionParams) {
@@ -29,7 +49,7 @@ class MockCall {
       Arrays.stream(parts[1].split("&"))
           .filter(p -> !p.startsWith("page=") && !p.startsWith("_count="))
           .map(kv -> kv.split("="))
-          .forEach(kv -> params.add(kv[0], kv[1]));
+          .forEach(kv -> params.add(aliasOf(kv[0]), kv[1]));
     }
     return params;
   }

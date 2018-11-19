@@ -43,7 +43,7 @@ import lombok.NoArgsConstructor;
 @Schema(
   description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-medication.html"
 )
-public class Medication {
+public class Medication implements Resource {
 
   @Pattern(regexp = Fhir.ID)
   String id;
