@@ -19,7 +19,7 @@ public class MrAndersonV1ApiControllerTest {
 
   @Mock Resources resources;
 
-  MrAndersonV1ApiController controller;
+  private MrAndersonV1ApiController controller;
 
   @Before
   public void _init() {

@@ -18,6 +18,7 @@ final class ResourceIdentities {
   }
 
   /** The CDW system value. */
+  @SuppressWarnings("SameReturnValue")
   public static String cdw() {
     return "CDW";
   }

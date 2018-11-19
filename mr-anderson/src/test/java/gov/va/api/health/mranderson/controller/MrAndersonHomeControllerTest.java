@@ -21,7 +21,9 @@ import org.springframework.util.StreamUtils;
 @RunWith(SpringRunner.class)
 @WebMvcTest(controllers = {MrAndersonHomeController.class})
 public class MrAndersonHomeControllerTest {
-  @MockBean Resources resources;
+  @SuppressWarnings("unused")
+  @MockBean
+  Resources resources;
 
   @Autowired private MockMvc mvc;
 

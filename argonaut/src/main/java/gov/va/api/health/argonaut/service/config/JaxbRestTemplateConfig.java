@@ -15,6 +15,7 @@ import org.springframework.web.client.RestTemplate;
  *
  * <p>Use the @{@link WithJaxb} qualifier.
  */
+@SuppressWarnings("WeakerAccess")
 @Configuration
 @AllArgsConstructor(onConstructor = @__({@Autowired}))
 public class JaxbRestTemplateConfig {

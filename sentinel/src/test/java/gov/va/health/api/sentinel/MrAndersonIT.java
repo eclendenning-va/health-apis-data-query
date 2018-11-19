@@ -8,7 +8,7 @@ import org.junit.Test;
 @Slf4j
 public class MrAndersonIT {
 
-  private IdRegistrar registrar = IdRegistrar.of(Sentinel.get().system());
+  private final IdRegistrar registrar = IdRegistrar.of(Sentinel.get().system());
 
   private TestIds ids() {
     return registrar.registeredIds();

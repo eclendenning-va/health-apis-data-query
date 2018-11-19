@@ -34,7 +34,7 @@ class MockCall {
     return params;
   }
 
-  String resourceAndVersion() {
+  private String resourceAndVersion() {
     return fhirString.split("\\?")[0];
   }
 }

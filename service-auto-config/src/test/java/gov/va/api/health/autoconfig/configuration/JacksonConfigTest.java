@@ -41,6 +41,7 @@ public class JacksonConfigTest {
     assertThat(supplier.get()).isNotNull();
   }
 
+  @SuppressWarnings("WeakerAccess")
   @Value
   @Builder
   public static class CandyYaml {
@@ -48,6 +49,7 @@ public class JacksonConfigTest {
     int ml;
   }
 
+  @SuppressWarnings("WeakerAccess")
   @Data
   @NoArgsConstructor(access = AccessLevel.PRIVATE)
   @AllArgsConstructor

@@ -1,11 +1,14 @@
 package gov.va.api.health.argonaut.service.controller.patient;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import gov.va.api.health.argonaut.api.datatypes.Address;
 import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
 import gov.va.api.health.argonaut.api.datatypes.Coding;
 import gov.va.api.health.argonaut.api.datatypes.ContactPoint;
+import gov.va.api.health.argonaut.api.datatypes.ContactPoint.ContactPointUse;
 import gov.va.api.health.argonaut.api.datatypes.HumanName;
 import gov.va.api.health.argonaut.api.datatypes.Identifier;
 import gov.va.api.health.argonaut.api.elements.Extension;
@@ -31,7 +34,6 @@ import gov.va.dvp.cdw.xsd.model.CdwPatient103Root.CdwPatients.CdwPatient.CdwCont
 import gov.va.dvp.cdw.xsd.model.CdwPatientContactRelationshipCodes;
 import gov.va.dvp.cdw.xsd.model.CdwPatientContactRelationshipSystem;
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -43,8 +45,8 @@ import org.junit.Test;
 
 public class PatientTransformerTest {
 
-  private XmlSampleData cdw = new XmlSampleData();
-  private PatientSampleData expectedPatient = new PatientSampleData();
+  private final XmlSampleData cdw = new XmlSampleData();
+  private final PatientSampleData expectedPatient = new PatientSampleData();
 
   @Test
   public void addressReturnsNullForNull() {
@@ -360,29 +362,20 @@ public class PatientTransformerTest {
   static class PatientSampleData {
 
     List<Address> address() {
-      List<Address> addresses = new LinkedList<>();
-      addresses.add(Address.builder().state("Missing*").build());
-      List<String> line1 = new LinkedList<>();
-      line1.add("1234 Test Road");
-      line1.add("Testland");
-      line1.add("Test POSTGRES");
-      addresses.add(
+      return asList(
+          Address.builder().state("Missing*").build(),
           Address.builder()
-              .line(line1)
+              .line(asList("1234 Test Road", "Testland", "Test POSTGRES"))
               .city("Testville")
               .state("Testlina")
               .postalCode("12345")
-              .build());
-      List<String> line2 = new LinkedList<>();
-      line2.add("9876 Fake Lane");
-      addresses.add(
+              .build(),
           Address.builder()
-              .line(line2)
+              .line(singletonList("9876 Fake Lane"))
               .city("Fooville")
               .state("Foolina")
               .postalCode("98765")
               .build());
-      return addresses;
     }
 
     Patient alivePatient() {
@@ -403,97 +396,80 @@ public class PatientTransformerTest {
     }
 
     List<Extension> argoCdwExtensions() {
-      List<Extension> CdwExtensions = new ArrayList<>(3);
+      List<Extension> race =
+          asList(
+              Extension.builder()
+                  .url("ombTest")
+                  .valueCoding(coding("http://test-race", "R4C3", "tester"))
+                  .build(),
+              Extension.builder().url("text").valueString("tester").build());
 
-      List<Extension> raceCdwExtensions = new LinkedList<>();
-      raceCdwExtensions.add(
-          Extension.builder()
-              .url("ombTest")
-              .valueCoding(
-                  Coding.builder()
-                      .system("http://test-race")
-                      .code("R4C3")
-                      .display("tester")
-                      .build())
-              .build());
-      raceCdwExtensions.add(Extension.builder().url("text").valueString("tester").build());
+      List<Extension> ethnicity =
+          asList(
+              Extension.builder()
+                  .url("ombTest")
+                  .valueCoding(coding("http://test-ethnicity", "3THN1C1TY", "testa"))
+                  .build(),
+              Extension.builder().url("text").valueString("testa").build());
 
-      List<Extension> ethnicityCdwExtensions = new LinkedList<>();
-      ethnicityCdwExtensions.add(
-          Extension.builder()
-              .url("ombTest")
-              .valueCoding(
-                  Coding.builder()
-                      .system("http://test-ethnicity")
-                      .code("3THN1C1TY")
-                      .display("testa")
-                      .build())
-              .build());
-      ethnicityCdwExtensions.add(Extension.builder().url("text").valueString("testa").build());
+      return asList(
+          Extension.builder().url("http://test-race").extension(race).build(),
+          Extension.builder().url("http://test-ethnicity").extension(ethnicity).build(),
+          Extension.builder().url("http://test-birthsex").valueCode("M").build());
+    }
 
-      CdwExtensions.add(
-          Extension.builder().url("http://test-race").extension(raceCdwExtensions).build());
-      CdwExtensions.add(
-          Extension.builder()
-              .url("http://test-ethnicity")
-              .extension(ethnicityCdwExtensions)
-              .build());
-      CdwExtensions.add(Extension.builder().url("http://test-birthsex").valueCode("M").build());
-      return CdwExtensions;
+    private CodeableConcept codeableConcept(String text, List<Coding> codings) {
+      return CodeableConcept.builder().coding(codings).text(text).build();
+    }
+
+    Coding coding(String system, String code, String display) {
+      return Coding.builder().system(system).code(code).display(display).build();
+    }
+
+    List<Coding> codingList(String system, String code, String display) {
+      return singletonList(coding(system, code, display));
     }
 
     List<Contact> contact() {
-      List<Contact> contacts = new LinkedList<>();
-
-      List<String> line1 = new LinkedList<>();
-      line1.add("123 Happy Avenue");
-      line1.add("456 Smile Drive");
-      line1.add("789 Laughter Lane");
-      contacts.add(
+      return asList(
           Contact.builder()
               .relationship(relationship())
               .name(HumanName.builder().text("DUCK, DAFFY JOHN").build())
-              .telecom(
-                  Collections.singletonList(
-                      ContactPoint.builder()
-                          .system(ContactPoint.ContactPointSystem.phone)
-                          .value("9998886666")
-                          .build()))
+              .telecom(singletonList(contactPoint("9998886666")))
               .address(
                   Address.builder()
-                      .line(line1)
+                      .line(asList("123 Happy Avenue", "456 Smile Drive", "789 Laughter Lane"))
                       .city("Happyland")
                       .state("Happylina")
                       .postalCode("12345")
                       .country("USA")
                       .build())
-              .build());
-
-      List<String> line2 = new LinkedList<>();
-      line2.add("123 Sad Avenue");
-      line2.add("456 Frown Drive");
-      line2.add("789 Weeping Lane");
-      contacts.add(
+              .build(),
           Contact.builder()
               .relationship(relationship())
               .name(HumanName.builder().text("ALICE, TEST JANE").build())
-              .telecom(
-                  Collections.singletonList(
-                      ContactPoint.builder()
-                          .system(ContactPoint.ContactPointSystem.phone)
-                          .value("1112224444")
-                          .build()))
+              .telecom(singletonList(contactPoint("1112224444")))
               .address(
                   Address.builder()
-                      .line(line2)
+                      .line(asList("123 Sad Avenue", "456 Frown Drive", "789 Weeping Lane"))
                       .city("Sadland")
                       .state("Sadlina")
                       .postalCode("98765")
                       .country("USA")
                       .build())
               .build());
+    }
 
-      return contacts;
+    private ContactPoint contactPoint(String s) {
+      return ContactPoint.builder().system(ContactPoint.ContactPointSystem.phone).value(s).build();
+    }
+
+    private ContactPoint contactPoint(String s, ContactPointUse home) {
+      return ContactPoint.builder()
+          .system(ContactPoint.ContactPointSystem.phone)
+          .value(s)
+          .use(home)
+          .build();
     }
 
     Patient deceasedPatient() {
@@ -520,9 +496,7 @@ public class PatientTransformerTest {
               .use(Identifier.IdentifierUse.usual)
               .type(
                   CodeableConcept.builder()
-                      .coding(
-                          Collections.singletonList(
-                              Coding.builder().system("http://test-code").code("C0D3").build()))
+                      .coding(codingList("http://test-code", "C0D3", null))
                       .build())
               .system("http://test-system")
               .value("123456789")
@@ -533,57 +507,32 @@ public class PatientTransformerTest {
     }
 
     CodeableConcept maritalStatus() {
-      return CodeableConcept.builder()
-          .coding(
-              Collections.singletonList(
-                  Coding.builder()
-                      .system("http://hl7.org/fhir/marital-status")
-                      .code("M")
-                      .display("Married")
-                      .build()))
-          .text("testMarriage")
-          .build();
+      return codeableConcept(
+          "testMarriage", codingList("http://hl7.org/fhir/marital-status", "M", "Married"));
     }
 
     List<HumanName> name() {
-      return Collections.singletonList(
+      return singletonList(
           HumanName.builder()
               .use(HumanName.NameUse.usual)
               .text("FOOMAN FOO")
-              .family(Collections.singletonList("FOO"))
-              .given(Collections.singletonList("FOOMAN"))
+              .family(singletonList("FOO"))
+              .given(singletonList("FOOMAN"))
               .build());
     }
 
     List<CodeableConcept> relationship() {
-      return Collections.singletonList(
-          CodeableConcept.builder()
-              .coding(
-                  Collections.singletonList(
-                      Coding.builder()
-                          .system("http://hl7.org/fhir/patient-contact-relationship")
-                          .code("emergency")
-                          .display("Emergency")
-                          .build()))
-              .text("Emergency Contact")
-              .build());
+      return singletonList(
+          codeableConcept(
+              "Emergency Contact",
+              codingList(
+                  "http://hl7.org/fhir/patient-contact-relationship", "emergency", "Emergency")));
     }
 
     List<ContactPoint> telecom() {
-      List<ContactPoint> telecoms = new LinkedList<>();
-      telecoms.add(
-          ContactPoint.builder()
-              .system(ContactPoint.ContactPointSystem.phone)
-              .value("9998886666")
-              .use(ContactPoint.ContactPointUse.home)
-              .build());
-      telecoms.add(
-          ContactPoint.builder()
-              .system(ContactPoint.ContactPointSystem.phone)
-              .value("1112224444")
-              .use(ContactPoint.ContactPointUse.work)
-              .build());
-      return telecoms;
+      return asList(
+          contactPoint("9998886666", ContactPointUse.home),
+          contactPoint("1112224444", ContactPointUse.work));
     }
   }
 

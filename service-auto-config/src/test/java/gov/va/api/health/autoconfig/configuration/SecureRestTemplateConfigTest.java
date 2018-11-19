@@ -1,5 +1,7 @@
 package gov.va.api.health.autoconfig.configuration;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import gov.va.api.health.autoconfig.configuration.SecureRestTemplateConfig.FailedToConfigureSsl;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -127,8 +129,8 @@ public class SecureRestTemplateConfigTest {
   }
 
   private RestTemplate makeOne(SslClientProperties props) {
-    props.equals(new SslClientProperties());
-    props.hashCode();
+    assertThat(props.equals(new SslClientProperties())).isFalse();
+    assertThat(props.hashCode()).isNotEqualTo(1);
     RestTemplateBuilder rtb = new RestTemplateBuilder();
     return new SecureRestTemplateConfig(props).restTemplate(rtb);
   }

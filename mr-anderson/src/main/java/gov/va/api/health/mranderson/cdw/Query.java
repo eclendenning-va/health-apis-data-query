@@ -3,6 +3,7 @@ package gov.va.api.health.mranderson.cdw;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.Builder;
@@ -37,7 +38,7 @@ public class Query {
           parameters
               .entrySet()
               .stream()
-              .sorted(Comparator.comparing(e -> e.getKey()))
+              .sorted(Comparator.comparing(Entry::getKey))
               .flatMap(Query::toKeyValueString)
               .collect(Collectors.joining("&"));
       msg.append('?').append(params);

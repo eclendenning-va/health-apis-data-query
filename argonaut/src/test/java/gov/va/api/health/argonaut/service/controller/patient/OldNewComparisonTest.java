@@ -24,6 +24,6 @@ public class OldNewComparisonTest {
     Patient oldPatient =
         JacksonConfig.createMapper()
             .readValue(getClass().getResourceAsStream("/cdw/old-patient-1.03.json"), Patient.class);
-    assertThat(newPatient).isEqualTo(newPatient);
+    assertThat(newPatient).isEqualTo(oldPatient);
   }
 }

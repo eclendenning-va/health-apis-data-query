@@ -13,12 +13,12 @@ import lombok.RequiredArgsConstructor;
  * MockEntityReturnDriver}
  */
 @RequiredArgsConstructor(staticName = "of")
-public class MockEntityReturnClob implements Clob {
+class MockEntityReturnClob implements Clob {
 
   private final String value;
 
   @Override
-  public void free() throws SQLException {
+  public void free() {
     /* noop */
   }
 
@@ -38,13 +38,13 @@ public class MockEntityReturnClob implements Clob {
   }
 
   @Override
-  public String getSubString(long pos, int length) throws SQLException {
+  public String getSubString(long pos, int length) {
     /* Don't support substring */
     return value;
   }
 
   @Override
-  public long length() throws SQLException {
+  public long length() {
     return value.length();
   }
 

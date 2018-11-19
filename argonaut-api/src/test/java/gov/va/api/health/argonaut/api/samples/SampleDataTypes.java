@@ -3,6 +3,7 @@ package gov.va.api.health.argonaut.api.samples;
 import static java.util.Collections.singletonList;
 
 import gov.va.api.health.argonaut.api.bundle.AbstractEntry;
+import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
 import gov.va.api.health.argonaut.api.datatypes.Coding;
 import gov.va.api.health.argonaut.api.datatypes.Quantity;
 import gov.va.api.health.argonaut.api.datatypes.Ratio;
@@ -14,11 +15,17 @@ import gov.va.api.health.argonaut.api.elements.Narrative;
 import gov.va.api.health.argonaut.api.elements.Narrative.NarrativeStatus;
 import gov.va.api.health.argonaut.api.elements.Reference;
 import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.List;
 import lombok.NoArgsConstructor;
 
-@SuppressWarnings("WeakerAccess")
+@SuppressWarnings({"WeakerAccess", "unused"})
 @NoArgsConstructor(staticName = "get")
 public final class SampleDataTypes {
+
+  public CodeableConcept codeableConcept() {
+    return CodeableConcept.builder().coding(codingList()).text("code text test").build();
+  }
 
   public Coding coding() {
     return Coding.builder()
@@ -28,6 +35,10 @@ public final class SampleDataTypes {
         .display("Hello Display")
         .userSelected(true)
         .build();
+  }
+
+  public List<Coding> codingList() {
+    return Collections.singletonList(coding());
   }
 
   public Extension extension() {

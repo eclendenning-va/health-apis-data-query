@@ -1,5 +1,7 @@
 package gov.va.health.api.sentinel;
 
+import static java.util.Collections.singletonList;
+
 import gov.va.api.health.ids.api.Registration;
 import gov.va.api.health.ids.api.ResourceIdentity;
 import java.util.Arrays;
@@ -15,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 @Value
 @AllArgsConstructor(staticName = "of")
 @Slf4j
-public class IdRegistrar {
+class IdRegistrar {
 
   SystemDefinition system;
 
@@ -32,7 +34,8 @@ public class IdRegistrar {
   }
 
   /** Register a CDW identity and return the registered UUID. */
-  public String register(String resource, String id) {
+  @SuppressWarnings("SameParameterValue")
+  String register(String resource, String id) {
     ResourceIdentity identity =
         ResourceIdentity.builder().system("CDW").resource(resource).identifier(id).build();
     log.info("Registering {}", identity);
@@ -40,7 +43,7 @@ public class IdRegistrar {
         system()
             .clients()
             .ids()
-            .post("/api/v1/ids", Arrays.asList(identity))
+            .post("/api/v1/ids", singletonList(identity))
             .expect(201)
             .expectListOf(Registration.class);
     return findUuid(registrations, identity);

@@ -4,6 +4,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.Builder;
@@ -45,7 +46,7 @@ public class Query<T> {
    * Returns a Mr. Anderson formatted query string, /profile/resource/version?key=value&key=value.
    * The query parameters will be sorted alphabetically.
    */
-  public String toQueryString() {
+  String toQueryString() {
     StringBuilder msg = new StringBuilder();
     msg.append('/')
         .append(profile().toPathString())
@@ -58,7 +59,7 @@ public class Query<T> {
           parameters()
               .entrySet()
               .stream()
-              .sorted(Comparator.comparing(e -> e.getKey()))
+              .sorted(Comparator.comparing(Entry::getKey))
               .flatMap(Query::toKeyValueString)
               .collect(Collectors.joining("&"));
       msg.append('?').append(params);
@@ -67,6 +68,7 @@ public class Query<T> {
   }
 
   /** The Argonaut profile to request. */
+  @SuppressWarnings("unused")
   public enum Profile {
     ARGONAUT,
     DSTU2,

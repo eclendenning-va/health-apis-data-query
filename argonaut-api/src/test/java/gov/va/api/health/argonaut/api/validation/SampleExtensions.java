@@ -13,6 +13,7 @@ import java.util.LinkedList;
 import java.util.List;
 import lombok.NoArgsConstructor;
 
+@SuppressWarnings("WeakerAccess")
 @NoArgsConstructor(staticName = "get")
 class SampleExtensions {
 

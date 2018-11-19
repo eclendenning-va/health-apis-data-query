@@ -69,12 +69,11 @@ public class ModelTest {
   }
 
   @SneakyThrows
-  private <T> T roundTrip(T object) {
+  private <T> void roundTrip(T object) {
     ObjectMapper mapper = new JacksonConfig().objectMapper();
     String json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(object);
     log.info("{}", json);
     Object evilTwin = mapper.readValue(json, object.getClass());
     assertThat(evilTwin).isEqualTo(object);
-    return object;
   }
 }

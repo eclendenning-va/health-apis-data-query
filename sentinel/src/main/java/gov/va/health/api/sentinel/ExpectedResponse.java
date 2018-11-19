@@ -19,12 +19,12 @@ import lombok.extern.slf4j.Slf4j;
 @Value
 @AllArgsConstructor(staticName = "of")
 @Slf4j
-public class ExpectedResponse {
+class ExpectedResponse {
 
   Response response;
 
   /** Expect the HTTP status code to be the given value. */
-  public ExpectedResponse expect(int statusCode) {
+  ExpectedResponse expect(int statusCode) {
     try {
       response.then().statusCode(statusCode);
     } catch (AssertionError e) {
@@ -38,7 +38,7 @@ public class ExpectedResponse {
    * Expect the body to be JSON represented by the given type, using the project standard {@link
    * JacksonConfig} object mapper.
    */
-  public <T> T expect(Class<T> type) {
+  private <T> T expect(Class<T> type) {
     try {
       return JacksonConfig.createMapper().readValue(response().asByteArray(), type);
     } catch (IOException e) {
@@ -51,7 +51,7 @@ public class ExpectedResponse {
    * Expect the body to be a JSON list represented by the given type, using the project standard
    * {@link JacksonConfig} object mapper.
    */
-  public <T> List<T> expectListOf(Class<T> type) {
+  <T> List<T> expectListOf(Class<T> type) {
     try {
       ObjectMapper mapper = JacksonConfig.createMapper();
       return mapper.readValue(
@@ -67,7 +67,7 @@ public class ExpectedResponse {
    * Expect the body to be JSON represented by the given type, using the project standard {@link
    * JacksonConfig} object mapper, then perform Javax Validation against it.
    */
-  public <T> T expectValid(Class<T> type) {
+  <T> T expectValid(Class<T> type) {
     T payload = expect(type);
     Set<ConstraintViolation<T>> violations =
         Validation.buildDefaultValidatorFactory().getValidator().validate(payload);
@@ -90,7 +90,8 @@ public class ExpectedResponse {
     throw new AssertionError(message.toString());
   }
 
-  public ExpectedResponse log() {
+  @SuppressWarnings("UnusedReturnValue")
+  private ExpectedResponse log() {
     response().then().log().all();
     return this;
   }

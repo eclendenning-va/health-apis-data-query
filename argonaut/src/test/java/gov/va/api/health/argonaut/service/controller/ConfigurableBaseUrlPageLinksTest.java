@@ -11,7 +11,7 @@ import org.junit.Test;
 
 public class ConfigurableBaseUrlPageLinksTest {
 
-  ConfigurableBaseUrlPageLinks links;
+  private ConfigurableBaseUrlPageLinks links;
 
   @Before
   public void _init() {

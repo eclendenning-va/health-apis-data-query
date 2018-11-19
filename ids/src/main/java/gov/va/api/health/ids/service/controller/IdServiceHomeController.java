@@ -21,6 +21,7 @@ public class IdServiceHomeController {
   private Resource openapi;
 
   /** The OpenAPI specific content in yaml form. */
+  @SuppressWarnings("WeakerAccess")
   @Bean
   public String openapiContent() throws IOException {
     try (InputStream is = openapi.getInputStream()) {

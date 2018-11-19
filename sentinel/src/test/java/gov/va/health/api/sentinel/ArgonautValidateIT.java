@@ -6,7 +6,7 @@ import org.junit.Test;
 
 public class ArgonautValidateIT {
 
-  private TestIds ids = IdRegistrar.of(Sentinel.get().system()).registeredIds();
+  private final TestIds ids = IdRegistrar.of(Sentinel.get().system()).registeredIds();
 
   private TestClient argonaut() {
     return Sentinel.get().clients().argonaut();

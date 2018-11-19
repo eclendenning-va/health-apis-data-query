@@ -24,21 +24,21 @@ class XmlResponseValidator {
     this.response = response;
   }
 
-  private String extractErrorNumberValueOrDie() {
-    XPath xpath = XPathFactory.newInstance().newXPath();
-    try {
-      return xpath.compile("/root/errorNumber").evaluate(response);
-    } catch (XPathExpressionException e) {
-      throw new SearchFailed(query, "Do not understand XML response. Error Number: <missing>");
-    }
-  }
-
   private int asIntegerOrDie(String errorNumberValue) {
     try {
       return Integer.parseInt(errorNumberValue);
     } catch (NumberFormatException e) {
       throw new SearchFailed(
           query, "Do not understand XML response. Error Number: " + errorNumberValue);
+    }
+  }
+
+  private String extractErrorNumberValueOrDie() {
+    XPath xpath = XPathFactory.newInstance().newXPath();
+    try {
+      return xpath.compile("/root/errorNumber").evaluate(response);
+    } catch (XPathExpressionException e) {
+      throw new SearchFailed(query, "Do not understand XML response. Error Number: <missing>");
     }
   }
 
@@ -55,9 +55,9 @@ class XmlResponseValidator {
     }
   }
 
-  private static class ErrorNumbers {
-    static int NO_ERROR = 0;
-    static int UNKNOWN_RESOURCE = -8;
-    static int BAD_PARAMETERS = -999;
+  private interface ErrorNumbers {
+    int NO_ERROR = 0;
+    int UNKNOWN_RESOURCE = -8;
+    int BAD_PARAMETERS = -999;
   }
 }

@@ -1,5 +1,6 @@
 package gov.va.api.health.mranderson.controller;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -41,6 +42,7 @@ import org.springframework.web.method.annotation.ExceptionHandlerMethodResolver;
 import org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver;
 import org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod;
 
+@SuppressWarnings("DefaultAnnotationParam")
 @RunWith(Parameterized.class)
 public class WebExceptionHandlerTest {
 
@@ -51,8 +53,8 @@ public class WebExceptionHandlerTest {
   public Exception exception;
 
   @Mock Resources resources;
-  WebExceptionHandler exceptionHandler;
-  MrAndersonV1ApiController controller;
+  private WebExceptionHandler exceptionHandler;
+  private MrAndersonV1ApiController controller;
 
   @Parameterized.Parameters(name = "{index}:{0} - {1}")
   public static List<Object[]> parameters() {
@@ -99,6 +101,7 @@ public class WebExceptionHandlerTest {
             Method method =
                 new ExceptionHandlerMethodResolver(WebExceptionHandler.class)
                     .resolveMethod(exception);
+            assertThat(method).isNotNull();
             return new ServletInvocableHandlerMethod(exceptionHandler, method);
           }
         };

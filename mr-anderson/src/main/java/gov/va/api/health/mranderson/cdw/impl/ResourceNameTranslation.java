@@ -38,8 +38,7 @@ final class ResourceNameTranslation {
    * </pre>
    */
   String fhirToIdentityService(String fhirName) {
-    return Arrays.asList(StringUtils.splitByCharacterTypeCamelCase(fhirName))
-        .stream()
+    return Arrays.stream(StringUtils.splitByCharacterTypeCamelCase(fhirName))
         .map(s -> s.toUpperCase(Locale.ENGLISH))
         .collect(Collectors.joining("_"));
   }
@@ -53,8 +52,7 @@ final class ResourceNameTranslation {
    * </pre>
    */
   String identityServiceToFhir(String identityServiceName) {
-    return Arrays.asList(StringUtils.splitByWholeSeparator(identityServiceName, "_"))
-        .stream()
+    return Arrays.stream(StringUtils.splitByWholeSeparator(identityServiceName, "_"))
         .map(s -> StringUtils.capitalize(s.toLowerCase(Locale.ENGLISH)))
         .collect(Collectors.joining());
   }

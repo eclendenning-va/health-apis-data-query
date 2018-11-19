@@ -25,6 +25,6 @@ public class ResourceIdentityDetailTest {
     assertThat(detail).isNotEqualTo(ResourceIdentityDetail.builder().pk(2).build());
     assertThat(detail).isNotEqualTo(null);
     assertThat(detail).isEqualTo(detail);
-    detail.toString();
+    assertThat(detail.toString()).isNotNull();
   }
 }

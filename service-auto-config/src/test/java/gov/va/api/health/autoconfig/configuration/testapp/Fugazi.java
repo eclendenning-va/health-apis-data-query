@@ -9,26 +9,27 @@ import lombok.Value;
 
 @Value
 @Builder
-public class Fugazi {
+class Fugazi {
   String thing;
   Instant time;
   CustomBuilder cb;
   Specified specified;
 
-  @Value
-  @Builder
-  @JsonDeserialize(builder = Specified.SpecifiedBuilder.class)
-  public static class Specified {
-    boolean troofs;
-  }
-
   @Data
   @Builder(builderMethodName = "makeOne", builderClassName = "CustomBuilderMaker")
   @JsonDeserialize(builder = CustomBuilder.CustomBuilderMaker.class)
-  public static class CustomBuilder {
+  static class CustomBuilder {
     int one;
 
+    @SuppressWarnings("DefaultAnnotationParam")
     @JsonPOJOBuilder(buildMethodName = "build", withPrefix = "")
-    public static class CustomBuilderMaker {}
+    static class CustomBuilderMaker {}
+  }
+
+  @Value
+  @Builder
+  @JsonDeserialize(builder = Specified.SpecifiedBuilder.class)
+  static class Specified {
+    boolean troofs;
   }
 }

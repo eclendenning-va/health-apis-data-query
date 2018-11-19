@@ -42,10 +42,7 @@ public class ZeroOrOneOfValidator implements ConstraintValidator<ZeroOrOneOf, Ob
         notNullCount++;
       }
     }
-    if (notNullCount > 1) {
-      return false;
-    }
-    return true;
+    return notNullCount <= 1;
   }
 
   /** Gets the value of the property provided. */

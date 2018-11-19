@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import gov.va.api.health.ids.api.Registration;
 import gov.va.api.health.ids.api.ResourceIdentity;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import org.junit.Test;
@@ -26,7 +26,7 @@ public class IdsIT {
 
     List<Registration> registrations =
         client()
-            .post("/api/resourceIdentity", Arrays.asList(identity))
+            .post("/api/resourceIdentity", Collections.singletonList(identity))
             .expect(201)
             .expectListOf(Registration.class);
     assertThat(registrations.size()).isEqualTo(1);
@@ -56,14 +56,14 @@ public class IdsIT {
 
     List<Registration> registrations =
         client()
-            .post("/api/v1/ids", Arrays.asList(identity))
+            .post("/api/v1/ids", Collections.singletonList(identity))
             .expect(201)
             .expectListOf(Registration.class);
     assertThat(registrations.size()).isEqualTo(1);
 
     List<Registration> repeatedRegistrations =
         client()
-            .post("/api/v1/ids", Arrays.asList(identity))
+            .post("/api/v1/ids", Collections.singletonList(identity))
             .expect(201)
             .expectListOf(Registration.class);
     assertThat(repeatedRegistrations).isEqualTo(registrations);
@@ -85,7 +85,7 @@ public class IdsIT {
 
     List<Registration> registrations =
         client()
-            .post("/api/v1/ids", Arrays.asList(identity))
+            .post("/api/v1/ids", Collections.singletonList(identity))
             .expect(201)
             .expectListOf(Registration.class);
     assertThat(registrations.size()).isEqualTo(1);
@@ -100,6 +100,6 @@ public class IdsIT {
   public void registerReturns400ForInvalidRequest() {
     ResourceIdentity identity =
         ResourceIdentity.builder().system("CDW").resource("WHATEVER").identifier(null).build();
-    client().post("/api/v1/ids", Arrays.asList(identity)).expect(400);
+    client().post("/api/v1/ids", Collections.singletonList(identity)).expect(400);
   }
 }

@@ -7,6 +7,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 /** A cleaner parameter map builder based on Spring' MultiValueMap. */
+@SuppressWarnings("UnusedReturnValue")
 @NoArgsConstructor(staticName = "builder")
 public class Parameters {
 

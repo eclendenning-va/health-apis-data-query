@@ -20,8 +20,8 @@ import org.junit.Test;
 @Slf4j
 public class PatientBundleTest {
 
-  private SamplePatients patientData = SamplePatients.get();
-  private SampleDataTypes dataTypes = SampleDataTypes.get();
+  private final SamplePatients patientData = SamplePatients.get();
+  private final SampleDataTypes dataTypes = SampleDataTypes.get();
 
   @Test
   public void bundlerCanBuildPatientBundles() {
@@ -60,12 +60,11 @@ public class PatientBundleTest {
   }
 
   @SneakyThrows
-  private <T> T roundTrip(T object) {
+  private <T> void roundTrip(T object) {
     ObjectMapper mapper = new JacksonConfig().objectMapper();
     String json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(object);
     log.info("{}", json);
     Object evilTwin = mapper.readValue(json, object.getClass());
     assertThat(evilTwin).isEqualTo(object);
-    return object;
   }
 }

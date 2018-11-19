@@ -20,8 +20,8 @@ import org.junit.Test;
 
 public class MedicationTransformerTest {
 
-  private XmlSampleData cdw = new XmlSampleData();
-  private MedicationSampleData expectedMedication = new MedicationSampleData();
+  private final XmlSampleData cdw = new XmlSampleData();
+  private final MedicationSampleData expectedMedication = new MedicationSampleData();
 
   @Test
   public void codeCodingListTransformsToCodingList() {
@@ -101,29 +101,24 @@ public class MedicationTransformerTest {
   private static class MedicationSampleData {
 
     CodeableConcept code() {
-      return CodeableConcept.builder()
-          .coding(
-              Collections.singletonList(
-                  Coding.builder()
-                      .system("system test")
-                      .code("code test")
-                      .display("display test")
-                      .build()))
-          .text("code text test")
-          .build();
+      return codeableConcept("code");
+    }
+
+    private CodeableConcept codeableConcept(String prefix) {
+      return CodeableConcept.builder().coding(coding(prefix)).text(prefix + " text").build();
+    }
+
+    private List<Coding> coding(String prefix) {
+      return Collections.singletonList(
+          Coding.builder()
+              .system(prefix + " system")
+              .code(prefix + " code")
+              .display(prefix + " display")
+              .build());
     }
 
     CodeableConcept form() {
-      return CodeableConcept.builder()
-          .coding(
-              Collections.singletonList(
-                  Coding.builder()
-                      .system("system test")
-                      .code("code test")
-                      .display("display test")
-                      .build()))
-          .text("form text test")
-          .build();
+      return codeableConcept("form");
     }
 
     Medication medication() {
@@ -148,25 +143,26 @@ public class MedicationTransformerTest {
   private static class XmlSampleData {
 
     CdwCodeableConcept code() {
+      return codeableConcept("code");
+    }
+
+    CdwCodeableConcept codeableConcept(String prefix) {
       CdwCodeableConcept code = new CdwCodeableConcept();
-      code.getCoding().add(coding());
-      code.setText("code text test");
+      code.getCoding().add(coding(prefix));
+      code.setText(prefix + " text");
       return code;
     }
 
-    CdwCoding coding() {
+    CdwCoding coding(String prefix) {
       CdwCoding coding = new CdwCoding();
-      coding.setSystem("system test");
-      coding.setCode("code test");
-      coding.setDisplay("display test");
+      coding.setSystem(prefix + " system");
+      coding.setCode(prefix + " code");
+      coding.setDisplay(prefix + " display");
       return coding;
     }
 
     CdwCodeableConcept form() {
-      CdwCodeableConcept form = new CdwCodeableConcept();
-      form.getCoding().add(coding());
-      form.setText("form text test");
-      return form;
+      return codeableConcept("form");
     }
 
     CdwMedication medication() {

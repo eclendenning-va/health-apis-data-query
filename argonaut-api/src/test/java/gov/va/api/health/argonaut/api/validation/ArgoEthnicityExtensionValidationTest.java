@@ -11,9 +11,14 @@ import org.junit.Test;
 public class ArgoEthnicityExtensionValidationTest {
   private final SampleExtensions data = SampleExtensions.get();
 
-  <T> Set<ConstraintViolation<T>> violationsOf(T object) {
-    ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-    return factory.getValidator().validate(object);
+  @Test
+  public void patientWithMultipleOptionalEthnicityExtensionIsValid() {
+    assertThat(violationsOf(data.patientWithMultipleOptionalEthnicityExtension())).isEmpty();
+  }
+
+  @Test
+  public void patientWithNoRequiredEthnicityExtensionIsNotValid() {
+    assertThat(violationsOf(data.patientWithNoRequiredEthnicityExtension())).isNotEmpty();
   }
 
   @Test
@@ -22,18 +27,13 @@ public class ArgoEthnicityExtensionValidationTest {
   }
 
   @Test
-  public void patientWithSingleRequiredEthnicityExtensionIsValid() {
-    assertThat(violationsOf(data.patientWithSingleRequiredEthnicityExtension())).isEmpty();
-  }
-
-  @Test
   public void patientWithSingleOptionalEthnicityExtensionIsValid() {
     assertThat(violationsOf(data.patientWithSingleOptionalEthnicityExtension())).isEmpty();
   }
 
   @Test
-  public void patientWithMultipleOptionalEthnicityExtensionIsValid() {
-    assertThat(violationsOf(data.patientWithMultipleOptionalEthnicityExtension())).isEmpty();
+  public void patientWithSingleRequiredEthnicityExtensionIsValid() {
+    assertThat(violationsOf(data.patientWithSingleRequiredEthnicityExtension())).isEmpty();
   }
 
   @Test
@@ -46,8 +46,8 @@ public class ArgoEthnicityExtensionValidationTest {
     assertThat(violationsOf(data.patientWithTooManyRequiredEthnicityExtension())).isNotEmpty();
   }
 
-  @Test
-  public void patientWithNoRequiredEthnicityExtensionIsNotValid() {
-    assertThat(violationsOf(data.patientWithNoRequiredEthnicityExtension())).isNotEmpty();
+  private <T> Set<ConstraintViolation<T>> violationsOf(T object) {
+    ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+    return factory.getValidator().validate(object);
   }
 }

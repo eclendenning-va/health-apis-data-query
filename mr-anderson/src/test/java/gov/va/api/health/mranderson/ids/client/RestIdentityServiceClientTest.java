@@ -34,9 +34,9 @@ import org.springframework.web.client.RestTemplate;
 @SuppressWarnings("unchecked")
 public class RestIdentityServiceClientTest {
 
-  @Rule public ExpectedException thrown = ExpectedException.none();
+  @Rule public final ExpectedException thrown = ExpectedException.none();
   @Mock RestTemplate restTemplate;
-  RestIdentityServiceClient client;
+  private RestIdentityServiceClient client;
 
   @Before
   public void _init() {
@@ -56,11 +56,10 @@ public class RestIdentityServiceClientTest {
   }
 
   @SneakyThrows
-  private void assertRegisterErrorHandler(
-      Class<? extends Exception> exceptionType, HttpStatus status) {
-    thrown.expect(exceptionType);
+  private void assertRegisterErrorHandler() {
+    thrown.expect(RegistrationFailed.class);
     ClientHttpResponse response = mock(ClientHttpResponse.class);
-    when(response.getStatusCode()).thenReturn(status);
+    when(response.getStatusCode()).thenReturn(HttpStatus.BAD_REQUEST);
     RegisterErrorHandler handler = new RegisterErrorHandler();
     assertThat(handler.hasError(response)).isTrue();
     handler.handleError(response);
@@ -128,7 +127,7 @@ public class RestIdentityServiceClientTest {
 
   @Test
   public void registrationFailedExceptionIsThrownWhenStatusIsNotOk() {
-    assertRegisterErrorHandler(RegistrationFailed.class, HttpStatus.BAD_REQUEST);
+    assertRegisterErrorHandler();
   }
 
   @Test
