@@ -7,16 +7,10 @@ import gov.va.api.health.argonaut.api.datatypes.Address.AddressType;
 import gov.va.api.health.argonaut.api.datatypes.Address.AddressUse;
 import gov.va.api.health.argonaut.api.datatypes.Attachment;
 import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
-import gov.va.api.health.argonaut.api.datatypes.ContactPoint;
-import gov.va.api.health.argonaut.api.datatypes.ContactPoint.ContactPointSystem;
-import gov.va.api.health.argonaut.api.datatypes.ContactPoint.ContactPointUse;
 import gov.va.api.health.argonaut.api.datatypes.HumanName;
 import gov.va.api.health.argonaut.api.datatypes.HumanName.NameUse;
 import gov.va.api.health.argonaut.api.datatypes.Identifier;
 import gov.va.api.health.argonaut.api.datatypes.Identifier.IdentifierUse;
-import gov.va.api.health.argonaut.api.datatypes.Period;
-import gov.va.api.health.argonaut.api.datatypes.Range;
-import gov.va.api.health.argonaut.api.elements.Extension;
 import gov.va.api.health.argonaut.api.resources.OperationOutcome.Issue;
 import gov.va.api.health.argonaut.api.resources.OperationOutcome.Issue.IssueSeverity;
 import gov.va.api.health.argonaut.api.resources.Patient;
@@ -71,7 +65,7 @@ public class SamplePatients {
         .modifierExtension(singletonList(extension()))
         .relationship(singletonList(relationship()))
         .name(name())
-        .telecom(singletonList(telecom()))
+        .telecom(contactPointList())
         .address(address())
         .gender(Patient.Gender.unknown)
         .organization(reference())
@@ -147,7 +141,7 @@ public class SamplePatients {
         .identifier(singletonList(identifier()))
         .active(true)
         .name(singletonList(name()))
-        .telecom(singletonList(telecom()))
+        .telecom(contactPointList())
         .gender(Patient.Gender.unknown)
         .birthDate("2000-01-01")
         .deceasedBoolean(false)
@@ -160,15 +154,6 @@ public class SamplePatients {
         .careProvider(singletonList(reference()))
         .managingOrganization(reference())
         .link(singletonList(link()))
-        .build();
-  }
-
-  public Period period() {
-    return Period.builder()
-        .id("5678")
-        .extension(singletonList(Extension.builder().url("http://wtf.com").valueInteger(1).build()))
-        .start("2000-01-01T00:00:00-00:00")
-        .end("2001-01-01T00:00:00-00:00")
         .build();
   }
 
@@ -185,21 +170,7 @@ public class SamplePatients {
         .build();
   }
 
-  public Range range() {
-    return Range.builder().low(simpleQuantity()).high(simpleQuantity()).build();
-  }
-
   public CodeableConcept relationship() {
     return CodeableConcept.builder().coding(singletonList(coding())).text("HelloText").build();
-  }
-
-  public ContactPoint telecom() {
-    return ContactPoint.builder()
-        .system(ContactPointSystem.other)
-        .value("HelloValue")
-        .use(ContactPointUse.home)
-        .rank(1)
-        .period(period())
-        .build();
   }
 }
