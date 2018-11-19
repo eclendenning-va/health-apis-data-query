@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import gov.va.api.health.argonaut.api.Fhir;
 import gov.va.api.health.argonaut.api.elements.BackboneElement;
 import gov.va.api.health.argonaut.api.elements.Extension;
+import gov.va.api.health.argonaut.api.resources.Resource;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
 import java.util.List;
@@ -23,7 +24,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @Schema(description = "http://hl7.org/fhir/DSTU2/bundle.html")
-public abstract class AbstractEntry<T> implements BackboneElement {
+public abstract class AbstractEntry<T extends Resource> implements BackboneElement {
   @Pattern(regexp = Fhir.ID)
   protected String id;
 
