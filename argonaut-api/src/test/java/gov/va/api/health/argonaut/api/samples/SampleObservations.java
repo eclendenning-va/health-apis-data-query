@@ -9,6 +9,7 @@ import gov.va.api.health.argonaut.api.datatypes.Identifier;
 import gov.va.api.health.argonaut.api.datatypes.Identifier.IdentifierUse;
 import gov.va.api.health.argonaut.api.elements.Reference;
 import gov.va.api.health.argonaut.api.resources.Observation;
+import gov.va.api.health.argonaut.api.resources.Observation.ObservationComponent;
 import gov.va.api.health.argonaut.api.resources.Observation.ObservationReferenceRange;
 import gov.va.api.health.argonaut.api.resources.Observation.ObservationRelated;
 import gov.va.api.health.argonaut.api.resources.Observation.Status;
@@ -48,34 +49,33 @@ public class SampleObservations {
         .code(codeableConcept())
         .subject(reference())
         .encounter(reference())
-        .effectiveDateTime()
-        .issued()
-        .performer()
-        .valueCodeableConcept()
-        .dataAbsentReason()
-        .interpretation()
-        .comments()
-        .bodySite()
-        .method()
-        .specimen()
-        .device()
-        .referenceRange(referenceRange())
-        .related()
+        .effectiveDateTime("2000-01-01T00:00:00-00:00")
+        .issued("2000-01-01T00:00:00-00:00")
+        .performer(reference())
+        .valueCodeableConcept(codeableConcept())
+        .dataAbsentReason(codeableConcept())
+        .interpretation(codeableConcept())
+        .comments("HelloText")
+        .bodySite(codeableConcept())
+        .method(codeableConcept())
+        .specimen(reference())
+        .device(reference())
+        .referenceRange(singletonList(referenceRange()))
+        .related(singletonList(related()))
+        .component(singletonList(component()))
         .build();
   }
 
-  public CodeableConcept category() {
-    return CodeableConcept.builder()
-        .coding(observationCategoryCoding())
+  public ObservationComponent component() {
+    return ObservationComponent.builder()
+        .id("0000")
+        .extension(singletonList(extension()))
+        .modifierExtension(singletonList(extension()))
+        .code(codeableConcept())
+        .valueCodeableConcept(codeableConcept())
+        .dataAbsentReason(codeableConcept())
+        .referenceRange(singletonList(referenceRange()))
         .build();
-  }
-
-  public List<Coding> observationCategoryCoding() {
-    Coding coding = Coding.builder()
-        .system("http://hl7.org/fhir/observation-category")
-        .code("laboratory")
-        .build();
-    return Collections.singletonList(coding());
   }
 
   public ObservationReferenceRange referenceRange() {
