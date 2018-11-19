@@ -12,8 +12,6 @@ import gov.va.api.health.argonaut.api.datatypes.ContactPoint.ContactPointSystem;
 import gov.va.api.health.argonaut.api.datatypes.ContactPoint.ContactPointUse;
 import gov.va.api.health.argonaut.api.datatypes.HumanName;
 import gov.va.api.health.argonaut.api.datatypes.HumanName.NameUse;
-import gov.va.api.health.argonaut.api.datatypes.Identifier;
-import gov.va.api.health.argonaut.api.datatypes.Identifier.IdentifierUse;
 import gov.va.api.health.argonaut.api.datatypes.Period;
 import gov.va.api.health.argonaut.api.datatypes.Range;
 import gov.va.api.health.argonaut.api.elements.Extension;

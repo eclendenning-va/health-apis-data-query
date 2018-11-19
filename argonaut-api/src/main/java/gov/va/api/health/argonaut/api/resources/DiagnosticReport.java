@@ -8,16 +8,34 @@ import gov.va.api.health.argonaut.api.Fhir;
 import gov.va.api.health.argonaut.api.bundle.AbstractBundle;
 import gov.va.api.health.argonaut.api.bundle.AbstractEntry;
 import gov.va.api.health.argonaut.api.bundle.BundleLink;
-import gov.va.api.health.argonaut.api.datatypes.*;
-import gov.va.api.health.argonaut.api.elements.*;
+import gov.va.api.health.argonaut.api.datatypes.Attachment;
+import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
+import gov.va.api.health.argonaut.api.datatypes.Identifier;
+import gov.va.api.health.argonaut.api.datatypes.Period;
+import gov.va.api.health.argonaut.api.datatypes.Signature;
+import gov.va.api.health.argonaut.api.datatypes.SimpleResource;
+import gov.va.api.health.argonaut.api.elements.BackboneElement;
+import gov.va.api.health.argonaut.api.elements.Extension;
+import gov.va.api.health.argonaut.api.elements.Meta;
+import gov.va.api.health.argonaut.api.elements.Narrative;
+import gov.va.api.health.argonaut.api.elements.Reference;
 import gov.va.api.health.argonaut.api.validation.ZeroOrOneOf;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
-import org.apache.commons.lang3.StringUtils;
-
-import javax.validation.Valid;
-import javax.validation.constraints.*;
 import java.util.List;
+import javax.validation.Valid;
+import javax.validation.constraints.AssertTrue;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 
 @Data
 @Builder
@@ -25,11 +43,13 @@ import java.util.List;
 @AllArgsConstructor
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @Schema(
-    description =
-        "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-diagnosticreport.html")
+  description =
+      "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-diagnosticreport.html"
+)
 @ZeroOrOneOf(
-    fields = {"effectiveDateTime", "effectivePeriod"},
-    message = "Only one effective value may be specified")
+  fields = {"effectiveDateTime", "effectivePeriod"},
+  message = "Only one effective value may be specified"
+)
 public class DiagnosticReport implements Resource {
 
   @Pattern(regexp = Fhir.ID)
@@ -85,10 +105,12 @@ public class DiagnosticReport implements Resource {
   @JsonIgnore
   @AssertTrue(message = "Category Coding is not valid.")
   private boolean isValidCategory() {
-      if(category == null) {
-          return true;
-      }
-      return StringUtils.equals("http://hl7.org/fhir/ValueSet/diagnostic-service-sections", (category.coding().get(0).system()));
+    if (category == null) {
+      return true;
+    }
+    return StringUtils.equals(
+        "http://hl7.org/fhir/ValueSet/diagnostic-service-sections",
+        (category.coding().get(0).system()));
   }
 
   @Data

@@ -66,7 +66,6 @@ public final class SampleDataTypes {
         .build();
   }
 
-
   public Identifier identifier() {
     return Identifier.builder()
         .id("5678")
