@@ -31,7 +31,7 @@ import lombok.RequiredArgsConstructor;
  * <p>See {@link MockEntityReturnDriver}
  */
 @RequiredArgsConstructor(staticName = "of")
-public class MockEntityReturnCallableStatement implements CallableStatement {
+class MockEntityReturnCallableStatement implements CallableStatement {
 
   /** Responses will be used to find XML samples. */
   private final MockResponses responses;

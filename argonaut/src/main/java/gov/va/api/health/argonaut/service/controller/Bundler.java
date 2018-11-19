@@ -1,9 +1,9 @@
 package gov.va.api.health.argonaut.service.controller;
 
-import gov.va.api.health.argonaut.api.Resource;
 import gov.va.api.health.argonaut.api.bundle.AbstractBundle;
 import gov.va.api.health.argonaut.api.bundle.AbstractBundle.BundleType;
 import gov.va.api.health.argonaut.api.bundle.AbstractEntry;
+import gov.va.api.health.argonaut.api.resources.Resource;
 import gov.va.api.health.argonaut.service.controller.PageLinks.LinkConfig;
 import java.util.List;
 import java.util.function.Function;
@@ -98,7 +98,7 @@ public class Bundler {
             Function<X, T> transformer,
             Supplier<E> newEntry,
             Supplier<B> newBundle) {
-      return new BundleContext<X, T, E, B>(linkConfig, xmlItems, transformer, newEntry, newBundle);
+      return new BundleContext<>(linkConfig, xmlItems, transformer, newEntry, newBundle);
     }
   }
 }

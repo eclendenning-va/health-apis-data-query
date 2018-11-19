@@ -14,13 +14,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import lombok.Value;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.ArgumentCaptor;
-import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -29,10 +27,10 @@ import org.springframework.http.ResponseEntity;
 
 public class IdServiceV1ApiControllerTest {
 
-  @Rule public ExpectedException thrown = ExpectedException.none();
+  @Rule public final ExpectedException thrown = ExpectedException.none();
   @Mock ResourceIdentityDetailRepository repo;
   @Mock UuidGenerator uuidGenerator;
-  IdServiceV1ApiController controller;
+  private IdServiceV1ApiController controller;
 
   @Before
   public void _init() {
@@ -44,20 +42,20 @@ public class IdServiceV1ApiControllerTest {
    * What a detail will look like if it already exists in the database. The auto-incremented primary
    * key field 'pk' will be set.
    */
-  private ResourceIdentityDetail existingDetail(String uuid, int i) {
+  private ResourceIdentityDetail existingDetail(int i) {
     return ResourceIdentityDetail.builder()
         .pk(i)
         .identifier("i" + i)
         .resource("r" + i)
         .system("s" + i)
-        .uuid(uuid)
+        .uuid("x")
         .build();
   }
 
   @Test
   public void lookupReturns200AndIdentitiesWhenFound() {
     List<ResourceIdentityDetail> searchResults =
-        Arrays.asList(existingDetail("x", 3), existingDetail("x", 2), existingDetail("x", 1));
+        Arrays.asList(existingDetail(3), existingDetail(2), existingDetail(1));
     when(repo.findByUuid("x")).thenReturn(searchResults);
 
     ResponseEntity<List<ResourceIdentity>> actual = controller.lookup("x");
@@ -116,15 +114,5 @@ public class IdServiceV1ApiControllerTest {
 
   private ResourceIdentity resourceIdentity(int i) {
     return ResourceIdentity.builder().identifier("i" + i).resource("r" + i).system("s" + i).build();
-  }
-
-  @Value
-  private static class PredicateAdapter<T> implements ArgumentMatcher<T> {
-    PredicateAdapter<T> predicate;
-
-    @Override
-    public boolean matches(T argument) {
-      return predicate.matches(argument);
-    }
   }
 }

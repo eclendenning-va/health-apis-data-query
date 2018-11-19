@@ -4,12 +4,12 @@ import static gov.va.api.health.argonaut.service.controller.Transformers.convert
 import static gov.va.api.health.argonaut.service.controller.Transformers.convertAll;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convertString;
 
-import gov.va.api.health.argonaut.api.CodeableConcept;
-import gov.va.api.health.argonaut.api.Coding;
-import gov.va.api.health.argonaut.api.Medication;
-import gov.va.api.health.argonaut.api.Medication.Product;
-import gov.va.api.health.argonaut.api.Narrative;
-import gov.va.api.health.argonaut.api.Narrative.NarrativeStatus;
+import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
+import gov.va.api.health.argonaut.api.datatypes.Coding;
+import gov.va.api.health.argonaut.api.elements.Narrative;
+import gov.va.api.health.argonaut.api.elements.Narrative.NarrativeStatus;
+import gov.va.api.health.argonaut.api.resources.Medication;
+import gov.va.api.health.argonaut.api.resources.Medication.Product;
 import gov.va.dvp.cdw.xsd.model.CdwMedication101Root;
 import gov.va.dvp.cdw.xsd.model.CdwMedication101Root.CdwMedications.CdwMedication;
 import java.util.List;

@@ -29,11 +29,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 public class SqlResourceRepositoryTest {
 
-  @Rule public ExpectedException thrown = ExpectedException.none();
+  @Rule public final ExpectedException thrown = ExpectedException.none();
   @Mock DataSource dataSource;
   @Mock Connection connection;
   @Mock CallableStatement cs;
-  SqlResourceRepository rr;
+  private SqlResourceRepository rr;
 
   @Before
   @SneakyThrows

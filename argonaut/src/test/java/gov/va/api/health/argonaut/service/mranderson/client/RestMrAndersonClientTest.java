@@ -28,11 +28,11 @@ import org.springframework.web.client.RestTemplate;
 
 public class RestMrAndersonClientTest {
 
-  @Rule public ExpectedException thrown = ExpectedException.none();
+  @Rule public final ExpectedException thrown = ExpectedException.none();
 
   @Mock RestTemplate rt;
 
-  RestMrAndersonClient client;
+  private RestMrAndersonClient client;
 
   @Before
   public void _init() {
@@ -48,6 +48,7 @@ public class RestMrAndersonClientTest {
     client.search(query());
   }
 
+  @SuppressWarnings("unchecked")
   private void mockErrorResponse(Exception throwMe) {
     when(rt.exchange(
             Mockito.anyString(),
@@ -73,6 +74,7 @@ public class RestMrAndersonClientTest {
         .build();
   }
 
+  @SuppressWarnings({"unchecked", "ResultOfMethodCallIgnored"})
   @Test
   public void responseBodyIsReturnedFor200Status() {
     CdwPatient103Root root = new CdwPatient103Root();

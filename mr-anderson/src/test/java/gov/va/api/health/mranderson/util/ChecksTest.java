@@ -7,18 +7,8 @@ import org.junit.Test;
 public class ChecksTest {
 
   @Test
-  public void notNullReturnsNonNullValue() {
-    assertThat(Checks.notNull("something")).isEqualTo("something");
-  }
-
-  @Test(expected = IllegalStateException.class)
-  public void notNullThrowsExceptionForNullValue() {
-    Checks.notNull(null);
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void argumentMatchesThrowsExceptionForNullValue() {
-    Checks.argumentMatches(null, ".*");
+  public void argumentMatchesReturnsMatchingValue() {
+    assertThat(Checks.argumentMatches("yes", "yes")).isEqualTo("yes");
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -26,8 +16,19 @@ public class ChecksTest {
     Checks.argumentMatches("no", "yes");
   }
 
+  @Test(expected = IllegalArgumentException.class)
+  public void argumentMatchesThrowsExceptionForNullValue() {
+    Checks.argumentMatches(null, ".*");
+  }
+
+  @SuppressWarnings("ObviousNullCheck")
   @Test
-  public void argumentMatchesReturnsMatchingValue() {
-    assertThat(Checks.argumentMatches("yes", "yes")).isEqualTo("yes");
+  public void notNullReturnsNonNullValue() {
+    assertThat(Checks.notNull("something")).isEqualTo("something");
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void notNullThrowsExceptionForNullValue() {
+    Checks.notNull(null);
   }
 }

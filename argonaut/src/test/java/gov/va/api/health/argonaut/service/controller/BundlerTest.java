@@ -3,13 +3,13 @@ package gov.va.api.health.argonaut.service.controller;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
-import gov.va.api.health.argonaut.api.Meta;
-import gov.va.api.health.argonaut.api.Resource;
 import gov.va.api.health.argonaut.api.bundle.AbstractBundle;
 import gov.va.api.health.argonaut.api.bundle.AbstractBundle.BundleType;
 import gov.va.api.health.argonaut.api.bundle.AbstractEntry;
 import gov.va.api.health.argonaut.api.bundle.BundleLink;
 import gov.va.api.health.argonaut.api.bundle.BundleLink.LinkRelation;
+import gov.va.api.health.argonaut.api.elements.Meta;
+import gov.va.api.health.argonaut.api.resources.Resource;
 import gov.va.api.health.argonaut.service.controller.Bundler.BundleContext;
 import gov.va.api.health.argonaut.service.controller.PageLinks.LinkConfig;
 import java.util.Arrays;
@@ -26,6 +26,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+@SuppressWarnings("WeakerAccess")
 public class BundlerTest {
 
   private static final Function<FugaziCdwRoot, FugaziArgo> FUGAZIMUS_PRIME =

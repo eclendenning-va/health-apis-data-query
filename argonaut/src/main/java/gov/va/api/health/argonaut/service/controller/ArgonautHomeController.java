@@ -4,6 +4,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.Resource;
@@ -12,15 +13,21 @@ import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+@SuppressWarnings("WeakerAccess")
 @Controller
 public class ArgonautHomeController {
 
   private static final YAMLMapper MAPPER = new YAMLMapper();
 
-  @Value("classpath:/openapi.yaml")
-  private Resource openapi;
+  private final Resource openapi;
+
+  @Autowired
+  public ArgonautHomeController(@Value("classpath:/openapi.yaml") Resource openapi) {
+    this.openapi = openapi;
+  }
 
   /** The OpenAPI specific content in yaml form. */
+  @SuppressWarnings("WeakerAccess")
   @Bean
   public String openapiContent() throws IOException {
     try (InputStream is = openapi.getInputStream()) {

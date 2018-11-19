@@ -30,7 +30,7 @@ public class TransformersTest {
   @Test
   public void asDateStringReturnsStringWhenCalendarIsNotNull() {
     XMLGregorianCalendar time =
-        DatatypeFactory.newInstance().newXMLGregorianCalendar(2005, 01, 21, 7, 57, 0, 0, 0);
+        DatatypeFactory.newInstance().newXMLGregorianCalendar(2005, 1, 21, 7, 57, 0, 0, 0);
     assertThat(asDateString(time)).isEqualTo("2005-01-21");
   }
 
@@ -43,7 +43,7 @@ public class TransformersTest {
   @Test
   public void asDateTimeStringReturnsStringWhenCalendarIsNotNull() {
     XMLGregorianCalendar time =
-        DatatypeFactory.newInstance().newXMLGregorianCalendar(2005, 01, 21, 7, 57, 0, 0, 0);
+        DatatypeFactory.newInstance().newXMLGregorianCalendar(2005, 1, 21, 7, 57, 0, 0, 0);
     assertThat(asDateTimeString(time)).isEqualTo("2005-01-21T07:57:00.000Z");
   }
 

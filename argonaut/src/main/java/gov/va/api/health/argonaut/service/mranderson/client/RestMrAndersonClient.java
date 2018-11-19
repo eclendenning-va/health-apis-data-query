@@ -1,7 +1,7 @@
 package gov.va.api.health.argonaut.service.mranderson.client;
 
 import gov.va.api.health.argonaut.service.config.WithJaxb;
-import java.util.Arrays;
+import java.util.Collections;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,7 +32,7 @@ public class RestMrAndersonClient implements MrAndersonClient {
 
   private HttpEntity<Void> requestEntity() {
     HttpHeaders headers = new HttpHeaders();
-    headers.setAccept(Arrays.asList(MediaType.APPLICATION_XML));
+    headers.setAccept(Collections.singletonList(MediaType.APPLICATION_XML));
     return new HttpEntity<>(headers);
   }
 

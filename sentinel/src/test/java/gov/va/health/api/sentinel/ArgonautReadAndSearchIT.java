@@ -1,8 +1,8 @@
 package gov.va.health.api.sentinel;
 
-import gov.va.api.health.argonaut.api.Medication;
-import gov.va.api.health.argonaut.api.OperationOutcome;
-import gov.va.api.health.argonaut.api.Patient;
+import gov.va.api.health.argonaut.api.resources.Medication;
+import gov.va.api.health.argonaut.api.resources.OperationOutcome;
+import gov.va.api.health.argonaut.api.resources.Patient;
 import java.util.Arrays;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +12,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
 
+@SuppressWarnings({"DefaultAnnotationParam", "WeakerAccess"})
 @RunWith(Parameterized.class)
 @Slf4j
 public class ArgonautReadAndSearchIT {
@@ -36,8 +37,13 @@ public class ArgonautReadAndSearchIT {
   public static List<Object[]> parameters() {
     TestIds ids = IdRegistrar.of(Sentinel.get().system()).registeredIds();
     return Arrays.asList(
+        // Medication
         expect(200, Medication.class, "/api/Medication/{id}", ids.medication()),
         expect(404, OperationOutcome.class, "/api/Medication/{id}", ids.unknown()),
+        expect(200, Medication.Bundle.class, "/api/Medication?_id={id}", ids.medication()),
+        expect(200, Medication.Bundle.class, "/api/Medication?identifier={id}", ids.medication()),
+        expect(404, OperationOutcome.class, "/api/Medication?_id={id}", ids.unknown()),
+        // Patient
         expect(200, Patient.class, "/api/Patient/{id}", ids.patient()),
         expect(404, OperationOutcome.class, "/api/Patient/{id}", ids.unknown()),
         expect(200, Patient.Bundle.class, "/api/Patient?_id={id}", ids.patient()),

@@ -27,7 +27,7 @@ import lombok.Value;
  */
 @Value
 @AllArgsConstructor(staticName = "of")
-public class MockEntityReturnConnection implements Connection {
+class MockEntityReturnConnection implements Connection {
 
   MockResponses responses;
 

@@ -14,11 +14,10 @@ public class ErrorResponseTest {
   }
 
   @SneakyThrows
-  private <T> T roundTrip(T object) {
+  private <T> void roundTrip(T object) {
     ObjectMapper mapper = new JacksonConfig().objectMapper();
     String json = mapper.writeValueAsString(object);
     Object evilTwin = mapper.readValue(json, object.getClass());
     assertThat(evilTwin).isEqualTo(object);
-    return object;
   }
 }

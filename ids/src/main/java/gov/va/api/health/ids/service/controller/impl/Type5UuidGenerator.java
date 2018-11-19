@@ -33,12 +33,7 @@ public class Type5UuidGenerator implements UuidGenerator {
   }
 
   /** Checks to see if resource is "PATIENT" and system is "CDW". */
-  public boolean isSpecialPatient(@NonNull ResourceIdentity resourceIdentity) {
-    if ("CDW".equals(resourceIdentity.system())
-        && ("PATIENT".equals(resourceIdentity.resource()))) {
-      return true;
-    } else {
-      return false;
-    }
+  boolean isSpecialPatient(@NonNull ResourceIdentity resourceIdentity) {
+    return "CDW".equals(resourceIdentity.system()) && "PATIENT".equals(resourceIdentity.resource());
   }
 }

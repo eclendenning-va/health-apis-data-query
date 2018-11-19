@@ -6,10 +6,9 @@ import java.sql.CallableStatement;
 import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.sql.Types;
 import lombok.SneakyThrows;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.RegExUtils;
 import org.junit.Test;
 
 public class MockEntityReturnDriverTest {
@@ -19,12 +18,12 @@ public class MockEntityReturnDriverTest {
   public void driverCanExecutePrcEntityReturnCalls() {
     String response1 = executeQuery(1, 2, "/Whatever:1.00?id=123");
     assertThat(response1).isNotBlank();
-    assertThat(StringUtils.removeAll(response1, "\\s"))
+    assertThat(RegExUtils.removeAll(response1, "\\s"))
         .isEqualTo("<?xmlversion=\"1.0\"encoding=\"UTF-8\"?><root><whatever>123</whatever></root>");
 
     String response2 = executeQuery(2, 3, "/Whatever:1.01?stuff=neat");
     assertThat(response2).isNotBlank();
-    assertThat(StringUtils.removeAll(response2, "\\s"))
+    assertThat(RegExUtils.removeAll(response2, "\\s"))
         .isEqualTo("<?xmlversion=\"1.0\"encoding=\"UTF-8\"?><root><stuff>neat</stuff></root>");
   }
 
@@ -33,8 +32,7 @@ public class MockEntityReturnDriverTest {
    * us to test the mock driver in isolation.
    */
   @SneakyThrows
-  private String executeQuery(int page, int count, String query)
-      throws ClassNotFoundException, SQLException {
+  private String executeQuery(int page, int count, String query) {
     Class.forName(MockEntityReturnDriver.class.getName());
     Connection connection =
         DriverManager.getConnection(
@@ -72,6 +70,7 @@ public class MockEntityReturnDriverTest {
     int FULL = 3;
   }
 
+  @SuppressWarnings("unused")
   interface Format {
     int XML = 1;
     int JSON = 2;

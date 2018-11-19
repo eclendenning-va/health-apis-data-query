@@ -106,14 +106,15 @@ public final class Transformers {
    * Indicates the CDW payload is missing, but no errors were reported. This exception indicates
    * there is a bug in CDW, Mr. Anderson, or the Mr. Anderson client.
    */
-  public static class MissingPayload extends TransformationException {
-    public MissingPayload() {
+  static class MissingPayload extends TransformationException {
+    MissingPayload() {
       super("Payload is missing, but no errors reported by Mr. Anderson.");
     }
   }
 
   /** Base exception for controller errors. */
-  public static class TransformationException extends RuntimeException {
+  static class TransformationException extends RuntimeException {
+    @SuppressWarnings("SameParameterValue")
     TransformationException(String message) {
       super(message);
     }

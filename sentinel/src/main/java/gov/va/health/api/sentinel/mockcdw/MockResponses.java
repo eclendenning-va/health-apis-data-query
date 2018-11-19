@@ -8,7 +8,7 @@ import lombok.Value;
 
 @Value
 @Builder
-public class MockResponses {
+class MockResponses {
   @Singular List<MockResponseSource> sources;
 
   String responseFor(MockCall call) {
@@ -23,7 +23,7 @@ public class MockResponses {
 
   static class FailedMockResponse extends RuntimeException {
 
-    public FailedMockResponse(String message) {
+    FailedMockResponse(String message) {
       super(message);
     }
 

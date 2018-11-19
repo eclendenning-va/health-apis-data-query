@@ -12,6 +12,22 @@ import org.junit.Test;
 import org.w3c.dom.Document;
 
 public class XmlResponseValidatorTest {
+  @Test
+  public void noErrorsForErrorNumber0() {
+    parse(Samples.create().patient());
+    // no exceptions thrown!
+  }
+
+  @SuppressWarnings({"ResultOfMethodCallIgnored", "EqualsWithItself"})
+  private void parse(String sample) {
+    Document document = XmlDocuments.create().parse(sample);
+    XmlResponseValidator validator =
+        XmlResponseValidator.builder().query(query()).response(document).build();
+    validator.validate();
+    validator.hashCode();
+    validator.equals(validator);
+  }
+
   private Query query() {
     return Query.builder()
         .profile(Profile.ARGONAUT)
@@ -21,12 +37,6 @@ public class XmlResponseValidatorTest {
         .count(2)
         .parameters(Parameters.empty())
         .build();
-  }
-
-  @Test
-  public void noErrorsForErrorNumber0() {
-    parse(Samples.create().patient());
-    // no exceptions thrown!
   }
 
   @Test(expected = UnknownResource.class)
@@ -47,14 +57,5 @@ public class XmlResponseValidatorTest {
   @Test(expected = SearchFailed.class)
   public void unknownResourceForErrorNumberNotNumber() {
     parse(Samples.create().invalidQueryParams().replace("-999", "kaboom"));
-  }
-
-  private void parse(String sample) {
-    Document document = XmlDocuments.create().parse(sample);
-    XmlResponseValidator validator =
-        XmlResponseValidator.builder().query(query()).response(document).build();
-    validator.validate();
-    validator.hashCode();
-    validator.equals(validator);
   }
 }

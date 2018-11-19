@@ -4,6 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /** This is a test application to test auto-configuration is working. */
+@SuppressWarnings("WeakerAccess")
 @SpringBootApplication
 public class FugaziApplication {
 

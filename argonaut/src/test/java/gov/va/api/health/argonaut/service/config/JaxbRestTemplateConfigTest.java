@@ -29,6 +29,7 @@ public class JaxbRestTemplateConfigTest {
 
     assertThat(actual).isSameAs(rt);
 
+    @SuppressWarnings("unchecked")
     ArgumentCaptor<List<HttpMessageConverter<?>>> captor = ArgumentCaptor.forClass(List.class);
     verify(rt).setMessageConverters(captor.capture());
     assertThat(captor.getValue().size()).isEqualTo(1);

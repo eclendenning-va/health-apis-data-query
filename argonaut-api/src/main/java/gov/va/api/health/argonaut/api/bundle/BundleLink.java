@@ -2,9 +2,9 @@ package gov.va.api.health.argonaut.api.bundle;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import gov.va.api.health.argonaut.api.BackboneElement;
-import gov.va.api.health.argonaut.api.Extension;
 import gov.va.api.health.argonaut.api.Fhir;
+import gov.va.api.health.argonaut.api.elements.BackboneElement;
+import gov.va.api.health.argonaut.api.elements.Extension;
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
@@ -29,6 +29,7 @@ public class BundleLink implements BackboneElement {
   @Pattern(regexp = Fhir.URI)
   String url;
 
+  @SuppressWarnings("unused")
   public enum LinkRelation {
     about,
     alternate,

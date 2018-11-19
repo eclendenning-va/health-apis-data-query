@@ -21,6 +21,7 @@ import gov.va.api.health.mranderson.cdw.Resources.UnknownResource;
 import gov.va.api.health.mranderson.util.Parameters;
 import gov.va.api.health.mranderson.util.XmlDocuments;
 import java.util.Arrays;
+import java.util.Collections;
 import lombok.SneakyThrows;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
@@ -34,15 +35,23 @@ import org.mockito.MockitoAnnotations;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class WitnessProtectionResourcesTest {
-  @Rule public ExpectedException thrown = ExpectedException.none();
+  @Rule public final ExpectedException thrown = ExpectedException.none();
   @Mock ResourceRepository repository;
   @Mock IdentityService uis;
-  WitnessProtectionResources resources;
+  private WitnessProtectionResources resources;
 
   @Before
   public void _init() {
     MockitoAnnotations.initMocks(this);
     resources = new WitnessProtectionResources(repository, uis);
+  }
+
+  @Test
+  public void emptySearchResultsAreReturned() {
+    String expected = standardizeFormatting(mockResults(Samples.create().emptySearchResults()));
+    String actual = resources.search(forResource("patient", "123"));
+    verify(repository).execute(forResource("patient", "123"));
+    assertThat(actual).isEqualTo(expected);
   }
 
   private Query forAnything() {
@@ -60,38 +69,6 @@ public class WitnessProtectionResourcesTest {
         .count(2)
         .parameters(Parameters.builder().add(identity, value).add("what", "ever").build())
         .build();
-  }
-
-  private String mockResults(String result) {
-    when(repository.execute(Mockito.any())).thenReturn(result);
-    return result;
-  }
-
-  private Registration register(String resource, int systemId, String uuid) {
-    return Registration.builder()
-        .uuid(uuid)
-        .resourceIdentity(
-            ResourceIdentity.builder()
-                .identifier(Integer.toString(systemId))
-                .resource(resource)
-                .system("CDW")
-                .build())
-        .build();
-  }
-
-  private void mockRegister(Registration... registrations) {
-    when(uis.register(Mockito.anyList())).thenReturn(Arrays.asList(registrations));
-  }
-
-  private void mockLookup(String uuid, String systemId) {
-    when(uis.lookup(uuid))
-        .thenReturn(
-            Arrays.asList(
-                ResourceIdentity.builder()
-                    .identifier(systemId)
-                    .resource("PATIENT")
-                    .system("CDW")
-                    .build()));
   }
 
   @Test
@@ -122,40 +99,24 @@ public class WitnessProtectionResourcesTest {
             .build());
   }
 
-  @Test
-  public void unknownResourceExceptionIsThrownIfSearchResultsIndicateNoResourceFound() {
-    thrown.expect(UnknownResource.class);
-    mockResults(Samples.create().unknownResource());
-    resources.search(forAnything());
+  private void mockLookup() {
+    when(uis.lookup("123"))
+        .thenReturn(
+            Collections.singletonList(
+                ResourceIdentity.builder()
+                    .identifier("MAGIC321")
+                    .resource("PATIENT")
+                    .system("CDW")
+                    .build()));
   }
 
-  @Test
-  public void unknownIdentityExceptionIsThrownWhenLookupReportsUnknownIdentity() {
-    thrown.expect(UnknownIdentityInSearchParameter.class);
-    when(uis.lookup(Mockito.any())).thenThrow(new UnknownIdentity("mock"));
-    resources.search(forAnything());
+  private void mockRegister(Registration... registrations) {
+    when(uis.register(Mockito.anyList())).thenReturn(Arrays.asList(registrations));
   }
 
-  @Test
-  public void searchFailedExceptionIsThrownWhenLookupFails() {
-    thrown.expect(SearchFailed.class);
-    when(uis.lookup(Mockito.any())).thenThrow(new LookupFailed("mock", "mock"));
-    resources.search(forAnything());
-  }
-
-  @Test
-  public void searchFailedExceptionIsThrownWhenRegisterFails() {
-    thrown.expect(SearchFailed.class);
-    mockResults(Samples.create().fakeWithReferences());
-    when(uis.register(Mockito.any())).thenThrow(new RegistrationFailed("mock"));
-    resources.search(forAnything());
-  }
-
-  @Test
-  public void searchFailedExceptionIsThrownWhenXmlCannotBeParsed() {
-    thrown.expect(SearchFailed.class);
-    mockResults("not valid xml");
-    resources.search(forAnything());
+  private String mockResults(String result) {
+    when(repository.execute(Mockito.any())).thenReturn(result);
+    return result;
   }
 
   private String mockWithFakeSampleAndReplaceReferences() {
@@ -191,27 +152,23 @@ public class WitnessProtectionResourcesTest {
             .replace("AllergyIntolerance/2320", "AllergyIntolerance/MAGIC7780"));
   }
 
-  private void referencesAreReplacedUsingIdentifierParameter(String identifierParameter) {
-    mockLookup("123", "MAGIC321");
+  private void referencesAreReplacedUsingIdentifierParameter(
+      String identifierParameter, String aliasValue) {
+    mockLookup();
     String expected = mockWithFakeSampleAndReplaceReferences();
     String actual = resources.search(forResource(identifierParameter, "123"));
-    verify(repository).execute(forResource(identifierParameter, "MAGIC321"));
+    verify(repository).execute(forResource(aliasValue, "MAGIC321"));
     assertThat(actual).isEqualTo(expected);
   }
 
   @Test
-  public void referencesAreReplacedWithIdentifierParameter() {
-    referencesAreReplacedUsingIdentifierParameter("identifier");
-  }
-
-  @Test
   public void referencesAreReplacedWithIdParameter() {
-    referencesAreReplacedUsingIdentifierParameter("_id");
+    referencesAreReplacedUsingIdentifierParameter("_id", "identifier");
   }
 
   @Test
-  public void referencesAreReplacedWithPatientParameter() {
-    referencesAreReplacedUsingIdentifierParameter("patient");
+  public void referencesAreReplacedWithIdentifierParameter() {
+    referencesAreReplacedUsingIdentifierParameter("identifier", "identifier");
   }
 
   @Test
@@ -223,15 +180,60 @@ public class WitnessProtectionResourcesTest {
   }
 
   @Test
-  public void emptySearchResultsAreReturned() {
-    String expected = standardizeFormatting(mockResults(Samples.create().emptySearchResults()));
-    String actual = resources.search(forResource("patient", "123"));
-    verify(repository).execute(forResource("patient", "123"));
-    assertThat(actual).isEqualTo(expected);
+  public void referencesAreReplacedWithPatientParameter() {
+    referencesAreReplacedUsingIdentifierParameter("patient", "patient");
+  }
+
+  private Registration register(String resource, int systemId, String uuid) {
+    return Registration.builder()
+        .uuid(uuid)
+        .resourceIdentity(
+            ResourceIdentity.builder()
+                .identifier(Integer.toString(systemId))
+                .resource(resource)
+                .system("CDW")
+                .build())
+        .build();
+  }
+
+  @Test
+  public void searchFailedExceptionIsThrownWhenLookupFails() {
+    thrown.expect(SearchFailed.class);
+    when(uis.lookup(Mockito.any())).thenThrow(new LookupFailed("mock", "mock"));
+    resources.search(forAnything());
+  }
+
+  @Test
+  public void searchFailedExceptionIsThrownWhenRegisterFails() {
+    thrown.expect(SearchFailed.class);
+    mockResults(Samples.create().fakeWithReferences());
+    when(uis.register(Mockito.any())).thenThrow(new RegistrationFailed("mock"));
+    resources.search(forAnything());
+  }
+
+  @Test
+  public void searchFailedExceptionIsThrownWhenXmlCannotBeParsed() {
+    thrown.expect(SearchFailed.class);
+    mockResults("not valid xml");
+    resources.search(forAnything());
   }
 
   @SneakyThrows
   private String standardizeFormatting(String xml) {
     return XmlDocuments.create().write(XmlDocuments.create().parse(xml));
+  }
+
+  @Test
+  public void unknownIdentityExceptionIsThrownWhenLookupReportsUnknownIdentity() {
+    thrown.expect(UnknownIdentityInSearchParameter.class);
+    when(uis.lookup(Mockito.any())).thenThrow(new UnknownIdentity("mock"));
+    resources.search(forAnything());
+  }
+
+  @Test
+  public void unknownResourceExceptionIsThrownIfSearchResultsIndicateNoResourceFound() {
+    thrown.expect(UnknownResource.class);
+    mockResults(Samples.create().unknownResource());
+    resources.search(forAnything());
   }
 }

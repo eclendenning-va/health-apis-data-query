@@ -6,6 +6,7 @@ import java.time.Instant;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@SuppressWarnings("WeakerAccess")
 @RestController
 public class FugaziController {
 

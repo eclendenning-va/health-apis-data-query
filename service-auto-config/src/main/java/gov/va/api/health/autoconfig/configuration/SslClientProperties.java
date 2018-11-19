@@ -22,6 +22,7 @@ import org.springframework.context.annotation.Configuration;
  * ssl.trust-store-password=secret
  * </pre>
  */
+@SuppressWarnings("DefaultAnnotationParam")
 @Configuration
 @EnableConfigurationProperties
 @ConfigurationProperties("ssl")
@@ -41,15 +42,15 @@ public class SslClientProperties {
   private String trustStore;
   private String trustStorePassword;
 
-  public char[] clientKeyPassword() {
+  char[] clientKeyPassword() {
     return getClientKeyPassword().toCharArray();
   }
 
-  public char[] keyStorePassword() {
+  char[] keyStorePassword() {
     return getKeyStorePassword().toCharArray();
   }
 
-  public char[] trustStorePassword() {
+  char[] trustStorePassword() {
     return getTrustStorePassword().toCharArray();
   }
 }

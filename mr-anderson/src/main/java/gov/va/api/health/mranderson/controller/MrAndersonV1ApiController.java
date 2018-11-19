@@ -45,6 +45,7 @@ public class MrAndersonV1ApiController {
   /**
    * Implementation of /v1/resources/{profile}/{resourceType}/{resourceVersion}. See api-v1.yaml.
    */
+  @SuppressWarnings("UnusedReturnValue")
   @RequestMapping(
     value = "/v1/resources/{profile}/{resourceType}/{resourceVersion}",
     produces = {

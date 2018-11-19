@@ -4,6 +4,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.Resource;
@@ -15,12 +16,17 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 public class MrAndersonHomeController {
 
-  private static YAMLMapper yamlMapper = new YAMLMapper();
+  private static final YAMLMapper YAML_MAPPER = new YAMLMapper();
 
-  @Value("classpath:/api-v1.yaml")
-  private Resource openapi;
+  private final Resource openapi;
+
+  @Autowired
+  public MrAndersonHomeController(@Value("classpath:/api-v1.yaml") Resource openapi) {
+    this.openapi = openapi;
+  }
 
   /** The OpenAPI specific content in yaml form. */
+  @SuppressWarnings("WeakerAccess")
   @Bean
   public String openapiContent() throws IOException {
     try (InputStream is = openapi.getInputStream()) {
@@ -38,7 +44,7 @@ public class MrAndersonHomeController {
   )
   @ResponseBody
   public Object openapiJson() throws IOException {
-    return MrAndersonHomeController.yamlMapper.readValue(openapiContent(), Object.class);
+    return MrAndersonHomeController.YAML_MAPPER.readValue(openapiContent(), Object.class);
   }
 
   /** Provide access to the OpenAPI yaml via RESTful interface. */

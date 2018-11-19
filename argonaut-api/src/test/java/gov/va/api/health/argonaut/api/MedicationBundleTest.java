@@ -6,6 +6,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.va.api.health.argonaut.api.bundle.AbstractBundle;
 import gov.va.api.health.argonaut.api.bundle.AbstractEntry;
 import gov.va.api.health.argonaut.api.bundle.BundleLink;
+import gov.va.api.health.argonaut.api.resources.Medication;
+import gov.va.api.health.argonaut.api.samples.SampleDataTypes;
+import gov.va.api.health.argonaut.api.samples.SampleMedications;
 import gov.va.api.health.autoconfig.configuration.JacksonConfig;
 import java.util.Collections;
 import lombok.SneakyThrows;
@@ -15,8 +18,8 @@ import org.junit.Test;
 @Slf4j
 public class MedicationBundleTest {
 
-  private SampleMedications medicationData = SampleMedications.get();
-  private SampleDataTypes dataTypes = SampleDataTypes.get();
+  private final SampleMedications medicationData = SampleMedications.get();
+  private final SampleDataTypes dataTypes = SampleDataTypes.get();
 
   @Test
   public void bundlerCanBuildMedicationBundles() {
@@ -54,12 +57,11 @@ public class MedicationBundleTest {
   }
 
   @SneakyThrows
-  private <T> T roundTrip(T object) {
+  private <T> void roundTrip(T object) {
     ObjectMapper mapper = new JacksonConfig().objectMapper();
     String json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(object);
     log.info("{}", json);
     Object evilTwin = mapper.readValue(json, object.getClass());
     assertThat(evilTwin).isEqualTo(object);
-    return object;
   }
 }

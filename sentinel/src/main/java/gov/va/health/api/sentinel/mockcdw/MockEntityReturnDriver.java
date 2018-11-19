@@ -9,7 +9,6 @@ import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.DriverPropertyInfo;
 import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
 import java.util.Properties;
 import java.util.logging.Logger;
 import lombok.extern.slf4j.Slf4j;
@@ -59,7 +58,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class MockEntityReturnDriver implements Driver {
 
-  public static final String URL_PREFIX = "jdbc:mockcdw://";
+  private static final String URL_PREFIX = "jdbc:mockcdw://";
 
   static {
     try {
@@ -72,7 +71,7 @@ public class MockEntityReturnDriver implements Driver {
   }
 
   @Override
-  public boolean acceptsURL(String url) throws SQLException {
+  public boolean acceptsURL(String url) {
     return url.startsWith(URL_PREFIX);
   }
 
@@ -116,12 +115,12 @@ public class MockEntityReturnDriver implements Driver {
   }
 
   @Override
-  public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+  public Logger getParentLogger() {
     return Logger.getLogger(MockEntityReturnDriver.class.getName());
   }
 
   @Override
-  public DriverPropertyInfo[] getPropertyInfo(String url, Properties info) throws SQLException {
+  public DriverPropertyInfo[] getPropertyInfo(String url, Properties info) {
     return new DriverPropertyInfo[0];
   }
 

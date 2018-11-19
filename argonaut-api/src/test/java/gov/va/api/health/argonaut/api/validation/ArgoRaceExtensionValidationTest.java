@@ -11,9 +11,14 @@ import org.junit.Test;
 public class ArgoRaceExtensionValidationTest {
   private final SampleExtensions data = SampleExtensions.get();
 
-  <T> Set<ConstraintViolation<T>> violationsOf(T object) {
-    ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-    return factory.getValidator().validate(object);
+  @Test
+  public void patientWithMultipleOptionalRaceExtensionIsValid() {
+    assertThat(violationsOf(data.patientWithMultipleOptionalRaceExtension())).isEmpty();
+  }
+
+  @Test
+  public void patientWithNoRequiredRaceExtensionIsNotValid() {
+    assertThat(violationsOf(data.patientWithNoRequiredRaceExtension())).isNotEmpty();
   }
 
   @Test
@@ -22,18 +27,13 @@ public class ArgoRaceExtensionValidationTest {
   }
 
   @Test
-  public void patientWithSingleRequiredRaceExtensionIsValid() {
-    assertThat(violationsOf(data.patientWithSingleRequiredRaceExtension())).isEmpty();
-  }
-
-  @Test
   public void patientWithSingleOptionalRaceExtensionIsValid() {
     assertThat(violationsOf(data.patientWithSingleOptionalRaceExtension())).isEmpty();
   }
 
   @Test
-  public void patientWithMultipleOptionalRaceExtensionIsValid() {
-    assertThat(violationsOf(data.patientWithMultipleOptionalRaceExtension())).isEmpty();
+  public void patientWithSingleRequiredRaceExtensionIsValid() {
+    assertThat(violationsOf(data.patientWithSingleRequiredRaceExtension())).isEmpty();
   }
 
   @Test
@@ -46,8 +46,8 @@ public class ArgoRaceExtensionValidationTest {
     assertThat(violationsOf(data.patientWithTooManyRequiredRaceExtension())).isNotEmpty();
   }
 
-  @Test
-  public void patientWithNoRequiredRaceExtensionIsNotValid() {
-    assertThat(violationsOf(data.patientWithNoRequiredRaceExtension())).isNotEmpty();
+  private <T> Set<ConstraintViolation<T>> violationsOf(T object) {
+    ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+    return factory.getValidator().validate(object);
   }
 }

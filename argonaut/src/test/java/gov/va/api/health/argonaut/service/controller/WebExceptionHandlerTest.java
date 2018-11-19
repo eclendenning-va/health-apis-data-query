@@ -1,5 +1,6 @@
 package gov.va.api.health.argonaut.service.controller;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -31,7 +32,6 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.http.server.RequestPath;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.method.HandlerMethod;
@@ -39,6 +39,7 @@ import org.springframework.web.method.annotation.ExceptionHandlerMethodResolver;
 import org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver;
 import org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod;
 
+@SuppressWarnings("DefaultAnnotationParam")
 @RunWith(Parameterized.class)
 public class WebExceptionHandlerTest {
 
@@ -52,7 +53,6 @@ public class WebExceptionHandlerTest {
   @Mock MrAndersonClient mrAnderson;
   @Mock PatientController.Transformer tx;
   @Mock Bundler bundler;
-  @Mock RequestPath requestPath;
   private PatientController controller;
   private WebExceptionHandler exceptionHandler;
 
@@ -95,11 +95,8 @@ public class WebExceptionHandlerTest {
             Method method =
                 new ExceptionHandlerMethodResolver(WebExceptionHandler.class)
                     .resolveMethod(exception);
-
-            ServletInvocableHandlerMethod invocable =
-                new ServletInvocableHandlerMethod(exceptionHandler, method);
-
-            return invocable;
+            assertThat(method).isNotNull();
+            return new ServletInvocableHandlerMethod(exceptionHandler, method);
           }
         };
     exceptionResolver
@@ -121,7 +118,7 @@ public class WebExceptionHandlerTest {
             .setHandlerExceptionResolvers(createExceptionResolver())
             .setMessageConverters()
             .build();
-    /**
+    /*
      * Actual:
      *
      * <pre>
