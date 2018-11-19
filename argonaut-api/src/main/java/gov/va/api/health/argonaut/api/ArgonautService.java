@@ -1,5 +1,6 @@
 package gov.va.api.health.argonaut.api;
 
+import gov.va.api.health.argonaut.api.resources.DiagnosticReport;
 import gov.va.api.health.argonaut.api.resources.Medication;
 import gov.va.api.health.argonaut.api.resources.OperationOutcome;
 import gov.va.api.health.argonaut.api.resources.Patient;
@@ -28,6 +29,73 @@ import javax.ws.rs.Path;
 )
 @Path("api")
 public interface ArgonautService {
+
+  @Operation(
+    summary = "Diagnostic Report Read",
+    description =
+        "https://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-diagnosticreport.html"
+  )
+  @GET
+  @Path("DiagnosticReport/{id}")
+  @ApiResponse(
+    responseCode = "200",
+    description = "Record found",
+    content =
+        @Content(
+          mediaType = "application/fhir+json",
+          schema = @Schema(implementation = DiagnosticReport.class)
+        )
+  )
+  @ApiResponse(responseCode = "400", description = "Not found")
+  @ApiResponse(responseCode = "404", description = "Bad request")
+  DiagnosticReport diagnosticReportRead(
+      @Parameter(in = ParameterIn.PATH, name = "id", required = true) String id);
+
+  @Operation(
+    summary = "Diagnostic Report Search",
+    description =
+        "https://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-diagnosticreport.html"
+  )
+  @GET
+  @Path("DiagnosticReport")
+  @ApiResponse(
+    responseCode = "200",
+    description = "Record Found",
+    content =
+        @Content(
+          mediaType = "application/fhir+json",
+          schema = @Schema(implementation = DiagnosticReport.Bundle.class)
+        )
+  )
+  @ApiResponse(responseCode = "400", description = "Not found")
+  @ApiResponse(responseCode = "404", description = "Bad request")
+  DiagnosticReport.Bundle diagnosticReportSearch(
+      @Parameter(in = ParameterIn.QUERY, name = "_id") String id,
+      @Parameter(in = ParameterIn.QUERY, name = "identifier") String identifier,
+      @Parameter(in = ParameterIn.QUERY, name = "category") String category,
+      @Parameter(in = ParameterIn.QUERY, name = "code") String[] code,
+      @Parameter(in = ParameterIn.QUERY, name = "date") String[] date);
+
+  @Operation(
+    summary = "Diagnostic Report validate",
+    description =
+        "https://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-diagnosticreport.html"
+  )
+  @POST
+  @Consumes("application/fhir+json")
+  @Path("DiagnosticReport/$validate")
+  @ApiResponse(
+    responseCode = "200",
+    description = "Record found",
+    content =
+        @Content(
+          mediaType = "application/fhir+json",
+          schema = @Schema(implementation = OperationOutcome.class)
+        )
+  )
+  @ApiResponse(responseCode = "404", description = "Bad request")
+  OperationOutcome diagnosticReportValidate(
+      @RequestBody(required = true) DiagnosticReport.Bundle bundle);
 
   @Operation(
     summary = "Medication read",
