@@ -1,5 +1,9 @@
 package gov.va.api.health.argonaut.service.controller.medication;
 
+import static gov.va.api.health.argonaut.service.controller.Transformers.convert;
+import static gov.va.api.health.argonaut.service.controller.Transformers.convertAll;
+import static gov.va.api.health.argonaut.service.controller.Transformers.convertString;
+
 import gov.va.api.health.argonaut.api.CodeableConcept;
 import gov.va.api.health.argonaut.api.Coding;
 import gov.va.api.health.argonaut.api.Medication;
@@ -8,9 +12,7 @@ import gov.va.api.health.argonaut.api.Narrative;
 import gov.va.api.health.argonaut.api.Narrative.NarrativeStatus;
 import gov.va.dvp.cdw.xsd.model.CdwMedication101Root;
 import gov.va.dvp.cdw.xsd.model.CdwMedication101Root.CdwMedications.CdwMedication;
-import java.util.LinkedList;
 import java.util.List;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -21,60 +23,54 @@ public class MedicationTransformer implements MedicationController.Transformer {
     return medication(medication);
   }
 
-  CodeableConcept code(gov.va.dvp.cdw.xsd.model.CdwCodeableConcept code) {
-    if (code == null) {
-      return null;
-    }
-    return CodeableConcept.builder().text(code.getText()).coding(coding(code.getCoding())).build();
+  CodeableConcept code(gov.va.dvp.cdw.xsd.model.CdwCodeableConcept optionalSource) {
+    return convert(
+        optionalSource,
+        cdw ->
+            CodeableConcept.builder().text(cdw.getText()).coding(coding(cdw.getCoding())).build());
   }
 
-  List<Coding> coding(List<gov.va.dvp.cdw.xsd.model.CdwCoding> coding) {
-    if (coding == null) {
-      return null;
-    }
-    LinkedList<Coding> argoCodings = new LinkedList<>();
-    for (gov.va.dvp.cdw.xsd.model.CdwCoding argoCoding : coding) {
-      argoCodings.add(
-          Coding.builder()
-              .code(argoCoding.getCode())
-              .system(argoCoding.getSystem())
-              .display(argoCoding.getDisplay())
-              .build());
-    }
-    return argoCodings;
+  List<Coding> coding(List<gov.va.dvp.cdw.xsd.model.CdwCoding> optionalSource) {
+    return convertAll(
+        optionalSource,
+        cdw ->
+            Coding.builder()
+                .code(cdw.getCode())
+                .system(cdw.getSystem())
+                .display(cdw.getDisplay())
+                .build());
   }
 
-  private Medication medication(CdwMedication medication) {
+  private Medication medication(CdwMedication source) {
     return Medication.builder()
-        .id(medication.getCdwId())
+        .id(source.getCdwId())
         .resourceType("Medication")
-        .text(text(medication.getText()))
-        .code(code(medication.getCode()))
-        .product(product(medication.getProduct()))
+        .text(text(source.getText()))
+        .code(code(source.getCode()))
+        .product(product(source.getProduct()))
         .build();
   }
 
-  Narrative text(String text) {
-    if (StringUtils.isEmpty(text)) {
-      return null;
-    }
-    return Narrative.builder()
-        .div("<div>" + text + "</div>")
-        .status(NarrativeStatus.additional)
-        .build();
+  Product product(CdwMedication101Root.CdwMedications.CdwMedication.CdwProduct optionalSource) {
+    return convert(
+        optionalSource,
+        cdw -> Product.builder().id(cdw.getId()).form(productForm(cdw.getForm())).build());
   }
 
-  Product product(CdwMedication101Root.CdwMedications.CdwMedication.CdwProduct product) {
-    if (product == null) {
-      return null;
-    }
-    return Product.builder().id(product.getId()).form(productForm(product.getForm())).build();
-  }
-
-  CodeableConcept productForm(gov.va.dvp.cdw.xsd.model.CdwCodeableConcept productForm) {
+  CodeableConcept productForm(gov.va.dvp.cdw.xsd.model.CdwCodeableConcept source) {
     return CodeableConcept.builder()
-        .text(productForm.getText())
-        .coding(coding(productForm.getCoding()))
+        .text(source.getText())
+        .coding(coding(source.getCoding()))
         .build();
+  }
+
+  Narrative text(String optionalSource) {
+    return convertString(
+        optionalSource,
+        cdw ->
+            Narrative.builder()
+                .div("<div>" + cdw + "</div>")
+                .status(NarrativeStatus.additional)
+                .build());
   }
 }
