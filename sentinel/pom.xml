@@ -241,6 +241,7 @@
                 <argument>-Dloader.path=sentinel-${project.version}.jar</argument>
                 <argument>-Dloader=gov.va.api.health.argonaut.service.Application</argument>
                 <argument>-Dmranderson.url=https://localhost:8088</argument>
+                <argument>-Dhealth-check.medication-id=skip</argument>
                 <argument>-Dserver.ssl.key-store=file:certs/system/DVP-DVP-NONPROD.jks</argument>
                 <argument>-Dserver.ssl.key-alias=internal-sys-dev</argument>
                 <argument>-Dssl.verify=false</argument>

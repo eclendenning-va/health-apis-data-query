@@ -24,23 +24,33 @@ public class FhirTestClient implements TestClient {
    * the timestamp.
    */
   private OperationOutcome asOperationOutcomeWithoutDiagnostics(ResponseBody body) {
-    OperationOutcome oo = body.as(OperationOutcome.class);
-    oo.id("REMOVED-FOR-COMPARISON");
-    oo.issue()
-        .forEach(
-            i -> {
-              if (i.diagnostics() != null) {
-                i.diagnostics(
-                    i.diagnostics()
-                        .replaceAll("Timestamp:.*$", "Timestamp:REMOVED-FOR-COMPARISON"));
-              }
-            });
-    return oo;
+    try {
+      OperationOutcome oo = body.as(OperationOutcome.class);
+      oo.id("REMOVED-FOR-COMPARISON");
+      oo.issue()
+          .forEach(
+              i -> {
+                if (i.diagnostics() != null) {
+                  i.diagnostics(
+                      i.diagnostics()
+                          .replaceAll("Timestamp:.*$", "Timestamp:REMOVED-FOR-COMPARISON"));
+                }
+              });
+      return oo;
+    } catch (Exception e) {
+      log.error("Failed read response as OperationOutcome: {}", body.prettyPrint());
+      throw e;
+    }
   }
 
   @Override
   public ExpectedResponse get(String path, String... params) {
     Response baselineResponse = get("application/json", path, params);
+    if (path.startsWith("/actuator")) {
+      /* Health checks, metrics, etc. do not have FHIR compliance requirements */
+      return ExpectedResponse.of(baselineResponse);
+    }
+
     Response fhirJsonResponse = get("application/fhir+json", path, params);
     Response jsonFhirResponse = get("application/json+fhir", path, params);
 
