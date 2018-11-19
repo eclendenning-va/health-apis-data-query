@@ -5,7 +5,10 @@ import static java.util.Collections.singletonList;
 import gov.va.api.health.argonaut.api.bundle.AbstractEntry;
 import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
 import gov.va.api.health.argonaut.api.datatypes.Coding;
+import gov.va.api.health.argonaut.api.datatypes.Identifier;
+import gov.va.api.health.argonaut.api.datatypes.Identifier.IdentifierUse;
 import gov.va.api.health.argonaut.api.datatypes.Quantity;
+import gov.va.api.health.argonaut.api.datatypes.Range;
 import gov.va.api.health.argonaut.api.datatypes.Ratio;
 import gov.va.api.health.argonaut.api.datatypes.SimpleQuantity;
 import gov.va.api.health.argonaut.api.datatypes.SimpleResource;
@@ -71,6 +74,14 @@ public final class SampleDataTypes {
         .build();
   }
 
+  public Identifier identifier() {
+    return Identifier.builder()
+        .id("5678")
+        .use(IdentifierUse.official)
+        .extension(singletonList(extension()))
+        .build();
+  }
+
   public Meta meta() {
     return Meta.builder()
         .versionId("1111")
@@ -87,6 +98,10 @@ public final class SampleDataTypes {
 
   public Quantity quantity() {
     return Quantity.builder().value(11.11).unit("HelloUnit").build();
+  }
+
+  public Range range() {
+    return Range.builder().low(simpleQuantity()).high(simpleQuantity()).build();
   }
 
   public Ratio ratio() {

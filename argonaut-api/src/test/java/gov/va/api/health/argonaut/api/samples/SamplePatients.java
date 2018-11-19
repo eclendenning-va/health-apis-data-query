@@ -83,14 +83,6 @@ public class SamplePatients {
     return CodeableConcept.builder().coding(singletonList(coding())).text("HelloText").build();
   }
 
-  public Identifier identifier() {
-    return Identifier.builder()
-        .id("5678")
-        .use(IdentifierUse.official)
-        .extension(singletonList(extension()))
-        .build();
-  }
-
   public Issue issue() {
     return Issue.builder()
         .severity(IssueSeverity.error)
@@ -183,10 +175,6 @@ public class SamplePatients {
         .title("HelloTitle")
         .creation("2000-01-01T00:00:00-00:00")
         .build();
-  }
-
-  public Range range() {
-    return Range.builder().low(simpleQuantity()).high(simpleQuantity()).build();
   }
 
   public CodeableConcept relationship() {
