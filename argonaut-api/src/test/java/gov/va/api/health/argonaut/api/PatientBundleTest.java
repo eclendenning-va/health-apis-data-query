@@ -3,12 +3,14 @@ package gov.va.api.health.argonaut.api;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import gov.va.api.health.argonaut.api.Patient.Bundle;
-import gov.va.api.health.argonaut.api.Patient.Entry;
 import gov.va.api.health.argonaut.api.bundle.AbstractBundle.BundleType;
 import gov.va.api.health.argonaut.api.bundle.AbstractEntry;
 import gov.va.api.health.argonaut.api.bundle.BundleLink;
 import gov.va.api.health.argonaut.api.bundle.BundleLink.LinkRelation;
+import gov.va.api.health.argonaut.api.resources.Patient.Bundle;
+import gov.va.api.health.argonaut.api.resources.Patient.Entry;
+import gov.va.api.health.argonaut.api.samples.SampleDataTypes;
+import gov.va.api.health.argonaut.api.samples.SamplePatients;
 import gov.va.api.health.autoconfig.configuration.JacksonConfig;
 import java.util.Collections;
 import lombok.SneakyThrows;

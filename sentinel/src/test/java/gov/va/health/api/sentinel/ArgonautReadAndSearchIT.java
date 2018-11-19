@@ -1,8 +1,8 @@
 package gov.va.health.api.sentinel;
 
-import gov.va.api.health.argonaut.api.Medication;
-import gov.va.api.health.argonaut.api.OperationOutcome;
-import gov.va.api.health.argonaut.api.Patient;
+import gov.va.api.health.argonaut.api.resources.Medication;
+import gov.va.api.health.argonaut.api.resources.OperationOutcome;
+import gov.va.api.health.argonaut.api.resources.Patient;
 import java.util.Arrays;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +12,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
 
+@SuppressWarnings({"DefaultAnnotationParam", "WeakerAccess"})
 @RunWith(Parameterized.class)
 @Slf4j
 public class ArgonautReadAndSearchIT {

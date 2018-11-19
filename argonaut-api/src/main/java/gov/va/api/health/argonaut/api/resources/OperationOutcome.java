@@ -1,12 +1,13 @@
-package gov.va.api.health.argonaut.api;
+package gov.va.api.health.argonaut.api.resources;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import gov.va.api.health.argonaut.api.Fhir;
 import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
+import gov.va.api.health.argonaut.api.datatypes.SimpleResource;
 import gov.va.api.health.argonaut.api.elements.BackboneElement;
 import gov.va.api.health.argonaut.api.elements.Extension;
 import gov.va.api.health.argonaut.api.elements.Meta;
 import gov.va.api.health.argonaut.api.elements.Narrative;
-import gov.va.api.health.argonaut.api.resources.DomainResource;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import javax.validation.Valid;
@@ -56,7 +57,8 @@ public class OperationOutcome implements DomainResource {
   @AllArgsConstructor
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
   @Schema(
-    description = "https://www.hl7.org/fhir/operationoutcome-definitions.html#OperationOutcome.issue"
+    description =
+        "https://www.hl7.org/fhir/operationoutcome-definitions.html#OperationOutcome.issue"
   )
   public static class Issue implements BackboneElement {
     @Pattern(regexp = Fhir.ID)
@@ -81,6 +83,7 @@ public class OperationOutcome implements DomainResource {
 
     List<String> expression;
 
+    @SuppressWarnings("unused")
     public enum IssueSeverity {
       fatal,
       error,

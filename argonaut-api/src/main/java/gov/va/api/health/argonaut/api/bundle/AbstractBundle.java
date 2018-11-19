@@ -3,9 +3,9 @@ package gov.va.api.health.argonaut.api.bundle;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import gov.va.api.health.argonaut.api.Fhir;
-import gov.va.api.health.argonaut.api.Meta;
-import gov.va.api.health.argonaut.api.Resource;
-import gov.va.api.health.argonaut.api.Signature;
+import gov.va.api.health.argonaut.api.datatypes.Signature;
+import gov.va.api.health.argonaut.api.elements.Meta;
+import gov.va.api.health.argonaut.api.resources.Resource;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import javax.validation.Valid;
@@ -44,6 +44,7 @@ public abstract class AbstractBundle<N extends AbstractEntry<?>> implements Reso
   @NotBlank protected String resourceType;
   @Valid protected Signature signature;
 
+  @SuppressWarnings("unused")
   public enum BundleType {
     document,
     message,

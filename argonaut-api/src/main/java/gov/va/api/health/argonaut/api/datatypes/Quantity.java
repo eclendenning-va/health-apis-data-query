@@ -1,6 +1,7 @@
-package gov.va.api.health.argonaut.api;
+package gov.va.api.health.argonaut.api.datatypes;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import gov.va.api.health.argonaut.api.Fhir;
 import gov.va.api.health.argonaut.api.elements.Element;
 import gov.va.api.health.argonaut.api.elements.Extension;
 import io.swagger.v3.oas.annotations.media.Schema;

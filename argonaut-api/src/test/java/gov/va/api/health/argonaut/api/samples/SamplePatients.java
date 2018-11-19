@@ -1,15 +1,28 @@
-package gov.va.api.health.argonaut.api;
+package gov.va.api.health.argonaut.api.samples;
 
 import static java.util.Collections.singletonList;
 
-import gov.va.api.health.argonaut.api.Address.AddressType;
-import gov.va.api.health.argonaut.api.Address.AddressUse;
-import gov.va.api.health.argonaut.api.ContactPoint.ContactPointSystem;
-import gov.va.api.health.argonaut.api.ContactPoint.ContactPointUse;
-import gov.va.api.health.argonaut.api.HumanName.NameUse;
-import gov.va.api.health.argonaut.api.Identifier.IdentifierUse;
-import gov.va.api.health.argonaut.api.Issue.IssueSeverity;
-import gov.va.api.health.argonaut.api.Patient.Gender;
+import gov.va.api.health.argonaut.api.datatypes.Address;
+import gov.va.api.health.argonaut.api.datatypes.Address.AddressType;
+import gov.va.api.health.argonaut.api.datatypes.Address.AddressUse;
+import gov.va.api.health.argonaut.api.datatypes.Attachment;
+import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
+import gov.va.api.health.argonaut.api.datatypes.ContactPoint;
+import gov.va.api.health.argonaut.api.datatypes.ContactPoint.ContactPointSystem;
+import gov.va.api.health.argonaut.api.datatypes.ContactPoint.ContactPointUse;
+import gov.va.api.health.argonaut.api.datatypes.HumanName;
+import gov.va.api.health.argonaut.api.datatypes.HumanName.NameUse;
+import gov.va.api.health.argonaut.api.datatypes.Identifier;
+import gov.va.api.health.argonaut.api.datatypes.Identifier.IdentifierUse;
+import gov.va.api.health.argonaut.api.datatypes.Period;
+import gov.va.api.health.argonaut.api.datatypes.Range;
+import gov.va.api.health.argonaut.api.elements.Extension;
+import gov.va.api.health.argonaut.api.resources.OperationOutcome.Issue;
+import gov.va.api.health.argonaut.api.resources.OperationOutcome.Issue.IssueSeverity;
+import gov.va.api.health.argonaut.api.resources.Patient;
+import gov.va.api.health.argonaut.api.resources.Patient.Communication;
+import gov.va.api.health.argonaut.api.resources.Patient.Contact;
+import gov.va.api.health.argonaut.api.resources.Patient.PatientLink;
 import java.util.Arrays;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Delegate;
@@ -60,7 +73,7 @@ public class SamplePatients {
         .name(name())
         .telecom(singletonList(telecom()))
         .address(address())
-        .gender(Contact.Gender.unknown)
+        .gender(Patient.Gender.unknown)
         .organization(reference())
         .period(period())
         .build();
@@ -93,8 +106,8 @@ public class SamplePatients {
     return CodeableConcept.builder().coding(singletonList(coding())).text("HelloText").build();
   }
 
-  public Link link() {
-    return Link.builder()
+  public Patient.PatientLink link() {
+    return PatientLink.builder()
         .id("7777")
         .extension(singletonList(extension()))
         .modifierExtension(singletonList(extension()))
@@ -135,7 +148,7 @@ public class SamplePatients {
         .active(true)
         .name(singletonList(name()))
         .telecom(singletonList(telecom()))
-        .gender(Gender.unknown)
+        .gender(Patient.Gender.unknown)
         .birthDate("2000-01-01")
         .deceasedBoolean(false)
         .address(singletonList(address()))

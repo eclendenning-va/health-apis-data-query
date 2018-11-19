@@ -3,14 +3,14 @@ package gov.va.api.health.argonaut.service.controller.patient;
 import static gov.va.api.health.argonaut.service.controller.Transformers.firstPayloadItem;
 import static gov.va.api.health.argonaut.service.controller.Transformers.hasPayload;
 
-import gov.va.api.health.argonaut.api.CodeableConcept;
-import gov.va.api.health.argonaut.api.Issue;
-import gov.va.api.health.argonaut.api.Issue.IssueSeverity;
-import gov.va.api.health.argonaut.api.Narrative;
-import gov.va.api.health.argonaut.api.Narrative.NarrativeStatus;
-import gov.va.api.health.argonaut.api.OperationOutcome;
-import gov.va.api.health.argonaut.api.Patient;
-import gov.va.api.health.argonaut.api.Patient.Bundle;
+import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
+import gov.va.api.health.argonaut.api.elements.Narrative;
+import gov.va.api.health.argonaut.api.elements.Narrative.NarrativeStatus;
+import gov.va.api.health.argonaut.api.resources.OperationOutcome;
+import gov.va.api.health.argonaut.api.resources.OperationOutcome.Issue;
+import gov.va.api.health.argonaut.api.resources.OperationOutcome.Issue.IssueSeverity;
+import gov.va.api.health.argonaut.api.resources.Patient;
+import gov.va.api.health.argonaut.api.resources.Patient.Bundle;
 import gov.va.api.health.argonaut.service.controller.Bundler;
 import gov.va.api.health.argonaut.service.controller.Bundler.BundleContext;
 import gov.va.api.health.argonaut.service.controller.PageLinks.LinkConfig;
@@ -43,6 +43,7 @@ import org.springframework.web.bind.annotation.RestController;
  * https://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-patient.html for implementation
  * details.
  */
+@SuppressWarnings("WeakerAccess")
 @RestController
 @RequestMapping(
   value = {"/api/Patient"},

@@ -1,9 +1,8 @@
-package gov.va.api.health.argonaut.api;
+package gov.va.api.health.argonaut.api.elements;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import gov.va.api.health.argonaut.api.Fhir;
 import gov.va.api.health.argonaut.api.datatypes.Coding;
-import gov.va.api.health.argonaut.api.elements.Element;
-import gov.va.api.health.argonaut.api.elements.Extension;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import javax.validation.Valid;

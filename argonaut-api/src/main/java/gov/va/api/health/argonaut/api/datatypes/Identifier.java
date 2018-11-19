@@ -1,9 +1,10 @@
-package gov.va.api.health.argonaut.api;
+package gov.va.api.health.argonaut.api.datatypes;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
+import gov.va.api.health.argonaut.api.Fhir;
 import gov.va.api.health.argonaut.api.elements.Element;
 import gov.va.api.health.argonaut.api.elements.Extension;
+import gov.va.api.health.argonaut.api.elements.Reference;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import javax.validation.Valid;
@@ -37,6 +38,7 @@ public class Identifier implements Element {
   @Valid Period period;
   @Valid Reference assigner;
 
+  @SuppressWarnings("unused")
   public enum IdentifierUse {
     usual,
     official,

@@ -1,13 +1,12 @@
 package gov.va.health.api.sentinel;
 
-import gov.va.api.health.argonaut.api.OperationOutcome;
-import gov.va.api.health.argonaut.api.Patient;
-import gov.va.api.health.argonaut.api.Patient.Bundle;
+import gov.va.api.health.argonaut.api.resources.OperationOutcome;
+import gov.va.api.health.argonaut.api.resources.Patient.Bundle;
 import org.junit.Test;
 
 public class ArgonautValidateIT {
 
-  TestIds ids = IdRegistrar.of(Sentinel.get().system()).registeredIds();
+  private TestIds ids = IdRegistrar.of(Sentinel.get().system()).registeredIds();
 
   private TestClient argonaut() {
     return Sentinel.get().clients().argonaut();
@@ -15,7 +14,7 @@ public class ArgonautValidateIT {
 
   @Test
   public void patient() {
-    Patient.Bundle bundle =
+    Bundle bundle =
         argonaut().get("/api/Patient?_id={id}", ids.patient()).expectValid(Bundle.class);
     argonaut()
         .post("/api/Patient/$validate", bundle)

@@ -2,15 +2,16 @@ package gov.va.api.health.argonaut.service.controller.patient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import gov.va.api.health.argonaut.api.Address;
-import gov.va.api.health.argonaut.api.CodeableConcept;
-import gov.va.api.health.argonaut.api.Coding;
-import gov.va.api.health.argonaut.api.Contact;
-import gov.va.api.health.argonaut.api.ContactPoint;
-import gov.va.api.health.argonaut.api.Extension;
-import gov.va.api.health.argonaut.api.HumanName;
-import gov.va.api.health.argonaut.api.Identifier;
-import gov.va.api.health.argonaut.api.Reference;
+import gov.va.api.health.argonaut.api.datatypes.Address;
+import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
+import gov.va.api.health.argonaut.api.datatypes.Coding;
+import gov.va.api.health.argonaut.api.datatypes.ContactPoint;
+import gov.va.api.health.argonaut.api.datatypes.HumanName;
+import gov.va.api.health.argonaut.api.datatypes.Identifier;
+import gov.va.api.health.argonaut.api.elements.Extension;
+import gov.va.api.health.argonaut.api.elements.Reference;
+import gov.va.api.health.argonaut.api.resources.Patient;
+import gov.va.api.health.argonaut.api.resources.Patient.Contact;
 import gov.va.api.health.argonaut.service.controller.Transformers;
 import gov.va.dvp.cdw.xsd.model.CdwAdministrativeGenderCodes;
 import gov.va.dvp.cdw.xsd.model.CdwBirthSexCodes;
@@ -70,12 +71,13 @@ public class PatientTransformerTest {
     assertThat(transformer().addresses(null)).isEmpty();
   }
 
+  @SuppressWarnings("OptionalGetWithoutIsPresent")
   @Test
   public void argoBirthsex() {
     Optional<Extension> testArgoBirthsex =
         transformer().argoBirthSex(cdw.alivePatient().getArgoBirthsex());
-    Extension expexctedArgoBirthsex = expectedPatient.alivePatient().extension().get(2);
-    assertThat(testArgoBirthsex.get()).isEqualTo(expexctedArgoBirthsex);
+    Extension expectedArgoBirthsex = expectedPatient.alivePatient().extension().get(2);
+    assertThat(testArgoBirthsex.get()).isEqualTo(expectedArgoBirthsex);
   }
 
   @Test
@@ -98,6 +100,7 @@ public class PatientTransformerTest {
     assertThat(testArgoEthnicity).isEqualTo(expectedArgoEthnicity);
   }
 
+  @SuppressWarnings("OptionalGetWithoutIsPresent")
   @Test
   public void argoEthnicityTransformsToOptionalExtensionList() {
     Optional<Extension> testArgoEthnicity =
@@ -140,6 +143,7 @@ public class PatientTransformerTest {
     assertThat(transformer().argoRace(Collections.emptyList())).isEmpty();
   }
 
+  @SuppressWarnings("OptionalGetWithoutIsPresent")
   @Test
   public void argoRaceTransformsToOptionalExtensionList() {
     Optional<Extension> testArgoRace = transformer().argoRace(cdw.alivePatient().getArgoRace());
@@ -315,8 +319,8 @@ public class PatientTransformerTest {
 
   @Test
   public void patient103TransformsToModelPatient() {
-    gov.va.api.health.argonaut.api.Patient test = transformer().apply(cdw.alivePatient());
-    gov.va.api.health.argonaut.api.Patient expected = expectedPatient.alivePatient();
+    Patient test = transformer().apply(cdw.alivePatient());
+    Patient expected = expectedPatient.alivePatient();
     assertThat(test).isEqualTo(expected);
   }
 
@@ -355,13 +359,6 @@ public class PatientTransformerTest {
 
   static class PatientSampleData {
 
-    private DatatypeFactory datatypeFactory;
-
-    @SneakyThrows
-    private PatientSampleData() {
-      datatypeFactory = DatatypeFactory.newInstance();
-    }
-
     List<Address> address() {
       List<Address> addresses = new LinkedList<>();
       addresses.add(Address.builder().state("Missing*").build());
@@ -388,15 +385,15 @@ public class PatientTransformerTest {
       return addresses;
     }
 
-    gov.va.api.health.argonaut.api.Patient alivePatient() {
-      return gov.va.api.health.argonaut.api.Patient.builder()
+    Patient alivePatient() {
+      return Patient.builder()
           .resourceType("Patient")
           .id("123456789")
           .extension(argoCdwExtensions())
           .identifier(identifier())
           .name(name())
           .telecom(telecom())
-          .gender(gov.va.api.health.argonaut.api.Patient.Gender.male)
+          .gender(Patient.Gender.male)
           .birthDate("2018-11-06")
           .deceasedBoolean(false)
           .address(address())
@@ -499,14 +496,14 @@ public class PatientTransformerTest {
       return contacts;
     }
 
-    gov.va.api.health.argonaut.api.Patient deceasedPatient() {
-      return gov.va.api.health.argonaut.api.Patient.builder()
+    Patient deceasedPatient() {
+      return Patient.builder()
           .id("123456789")
           .extension(argoCdwExtensions())
           .identifier(identifier())
           .name(name())
           .telecom(telecom())
-          .gender(gov.va.api.health.argonaut.api.Patient.Gender.male)
+          .gender(Patient.Gender.male)
           .birthDate("2018-11-06")
           .deceasedBoolean(true)
           .deceasedDateTime("2018-11-07")
@@ -657,7 +654,7 @@ public class PatientTransformerTest {
       XMLGregorianCalendar birthdate = datatypeFactory.newXMLGregorianCalendar();
       birthdate.setYear(2018);
       birthdate.setMonth(11);
-      birthdate.setDay(06);
+      birthdate.setDay(6);
       return birthdate;
     }
 
@@ -730,7 +727,7 @@ public class PatientTransformerTest {
       XMLGregorianCalendar deceasedDate = datatypeFactory.newXMLGregorianCalendar();
       deceasedDate.setYear(2018);
       deceasedDate.setMonth(11);
-      deceasedDate.setDay(07);
+      deceasedDate.setDay(7);
       return deceasedDate;
     }
 

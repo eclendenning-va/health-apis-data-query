@@ -1,9 +1,9 @@
 package gov.va.api.health.argonaut.api.bundle;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import gov.va.api.health.argonaut.api.BackboneElement;
-import gov.va.api.health.argonaut.api.Extension;
 import gov.va.api.health.argonaut.api.Fhir;
+import gov.va.api.health.argonaut.api.elements.BackboneElement;
+import gov.va.api.health.argonaut.api.elements.Extension;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
 import java.util.List;
@@ -39,12 +39,14 @@ public abstract class AbstractEntry<T> implements BackboneElement {
   @Valid Request request;
   @Valid Response response;
 
+  @SuppressWarnings("unused")
   public enum SearchMode {
     match,
     include,
     outcome
   }
 
+  @SuppressWarnings("unused")
   public enum HttpVerb {
     GET,
     POST,

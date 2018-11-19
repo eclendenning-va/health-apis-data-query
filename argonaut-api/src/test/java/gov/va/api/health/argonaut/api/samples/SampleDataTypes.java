@@ -1,9 +1,18 @@
-package gov.va.api.health.argonaut.api;
+package gov.va.api.health.argonaut.api.samples;
 
 import static java.util.Collections.singletonList;
 
-import gov.va.api.health.argonaut.api.Narrative.NarrativeStatus;
 import gov.va.api.health.argonaut.api.bundle.AbstractEntry;
+import gov.va.api.health.argonaut.api.datatypes.Coding;
+import gov.va.api.health.argonaut.api.datatypes.Quantity;
+import gov.va.api.health.argonaut.api.datatypes.Ratio;
+import gov.va.api.health.argonaut.api.datatypes.SimpleQuantity;
+import gov.va.api.health.argonaut.api.datatypes.SimpleResource;
+import gov.va.api.health.argonaut.api.elements.Extension;
+import gov.va.api.health.argonaut.api.elements.Meta;
+import gov.va.api.health.argonaut.api.elements.Narrative;
+import gov.va.api.health.argonaut.api.elements.Narrative.NarrativeStatus;
+import gov.va.api.health.argonaut.api.elements.Reference;
 import java.math.BigDecimal;
 import lombok.NoArgsConstructor;
 
@@ -77,31 +86,6 @@ public final class SampleDataTypes {
     return Reference.builder().reference("HelloReference").display("HelloDisplay").build();
   }
 
-  public SimpleResource resource() {
-    return SimpleResource.builder()
-        .id("1111")
-        .meta(meta())
-        .implicitRules("http://HelloRules.com")
-        .language("Hello Language")
-        .build();
-  }
-
-  public SimpleQuantity simpleQuantity() {
-    return SimpleQuantity.builder().value(11.11).unit("HelloUnit").build();
-  }
-
-  public AbstractEntry.Response response() {
-    return AbstractEntry.Response.builder()
-        .id("request1")
-        .extension(singletonList(extension()))
-        .modifierExtension(singletonList(extension()))
-        .status("single")
-        .location("http://example.com")
-        .etag("you're it")
-        .lastModified("2005-01-21T07:57:00Z")
-        .build();
-  }
-
   public AbstractEntry.Request request() {
     return AbstractEntry.Request.builder()
         .id("request1")
@@ -116,6 +100,27 @@ public final class SampleDataTypes {
         .build();
   }
 
+  public SimpleResource resource() {
+    return SimpleResource.builder()
+        .id("1111")
+        .meta(meta())
+        .implicitRules("http://HelloRules.com")
+        .language("Hello Language")
+        .build();
+  }
+
+  public AbstractEntry.Response response() {
+    return AbstractEntry.Response.builder()
+        .id("request1")
+        .extension(singletonList(extension()))
+        .modifierExtension(singletonList(extension()))
+        .status("single")
+        .location("http://example.com")
+        .etag("you're it")
+        .lastModified("2005-01-21T07:57:00Z")
+        .build();
+  }
+
   public AbstractEntry.Search search() {
     return AbstractEntry.Search.builder()
         .id("s1")
@@ -124,5 +129,9 @@ public final class SampleDataTypes {
         .modifierExtension(singletonList(extension()))
         .rank(new BigDecimal(0.5))
         .build();
+  }
+
+  public SimpleQuantity simpleQuantity() {
+    return SimpleQuantity.builder().value(11.11).unit("HelloUnit").build();
   }
 }

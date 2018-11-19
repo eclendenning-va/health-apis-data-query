@@ -1,5 +1,8 @@
 package gov.va.api.health.argonaut.api;
 
+import gov.va.api.health.argonaut.api.resources.Medication;
+import gov.va.api.health.argonaut.api.resources.OperationOutcome;
+import gov.va.api.health.argonaut.api.resources.Patient;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -117,12 +120,14 @@ public interface ArgonautService {
   }
 
   class SearchFailed extends ArgonautServiceException {
+    @SuppressWarnings("WeakerAccess")
     public SearchFailed(String id, String reason) {
       super(id + " Reason: " + reason);
     }
   }
 
   class UnknownResource extends ArgonautServiceException {
+    @SuppressWarnings("WeakerAccess")
     public UnknownResource(String id) {
       super(id);
     }

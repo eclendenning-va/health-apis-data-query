@@ -1,8 +1,9 @@
-package gov.va.api.health.argonaut.api;
+package gov.va.api.health.argonaut.api.resources;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import gov.va.api.health.argonaut.api.Fhir;
 import gov.va.api.health.argonaut.api.bundle.AbstractBundle;
 import gov.va.api.health.argonaut.api.bundle.AbstractEntry;
 import gov.va.api.health.argonaut.api.bundle.BundleLink;
@@ -12,10 +13,14 @@ import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
 import gov.va.api.health.argonaut.api.datatypes.ContactPoint;
 import gov.va.api.health.argonaut.api.datatypes.HumanName;
 import gov.va.api.health.argonaut.api.datatypes.Identifier;
+import gov.va.api.health.argonaut.api.datatypes.Period;
+import gov.va.api.health.argonaut.api.datatypes.Signature;
+import gov.va.api.health.argonaut.api.datatypes.SimpleResource;
 import gov.va.api.health.argonaut.api.elements.BackboneElement;
 import gov.va.api.health.argonaut.api.elements.Extension;
 import gov.va.api.health.argonaut.api.elements.Meta;
 import gov.va.api.health.argonaut.api.elements.Narrative;
+import gov.va.api.health.argonaut.api.elements.Reference;
 import gov.va.api.health.argonaut.api.validation.RelatedFields;
 import gov.va.api.health.argonaut.api.validation.ZeroOrOneOf;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -41,14 +46,17 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @Schema(
-    description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-patient.html")
+  description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-patient.html"
+)
 @RelatedFields({
   @ZeroOrOneOf(
-      fields = {"deceasedBoolean", "deceasedDateTime"},
-      message = "Only one deceased value may be specified"),
+    fields = {"deceasedBoolean", "deceasedDateTime"},
+    message = "Only one deceased value may be specified"
+  ),
   @ZeroOrOneOf(
-      fields = {"multipleBirthBoolean", "multipleBirthInteger"},
-      message = "Only one multiple birth value may be specified")
+    fields = {"multipleBirthBoolean", "multipleBirthInteger"},
+    message = "Only one multiple birth value may be specified"
+  )
 })
 public class Patient implements Resource {
 

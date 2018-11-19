@@ -1,8 +1,7 @@
-package gov.va.api.health.argonaut.api;
+package gov.va.api.health.argonaut.api.elements;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import gov.va.api.health.argonaut.api.elements.Element;
-import gov.va.api.health.argonaut.api.elements.Extension;
+import gov.va.api.health.argonaut.api.Fhir;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import javax.validation.Valid;
@@ -33,6 +32,7 @@ public class Narrative implements Element {
   @Pattern(regexp = Fhir.XHTML)
   String div;
 
+  @SuppressWarnings("unused")
   public enum NarrativeStatus {
     generated,
     extensions,

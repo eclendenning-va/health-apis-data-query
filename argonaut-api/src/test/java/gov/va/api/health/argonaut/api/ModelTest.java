@@ -6,6 +6,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.va.api.health.argonaut.api.ArgonautService.SearchFailed;
 import gov.va.api.health.argonaut.api.ArgonautService.UnknownResource;
+import gov.va.api.health.argonaut.api.resources.OperationOutcome;
+import gov.va.api.health.argonaut.api.samples.SampleMedications;
+import gov.va.api.health.argonaut.api.samples.SamplePatients;
 import gov.va.api.health.autoconfig.configuration.JacksonConfig;
 import java.util.Arrays;
 import lombok.SneakyThrows;
@@ -23,6 +26,11 @@ public class ModelTest {
   public void exceptionConstructors() {
     new UnknownResource("some id");
     new SearchFailed("some id", "some reason");
+  }
+
+  @Test
+  public void medication() {
+    roundTrip(medicationData.medication());
   }
 
   @Test
@@ -44,11 +52,6 @@ public class ModelTest {
             .build());
   }
 
-  @Test
-  public void patient() {
-    roundTrip(patientData.patient());
-  }
-
   /*
    Believe this test to be failing due to a java bean property.
    it is viewing the "isBrand" variable as a method and creating its own "brand" field
@@ -56,8 +59,8 @@ public class ModelTest {
   */
 
   @Test
-  public void medication() {
-    roundTrip(medicationData.medication());
+  public void patient() {
+    roundTrip(patientData.patient());
   }
 
   @Test

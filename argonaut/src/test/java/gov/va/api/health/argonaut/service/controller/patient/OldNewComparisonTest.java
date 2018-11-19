@@ -2,7 +2,7 @@ package gov.va.api.health.argonaut.service.controller.patient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import gov.va.api.health.argonaut.api.Patient;
+import gov.va.api.health.argonaut.api.resources.Patient;
 import gov.va.api.health.autoconfig.configuration.JacksonConfig;
 import gov.va.dvp.cdw.xsd.model.CdwPatient103Root;
 import javax.xml.bind.JAXBContext;

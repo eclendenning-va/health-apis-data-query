@@ -3,7 +3,7 @@ package gov.va.api.health.argonaut.service.controller.medication;
 import static gov.va.api.health.argonaut.service.controller.Transformers.firstPayloadItem;
 import static gov.va.api.health.argonaut.service.controller.Transformers.hasPayload;
 
-import gov.va.api.health.argonaut.api.Medication;
+import gov.va.api.health.argonaut.api.resources.Medication;
 import gov.va.api.health.argonaut.service.controller.Parameters;
 import gov.va.api.health.argonaut.service.mranderson.client.MrAndersonClient;
 import gov.va.api.health.argonaut.service.mranderson.client.Query;
@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
  * https://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-medication.html for
  * implementation details.
  */
+@SuppressWarnings("WeakerAccess")
 @RestController
 @RequestMapping(
   value = {"/api/Medication"},

@@ -4,16 +4,16 @@ import static gov.va.api.health.argonaut.service.controller.Transformers.asDateS
 import static gov.va.api.health.argonaut.service.controller.Transformers.asDateTimeString;
 import static gov.va.api.health.argonaut.service.controller.Transformers.ifPresent;
 
-import gov.va.api.health.argonaut.api.Address;
-import gov.va.api.health.argonaut.api.CodeableConcept;
-import gov.va.api.health.argonaut.api.Coding;
-import gov.va.api.health.argonaut.api.Contact;
-import gov.va.api.health.argonaut.api.ContactPoint;
-import gov.va.api.health.argonaut.api.Extension;
-import gov.va.api.health.argonaut.api.HumanName;
-import gov.va.api.health.argonaut.api.Identifier;
-import gov.va.api.health.argonaut.api.Patient;
-import gov.va.api.health.argonaut.api.Reference;
+import gov.va.api.health.argonaut.api.datatypes.Address;
+import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
+import gov.va.api.health.argonaut.api.datatypes.Coding;
+import gov.va.api.health.argonaut.api.datatypes.ContactPoint;
+import gov.va.api.health.argonaut.api.datatypes.HumanName;
+import gov.va.api.health.argonaut.api.datatypes.Identifier;
+import gov.va.api.health.argonaut.api.elements.Extension;
+import gov.va.api.health.argonaut.api.elements.Reference;
+import gov.va.api.health.argonaut.api.resources.Patient;
+import gov.va.api.health.argonaut.api.resources.Patient.Contact;
 import gov.va.dvp.cdw.xsd.model.CdwBirthSexCodes;
 import gov.va.dvp.cdw.xsd.model.CdwBirthsexExtension;
 import gov.va.dvp.cdw.xsd.model.CdwExtensions;

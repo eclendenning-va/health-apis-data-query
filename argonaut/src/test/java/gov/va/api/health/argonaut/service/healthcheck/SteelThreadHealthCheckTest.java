@@ -3,7 +3,7 @@ package gov.va.api.health.argonaut.service.healthcheck;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
-import gov.va.api.health.argonaut.api.Medication;
+import gov.va.api.health.argonaut.api.resources.Medication;
 import gov.va.api.health.argonaut.service.controller.Parameters;
 import gov.va.api.health.argonaut.service.mranderson.client.MrAndersonClient;
 import gov.va.api.health.argonaut.service.mranderson.client.Query;
@@ -32,7 +32,7 @@ public class SteelThreadHealthCheckTest {
     root.getMedications().getMedication().add(xmlMedication);
     SteelThreadSystemCheck test = new SteelThreadSystemCheck(client, "123");
     when(client.search(Mockito.any())).thenReturn(root);
-    assertThat(test.health().getStatus().equals(Status.UP));
+    assertThat(test.health().getStatus()).isEqualTo(Status.UP);
   }
 
   @Test
@@ -47,6 +47,6 @@ public class SteelThreadHealthCheckTest {
                     .resource("Medication")
                     .version("999")
                     .build()));
-    assertThat(test.health().getStatus().equals(Status.DOWN));
+    assertThat(test.health().getStatus()).isEqualTo(Status.DOWN);
   }
 }

@@ -1,6 +1,6 @@
 package gov.va.api.health.argonaut.service.controller.patient;
 
-import gov.va.api.health.argonaut.api.Patient;
+import gov.va.api.health.argonaut.api.resources.Patient;
 import java.util.LinkedList;
 import java.util.List;
 import org.assertj.core.api.Assertions;

@@ -1,4 +1,4 @@
-package gov.va.api.health.argonaut.api;
+package gov.va.api.health.argonaut.api.resources;
 
 import gov.va.api.health.argonaut.api.elements.Meta;
 import io.swagger.v3.oas.annotations.media.Schema;

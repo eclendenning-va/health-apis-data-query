@@ -1,7 +1,9 @@
-package gov.va.api.health.argonaut.api;
+package gov.va.api.health.argonaut.api.samples;
 
 import static java.util.Collections.singletonList;
 
+import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
+import gov.va.api.health.argonaut.api.resources.Medication;
 import java.util.Arrays;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Delegate;

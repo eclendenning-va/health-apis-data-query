@@ -2,11 +2,12 @@ package gov.va.api.health.argonaut.service.controller.medication;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import gov.va.api.health.argonaut.api.CodeableConcept;
-import gov.va.api.health.argonaut.api.Coding;
-import gov.va.api.health.argonaut.api.Medication.Product;
-import gov.va.api.health.argonaut.api.Narrative;
-import gov.va.api.health.argonaut.api.Narrative.NarrativeStatus;
+import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
+import gov.va.api.health.argonaut.api.datatypes.Coding;
+import gov.va.api.health.argonaut.api.elements.Narrative;
+import gov.va.api.health.argonaut.api.elements.Narrative.NarrativeStatus;
+import gov.va.api.health.argonaut.api.resources.Medication;
+import gov.va.api.health.argonaut.api.resources.Medication.Product;
 import gov.va.dvp.cdw.xsd.model.CdwCodeableConcept;
 import gov.va.dvp.cdw.xsd.model.CdwCoding;
 import gov.va.dvp.cdw.xsd.model.CdwMedication101Root.CdwMedications.CdwMedication;
@@ -15,8 +16,6 @@ import java.math.BigInteger;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import javax.xml.datatype.DatatypeFactory;
-import lombok.SneakyThrows;
 import org.junit.Test;
 
 public class MedicationTransformerTest {
@@ -44,20 +43,20 @@ public class MedicationTransformerTest {
   }
 
   @Test
-  public void codingReturnsNullForNull() {
-    assertThat(transformer().coding(null)).isNull();
-  }
-
-  @Test
   public void codingReturnsNullForEmptyList() {
     LinkedList<CdwCoding> emptyCodings = new LinkedList<>();
     assertThat(transformer().coding(emptyCodings)).isNull();
   }
 
   @Test
+  public void codingReturnsNullForNull() {
+    assertThat(transformer().coding(null)).isNull();
+  }
+
+  @Test
   public void medication101TransformsToModelMedication() {
-    gov.va.api.health.argonaut.api.Medication test = transformer().apply(cdw.medication());
-    gov.va.api.health.argonaut.api.Medication expected = expectedMedication.medication();
+    Medication test = transformer().apply(cdw.medication());
+    Medication expected = expectedMedication.medication();
     assertThat(test).isEqualTo(expected);
   }
 
@@ -100,12 +99,6 @@ public class MedicationTransformerTest {
   }
 
   private static class MedicationSampleData {
-    private DatatypeFactory datatypeFactory;
-
-    @SneakyThrows
-    private MedicationSampleData() {
-      datatypeFactory = DatatypeFactory.newInstance();
-    }
 
     CodeableConcept code() {
       return CodeableConcept.builder()
@@ -133,8 +126,8 @@ public class MedicationTransformerTest {
           .build();
     }
 
-    gov.va.api.health.argonaut.api.Medication medication() {
-      return gov.va.api.health.argonaut.api.Medication.builder()
+    Medication medication() {
+      return Medication.builder()
           .resourceType("Medication")
           .id("123456789")
           .text(text())
@@ -153,12 +146,6 @@ public class MedicationTransformerTest {
   }
 
   private static class XmlSampleData {
-    private DatatypeFactory datatypeFactory;
-
-    @SneakyThrows
-    private XmlSampleData() {
-      datatypeFactory = DatatypeFactory.newInstance();
-    }
 
     CdwCodeableConcept code() {
       CdwCodeableConcept code = new CdwCodeableConcept();

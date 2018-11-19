@@ -1,10 +1,10 @@
 package gov.va.api.health.argonaut.service.controller;
 
-import gov.va.api.health.argonaut.api.Issue;
-import gov.va.api.health.argonaut.api.Issue.IssueSeverity;
-import gov.va.api.health.argonaut.api.Narrative;
-import gov.va.api.health.argonaut.api.Narrative.NarrativeStatus;
-import gov.va.api.health.argonaut.api.OperationOutcome;
+import gov.va.api.health.argonaut.api.elements.Narrative;
+import gov.va.api.health.argonaut.api.elements.Narrative.NarrativeStatus;
+import gov.va.api.health.argonaut.api.resources.OperationOutcome;
+import gov.va.api.health.argonaut.api.resources.OperationOutcome.Issue;
+import gov.va.api.health.argonaut.api.resources.OperationOutcome.Issue.IssueSeverity;
 import gov.va.api.health.argonaut.service.mranderson.client.MrAndersonClient.BadRequest;
 import gov.va.api.health.argonaut.service.mranderson.client.MrAndersonClient.NotFound;
 import java.time.Instant;
@@ -81,7 +81,7 @@ public class WebExceptionHandler {
         .append(e.getClass().getSimpleName())
         .append(" Timestamp:")
         .append(Instant.now());
-    problems.stream().forEach(p -> diagnostics.append('\n').append(p));
+    problems.forEach(p -> diagnostics.append('\n').append(p));
 
     OperationOutcome response =
         OperationOutcome.builder()
