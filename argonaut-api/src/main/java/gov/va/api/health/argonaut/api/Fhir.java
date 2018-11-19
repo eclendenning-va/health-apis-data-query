@@ -15,6 +15,7 @@ public class Fhir {
   @Schema(description = "http://hl7.org/fhir/DSTU2/datatypes.html#uri")
   public static final String URI = ".+";
 
+
   @Schema(description = "http://hl7.org/fhir/DSTU2/datatypes.html#base64binary")
   public static final String BASE64 = "[^-A-Za-z0-9+/=]|=[^=]|={3,}$";
 
@@ -38,6 +39,9 @@ public class Fhir {
 
   @Schema(description = "http://hl7.org/fhir/DSTU2/datatypes.html#oid")
   public static final String OID = "urn:oid:[0-2](\\.[1-9]\\d*)+";
+
+  @Schema(description = "http://hl7.org/fhir/DSTU2/datatypes.html#positiveInt")
+  public static final String POSITIVEINT="[1-9][0-9]*";
 
   public static final String XHTML = "<.+>";
 }
