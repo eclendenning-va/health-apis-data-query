@@ -3,12 +3,7 @@ package gov.va.api.health.argonaut.api.samples;
 import static java.util.Collections.singletonList;
 
 import gov.va.api.health.argonaut.api.bundle.AbstractEntry;
-import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
-import gov.va.api.health.argonaut.api.datatypes.Coding;
-import gov.va.api.health.argonaut.api.datatypes.Quantity;
-import gov.va.api.health.argonaut.api.datatypes.Ratio;
-import gov.va.api.health.argonaut.api.datatypes.SimpleQuantity;
-import gov.va.api.health.argonaut.api.datatypes.SimpleResource;
+import gov.va.api.health.argonaut.api.datatypes.*;
 import gov.va.api.health.argonaut.api.elements.Extension;
 import gov.va.api.health.argonaut.api.elements.Meta;
 import gov.va.api.health.argonaut.api.elements.Narrative;
@@ -68,6 +63,15 @@ public final class SampleDataTypes {
                 .denominator(Quantity.builder().value(1.0).build())
                 .numerator(Quantity.builder().value(2.0).build())
                 .build())
+        .build();
+  }
+
+
+  public Identifier identifier() {
+    return Identifier.builder()
+        .id("5678")
+        .use(Identifier.IdentifierUse.official)
+        .extension(singletonList(extension()))
         .build();
   }
 
