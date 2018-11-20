@@ -9,6 +9,7 @@ import gov.va.api.health.argonaut.api.ArgonautService.UnknownResource;
 import gov.va.api.health.argonaut.api.resources.OperationOutcome;
 import gov.va.api.health.argonaut.api.samples.SampleAllergyIntolerances;
 import gov.va.api.health.argonaut.api.samples.SampleDiagnosticReports;
+import gov.va.api.health.argonaut.api.samples.SampleImmunizations;
 import gov.va.api.health.argonaut.api.samples.SampleMedications;
 import gov.va.api.health.argonaut.api.samples.SamplePatients;
 import gov.va.api.health.autoconfig.configuration.JacksonConfig;
@@ -24,6 +25,7 @@ public class ModelTest {
   private final SampleMedications medicationData = SampleMedications.get();
   private final SampleAllergyIntolerances allergyIntoleranceData = SampleAllergyIntolerances.get();
   private final SampleDiagnosticReports diagnosticReportData = SampleDiagnosticReports.get();
+  private final SampleImmunizations immunizationData = SampleImmunizations.get();
 
   @Test
   public void diagnosticReport() {
@@ -80,6 +82,11 @@ public class ModelTest {
   @Test
   public void allergyIntolerance() {
     roundTrip(allergyIntoleranceData.allergyIntolerance());
+  }
+
+  @Test
+  public void immunization() {
+    roundTrip(immunizationData.immunization());
   }
 
   @SneakyThrows
