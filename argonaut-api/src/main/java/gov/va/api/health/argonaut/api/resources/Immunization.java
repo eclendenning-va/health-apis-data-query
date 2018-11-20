@@ -134,14 +134,14 @@ public class Immunization implements Resource {
     @Valid List<Extension> modifierExtension;
 
     @NotNull
-    @Min(0)
+    @Min(1)
     Integer doseSequence;
 
     String description;
     @Valid Reference authority;
     String series;
 
-    @Min(0)
+    @Min(1)
     Integer seriesDoses;
 
     @NotEmpty @Valid List<CodeableConcept> targetDisease;
