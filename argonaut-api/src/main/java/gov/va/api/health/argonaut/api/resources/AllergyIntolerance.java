@@ -61,7 +61,7 @@ public class AllergyIntolerance implements Resource {
   @Valid List<SimpleResource> contained;
   @Valid List<Extension> extension;
   @Valid List<Extension> modifierExtension;
-  @NotEmpty @Valid List<Identifier> identifier;
+  @Valid List<Identifier> identifier;
 
   @Pattern(regexp = Fhir.DATETIME)
   String onset;
