@@ -3,11 +3,13 @@ package gov.va.api.health.argonaut.api.samples;
 import static java.util.Collections.singletonList;
 
 import gov.va.api.health.argonaut.api.bundle.AbstractEntry;
+import gov.va.api.health.argonaut.api.datatypes.Annotation;
 import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
 import gov.va.api.health.argonaut.api.datatypes.Coding;
 import gov.va.api.health.argonaut.api.datatypes.ContactPoint;
 import gov.va.api.health.argonaut.api.datatypes.ContactPoint.ContactPointSystem;
 import gov.va.api.health.argonaut.api.datatypes.ContactPoint.ContactPointUse;
+import gov.va.api.health.argonaut.api.datatypes.Identifier;
 import gov.va.api.health.argonaut.api.datatypes.Period;
 import gov.va.api.health.argonaut.api.datatypes.Quantity;
 import gov.va.api.health.argonaut.api.datatypes.Range;
@@ -27,6 +29,25 @@ import lombok.NoArgsConstructor;
 @SuppressWarnings({"WeakerAccess", "unused"})
 @NoArgsConstructor(staticName = "get")
 public final class SampleDataTypes {
+
+  public Annotation annotation() {
+    return Annotation.builder()
+        .id("8888")
+        .extension(singletonList(extension()))
+        .authorString("Test Author")
+        .time("2015-04-15T04:00:00Z")
+        .text("annotation test text")
+        .build();
+  }
+
+  public Annotation annotationWithBothAuthorValues() {
+    return Annotation.builder()
+        .authorReference(reference())
+        .authorString("Test Author")
+        .time("2015-04-15T04:00:00Z")
+        .text("annotation test text")
+        .build();
+  }
 
   public CodeableConcept codeableConcept() {
     return CodeableConcept.builder().coding(codingList()).text("code text test").build();
@@ -95,6 +116,14 @@ public final class SampleDataTypes {
                 .denominator(Quantity.builder().value(1.0).build())
                 .numerator(Quantity.builder().value(2.0).build())
                 .build())
+        .build();
+  }
+
+  public Identifier identifier() {
+    return Identifier.builder()
+        .id("5678")
+        .use(Identifier.IdentifierUse.official)
+        .extension(singletonList(extension()))
         .build();
   }
 

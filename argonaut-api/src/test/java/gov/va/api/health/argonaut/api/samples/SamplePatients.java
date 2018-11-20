@@ -9,8 +9,6 @@ import gov.va.api.health.argonaut.api.datatypes.Attachment;
 import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
 import gov.va.api.health.argonaut.api.datatypes.HumanName;
 import gov.va.api.health.argonaut.api.datatypes.HumanName.NameUse;
-import gov.va.api.health.argonaut.api.datatypes.Identifier;
-import gov.va.api.health.argonaut.api.datatypes.Identifier.IdentifierUse;
 import gov.va.api.health.argonaut.api.resources.OperationOutcome.Issue;
 import gov.va.api.health.argonaut.api.resources.OperationOutcome.Issue.IssueSeverity;
 import gov.va.api.health.argonaut.api.resources.Patient;
@@ -75,14 +73,6 @@ public class SamplePatients {
 
   public CodeableConcept details() {
     return CodeableConcept.builder().coding(singletonList(coding())).text("HelloText").build();
-  }
-
-  public Identifier identifier() {
-    return Identifier.builder()
-        .id("5678")
-        .use(IdentifierUse.official)
-        .extension(singletonList(extension()))
-        .build();
   }
 
   public Issue issue() {

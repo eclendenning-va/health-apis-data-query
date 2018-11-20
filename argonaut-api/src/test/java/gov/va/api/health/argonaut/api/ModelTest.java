@@ -7,7 +7,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.va.api.health.argonaut.api.ArgonautService.SearchFailed;
 import gov.va.api.health.argonaut.api.ArgonautService.UnknownResource;
 import gov.va.api.health.argonaut.api.resources.OperationOutcome;
+import gov.va.api.health.argonaut.api.samples.SampleAllergyIntolerances;
 import gov.va.api.health.argonaut.api.samples.SampleConformance;
+import gov.va.api.health.argonaut.api.samples.SampleDiagnosticReports;
 import gov.va.api.health.argonaut.api.samples.SampleMedications;
 import gov.va.api.health.argonaut.api.samples.SamplePatients;
 import gov.va.api.health.autoconfig.configuration.JacksonConfig;
@@ -19,6 +21,13 @@ public class ModelTest {
 
   private final SamplePatients patientData = SamplePatients.get();
   private final SampleMedications medicationData = SampleMedications.get();
+  private final SampleAllergyIntolerances allergyIntoleranceData = SampleAllergyIntolerances.get();
+  private final SampleDiagnosticReports diagnosticReportData = SampleDiagnosticReports.get();
+
+  @Test
+  public void diagnosticReport() {
+    roundTrip(diagnosticReportData.diagnosticReport());
+  }
 
   @Test
   public void conformance() {
@@ -64,6 +73,11 @@ public class ModelTest {
   @Test
   public void range() {
     roundTrip(patientData.range());
+  }
+
+  @Test
+  public void allergyIntolerance() {
+    roundTrip(allergyIntoleranceData.allergyIntolerance());
   }
 
   @SneakyThrows
