@@ -115,7 +115,8 @@ public final class SampleDataTypes {
   public Period period() {
     return Period.builder()
         .id("5678")
-        .extension(singletonList(Extension.builder().url("http://wtf.com").valueInteger(1).build()))
+        .extension(
+            singletonList(Extension.builder().url("http://example.com").valueInteger(1).build()))
         .start("2000-01-01T00:00:00-00:00")
         .end("2001-01-01T00:00:00-00:00")
         .build();
