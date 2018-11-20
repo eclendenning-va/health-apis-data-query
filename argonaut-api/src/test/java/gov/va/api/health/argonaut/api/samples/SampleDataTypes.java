@@ -3,7 +3,14 @@ package gov.va.api.health.argonaut.api.samples;
 import static java.util.Collections.singletonList;
 
 import gov.va.api.health.argonaut.api.bundle.AbstractEntry;
-import gov.va.api.health.argonaut.api.datatypes.*;
+import gov.va.api.health.argonaut.api.datatypes.Annotation;
+import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
+import gov.va.api.health.argonaut.api.datatypes.Coding;
+import gov.va.api.health.argonaut.api.datatypes.Identifier;
+import gov.va.api.health.argonaut.api.datatypes.Quantity;
+import gov.va.api.health.argonaut.api.datatypes.Ratio;
+import gov.va.api.health.argonaut.api.datatypes.SimpleQuantity;
+import gov.va.api.health.argonaut.api.datatypes.SimpleResource;
 import gov.va.api.health.argonaut.api.elements.Extension;
 import gov.va.api.health.argonaut.api.elements.Meta;
 import gov.va.api.health.argonaut.api.elements.Narrative;
@@ -17,6 +24,25 @@ import lombok.NoArgsConstructor;
 @SuppressWarnings({"WeakerAccess", "unused"})
 @NoArgsConstructor(staticName = "get")
 public final class SampleDataTypes {
+
+  public Annotation annotation() {
+    return Annotation.builder()
+        .id("8888")
+        .extension(singletonList(extension()))
+        .authorString("Test Author")
+        .time("2015-04-15T04:00:00Z")
+        .text("annotation test text")
+        .build();
+  }
+
+  public Annotation annotationWithBothAuthorValues() {
+    return Annotation.builder()
+        .authorReference(reference())
+        .authorString("Test Author")
+        .time("2015-04-15T04:00:00Z")
+        .text("annotation test text")
+        .build();
+  }
 
   public CodeableConcept codeableConcept() {
     return CodeableConcept.builder().coding(codingList()).text("code text test").build();
