@@ -111,11 +111,11 @@ public class Observation implements Resource {
   @Pattern(regexp = Fhir.INSTANT)
   String issued;
 
-  @Valid Reference performer;
+  @Valid List<Reference> performer;
 
   @Valid Quantity valueQuantity;
   @Valid CodeableConcept valueCodeableConcept;
-  @Valid String valueString;
+  String valueString;
   @Valid Range valueRange;
   @Valid Ratio valueRatio;
   @Valid SampledData valueSampledData;
@@ -202,6 +202,21 @@ public class Observation implements Resource {
   @NoArgsConstructor(access = AccessLevel.PRIVATE)
   @AllArgsConstructor
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+  @ZeroOrOneOf(
+    fields = {
+      "valueAttachment",
+      "valueCodeableConcept",
+      "valueDateTime",
+      "valuePeriod",
+      "valueQuantity",
+      "valueRange",
+      "valueRatio",
+      "valueSampledData",
+      "valueString",
+      "valueTime"
+    },
+    message = "Only one value value may be specified"
+  )
   public static class ObservationComponent implements BackboneElement {
     @Pattern(regexp = Fhir.ID)
     String id;
@@ -213,9 +228,9 @@ public class Observation implements Resource {
 
     @Valid Quantity valueQuantity;
     @Valid CodeableConcept valueCodeableConcept;
-    @Valid String valueString;
+    String valueString;
     @Valid Range valueRange;
-    @Valid Ratio valueRation;
+    @Valid Ratio valueRatio;
     @Valid SampledData valueSampledData;
     @Valid Attachment valueAttachment;
 
