@@ -178,6 +178,7 @@ public class Patient implements Resource {
   @AllArgsConstructor
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
   public static class Communication implements BackboneElement {
+
     @Pattern(regexp = Fhir.ID)
     String id;
 
