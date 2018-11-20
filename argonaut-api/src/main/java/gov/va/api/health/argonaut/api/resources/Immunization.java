@@ -59,7 +59,7 @@ public class Immunization implements Resource {
   @Valid List<Extension> extension;
   @Valid List<Extension> modifierExtension;
   @Valid List<Identifier> identifier;
-  @NotNull Status status;
+  @NotNull @Valid Status status;
 
   @NotBlank
   @Pattern(regexp = Fhir.DATETIME)
