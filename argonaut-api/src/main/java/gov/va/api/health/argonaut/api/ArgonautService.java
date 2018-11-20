@@ -1,5 +1,6 @@
 package gov.va.api.health.argonaut.api;
 
+import gov.va.api.health.argonaut.api.resources.AllergyIntolerance;
 import gov.va.api.health.argonaut.api.resources.Conformance;
 import gov.va.api.health.argonaut.api.resources.DiagnosticReport;
 import gov.va.api.health.argonaut.api.resources.Medication;
@@ -216,6 +217,69 @@ public interface ArgonautService {
   )
   @ApiResponse(responseCode = "404", description = "Bad request")
   OperationOutcome patientValidate(@RequestBody(required = true) Patient.Bundle bundle);
+
+  @Operation(
+    summary = "Allergy Intolerance read",
+    description =
+        "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-allergyintolerance.html"
+  )
+  @GET
+  @Path("AllergyIntolerance/{id}")
+  @ApiResponse(
+    responseCode = "200",
+    description = "Record found",
+    content =
+        @Content(
+          mediaType = "application/json+fhir",
+          schema = @Schema(implementation = AllergyIntolerance.class)
+        )
+  )
+  @ApiResponse(responseCode = "400", description = "Not found")
+  @ApiResponse(responseCode = "404", description = "Bad request")
+  AllergyIntolerance allergyIntoleranceRead(
+      @Parameter(in = ParameterIn.PATH, name = "id", required = true) String id);
+
+  @Operation(
+    summary = "Allergy Intolerance search",
+    description =
+        "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-allergyintolerance.html"
+  )
+  @GET
+  @Path("AllergyIntolerance")
+  @ApiResponse(
+    responseCode = "200",
+    description = "Record found",
+    content =
+        @Content(
+          mediaType = "application/json+fhir",
+          schema = @Schema(implementation = AllergyIntolerance.Bundle.class)
+        )
+  )
+  @ApiResponse(responseCode = "400", description = "Not found")
+  @ApiResponse(responseCode = "404", description = "Bad request")
+  AllergyIntolerance.Bundle allergyIntoleranceSearch(
+      @Parameter(in = ParameterIn.QUERY, name = "patient") String id);
+
+  @Operation(
+    summary = "Allergy Intolerance validate",
+    description =
+        "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-allergyintolerance.html"
+  )
+  @POST
+  @Consumes("application/json+fhir")
+  @Path("AllergyIntolerance/$validate")
+  @ApiResponse(
+    responseCode = "200",
+    description = "Record found",
+    content =
+        @Content(
+          mediaType = "application/json+fhir",
+          schema = @Schema(implementation = OperationOutcome.class)
+        )
+  )
+  @ApiResponse(responseCode = "404", description = "Bad request")
+  OperationOutcome allergyIntoleranceValidate(
+      @RequestBody(required = true) AllergyIntolerance.Bundle bundle);
 
   class ArgonautServiceException extends RuntimeException {
     ArgonautServiceException(String message) {
