@@ -96,14 +96,11 @@ public class Observation implements Resource {
 
   @Valid List<Identifier> identifier;
 
-  @Valid
-  @NotBlank
-  @Pattern(regexp = Fhir.CODE)
-  Status status;
+  @NotNull Code status;
 
-  @Valid @NotBlank CodeableConcept category;
-  @Valid @NotBlank CodeableConcept code;
-  @Valid @NotBlank Reference subject;
+  @Valid @NotNull CodeableConcept category;
+  @Valid @NotNull CodeableConcept code;
+  @Valid @NotNull Reference subject;
   @Valid Reference encounter;
 
   @Valid Period effectivePeriod;
@@ -120,7 +117,7 @@ public class Observation implements Resource {
   @Valid CodeableConcept valueCodeableConcept;
   @Valid String valueString;
   @Valid Range valueRange;
-  @Valid Ratio valueRation;
+  @Valid Ratio valueRatio;
   @Valid SampledData valueSampledData;
   @Valid Attachment valueAttachment;
 
@@ -212,7 +209,7 @@ public class Observation implements Resource {
     @Valid List<Extension> modifierExtension;
     @Valid List<Extension> extension;
 
-    @Valid @NotBlank CodeableConcept code;
+    @Valid @NotNull CodeableConcept code;
 
     @Valid Quantity valueQuantity;
     @Valid CodeableConcept valueCodeableConcept;
@@ -266,13 +263,12 @@ public class Observation implements Resource {
     @Valid List<Extension> modifierExtension;
     @Valid List<Extension> extension;
 
-    @Pattern(regexp = Fhir.CODE)
     Type type;
 
-    @Valid @NotBlank Reference target;
+    @Valid @NotNull Reference target;
   }
 
-  public enum Status {
+  public enum Code {
     registered,
     preliminary,
     amended,
