@@ -74,6 +74,19 @@
               </resources>
             </configuration>
           </execution>
+          <execution>
+            <id>conformance-timestamp</id>
+            <goals>
+              <goal>timestamp-property</goal>
+            </goals>
+            <configuration>
+              <name>conformance.publication-date</name>
+              <pattern>yyyy-MM-dd'T'HH:mm:ss'Z'</pattern>
+              <timeZone>UTC</timeZone>
+              <locale>en_US</locale>
+              <unit>second</unit>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
     </plugins>
