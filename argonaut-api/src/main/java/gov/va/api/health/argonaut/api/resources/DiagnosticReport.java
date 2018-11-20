@@ -26,7 +26,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import lombok.AccessLevel;
@@ -84,7 +83,6 @@ public class DiagnosticReport implements Resource {
 
   @Pattern(regexp = Fhir.INSTANT)
   @NotNull
-  @Valid
   String issued;
 
   @NotNull @Valid Reference performer;
@@ -92,7 +90,7 @@ public class DiagnosticReport implements Resource {
   @Valid List<Reference> request;
   @Valid List<Reference> specimen;
 
-  @NotEmpty @Valid List<Reference> result;
+  @Valid List<Reference> result;
 
   @Valid List<Reference> imagingStudy;
   @Valid List<Image> image;
@@ -176,6 +174,7 @@ public class DiagnosticReport implements Resource {
   }
 
   public enum Code {
+    registered,
     partial,
     @JsonProperty("final")
     _final,

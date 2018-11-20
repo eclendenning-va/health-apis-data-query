@@ -42,7 +42,7 @@ public interface ArgonautService {
     description = "Record found",
     content =
         @Content(
-          mediaType = "application/fhir+json",
+          mediaType = "application/json+fhir",
           schema = @Schema(implementation = DiagnosticReport.class)
         )
   )
@@ -63,7 +63,7 @@ public interface ArgonautService {
     description = "Record Found",
     content =
         @Content(
-          mediaType = "application/fhir+json",
+          mediaType = "application/json+fhir",
           schema = @Schema(implementation = DiagnosticReport.Bundle.class)
         )
   )
@@ -82,14 +82,14 @@ public interface ArgonautService {
         "https://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-diagnosticreport.html"
   )
   @POST
-  @Consumes("application/fhir+json")
+  @Consumes("application/json+fhir")
   @Path("DiagnosticReport/$validate")
   @ApiResponse(
     responseCode = "200",
     description = "Record found",
     content =
         @Content(
-          mediaType = "application/fhir+json",
+          mediaType = "application/json+fhir",
           schema = @Schema(implementation = OperationOutcome.class)
         )
   )
@@ -108,7 +108,7 @@ public interface ArgonautService {
     description = "Record found",
     content =
         @Content(
-          mediaType = "application/fhir+json",
+          mediaType = "application/json+fhir",
           schema = @Schema(implementation = Medication.class)
         )
   )
@@ -122,14 +122,14 @@ public interface ArgonautService {
     description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-medication.html"
   )
   @POST
-  @Consumes("application/fhir+json")
+  @Consumes("application/json+fhir")
   @Path("Medication/$validate")
   @ApiResponse(
     responseCode = "200",
     description = "Record found",
     content =
         @Content(
-          mediaType = "application/fhir+json",
+          mediaType = "application/json+fhir",
           schema = @Schema(implementation = OperationOutcome.class)
         )
   )
@@ -147,7 +147,7 @@ public interface ArgonautService {
     description = "Record found",
     content =
         @Content(
-          mediaType = "application/fhir+json",
+          mediaType = "application/json+fhir",
           schema = @Schema(implementation = Patient.class)
         )
   )
@@ -166,7 +166,7 @@ public interface ArgonautService {
     description = "Record found",
     content =
         @Content(
-          mediaType = "application/fhir+json",
+          mediaType = "application/json+fhir",
           schema = @Schema(implementation = Patient.Bundle.class)
         )
   )
@@ -186,14 +186,14 @@ public interface ArgonautService {
     description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-patient.html"
   )
   @POST
-  @Consumes("application/fhir+json")
+  @Consumes("application/json+fhir")
   @Path("Patient/$validate")
   @ApiResponse(
     responseCode = "200",
     description = "Record found",
     content =
         @Content(
-          mediaType = "application/fhir+json",
+          mediaType = "application/json+fhir",
           schema = @Schema(implementation = OperationOutcome.class)
         )
   )
