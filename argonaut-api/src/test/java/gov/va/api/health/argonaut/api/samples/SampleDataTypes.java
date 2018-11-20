@@ -3,6 +3,7 @@ package gov.va.api.health.argonaut.api.samples;
 import static java.util.Collections.singletonList;
 
 import gov.va.api.health.argonaut.api.bundle.AbstractEntry;
+import gov.va.api.health.argonaut.api.datatypes.Age;
 import gov.va.api.health.argonaut.api.datatypes.Annotation;
 import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
 import gov.va.api.health.argonaut.api.datatypes.Coding;
@@ -24,6 +25,10 @@ import lombok.NoArgsConstructor;
 @SuppressWarnings({"WeakerAccess", "unused"})
 @NoArgsConstructor(staticName = "get")
 public final class SampleDataTypes {
+
+  public Age age() {
+    return Age.builder().value(11.11).unit("HelloUnit").build();
+  }
 
   public Annotation annotation() {
     return Annotation.builder()

@@ -112,7 +112,7 @@ public class Condition implements Resource {
 
   @Valid Stage stage;
 
-  @Valid Evidence evidence;
+  @Valid List<Evidence> evidence;
 
   @Valid List<CodeableConcept> bodySite;
   String notes;

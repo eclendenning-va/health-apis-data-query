@@ -34,20 +34,19 @@ public interface ArgonautService {
 
   // BEGIN CONDITION
   @Operation(
-      summary = "Condition Read",
-      description =
-          "https://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-condition.html"
+    summary = "Condition Read",
+    description = "https://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-condition.html"
   )
   @GET
   @Path("Condition/{id}")
   @ApiResponse(
-      responseCode = "200",
-      description = "Record found",
-      content =
-      @Content(
+    responseCode = "200",
+    description = "Record found",
+    content =
+        @Content(
           mediaType = "application/json+fhir",
           schema = @Schema(implementation = Condition.class)
-      )
+        )
   )
   @ApiResponse(responseCode = "400", description = "Not found")
   @ApiResponse(responseCode = "404", description = "Bad request")
@@ -55,20 +54,19 @@ public interface ArgonautService {
       @Parameter(in = ParameterIn.PATH, name = "id", required = true) String id);
 
   @Operation(
-      summary = "Condition Search",
-      description =
-          "https://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-condition.html"
+    summary = "Condition Search",
+    description = "https://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-condition.html"
   )
   @GET
   @Path("Condition")
   @ApiResponse(
-      responseCode = "200",
-      description = "Record Found",
-      content =
-      @Content(
+    responseCode = "200",
+    description = "Record Found",
+    content =
+        @Content(
           mediaType = "application/json+fhir",
           schema = @Schema(implementation = Condition.Bundle.class)
-      )
+        )
   )
   @ApiResponse(responseCode = "400", description = "Not found")
   @ApiResponse(responseCode = "404", description = "Bad request")
@@ -78,27 +76,24 @@ public interface ArgonautService {
       @Parameter(in = ParameterIn.QUERY, name = "clinicalStatus") String clinicalStatus);
 
   @Operation(
-      summary = "Condition validate",
-      description =
-          "https://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-condition.html"
+    summary = "Condition validate",
+    description = "https://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-condition.html"
   )
   @POST
   @Consumes("application/json+fhir")
   @Path("Condition/$validate")
   @ApiResponse(
-      responseCode = "200",
-      description = "Record found",
-      content =
-      @Content(
+    responseCode = "200",
+    description = "Record found",
+    content =
+        @Content(
           mediaType = "application/json+fhir",
           schema = @Schema(implementation = OperationOutcome.class)
-      )
+        )
   )
   @ApiResponse(responseCode = "404", description = "Bad request")
-  OperationOutcome conditionValidate(
-      @RequestBody(required = true) Condition.Bundle bundle);
+  OperationOutcome conditionValidate(@RequestBody(required = true) Condition.Bundle bundle);
   // END CONDITION
-
 
   @Operation(
     summary = "Diagnostic Report Read",
