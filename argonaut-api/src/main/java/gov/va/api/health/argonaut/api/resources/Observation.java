@@ -2,8 +2,13 @@ package gov.va.api.health.argonaut.api.resources;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import gov.va.api.health.argonaut.api.Fhir;
+import gov.va.api.health.argonaut.api.bundle.AbstractBundle;
+import gov.va.api.health.argonaut.api.bundle.AbstractEntry;
+import gov.va.api.health.argonaut.api.bundle.BundleLink;
 import gov.va.api.health.argonaut.api.datatypes.Attachment;
 import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
 import gov.va.api.health.argonaut.api.datatypes.Identifier;
@@ -12,6 +17,7 @@ import gov.va.api.health.argonaut.api.datatypes.Quantity;
 import gov.va.api.health.argonaut.api.datatypes.Range;
 import gov.va.api.health.argonaut.api.datatypes.Ratio;
 import gov.va.api.health.argonaut.api.datatypes.SampledData;
+import gov.va.api.health.argonaut.api.datatypes.Signature;
 import gov.va.api.health.argonaut.api.datatypes.SimpleQuantity;
 import gov.va.api.health.argonaut.api.datatypes.SimpleResource;
 import gov.va.api.health.argonaut.api.elements.BackboneElement;
@@ -24,13 +30,18 @@ import gov.va.api.health.argonaut.api.validation.ZeroOrOneOf;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import javax.validation.Valid;
+import javax.validation.constraints.AssertTrue;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 
 @Data
 @Builder
@@ -134,6 +145,62 @@ public class Observation implements Resource {
   @Valid List<ObservationRelated> related;
   @Valid List<ObservationComponent> component;
 
+  @JsonIgnore
+  @AssertTrue(message = "Category coding is not valid.")
+  private boolean isValidCategory() {
+    if (category == null) {
+      return true;
+    }
+    return StringUtils.equals(
+        "http://hl7.org/fhir/observation-category",
+        (category.coding().get(0).system()));
+  }
+
+  @Data
+  @NoArgsConstructor
+  @EqualsAndHashCode(callSuper = true)
+  @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+  @JsonDeserialize(builder = Observation.Bundle.BundleBuilder.class)
+  public static class Bundle extends AbstractBundle<Entry> {
+
+    @Builder
+    public Bundle(
+        @Pattern(regexp = Fhir.ID) String id,
+        @Valid Meta meta,
+        @Pattern(regexp = Fhir.URI) String implicitRules,
+        @Pattern(regexp = Fhir.CODE) String language,
+        @NotNull BundleType type,
+        @Min(0) Integer total,
+        @Valid List<BundleLink> link,
+        @Valid List<Entry> entry,
+        @NotBlank String resourceType,
+        @Valid Signature signature) {
+      super(id, meta, implicitRules, language, type, total, link, entry, resourceType, signature);
+    }
+  }
+
+  @Data
+  @NoArgsConstructor
+  @EqualsAndHashCode(callSuper = true)
+  @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+  @JsonDeserialize(builder = Observation.Entry.EntryBuilder.class)
+  public static class Entry extends AbstractEntry<Observation> {
+
+    @Builder
+    public Entry(
+        @Pattern(regexp = Fhir.ID) String id,
+        @Valid List<Extension> extension,
+        @Valid List<Extension> modifierExtension,
+        @Valid List<BundleLink> link,
+        @Pattern(regexp = Fhir.URI) String fullUrl,
+        @Valid Observation resource,
+        @Valid Search search,
+        @Valid Request request,
+        @Valid Response response) {
+      super(id, extension, modifierExtension, link, fullUrl, resource, search, request, response);
+    }
+  }
+
   @Data
   @Builder
   @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -212,16 +279,23 @@ public class Observation implements Resource {
     amended,
     cancelled,
     unknown,
-    @JsonProperty("final") _final,
-    @JsonProperty("entered-in-error") entered_in_error
+    @JsonProperty("final")
+    _final,
+    @JsonProperty("entered-in-error")
+    entered_in_error
   }
 
   public enum Type {
-    @JsonProperty("has-member") has_member,
-    @JsonProperty("derived-from") derived_from,
-    @JsonProperty("sequel-to") sequel_to,
+    @JsonProperty("has-member")
+    has_member,
+    @JsonProperty("derived-from")
+    derived_from,
+    @JsonProperty("sequel-to")
+    sequel_to,
     replaces,
-    @JsonProperty("qualified-by") qualified_by,
-    @JsonProperty("interfered-by") interfered_by
+    @JsonProperty("qualified-by")
+    qualified_by,
+    @JsonProperty("interfered-by")
+    interfered_by
   }
 }

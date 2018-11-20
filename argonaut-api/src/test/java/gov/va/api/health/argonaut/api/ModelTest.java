@@ -8,6 +8,7 @@ import gov.va.api.health.argonaut.api.ArgonautService.SearchFailed;
 import gov.va.api.health.argonaut.api.ArgonautService.UnknownResource;
 import gov.va.api.health.argonaut.api.resources.OperationOutcome;
 import gov.va.api.health.argonaut.api.samples.SampleMedications;
+import gov.va.api.health.argonaut.api.samples.SampleObservations;
 import gov.va.api.health.argonaut.api.samples.SamplePatients;
 import gov.va.api.health.autoconfig.configuration.JacksonConfig;
 import java.util.Arrays;
@@ -20,6 +21,7 @@ public class ModelTest {
 
   private final SamplePatients patientData = SamplePatients.get();
   private final SampleMedications medicationData = SampleMedications.get();
+  private final SampleObservations observationData = SampleObservations.get();
 
   @SuppressWarnings("ThrowableNotThrown")
   @Test
@@ -31,6 +33,11 @@ public class ModelTest {
   @Test
   public void medication() {
     roundTrip(medicationData.medication());
+  }
+
+  @Test
+  public void observation() {
+    roundTrip(observationData.observation());
   }
 
   @Test

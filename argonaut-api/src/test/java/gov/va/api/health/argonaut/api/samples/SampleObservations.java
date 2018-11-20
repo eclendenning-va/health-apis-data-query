@@ -2,22 +2,13 @@ package gov.va.api.health.argonaut.api.samples;
 
 import static java.util.Collections.singletonList;
 
-import com.sun.org.apache.bcel.internal.classfile.Code;
-import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
-import gov.va.api.health.argonaut.api.datatypes.Coding;
-import gov.va.api.health.argonaut.api.datatypes.Identifier;
-import gov.va.api.health.argonaut.api.datatypes.Identifier.IdentifierUse;
-import gov.va.api.health.argonaut.api.elements.Reference;
 import gov.va.api.health.argonaut.api.resources.Observation;
 import gov.va.api.health.argonaut.api.resources.Observation.ObservationComponent;
 import gov.va.api.health.argonaut.api.resources.Observation.ObservationReferenceRange;
 import gov.va.api.health.argonaut.api.resources.Observation.ObservationRelated;
 import gov.va.api.health.argonaut.api.resources.Observation.Status;
 import gov.va.api.health.argonaut.api.resources.Observation.Type;
-import java.time.Instant;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Delegate;
 
@@ -52,7 +43,7 @@ public class SampleObservations {
         .effectiveDateTime("2000-01-01T00:00:00-00:00")
         .issued("2000-01-01T00:00:00-00:00")
         .performer(reference())
-        .valueCodeableConcept(codeableConcept())
+        .valueSampledData(sampledData())
         .dataAbsentReason(codeableConcept())
         .interpretation(codeableConcept())
         .comments("HelloText")

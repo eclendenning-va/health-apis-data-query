@@ -10,6 +10,7 @@ import gov.va.api.health.argonaut.api.datatypes.Identifier.IdentifierUse;
 import gov.va.api.health.argonaut.api.datatypes.Quantity;
 import gov.va.api.health.argonaut.api.datatypes.Range;
 import gov.va.api.health.argonaut.api.datatypes.Ratio;
+import gov.va.api.health.argonaut.api.datatypes.SampledData;
 import gov.va.api.health.argonaut.api.datatypes.SimpleQuantity;
 import gov.va.api.health.argonaut.api.datatypes.SimpleResource;
 import gov.va.api.health.argonaut.api.elements.Extension;
@@ -144,6 +145,18 @@ public final class SampleDataTypes {
         .location("http://example.com")
         .etag("you're it")
         .lastModified("2005-01-21T07:57:00Z")
+        .build();
+  }
+
+  public SampledData sampledData() {
+    return SampledData.builder()
+        .origin(simpleQuantity())
+        .period(11.11)
+        .factor(11.11)
+        .lowerLimit(11.11)
+        .upperLimit(11.11)
+        .dimensions(1)
+        .data("HelloText")
         .build();
   }
 
