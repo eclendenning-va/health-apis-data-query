@@ -4,12 +4,18 @@ import static java.util.Collections.singletonList;
 
 import gov.va.api.health.argonaut.api.bundle.AbstractEntry;
 import gov.va.api.health.argonaut.api.datatypes.Annotation;
+import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
+import gov.va.api.health.argonaut.api.datatypes.Coding;
 import gov.va.api.health.argonaut.api.datatypes.ContactPoint;
 import gov.va.api.health.argonaut.api.datatypes.ContactPoint.ContactPointSystem;
 import gov.va.api.health.argonaut.api.datatypes.ContactPoint.ContactPointUse;
 import gov.va.api.health.argonaut.api.datatypes.Identifier;
 import gov.va.api.health.argonaut.api.datatypes.Period;
+import gov.va.api.health.argonaut.api.datatypes.Quantity;
 import gov.va.api.health.argonaut.api.datatypes.Range;
+import gov.va.api.health.argonaut.api.datatypes.Ratio;
+import gov.va.api.health.argonaut.api.datatypes.SimpleQuantity;
+import gov.va.api.health.argonaut.api.datatypes.SimpleResource;
 import gov.va.api.health.argonaut.api.elements.Extension;
 import gov.va.api.health.argonaut.api.elements.Meta;
 import gov.va.api.health.argonaut.api.elements.Narrative;
