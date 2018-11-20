@@ -2,11 +2,14 @@ package gov.va.api.health.argonaut.api.datatypes;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import gov.va.api.health.argonaut.api.Fhir;
+import gov.va.api.health.argonaut.api.elements.Element;
+import gov.va.api.health.argonaut.api.elements.Extension;
 import gov.va.api.health.argonaut.api.elements.Reference;
 import gov.va.api.health.argonaut.api.validation.ZeroOrOneOf;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.List;
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -24,12 +27,16 @@ import lombok.NoArgsConstructor;
   fields = {"authorReference", "authorString"},
   message = "Only one author value may be specified"
 )
-public class Annotation {
+public class Annotation implements Element {
+  @Pattern(regexp = Fhir.ID)
+  String id;
+
+  @Valid List<Extension> extension;
   @Valid Reference authorReference;
   String authorString;
 
   @Pattern(regexp = Fhir.DATETIME)
   String time;
 
-  @NotNull String text;
+  @NotBlank String text;
 }
