@@ -5,6 +5,7 @@ import static java.util.Collections.singletonList;
 import gov.va.api.health.argonaut.api.resources.Conformance;
 import gov.va.api.health.argonaut.api.resources.Conformance.AcceptUnknown;
 import gov.va.api.health.argonaut.api.resources.Conformance.Contact;
+import gov.va.api.health.argonaut.api.resources.Conformance.DeleteCode;
 import gov.va.api.health.argonaut.api.resources.Conformance.Document;
 import gov.va.api.health.argonaut.api.resources.Conformance.DocumentMode;
 import gov.va.api.health.argonaut.api.resources.Conformance.Kind;
@@ -26,6 +27,7 @@ import gov.va.api.health.argonaut.api.resources.Conformance.RestTransactionMode;
 import gov.va.api.health.argonaut.api.resources.Conformance.SearchParam;
 import gov.va.api.health.argonaut.api.resources.Conformance.SearchParamModifier;
 import gov.va.api.health.argonaut.api.resources.Conformance.SearchParamType;
+import gov.va.api.health.argonaut.api.resources.Conformance.SecurityCertificate;
 import gov.va.api.health.argonaut.api.resources.Conformance.Status;
 import java.util.List;
 import lombok.NoArgsConstructor;
@@ -234,7 +236,7 @@ public class SampleConformance {
         .updateCreate(true)
         .conditionalCreate(true)
         .conditionalUpdate(true)
-        .conditionalDelete(true)
+        .conditionalDelete(DeleteCode.not_supported)
         .searchInclude(singletonList("ok"))
         .searchRevInclude(singletonList("meh"))
         .searchParam(searchParamList())
@@ -253,7 +255,7 @@ public class SampleConformance {
         .cors(true)
         .service(codeableConceptList())
         .description("wordy words")
-        .certificate(restSecurityCertificate())
+        .certificate(restSecurityCertificateList())
         .build();
   }
 
@@ -265,6 +267,10 @@ public class SampleConformance {
         .type("stuff")
         .blob("TH38L089")
         .build();
+  }
+
+  private List<SecurityCertificate> restSecurityCertificateList() {
+    return singletonList(restSecurityCertificate());
   }
 
   public Conformance.SearchParam searchParam() {

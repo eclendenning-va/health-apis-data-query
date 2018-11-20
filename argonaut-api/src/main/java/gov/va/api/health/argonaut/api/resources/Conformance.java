@@ -61,7 +61,7 @@ public class Conformance implements Resource {
   String publisher;
   @Valid List<Contact> contact;
 
-  @NotEmpty
+  @NotBlank
   @Pattern(regexp = Fhir.DATETIME)
   String date;
 
@@ -200,6 +200,14 @@ public class Conformance implements Resource {
     receiver
   }
 
+  @SuppressWarnings("unused")
+  public enum DeleteCode {
+    @JsonProperty("not-supported")
+    not_supported,
+    single,
+    multiple
+  }
+
   @Data
   @Builder
   @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -302,10 +310,10 @@ public class Conformance implements Resource {
     @Valid List<Extension> modifierExtension;
     @Valid List<Extension> extension;
     @NotNull @Valid Coding code;
-    MessagingEventCategory category;
-    @NotNull MessagingEventMode mode;
+    @Valid MessagingEventCategory category;
+    @NotNull @Valid MessagingEventMode mode;
 
-    @NotEmpty
+    @NotBlank
     @Pattern(regexp = Fhir.CODE)
     String focus;
 
@@ -384,7 +392,7 @@ public class Conformance implements Resource {
 
     @Valid List<Extension> modifierExtension;
     @Valid List<Extension> extension;
-    @NotEmpty String name;
+    @NotBlank String name;
     @NotNull @Valid Reference definition;
   }
 
@@ -416,7 +424,7 @@ public class Conformance implements Resource {
     Boolean updateCreate;
     Boolean conditionalCreate;
     Boolean conditionalUpdate;
-    Boolean conditionalDelete;
+    DeleteCode conditionalDelete;
     List<String> searchInclude;
     List<String> searchRevInclude;
     @Valid List<SearchParam> searchParam;
@@ -436,7 +444,7 @@ public class Conformance implements Resource {
     Boolean cors;
     @Valid List<CodeableConcept> service;
     String description;
-    @Valid SecurityCertificate certificate;
+    @Valid List<SecurityCertificate> certificate;
   }
 
   @Data
@@ -450,7 +458,7 @@ public class Conformance implements Resource {
 
     @Valid List<Extension> modifierExtension;
     @Valid List<Extension> extension;
-    @NotEmpty String name;
+    @NotBlank String name;
 
     @Pattern(regexp = Fhir.URI)
     String definition;
@@ -458,7 +466,7 @@ public class Conformance implements Resource {
     @NotNull SearchParamType type;
     String documentation;
     List<@Pattern(regexp = Fhir.CODE) String> target;
-    List<SearchParamModifier> modifier;
+    @Valid List<SearchParamModifier> modifier;
     List<String> chain;
   }
 
