@@ -6,6 +6,7 @@ import gov.va.api.health.mranderson.cdw.Query;
 import gov.va.api.health.mranderson.cdw.Resources.MissingSearchParameters;
 import gov.va.api.health.mranderson.util.Parameters;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import lombok.Builder;
@@ -17,12 +18,34 @@ class IdentityParameterReplacer {
 
   private final IdentityService identityService;
   private final Set<String> identityKeys;
+  private final Map<String, String> aliases;
 
   @Builder
   private IdentityParameterReplacer(
-      IdentityService identityService, @Singular Set<String> identityKeys) {
+      IdentityService identityService,
+      @Singular Set<String> identityKeys,
+      @Singular Map<String, String> aliases) {
     this.identityService = identityService;
     this.identityKeys = identityKeys;
+    this.aliases = aliases;
+  }
+
+  private String aliasOf(String key) {
+    return aliases.getOrDefault(key, key);
+  }
+
+  private boolean isIdentity(String key) {
+    return identityKeys.contains(key);
+  }
+
+  private String lookupCdwId(String uuid) {
+    List<ResourceIdentity> identities = identityService.lookup(uuid);
+    return identities
+        .stream()
+        .filter(ResourceIdentities::isCdw)
+        .map(ResourceIdentity::identifier)
+        .findFirst()
+        .orElse(uuid);
   }
 
   /**
@@ -37,26 +60,12 @@ class IdentityParameterReplacer {
           if (StringUtils.isBlank(value)) {
             throw new MissingSearchParameters(originalQuery);
           }
-          parameters.add(entry.getKey(), lookupCdwId(value));
+          parameters.add(aliasOf(entry.getKey()), lookupCdwId(value));
         }
       } else {
-        parameters.addAll(entry.getKey(), entry.getValue());
+        parameters.addAll(aliasOf(entry.getKey()), entry.getValue());
       }
     }
     return originalQuery.toBuilder().parameters(parameters.build()).build();
-  }
-
-  private String lookupCdwId(String uuid) {
-    List<ResourceIdentity> identities = identityService.lookup(uuid);
-    return identities
-        .stream()
-        .filter(ResourceIdentities::isCdw)
-        .map(ResourceIdentity::identifier)
-        .findFirst()
-        .orElse(uuid);
-  }
-
-  private boolean isIdentity(String key) {
-    return identityKeys.contains(key);
   }
 }

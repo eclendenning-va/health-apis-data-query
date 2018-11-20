@@ -38,13 +38,14 @@ import org.springframework.web.bind.annotation.RestController;
 @SuppressWarnings("WeakerAccess")
 @RestController
 @RequestMapping(
-    value = {"/api/Patient"},
-    produces = {"application/json", "application/json+fhir", "application/fhir+json"})
+  value = {"/api/Patient"},
+  produces = {"application/json", "application/json+fhir", "application/fhir+json"}
+)
 @AllArgsConstructor(onConstructor = @__({@Autowired}))
 @Slf4j
 public class PatientController {
 
-  private Transformer patientTransformer;
+  private Transformer transformer;
   private MrAndersonClient mrAndersonClient;
   private Bundler bundler;
 
@@ -66,7 +67,7 @@ public class PatientController {
         BundleContext.of(
             linkConfig,
             root.getPatients() == null ? Collections.emptyList() : root.getPatients().getPatient(),
-            patientTransformer,
+            transformer,
             Patient.Entry::new,
             Patient.Bundle::new));
   }
@@ -74,7 +75,7 @@ public class PatientController {
   /** Read by id. */
   @GetMapping(value = {"/{publicId}"})
   public Patient read(@PathVariable("publicId") String publicId) {
-    return patientTransformer.apply(
+    return transformer.apply(
         firstPayloadItem(
             hasPayload(search(Parameters.forIdentity(publicId)).getPatients()).getPatient()));
   }
@@ -136,7 +137,7 @@ public class PatientController {
   public Patient.Bundle searchById(
       @RequestParam("_id") String id,
       @RequestParam(value = "page", defaultValue = "1") int page,
-      @RequestParam(value = "_count", defaultValue = "15") int count,
+      @RequestParam(value = "_count", defaultValue = "1") int count,
       HttpServletRequest servletRequest) {
     return bundle(
         Parameters.builder().add("_id", id).add("page", page).add("_count", count).build(),
@@ -150,7 +151,7 @@ public class PatientController {
   public Patient.Bundle searchByIdentifier(
       @RequestParam("identifier") String id,
       @RequestParam(value = "page", defaultValue = "1") int page,
-      @RequestParam(value = "_count", defaultValue = "15") int count,
+      @RequestParam(value = "_count", defaultValue = "1") int count,
       HttpServletRequest servletRequest) {
     return bundle(
         Parameters.builder().add("identifier", id).add("page", page).add("_count", count).build(),
@@ -201,8 +202,9 @@ public class PatientController {
 
   /** Hey, this is a validate endpoint. It validates. */
   @PostMapping(
-      value = "/$validate",
-      consumes = {"application/json", "application/json+fhir", "application/fhir+json"})
+    value = "/$validate",
+    consumes = {"application/json", "application/json+fhir", "application/fhir+json"}
+  )
   public OperationOutcome validate(@RequestBody Bundle bundle) {
     return Validator.create().validate(bundle);
   }

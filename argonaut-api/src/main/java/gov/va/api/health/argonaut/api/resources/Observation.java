@@ -152,8 +152,7 @@ public class Observation implements Resource {
       return true;
     }
     return StringUtils.equals(
-        "http://hl7.org/fhir/observation-category",
-        (category.coding().get(0).system()));
+        "http://hl7.org/fhir/observation-category", (category.coding().get(0).system()));
   }
 
   @Data

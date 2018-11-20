@@ -25,34 +25,11 @@ public class WitnessProtectionResources implements Resources {
   private final ResourceRepository repository;
   private final IdentityService identityService;
 
-  @Override
-  public String search(final Query originalQuery) {
-    log.info("Search {}", originalQuery);
-    validate(originalQuery);
-    Query query = replacePublicIdsWithCdwIds(originalQuery);
-    String originalXml = repository.execute(query);
-    log.info("Executing {}", query.toQueryString());
-    Document xml = parse(originalQuery, originalXml);
-    XmlResponseValidator.builder().query(originalQuery).response(xml).build().validate();
-    xml = replaceCdwIdsWithPublicIds(originalQuery, xml);
-
-    return write(query, xml);
-  }
-
   private Document parse(Query query, String xml) {
     try {
       return XmlDocuments.create().parse(xml);
     } catch (ParseFailed e) {
       log.error("Failed to parse CDW response: {} ", e.getMessage());
-      throw new SearchFailed(query, e);
-    }
-  }
-
-  private String write(Query query, Document xml) {
-    try {
-      return XmlDocuments.create().write(xml);
-    } catch (WriteFailed e) {
-      log.error("Failed to write XML: {}", e.getMessage());
       throw new SearchFailed(query, e);
     }
   }
@@ -80,6 +57,7 @@ public class WitnessProtectionResources implements Resources {
           .identityKey("identifier")
           .identityKey("identifier:exact")
           .identityKey("_id")
+          .alias("_id", "identifier")
           .build()
           .rebuildWithCdwIdentities(originalQuery);
     } catch (IdentityService.LookupFailed e) {
@@ -91,9 +69,32 @@ public class WitnessProtectionResources implements Resources {
     }
   }
 
+  @Override
+  public String search(final Query originalQuery) {
+    log.info("Search {}", originalQuery);
+    validate(originalQuery);
+    Query query = replacePublicIdsWithCdwIds(originalQuery);
+    String originalXml = repository.execute(query);
+    log.info("Executing {}", query.toQueryString());
+    Document xml = parse(originalQuery, originalXml);
+    XmlResponseValidator.builder().query(originalQuery).response(xml).build().validate();
+    xml = replaceCdwIdsWithPublicIds(originalQuery, xml);
+
+    return write(query, xml);
+  }
+
   private void validate(Query query) {
     if (query.parameters().isEmpty()) {
       throw new MissingSearchParameters(query);
+    }
+  }
+
+  private String write(Query query, Document xml) {
+    try {
+      return XmlDocuments.create().write(xml);
+    } catch (WriteFailed e) {
+      log.error("Failed to write XML: {}", e.getMessage());
+      throw new SearchFailed(query, e);
     }
   }
 }

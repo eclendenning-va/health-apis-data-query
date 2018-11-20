@@ -152,22 +152,23 @@ public class WitnessProtectionResourcesTest {
             .replace("AllergyIntolerance/2320", "AllergyIntolerance/MAGIC7780"));
   }
 
-  private void referencesAreReplacedUsingIdentifierParameter(String identifierParameter) {
+  private void referencesAreReplacedUsingIdentifierParameter(
+      String identifierParameter, String aliasValue) {
     mockLookup();
     String expected = mockWithFakeSampleAndReplaceReferences();
     String actual = resources.search(forResource(identifierParameter, "123"));
-    verify(repository).execute(forResource(identifierParameter, "MAGIC321"));
+    verify(repository).execute(forResource(aliasValue, "MAGIC321"));
     assertThat(actual).isEqualTo(expected);
   }
 
   @Test
   public void referencesAreReplacedWithIdParameter() {
-    referencesAreReplacedUsingIdentifierParameter("_id");
+    referencesAreReplacedUsingIdentifierParameter("_id", "identifier");
   }
 
   @Test
   public void referencesAreReplacedWithIdentifierParameter() {
-    referencesAreReplacedUsingIdentifierParameter("identifier");
+    referencesAreReplacedUsingIdentifierParameter("identifier", "identifier");
   }
 
   @Test
@@ -180,7 +181,7 @@ public class WitnessProtectionResourcesTest {
 
   @Test
   public void referencesAreReplacedWithPatientParameter() {
-    referencesAreReplacedUsingIdentifierParameter("patient");
+    referencesAreReplacedUsingIdentifierParameter("patient", "patient");
   }
 
   private Registration register(String resource, int systemId, String uuid) {

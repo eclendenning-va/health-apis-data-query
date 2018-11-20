@@ -79,6 +79,7 @@ public final class SampleDataTypes {
     return Identifier.builder()
         .id("5678")
         .use(IdentifierUse.official)
+        .use(Identifier.IdentifierUse.official)
         .extension(singletonList(extension()))
         .build();
   }
