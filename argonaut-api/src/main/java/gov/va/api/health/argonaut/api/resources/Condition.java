@@ -194,6 +194,7 @@ public class Condition implements Resource {
     }
   }
 
+  @SuppressWarnings("unused")
   public enum ClinicalStatusCode {
     active,
     relapse,
@@ -201,10 +202,11 @@ public class Condition implements Resource {
     resolved
   }
 
+  @SuppressWarnings("unused")
   public enum VerificationStatusCode {
     provisional,
-    differencial,
-    confurmed,
+    differential,
+    conformed,
     refuted,
     @JsonProperty("entered-in-error")
     entered_in_error,
