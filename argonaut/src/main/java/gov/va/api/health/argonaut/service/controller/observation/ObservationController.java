@@ -12,7 +12,7 @@ import gov.va.api.health.argonaut.service.controller.Parameters;
 import gov.va.api.health.argonaut.service.controller.Validator;
 import gov.va.api.health.argonaut.service.mranderson.client.MrAndersonClient;
 import gov.va.api.health.argonaut.service.mranderson.client.Query;
-import gov.va.dvp.cdw.xsd.model.CdwObservation102Root;
+import gov.va.dvp.cdw.xsd.model.CdwObservation104Root;
 import java.util.Collections;
 import java.util.function.Function;
 import javax.servlet.http.HttpServletRequest;
@@ -52,7 +52,7 @@ public class ObservationController {
       int count,
       HttpServletRequest servletRequest) {
 
-    CdwObservation102Root root = search(parameters);
+    CdwObservation104Root root = search(parameters);
     LinkConfig linkConfig =
         LinkConfig.builder()
             .path(servletRequest.getRequestURI())
@@ -82,12 +82,12 @@ public class ObservationController {
                 search(Parameters.forIdentity(publicId)).getObservations().getObservation())));
   }
 
-  private CdwObservation102Root search(MultiValueMap<String, String> params) {
-    Query<CdwObservation102Root> query =
-        Query.forType(CdwObservation102Root.class)
+  private CdwObservation104Root search(MultiValueMap<String, String> params) {
+    Query<CdwObservation104Root> query =
+        Query.forType(CdwObservation104Root.class)
             .profile(Query.Profile.ARGONAUT)
             .resource("Observation")
-            .version("1.02")
+            .version("1.04")
             .parameters(params)
             .build();
     return mrAndersonClient.search(query);
@@ -130,5 +130,5 @@ public class ObservationController {
   }
 
   public interface Transformer
-      extends Function<CdwObservation102Root.CdwObservations.CdwObservation, Observation> {}
+      extends Function<CdwObservation104Root.CdwObservations.CdwObservation, Observation> {}
 }

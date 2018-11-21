@@ -15,9 +15,9 @@ import gov.va.api.health.argonaut.service.controller.Validator;
 import gov.va.api.health.argonaut.service.mranderson.client.MrAndersonClient;
 import gov.va.api.health.argonaut.service.mranderson.client.Query;
 import gov.va.api.health.autoconfig.configuration.JacksonConfig;
-import gov.va.dvp.cdw.xsd.model.CdwObservation102Root;
-import gov.va.dvp.cdw.xsd.model.CdwObservation102Root.CdwObservations;
-import gov.va.dvp.cdw.xsd.model.CdwObservation102Root.CdwObservations.CdwObservation;
+import gov.va.dvp.cdw.xsd.model.CdwObservation104Root;
+import gov.va.dvp.cdw.xsd.model.CdwObservation104Root.CdwObservations;
+import gov.va.dvp.cdw.xsd.model.CdwObservation104Root.CdwObservations.CdwObservation;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collections;
@@ -50,7 +50,7 @@ public class ObservationControllerTest {
   }
 
   private void assertSearch(Supplier<Bundle> invocation, MultiValueMap<String, String> params) {
-    CdwObservation102Root root = new CdwObservation102Root();
+    CdwObservation104Root root = new CdwObservation104Root();
     root.setPageNumber(BigInteger.valueOf(1));
     root.setRecordsPerPage(BigInteger.valueOf(10));
     root.setRecordCount(BigInteger.valueOf(3));
@@ -111,7 +111,7 @@ public class ObservationControllerTest {
   @SuppressWarnings("unchecked")
   @Test
   public void read() {
-    CdwObservation102Root root = new CdwObservation102Root();
+    CdwObservation104Root root = new CdwObservation104Root();
     root.setObservations(new CdwObservations());
     CdwObservation xmlObservation = new CdwObservation();
     root.getObservations().getObservation().add(xmlObservation);
@@ -120,7 +120,7 @@ public class ObservationControllerTest {
     when(tx.apply(xmlObservation)).thenReturn(item);
     Observation actual = controller.read("hello");
     assertThat(actual).isSameAs(item);
-    ArgumentCaptor<Query<CdwObservation102Root>> captor = ArgumentCaptor.forClass(Query.class);
+    ArgumentCaptor<Query<CdwObservation104Root>> captor = ArgumentCaptor.forClass(Query.class);
     verify(client).search(captor.capture());
     assertThat(captor.getValue().parameters()).isEqualTo(Parameters.forIdentity("hello"));
   }
@@ -145,7 +145,7 @@ public class ObservationControllerTest {
     Observation resource =
         JacksonConfig.createMapper()
             .readValue(
-                getClass().getResourceAsStream("/cdw/old-observation-1.02.json"),
+                getClass().getResourceAsStream("/cdw/old-observation-1.04.json"),
                 Observation.class);
 
     Bundle bundle = bundleOf(resource);
@@ -158,7 +158,7 @@ public class ObservationControllerTest {
     Observation resource =
         JacksonConfig.createMapper()
             .readValue(
-                getClass().getResourceAsStream("/cdw/old-observation-1.02.json"),
+                getClass().getResourceAsStream("/cdw/old-observation-1.04.json"),
                 Observation.class);
     resource.resourceType(null);
 

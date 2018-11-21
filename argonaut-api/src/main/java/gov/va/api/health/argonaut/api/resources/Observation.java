@@ -48,33 +48,29 @@ import org.apache.commons.lang3.StringUtils;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor
 @JsonAutoDetect(
-  fieldVisibility = JsonAutoDetect.Visibility.ANY,
-  isGetterVisibility = Visibility.NONE
-)
+    fieldVisibility = JsonAutoDetect.Visibility.ANY,
+    isGetterVisibility = Visibility.NONE)
 @Schema(
-  description =
-      "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-observationresults.html"
-)
+    description =
+        "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-observationresults.html")
 @RelatedFields({
   @ZeroOrOneOf(
-    fields = {"effectiveDateTime", "effectivePeriod"},
-    message = "Only one effective field may be specified"
-  ),
+      fields = {"effectiveDateTime", "effectivePeriod"},
+      message = "Only one effective field may be specified"),
   @ZeroOrOneOf(
-    fields = {
-      "valueAttachment",
-      "valueCodeableConcept",
-      "valueDateTime",
-      "valuePeriod",
-      "valueQuantity",
-      "valueRange",
-      "valueRatio",
-      "valueSampledData",
-      "valueString",
-      "valueTime"
-    },
-    message = "Only one value field may be specified"
-  )
+      fields = {
+        "valueAttachment",
+        "valueCodeableConcept",
+        "valueDateTime",
+        "valuePeriod",
+        "valueQuantity",
+        "valueRange",
+        "valueRatio",
+        "valueSampledData",
+        "valueString",
+        "valueTime"
+      },
+      message = "Only one value field may be specified")
 })
 public class Observation implements Resource {
   @Pattern(regexp = Fhir.ID)
@@ -94,7 +90,7 @@ public class Observation implements Resource {
   @Valid List<Extension> extension;
   @Valid List<Extension> modifierExtension;
   @Valid List<Identifier> identifier;
-  @NotNull Code status;
+  @NotNull Observation.Status status;
   @Valid @NotNull CodeableConcept category;
   @Valid @NotNull CodeableConcept code;
   @Valid @NotNull Reference subject;
@@ -123,7 +119,6 @@ public class Observation implements Resource {
   String valueDateTime;
 
   @Valid Period valuePeriod;
-
   @Valid CodeableConcept dataAbsentReason;
   @Valid CodeableConcept interpretation;
   String comments;
@@ -146,7 +141,7 @@ public class Observation implements Resource {
   }
 
   @SuppressWarnings("unused")
-  public enum Code {
+  public enum Status {
     registered,
     preliminary,
     amended,
@@ -224,20 +219,19 @@ public class Observation implements Resource {
   @AllArgsConstructor
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
   @ZeroOrOneOf(
-    fields = {
-      "valueAttachment",
-      "valueCodeableConcept",
-      "valueDateTime",
-      "valuePeriod",
-      "valueQuantity",
-      "valueRange",
-      "valueRatio",
-      "valueSampledData",
-      "valueString",
-      "valueTime"
-    },
-    message = "Only one value value may be specified"
-  )
+      fields = {
+        "valueAttachment",
+        "valueCodeableConcept",
+        "valueDateTime",
+        "valuePeriod",
+        "valueQuantity",
+        "valueRange",
+        "valueRatio",
+        "valueSampledData",
+        "valueString",
+        "valueTime"
+      },
+      message = "Only one value value may be specified")
   public static class ObservationComponent implements BackboneElement {
     @Pattern(regexp = Fhir.ID)
     String id;
