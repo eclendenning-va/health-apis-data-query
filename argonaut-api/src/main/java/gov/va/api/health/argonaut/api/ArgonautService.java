@@ -4,6 +4,7 @@ import gov.va.api.health.argonaut.api.resources.AllergyIntolerance;
 import gov.va.api.health.argonaut.api.resources.Conformance;
 import gov.va.api.health.argonaut.api.resources.DiagnosticReport;
 import gov.va.api.health.argonaut.api.resources.Medication;
+import gov.va.api.health.argonaut.api.resources.Observation;
 import gov.va.api.health.argonaut.api.resources.OperationOutcome;
 import gov.va.api.health.argonaut.api.resources.Patient;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
@@ -120,8 +121,73 @@ public interface ArgonautService {
       @Parameter(in = ParameterIn.PATH, name = "id", required = true) String id);
 
   @Operation(
-    summary = "Medication validate",
-    description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-medication.html"
+    summary = "Observation read",
+    description =
+        "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-observationresults.html"
+  )
+  @GET
+  @Path("Observation/{id}")
+  @ApiResponse(
+    responseCode = "200",
+    description = "Record found",
+    content =
+        @Content(
+          mediaType = "application/fhir+json",
+          schema = @Schema(implementation = Observation.class)
+        )
+  )
+  @ApiResponse(responseCode = "400", description = "Not found")
+  @ApiResponse(responseCode = "404", description = "Bad request")
+  Observation observationRead(
+      @Parameter(in = ParameterIn.PATH, name = "id", required = true) String id);
+
+  @Operation(
+    summary = "Observation validate",
+    description =
+        "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-observationresults.html"
+  )
+  @POST
+  @Consumes("application/fhir+json")
+  @Path("Observation/$validate")
+  @ApiResponse(
+    responseCode = "200",
+    description = "Record found",
+    content =
+        @Content(
+          mediaType = "application/fhir+json",
+          schema = @Schema(implementation = OperationOutcome.class)
+        )
+  )
+  @ApiResponse(responseCode = "404", description = "Bad request")
+  Observation observationRead(@RequestBody(required = true) Observation.Bundle bundle);
+
+  @Operation(
+    summary = "Observation search",
+    description =
+        "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-observationresults.html"
+  )
+  @GET
+  @Path("Observation")
+  @ApiResponse(
+    responseCode = "200",
+    description = "Record found",
+    content =
+        @Content(
+          mediaType = "application/fhir+json",
+          schema = @Schema(implementation = Observation.Bundle.class)
+        )
+  )
+  @ApiResponse(responseCode = "400", description = "Not found")
+  @ApiResponse(responseCode = "404", description = "Bad request")
+  Observation.Bundle observationSearch(
+      @Parameter(in = ParameterIn.QUERY, name = "_id") String id,
+      @Parameter(in = ParameterIn.QUERY, name = "category") String category,
+      @Parameter(in = ParameterIn.QUERY, name = "code") String[] code,
+      @Parameter(in = ParameterIn.QUERY, name = "date") String[] date);
+
+  @Operation(
+    summary = "Patient read",
+    description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-patient.html"
   )
   @POST
   @Consumes("application/json+fhir")

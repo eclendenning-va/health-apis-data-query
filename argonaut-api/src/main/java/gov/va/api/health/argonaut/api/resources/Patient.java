@@ -184,7 +184,7 @@ public class Patient implements Resource {
 
     @Valid List<Extension> modifierExtension;
     @Valid List<Extension> extension;
-    @NotBlank @Valid CodeableConcept language;
+    @NotNull @Valid CodeableConcept language;
     Boolean preferred;
   }
 
