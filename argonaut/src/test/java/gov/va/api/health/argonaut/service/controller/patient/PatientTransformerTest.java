@@ -524,7 +524,7 @@ public class PatientTransformerTest {
     List<CodeableConcept> relationship() {
       return singletonList(
           codeableConcept(
-              "Emergency Contact",
+              "Emergency ContactProperties",
               codingList(
                   "http://hl7.org/fhir/patient-contact-relationship", "emergency", "Emergency")));
     }
@@ -622,7 +622,7 @@ public class PatientTransformerTest {
       relationshipCoding1.setDisplay("Emergency");
 
       relationship1.setCoding(relationshipCoding1);
-      relationship1.setText("Emergency Contact");
+      relationship1.setText("Emergency ContactProperties");
 
       contact1.setRelationship(relationship1);
       contact1.setName("DUCK, DAFFY JOHN");
@@ -648,7 +648,7 @@ public class PatientTransformerTest {
       relationshipCoding2.setDisplay("Emergency");
 
       relationship2.setCoding(relationshipCoding2);
-      relationship2.setText("Emergency Contact");
+      relationship2.setText("Emergency ContactProperties");
 
       contact2.setRelationship(relationship2);
       contact2.setName("ALICE, TEST JANE");

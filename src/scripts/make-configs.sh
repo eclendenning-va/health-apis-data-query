@@ -114,6 +114,18 @@ ssl.trust-store-password=$KEYSTORE_PASSWORD
 EOF
 }
 
+whoDis() {
+  local me=$(git config --global --get user.name)
+  [ -z "$me" ] && me=$USER
+  echo $me
+}
+
+sendMoarSpams() {
+  local spam=$(git config --global --get user.email)
+  [ -z "$spam" ] && spam=$USER@aol.com
+  echo $spam
+}
+
 makeConfig ids $PROFILE
 configValue ids $PROFILE spring.datasource.url "$IDS_DB_URL"
 configValue ids $PROFILE spring.datasource.username "$IDS_DB_USER"
@@ -131,6 +143,10 @@ makeConfig argonaut $PROFILE
 configValue argonaut $PROFILE mranderson.url https://localhost:8088
 configValue argonaut $PROFILE argonaut.url https://localhost:8090 
 configValue argonaut $PROFILE health-check.medication-id 2f773f73-ad7f-56ca-891e-8e364c913fe0
+configValue argonaut $PROFILE conformance.contact.name "$(whoDis)"
+configValue argonaut $PROFILE conformance.contact.email "$(sendMoarSpams)"
+configValue argonaut $PROFILE conformance.security.token-endpoint https://fake.com/token
+configValue argonaut $PROFILE conformance.security.authorize-endpoint https://fake.com/authorize
 checkForUnsetValues argonaut $PROFILE
 
 makeSentinelSecrets
