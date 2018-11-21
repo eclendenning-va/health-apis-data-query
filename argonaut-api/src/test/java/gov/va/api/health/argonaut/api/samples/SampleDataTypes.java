@@ -6,8 +6,12 @@ import gov.va.api.health.argonaut.api.bundle.AbstractEntry;
 import gov.va.api.health.argonaut.api.datatypes.Annotation;
 import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
 import gov.va.api.health.argonaut.api.datatypes.Coding;
+import gov.va.api.health.argonaut.api.datatypes.ContactPoint;
+import gov.va.api.health.argonaut.api.datatypes.ContactPoint.ContactPointSystem;
+import gov.va.api.health.argonaut.api.datatypes.ContactPoint.ContactPointUse;
 import gov.va.api.health.argonaut.api.datatypes.Identifier;
 import gov.va.api.health.argonaut.api.datatypes.Identifier.IdentifierUse;
+import gov.va.api.health.argonaut.api.datatypes.Period;
 import gov.va.api.health.argonaut.api.datatypes.Quantity;
 import gov.va.api.health.argonaut.api.datatypes.Range;
 import gov.va.api.health.argonaut.api.datatypes.Ratio;
@@ -51,6 +55,10 @@ public final class SampleDataTypes {
     return CodeableConcept.builder().coding(codingList()).text("code text test").build();
   }
 
+  public List<CodeableConcept> codeableConceptList() {
+    return singletonList(codeableConcept());
+  }
+
   public Coding coding() {
     return Coding.builder()
         .system("http://HelloSystem.com")
@@ -65,8 +73,26 @@ public final class SampleDataTypes {
     return Collections.singletonList(coding());
   }
 
+  public ContactPoint contactPoint() {
+    return ContactPoint.builder()
+        .system(ContactPointSystem.other)
+        .value("HelloValue")
+        .use(ContactPointUse.home)
+        .rank(1)
+        .period(period())
+        .build();
+  }
+
+  public List<ContactPoint> contactPointList() {
+    return singletonList(contactPoint());
+  }
+
   public Extension extension() {
     return Extension.builder().url("http://HelloUrl.com").valueInteger(1).build();
+  }
+
+  public List<Extension> extensionList() {
+    return singletonList(extension());
   }
 
   public Extension extensionWithQuantity() {
@@ -118,6 +144,16 @@ public final class SampleDataTypes {
     return Narrative.builder().status(NarrativeStatus.additional).div("<p>HelloDiv<p>").build();
   }
 
+  public Period period() {
+    return Period.builder()
+        .id("5678")
+        .extension(
+            singletonList(Extension.builder().url("http://example.com").valueInteger(1).build()))
+        .start("2000-01-01T00:00:00-00:00")
+        .end("2001-01-01T00:00:00-00:00")
+        .build();
+  }
+
   public Quantity quantity() {
     return Quantity.builder().value(11.11).unit("HelloUnit").build();
   }
@@ -132,6 +168,10 @@ public final class SampleDataTypes {
 
   public Reference reference() {
     return Reference.builder().reference("HelloReference").display("HelloDisplay").build();
+  }
+
+  public List<Reference> referenceList() {
+    return singletonList(reference());
   }
 
   public AbstractEntry.Request request() {
@@ -193,5 +233,9 @@ public final class SampleDataTypes {
 
   public SimpleQuantity simpleQuantity() {
     return SimpleQuantity.builder().value(11.11).unit("HelloUnit").build();
+  }
+
+  public List<SimpleResource> simpleResourceList() {
+    return singletonList(resource());
   }
 }

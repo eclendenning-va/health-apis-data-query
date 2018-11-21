@@ -8,6 +8,7 @@ import gov.va.api.health.argonaut.api.ArgonautService.SearchFailed;
 import gov.va.api.health.argonaut.api.ArgonautService.UnknownResource;
 import gov.va.api.health.argonaut.api.resources.OperationOutcome;
 import gov.va.api.health.argonaut.api.samples.SampleAllergyIntolerances;
+import gov.va.api.health.argonaut.api.samples.SampleConformance;
 import gov.va.api.health.argonaut.api.samples.SampleDiagnosticReports;
 import gov.va.api.health.argonaut.api.samples.SampleMedications;
 import gov.va.api.health.argonaut.api.samples.SampleObservations;
@@ -15,10 +16,8 @@ import gov.va.api.health.argonaut.api.samples.SamplePatients;
 import gov.va.api.health.autoconfig.configuration.JacksonConfig;
 import java.util.Arrays;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 
-@Slf4j
 public class ModelTest {
 
   private final SamplePatients patientData = SamplePatients.get();
@@ -30,6 +29,11 @@ public class ModelTest {
   @Test
   public void diagnosticReport() {
     roundTrip(diagnosticReportData.diagnosticReport());
+  }
+
+  @Test
+  public void conformance() {
+    roundTrip(SampleConformance.get().conformance());
   }
 
   @SuppressWarnings("ThrowableNotThrown")
@@ -68,12 +72,6 @@ public class ModelTest {
             .build());
   }
 
-  /*
-   Believe this test to be failing due to a java bean property.
-   it is viewing the "isBrand" variable as a method and creating its own "brand" field
-   This may be fixed with a JsonProperty similar to "package" - however, package is not completely ironed out either
-  */
-
   @Test
   public void patient() {
     roundTrip(patientData.patient());
@@ -93,7 +91,6 @@ public class ModelTest {
   private <T> void roundTrip(T object) {
     ObjectMapper mapper = new JacksonConfig().objectMapper();
     String json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(object);
-    log.info("{}", json);
     Object evilTwin = mapper.readValue(json, object.getClass());
     assertThat(evilTwin).isEqualTo(object);
   }
