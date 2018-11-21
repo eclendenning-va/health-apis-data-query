@@ -1,7 +1,13 @@
 package gov.va.api.health.argonaut.service.controller.observation;
 
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
 
+import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
+import gov.va.api.health.argonaut.api.datatypes.Coding;
+import gov.va.api.health.argonaut.api.datatypes.Quantity;
+import gov.va.api.health.argonaut.api.elements.Reference;
 import gov.va.api.health.argonaut.api.resources.Observation;
 import gov.va.api.health.argonaut.api.resources.Observation.Status;
 import gov.va.dvp.cdw.xsd.model.CdwObservation104Root.CdwObservations.CdwObservation;
@@ -25,6 +31,7 @@ import gov.va.dvp.cdw.xsd.model.CdwObservationStatus;
 import gov.va.dvp.cdw.xsd.model.CdwReference;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.List;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import lombok.NoArgsConstructor;
@@ -38,8 +45,45 @@ public class ObservationTransformerTest {
   private final Expected expected = Expected.get();
 
   @Test
+  public void category() {
+    assertThat(tx.category(null)).isNull();
+    assertThat(tx.category(new CdwCategory())).isNull();
+    assertThat(tx.category(cdw.category())).isEqualTo(expected.category());
+  }
+
+  @Test
+  public void code() {
+    assertThat(tx.code(null)).isNull();
+    assertThat(tx.code(new CdwCode())).isNull();
+    assertThat(tx.code(cdw.code())).isEqualTo(expected.code());
+  }
+
+  @Test
+  public void interpretation() {
+    assertThat(tx.interpretation(null)).isNull();
+    assertThat(tx.interpretation(cdw.interpretation())).isEqualTo(expected.interpretation());
+  }
+
+  @Test
   public void observation() {
     assertThat(tx.apply(cdw.observation())).isEqualTo(expected.observation());
+    assertThat(tx.apply(cdw.observationWithValueCodeableConcept()))
+        .isEqualTo(expected.observationWithValueCodeableConcept());
+
+    fail("not done");
+  }
+
+  @Test
+  public void performers() {
+    assertThat(tx.performers(null)).isNull();
+    assertThat(tx.performers(new CdwPerformers())).isNull();
+    assertThat(tx.performers(cdw.performers())).isEqualTo(expected.performers());
+  }
+
+  @Test
+  public void reference() {
+    assertThat(tx.reference(null)).isNull();
+    assertThat(tx.reference(cdw.reference("x", "y"))).isEqualTo(expected.reference("x", "y"));
   }
 
   @Test
@@ -49,8 +93,21 @@ public class ObservationTransformerTest {
     assertThat(tx.status(CdwObservationStatus.FINAL)).isEqualTo(Status._final);
     assertThat(tx.status(CdwObservationStatus.AMENDED)).isEqualTo(Status.amended);
     assertThat(tx.status(CdwObservationStatus.CANCELLED)).isEqualTo(Status.cancelled);
-    assertThat(tx.status(CdwObservationStatus.ENTERED_IN_ERROR)).isEqualTo(Status.amended);
+    assertThat(tx.status(CdwObservationStatus.ENTERED_IN_ERROR)).isEqualTo(Status.entered_in_error);
     assertThat(tx.status(CdwObservationStatus.UNKNOWN)).isEqualTo(Status.unknown);
+  }
+
+  @Test
+  public void valueCodeableConcept() {
+    assertThat(tx.valueCodeableConcept(null)).isNull();
+    assertThat(tx.valueCodeableConcept(cdw.valueCodeableConcept()))
+        .isEqualTo(expected.valueCodeableConcept());
+  }
+
+  @Test
+  public void valueQuantity() {
+    assertThat(tx.valueQuantity(null)).isNull();
+    assertThat(tx.valueQuantity(cdw.valueQuantity())).isEqualTo(expected.valueQuantity());
   }
 
   @NoArgsConstructor(staticName = "get")
@@ -186,7 +243,13 @@ public class ObservationTransformerTest {
       cdw.setReferenceRanges(referenceRanges());
       cdw.setSpecimen(reference("Specimen/1200004290", "BLOOD"));
       cdw.setSubject(reference("Patient/185601V825290", "VETERAN,JOHN Q"));
+      return cdw;
+    }
+
+    CdwObservation observationWithValueCodeableConcept() {
+      CdwObservation cdw = observation();
       cdw.setValueCodeableConcept(valueCodeableConcept());
+      cdw.setValueQuantity(null);
       return cdw;
     }
 
@@ -244,7 +307,7 @@ public class ObservationTransformerTest {
     private CdwValueQuantity valueQuantity() {
       CdwValueQuantity cdw = new CdwValueQuantity();
       cdw.setCode("/min");
-      cdw.setComparator("=");
+      cdw.setComparator("<");
       cdw.setSystem("http://unitsofmeasure.org");
       cdw.setUnit("/min");
       cdw.setValue(BigDecimal.valueOf(74));
@@ -255,11 +318,68 @@ public class ObservationTransformerTest {
   @NoArgsConstructor(staticName = "get")
   private static class Expected {
 
-    public Observation observation() {
+    CodeableConcept category() {
+      return codeableConcept(
+          coding("http://hl7.org/fhir/observation-category", "vital-signs", "Vital Signs"));
+    }
+
+    CodeableConcept code() {
+      return codeableConcept(coding("http://loinc.org", "8867-4", "Heart rate")).text("<3");
+    }
+
+    CodeableConcept codeableConcept(Coding coding) {
+      return CodeableConcept.builder().coding(singletonList(coding)).build();
+    }
+
+    Coding coding(String system, String code, String display) {
+      return Coding.builder().system(system).code(code).display(display).build();
+    }
+
+    public CodeableConcept interpretation() {
+      return codeableConcept(coding("http://hl7.org/fhir/v2/0078", "L", "Low")).text("L");
+    }
+
+    Observation observation() {
       return Observation.builder()
           .resourceType("Observation")
           .id("1201051417263:V")
           .status(Status._final)
+          .category(category())
+          .code(code())
+          .subject(reference("Patient/185601V825290", "VETERAN,JOHN Q"))
+          .encounter(reference("Encounter/1234", "The 3rd Kind"))
+          .effectiveDateTime("2015-04-15T14:16:38Z")
+          .issued("2015-04-15T14:19:45Z")
+          .performer(performers())
+          .valueQuantity(valueQuantity())
+          .interpretation(interpretation())
+          .build();
+    }
+
+    Observation observationWithValueCodeableConcept() {
+      return observation().valueQuantity(null).valueCodeableConcept(valueCodeableConcept());
+    }
+
+    List<Reference> performers() {
+      return singletonList(reference("Practitioner/1715142", "SMITH,ATTENDING D"));
+    }
+
+    Reference reference(String ref, String display) {
+      return Reference.builder().reference(ref).display(display).build();
+    }
+
+    CodeableConcept valueCodeableConcept() {
+      return codeableConcept(coding("http://example.com", "vcc", "value codeable concept coding"))
+          .text("value cc");
+    }
+
+    Quantity valueQuantity() {
+      return Quantity.builder()
+          .system("http://unitsofmeasure.org")
+          .code("/min")
+          .comparator("<")
+          .unit("/min")
+          .value(74D)
           .build();
     }
   }
