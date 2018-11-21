@@ -72,15 +72,6 @@ public final class SampleDataTypes {
         .build();
   }
 
-  public Annotation annotationWithBothAuthorValues() {
-    return Annotation.builder()
-        .authorReference(reference())
-        .authorString("Test Author")
-        .time("2015-04-15T04:00:00Z")
-        .text("annotation test text")
-        .build();
-  }
-
   public Attachment attachment() {
     return Attachment.builder()
         .contentType("HelloType")
