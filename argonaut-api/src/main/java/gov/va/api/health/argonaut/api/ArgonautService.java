@@ -1,6 +1,7 @@
 package gov.va.api.health.argonaut.api;
 
 import gov.va.api.health.argonaut.api.resources.AllergyIntolerance;
+import gov.va.api.health.argonaut.api.resources.Conformance;
 import gov.va.api.health.argonaut.api.resources.DiagnosticReport;
 import gov.va.api.health.argonaut.api.resources.Medication;
 import gov.va.api.health.argonaut.api.resources.Observation;
@@ -202,6 +203,22 @@ public interface ArgonautService {
   )
   @ApiResponse(responseCode = "404", description = "Bad request")
   OperationOutcome medicationValidate(@RequestBody(required = true) Medication.Bundle bundle);
+
+  @Operation(summary = "Conformance", description = "http://hl7.org/fhir/DSTU2/conformance.html")
+  @GET
+  @Path("metadata")
+  @ApiResponse(
+    responseCode = "200",
+    description = "Record found",
+    content =
+        @Content(
+          mediaType = "application/json+fhir",
+          schema = @Schema(implementation = Conformance.class)
+        )
+  )
+  @ApiResponse(responseCode = "400", description = "Not found")
+  @ApiResponse(responseCode = "404", description = "Bad request")
+  Conformance metadata();
 
   @Operation(
     summary = "Patient read",
