@@ -30,6 +30,9 @@ public class SimpleQuantity implements Element {
 
   String unit;
 
+  @Pattern(regexp = Fhir.URI)
+  String system;
+
   @Pattern(regexp = Fhir.CODE)
   String code;
 }

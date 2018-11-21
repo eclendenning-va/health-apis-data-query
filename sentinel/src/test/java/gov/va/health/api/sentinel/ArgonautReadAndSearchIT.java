@@ -1,6 +1,7 @@
 package gov.va.health.api.sentinel;
 
 import gov.va.api.health.argonaut.api.resources.Medication;
+import gov.va.api.health.argonaut.api.resources.Observation;
 import gov.va.api.health.argonaut.api.resources.OperationOutcome;
 import gov.va.api.health.argonaut.api.resources.Patient;
 import java.util.Arrays;
@@ -44,8 +45,12 @@ public class ArgonautReadAndSearchIT {
         expect(200, Medication.Bundle.class, "/api/Medication?identifier={id}", ids.medication()),
         expect(404, OperationOutcome.class, "/api/Medication?_id={id}", ids.unknown()),
         // Observation
-        expect(200, Medication.class, "/api/Observation/{id}", ids.observation()),
+        expect(200, Observation.class, "/api/Observation/{id}", ids.observation()),
         expect(404, OperationOutcome.class, "/api/Observation/{id}", ids.unknown()),
+        expect(200, Observation.Bundle.class, "/api/Observation?_id={id}", ids.observation()),
+        expect(
+            200, Observation.Bundle.class, "/api/Observation?identifier={id}", ids.observation()),
+        expect(404, OperationOutcome.class, "/api/Medication?_id={id}", ids.unknown()),
         // Patient
         expect(200, Patient.class, "/api/Patient/{id}", ids.patient()),
         expect(404, OperationOutcome.class, "/api/Patient/{id}", ids.unknown()),
