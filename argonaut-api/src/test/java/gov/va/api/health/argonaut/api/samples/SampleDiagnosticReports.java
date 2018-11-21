@@ -22,7 +22,8 @@ public class SampleDiagnosticReports {
             singletonList(
                 Coding.builder()
                     .system("http://hl7.org/fhir/ValueSet/diagnostic-service-sections")
-                    .code("ok")
+                    .code("CH")
+                    .display("Chemistry")
                     .build()))
         .text("dat category")
         .build();
@@ -43,7 +44,7 @@ public class SampleDiagnosticReports {
         .identifier(singletonList(identifier()))
         .status(DiagnosticReport.Code._final)
         .category(category())
-        .code(codeableConcept())
+        .code(codeCodeableConcept())
         .subject(reference())
         .encounter(reference())
         .effectiveDateTime("2013-06-21T20:05:12Z")
@@ -58,6 +59,15 @@ public class SampleDiagnosticReports {
         .codedDiagnosis(Arrays.asList(codeableConcept(), codeableConcept()))
         .presentedForm(Arrays.asList(attachment(), attachment()))
         .build();
+  }
+
+  private CodeableConcept codeCodeableConcept() {
+    return CodeableConcept.builder().coding(codeCodingList()).text("panel").build();
+  }
+
+  private List<Coding> codeCodingList() {
+    return singletonList(
+        Coding.builder().system("http://HelloSystem.com").code("Hello Code").build());
   }
 
   private List<DiagnosticReport.Image> image() {

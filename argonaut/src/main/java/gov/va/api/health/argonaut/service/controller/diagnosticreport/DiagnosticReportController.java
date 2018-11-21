@@ -1,11 +1,15 @@
 package gov.va.api.health.argonaut.service.controller.diagnosticreport;
 
+import static gov.va.api.health.argonaut.service.controller.Transformers.firstPayloadItem;
+import static gov.va.api.health.argonaut.service.controller.Transformers.hasPayload;
+
 import gov.va.api.health.argonaut.api.resources.DiagnosticReport;
 import gov.va.api.health.argonaut.service.controller.Parameters;
+import gov.va.api.health.argonaut.service.mranderson.client.MrAndersonClient;
 import gov.va.api.health.argonaut.service.mranderson.client.Query;
 import gov.va.dvp.cdw.xsd.model.CdwDiagnosticReport102Root;
 import gov.va.dvp.cdw.xsd.model.CdwDiagnosticReport102Root.CdwDiagnosticReports.CdwDiagnosticReport;
-import gov.va.api.health.argonaut.service.mranderson.client.MrAndersonClient;
+import java.util.function.Function;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,10 +19,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.function.Function;
-
-import static gov.va.api.health.argonaut.service.controller.Transformers.firstPayloadItem;
-import static gov.va.api.health.argonaut.service.controller.Transformers.hasPayload;
 
 @RestController
 @RequestMapping(
@@ -37,7 +37,8 @@ public class DiagnosticReportController {
         return transformer.apply(
                 firstPayloadItem(
                         hasPayload(
-                                search(Parameters.forIdentity(publicId)).getDiagnosticReports().getDiagnosticReport()
+                                search(Parameters.forIdentity(publicId))
+                                    .getDiagnosticReports().getDiagnosticReport()
                         )));
     }
 
