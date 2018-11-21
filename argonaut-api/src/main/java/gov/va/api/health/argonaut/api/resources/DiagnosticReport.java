@@ -101,31 +101,32 @@ public class DiagnosticReport implements Resource {
   @Valid List<Attachment> presentedForm;
 
   @JsonIgnore
-  @AssertTrue(message = "Category Coding is not valid.")
+  @AssertTrue(
+    message = "Category system should be http://hl7.org/fhir/ValueSet/diagnostic-service-sections."
+  )
   private boolean isValidCategory() {
     if (category == null) {
       return true;
     }
+    if (category.coding() == null || category.coding().isEmpty()) {
+      return false;
+    }
     return StringUtils.equals(
         "http://hl7.org/fhir/ValueSet/diagnostic-service-sections",
-        (category.coding().get(0).system()));
+        category.coding().get(0).system());
   }
 
-  @Data
-  @Builder
-  @NoArgsConstructor(access = AccessLevel.PRIVATE)
-  @AllArgsConstructor
-  @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-  public static class Image implements BackboneElement {
-
-    @Pattern(regexp = Fhir.ID)
-    String id;
-
-    @Valid List<Extension> modifierExtension;
-    @Valid List<Extension> extension;
-    String comment;
-
-    @Valid @NotNull Reference link;
+  @SuppressWarnings("unused")
+  public enum Code {
+    registered,
+    partial,
+    @JsonProperty("final")
+    _final,
+    corrected,
+    appended,
+    cancelled,
+    @JsonProperty("entered-in-error")
+    entered_in_error
   }
 
   @Data
@@ -173,15 +174,20 @@ public class DiagnosticReport implements Resource {
     }
   }
 
-  public enum Code {
-    registered,
-    partial,
-    @JsonProperty("final")
-    _final,
-    corrected,
-    appended,
-    cancelled,
-    @JsonProperty("entered-in-error")
-    entered_in_error
+  @Data
+  @Builder
+  @NoArgsConstructor(access = AccessLevel.PRIVATE)
+  @AllArgsConstructor
+  @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+  public static class Image implements BackboneElement {
+
+    @Pattern(regexp = Fhir.ID)
+    String id;
+
+    @Valid List<Extension> modifierExtension;
+    @Valid List<Extension> extension;
+    String comment;
+
+    @Valid @NotNull Reference link;
   }
 }

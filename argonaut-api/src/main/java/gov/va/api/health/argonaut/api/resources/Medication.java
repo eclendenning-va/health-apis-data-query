@@ -124,7 +124,7 @@ public class Medication implements Resource {
     @Valid List<Extension> extension;
     @Valid List<Extension> modifierExtension;
 
-    @NotBlank @Valid Reference item;
+    @NotNull @Valid Reference item;
 
     @Valid SimpleQuantity amount;
   }
