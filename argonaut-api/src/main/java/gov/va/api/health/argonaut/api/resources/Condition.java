@@ -206,7 +206,7 @@ public class Condition implements Resource {
   public enum VerificationStatusCode {
     provisional,
     differential,
-    conformed,
+    confirmed,
     refuted,
     @JsonProperty("entered-in-error")
     entered_in_error,
