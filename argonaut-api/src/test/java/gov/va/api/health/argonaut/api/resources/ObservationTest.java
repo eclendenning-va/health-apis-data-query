@@ -1,4 +1,4 @@
-package gov.va.api.health.argonaut.api.resources.observation;
+package gov.va.api.health.argonaut.api.resources;
 
 import static gov.va.api.health.argonaut.api.RoundTrip.assertRoundTrip;
 import static org.assertj.core.api.Assertions.assertThat;
