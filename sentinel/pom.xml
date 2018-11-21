@@ -242,6 +242,10 @@
                 <argument>-Dloader=gov.va.api.health.argonaut.service.Application</argument>
                 <argument>-Dmranderson.url=https://localhost:8088</argument>
                 <argument>-Dhealth-check.medication-id=skip</argument>
+                <argument>-Dconformance.contact.name=Sentinel</argument>
+                <argument>-Dconformance.contact.email=sentinel@matrix.com</argument>
+                <argument>-Dconformance.security.token-endpoint=http://example.com/token</argument>
+                <argument>-Dconformance.security.authorize-endpoint=http://example.com/authorize</argument>
                 <argument>-Dserver.ssl.key-store=file:certs/system/DVP-DVP-NONPROD.jks</argument>
                 <argument>-Dserver.ssl.key-alias=internal-sys-dev</argument>
                 <argument>-Dssl.verify=false</argument>

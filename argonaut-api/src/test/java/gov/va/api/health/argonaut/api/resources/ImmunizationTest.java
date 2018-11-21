@@ -1,8 +1,7 @@
-package gov.va.api.health.argonaut.api;
+package gov.va.api.health.argonaut.api.resources;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static gov.va.api.health.argonaut.api.RoundTrip.assertRoundTrip;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.va.api.health.argonaut.api.bundle.AbstractBundle.BundleType;
 import gov.va.api.health.argonaut.api.bundle.AbstractEntry;
 import gov.va.api.health.argonaut.api.bundle.BundleLink;
@@ -11,14 +10,12 @@ import gov.va.api.health.argonaut.api.resources.Immunization.Bundle;
 import gov.va.api.health.argonaut.api.resources.Immunization.Entry;
 import gov.va.api.health.argonaut.api.samples.SampleDataTypes;
 import gov.va.api.health.argonaut.api.samples.SampleImmunizations;
-import gov.va.api.health.autoconfig.configuration.JacksonConfig;
 import java.util.Collections;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 
 @Slf4j
-public class ImmunizationBundleTest {
+public class ImmunizationTest {
 
   private final SampleImmunizations immunizationData = SampleImmunizations.get();
   private final SampleDataTypes dataTypes = SampleDataTypes.get();
@@ -54,17 +51,13 @@ public class ImmunizationBundleTest {
             .type(BundleType.searchset)
             .build();
 
-    roundTrip(bundle);
+    assertRoundTrip(bundle);
 
     AbstractEntry.Search.builder().build().id();
   }
 
-  @SneakyThrows
-  private <T> void roundTrip(T object) {
-    ObjectMapper mapper = new JacksonConfig().objectMapper();
-    String json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(object);
-    log.info("{}", json);
-    Object evilTwin = mapper.readValue(json, object.getClass());
-    assertThat(evilTwin).isEqualTo(object);
+  @Test
+  public void immunization() {
+    assertRoundTrip(immunizationData.immunization());
   }
 }
