@@ -2,7 +2,8 @@ package gov.va.api.health.argonaut.api.samples;
 
 import static java.util.Collections.singletonList;
 
-import gov.va.api.health.argonaut.api.datatypes.Attachment;
+import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
+import gov.va.api.health.argonaut.api.datatypes.Coding;
 import gov.va.api.health.argonaut.api.resources.DiagnosticReport;
 import java.util.Arrays;
 import java.util.List;
@@ -14,6 +15,18 @@ import lombok.experimental.Delegate;
 public class SampleDiagnosticReports {
 
   @Delegate SampleDataTypes dataTypes = SampleDataTypes.get();
+
+  private CodeableConcept category() {
+    return CodeableConcept.builder()
+        .coding(
+            singletonList(
+                Coding.builder()
+                    .system("http://hl7.org/fhir/ValueSet/diagnostic-service-sections")
+                    .code("ok")
+                    .build()))
+        .text("dat category")
+        .build();
+  }
 
   public DiagnosticReport diagnosticReport() {
     return DiagnosticReport.builder()
@@ -29,7 +42,7 @@ public class SampleDiagnosticReports {
             Arrays.asList(extension(), extensionWithQuantity(), extensionWithRatio()))
         .identifier(singletonList(identifier()))
         .status(DiagnosticReport.Code._final)
-        .category(codeableConcept())
+        .category(category())
         .code(codeableConcept())
         .subject(reference())
         .encounter(reference())
@@ -44,21 +57,6 @@ public class SampleDiagnosticReports {
         .conclusion("The end.")
         .codedDiagnosis(Arrays.asList(codeableConcept(), codeableConcept()))
         .presentedForm(Arrays.asList(attachment(), attachment()))
-        .build();
-  }
-
-  private Attachment attachment() {
-    return Attachment.builder()
-        .id("3579")
-        .extension(singletonList(extension()))
-        .contentType("Attachment")
-        .language("wordz")
-        .data("abc")
-        .url("http://urlz.com")
-        .size(10)
-        .hash("hashz")
-        .title("hello")
-        .creation("1990-11-11")
         .build();
   }
 

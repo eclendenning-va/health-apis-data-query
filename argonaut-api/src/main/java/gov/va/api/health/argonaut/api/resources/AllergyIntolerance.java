@@ -1,17 +1,16 @@
 package gov.va.api.health.argonaut.api.resources;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import gov.va.api.health.argonaut.api.Fhir;
 import gov.va.api.health.argonaut.api.bundle.AbstractBundle;
 import gov.va.api.health.argonaut.api.bundle.AbstractEntry;
 import gov.va.api.health.argonaut.api.bundle.BundleLink;
+import gov.va.api.health.argonaut.api.datatypes.Annotation;
 import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
-import gov.va.api.health.argonaut.api.datatypes.Ratio;
+import gov.va.api.health.argonaut.api.datatypes.Identifier;
 import gov.va.api.health.argonaut.api.datatypes.Signature;
-import gov.va.api.health.argonaut.api.datatypes.SimpleQuantity;
 import gov.va.api.health.argonaut.api.datatypes.SimpleResource;
 import gov.va.api.health.argonaut.api.elements.BackboneElement;
 import gov.va.api.health.argonaut.api.elements.Extension;
@@ -23,6 +22,7 @@ import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import lombok.AccessLevel;
@@ -38,13 +38,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @JsonAutoDetect(
   fieldVisibility = JsonAutoDetect.Visibility.ANY,
-  isGetterVisibility = Visibility.NONE
+  isGetterVisibility = JsonAutoDetect.Visibility.NONE
 )
 @Schema(
-  description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-medication.html"
+  description =
+      "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-allergyintolerance.html"
 )
-public class Medication implements Resource {
-
+public class AllergyIntolerance implements Resource {
   @Pattern(regexp = Fhir.ID)
   String id;
 
@@ -61,41 +61,60 @@ public class Medication implements Resource {
   @Valid List<SimpleResource> contained;
   @Valid List<Extension> extension;
   @Valid List<Extension> modifierExtension;
-  @Valid @NotNull CodeableConcept code;
+  @Valid List<Identifier> identifier;
 
-  Boolean isBrand;
+  @Pattern(regexp = Fhir.DATETIME)
+  String onset;
 
-  @Valid Reference manufacturer;
+  @Pattern(regexp = Fhir.DATETIME)
+  String recordedDate;
 
-  @Valid Product product;
+  @Valid Reference recorder;
+  @NotNull @Valid Reference patient;
+  @Valid Reference reporter;
+  @NotNull @Valid CodeableConcept substance;
+  @NotNull Status status;
+  Criticality criticality;
+  Type type;
+  Category category;
 
-  @JsonProperty("package")
-  @Valid
-  MedicationPackage medicationPackage;
+  @Pattern(regexp = Fhir.DATETIME)
+  String lastOccurence;
+
+  @Valid Annotation note;
+  @Valid List<Reaction> reaction;
 
   @Data
   @Builder
   @NoArgsConstructor(access = AccessLevel.PRIVATE)
   @AllArgsConstructor
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-  public static class Batch implements BackboneElement {
+  public static class Reaction implements BackboneElement {
     @Pattern(regexp = Fhir.ID)
     String id;
 
-    @Valid List<Extension> extension;
     @Valid List<Extension> modifierExtension;
-    String lotNumber;
+    @Valid List<Extension> extension;
+    @Valid CodeableConcept substance;
+    Certainty certainty;
+    @NotEmpty @Valid List<CodeableConcept> manifestation;
+    String description;
 
     @Pattern(regexp = Fhir.DATETIME)
-    String expirationDate;
+    String onset;
+
+    Severity severity;
+    @Valid CodeableConcept exposureRoute;
+    @Valid Annotation note;
   }
 
   @Data
   @NoArgsConstructor
   @EqualsAndHashCode(callSuper = true)
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-  @JsonDeserialize(builder = Medication.Bundle.BundleBuilder.class)
-  public static class Bundle extends AbstractBundle<Medication.Entry> {
+  @JsonDeserialize(builder = AllergyIntolerance.Bundle.BundleBuilder.class)
+  public static class Bundle extends AbstractBundle<AllergyIntolerance.Entry> {
+
     @Builder
     public Bundle(
         @Pattern(regexp = Fhir.ID) String id,
@@ -105,7 +124,7 @@ public class Medication implements Resource {
         @NotNull BundleType type,
         @Min(0) Integer total,
         @Valid List<BundleLink> link,
-        @Valid List<Entry> entry,
+        @Valid List<AllergyIntolerance.Entry> entry,
         @NotBlank String resourceType,
         @Valid Signature signature) {
       super(id, meta, implicitRules, language, type, total, link, entry, resourceType, signature);
@@ -113,28 +132,12 @@ public class Medication implements Resource {
   }
 
   @Data
-  @Builder
-  @NoArgsConstructor(access = AccessLevel.PRIVATE)
-  @AllArgsConstructor
-  @JsonAutoDetect(fieldVisibility = Visibility.ANY)
-  public static class Content implements BackboneElement {
-    @Pattern(regexp = Fhir.ID)
-    String id;
-
-    @Valid List<Extension> extension;
-    @Valid List<Extension> modifierExtension;
-
-    @NotNull @Valid Reference item;
-
-    @Valid SimpleQuantity amount;
-  }
-
-  @Data
   @NoArgsConstructor
   @EqualsAndHashCode(callSuper = true)
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-  @JsonDeserialize(builder = Medication.Entry.EntryBuilder.class)
-  public static class Entry extends AbstractEntry<Medication> {
+  @JsonDeserialize(builder = AllergyIntolerance.Entry.EntryBuilder.class)
+  public static class Entry extends AbstractEntry<AllergyIntolerance> {
+
     @Builder
     public Entry(
         @Pattern(regexp = Fhir.ID) String id,
@@ -142,7 +145,7 @@ public class Medication implements Resource {
         @Valid List<Extension> modifierExtension,
         @Valid List<BundleLink> link,
         @Pattern(regexp = Fhir.URI) String fullUrl,
-        @Valid Medication resource,
+        @Valid AllergyIntolerance resource,
         @Valid Search search,
         @Valid Request request,
         @Valid Response response) {
@@ -150,53 +153,50 @@ public class Medication implements Resource {
     }
   }
 
-  @Data
-  @Builder
-  @NoArgsConstructor(access = AccessLevel.PRIVATE)
-  @AllArgsConstructor
-  @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-  public static class Ingredient implements BackboneElement {
-    @Pattern(regexp = Fhir.ID)
-    String id;
-
-    @Valid List<Extension> extension;
-    @Valid List<Extension> modifierExtension;
-
-    @NotNull @Valid Reference item;
-    @Valid Ratio amount;
+  @SuppressWarnings("unused")
+  public enum Status {
+    active,
+    unconfirmed,
+    confirmed,
+    inactive,
+    resolved,
+    refuted,
+    @JsonProperty("entered-in-error")
+    entered_in_error
   }
 
-  @Data
-  @Builder
-  @NoArgsConstructor(access = AccessLevel.PRIVATE)
-  @AllArgsConstructor
-  @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-  public static class MedicationPackage implements BackboneElement {
-    @Pattern(regexp = Fhir.ID)
-    String id;
-
-    @Valid List<Extension> extension;
-    @Valid List<Extension> modifierExtension;
-
-    @Valid CodeableConcept container;
-
-    @Valid List<Content> content;
+  @SuppressWarnings("unused")
+  public enum Criticality {
+    CRITL,
+    CRITH,
+    CRITU
   }
 
-  @Data
-  @Builder
-  @NoArgsConstructor(access = AccessLevel.PRIVATE)
-  @AllArgsConstructor
-  @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-  public static class Product implements BackboneElement {
-    @Pattern(regexp = Fhir.ID)
-    String id;
+  @SuppressWarnings("unused")
+  public enum Type {
+    allergy,
+    intolerance
+  }
 
-    @Valid List<Extension> extension;
-    @Valid List<Extension> modifierExtension;
-    @Valid CodeableConcept form;
+  @SuppressWarnings("unused")
+  public enum Category {
+    food,
+    medication,
+    environment,
+    other
+  }
 
-    @Valid Ingredient ingredient;
-    @Valid List<Batch> batch;
+  @SuppressWarnings("unused")
+  public enum Certainty {
+    unlikely,
+    likely,
+    confirmed
+  }
+
+  @SuppressWarnings("unused")
+  public enum Severity {
+    mild,
+    moderate,
+    severe
   }
 }

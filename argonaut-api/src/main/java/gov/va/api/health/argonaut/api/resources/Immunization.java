@@ -1,15 +1,15 @@
 package gov.va.api.health.argonaut.api.resources;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import gov.va.api.health.argonaut.api.Fhir;
 import gov.va.api.health.argonaut.api.bundle.AbstractBundle;
 import gov.va.api.health.argonaut.api.bundle.AbstractEntry;
 import gov.va.api.health.argonaut.api.bundle.BundleLink;
+import gov.va.api.health.argonaut.api.datatypes.Annotation;
 import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
-import gov.va.api.health.argonaut.api.datatypes.Ratio;
+import gov.va.api.health.argonaut.api.datatypes.Identifier;
 import gov.va.api.health.argonaut.api.datatypes.Signature;
 import gov.va.api.health.argonaut.api.datatypes.SimpleQuantity;
 import gov.va.api.health.argonaut.api.datatypes.SimpleResource;
@@ -23,6 +23,7 @@ import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import lombok.AccessLevel;
@@ -36,15 +37,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor
-@JsonAutoDetect(
-  fieldVisibility = JsonAutoDetect.Visibility.ANY,
-  isGetterVisibility = Visibility.NONE
-)
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @Schema(
-  description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-medication.html"
+  description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-immunization.html"
 )
-public class Medication implements Resource {
-
+public class Immunization implements Resource {
   @Pattern(regexp = Fhir.ID)
   String id;
 
@@ -61,41 +58,103 @@ public class Medication implements Resource {
   @Valid List<SimpleResource> contained;
   @Valid List<Extension> extension;
   @Valid List<Extension> modifierExtension;
-  @Valid @NotNull CodeableConcept code;
+  @Valid List<Identifier> identifier;
+  @NotNull @Valid Status status;
 
-  Boolean isBrand;
+  @NotBlank
+  @Pattern(regexp = Fhir.DATETIME)
+  String date;
 
+  @NotNull @Valid CodeableConcept vaccineCode;
+  @NotNull @Valid Reference patient;
+  @NotNull Boolean wasNotGiven;
+  @NotNull Boolean reported;
+  @Valid Reference performer;
+  @Valid Reference requester;
+  @Valid Reference encounter;
   @Valid Reference manufacturer;
+  @Valid Reference location;
+  String lotNumber;
 
-  @Valid Product product;
+  @Pattern(regexp = Fhir.DATE)
+  String expirationDate;
 
-  @JsonProperty("package")
-  @Valid
-  MedicationPackage medicationPackage;
+  @Valid CodeableConcept site;
+  @Valid CodeableConcept route;
+  @Valid SimpleQuantity doseQuantity;
+  @Valid List<Annotation> note;
+  @Valid Explanation explanation;
+  @Valid List<Reaction> reaction;
+  @Valid List<VaccinationProtocol> vaccinationProtocol;
 
   @Data
   @Builder
   @NoArgsConstructor(access = AccessLevel.PRIVATE)
   @AllArgsConstructor
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-  public static class Batch implements BackboneElement {
+  public static class Explanation implements BackboneElement {
     @Pattern(regexp = Fhir.ID)
     String id;
 
     @Valid List<Extension> extension;
     @Valid List<Extension> modifierExtension;
-    String lotNumber;
+    @Valid List<CodeableConcept> reason;
+    @Valid List<CodeableConcept> reasonNotGiven;
+  }
+
+  @Data
+  @Builder
+  @NoArgsConstructor(access = AccessLevel.PRIVATE)
+  @AllArgsConstructor
+  @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+  public static class Reaction implements BackboneElement {
+    @Pattern(regexp = Fhir.ID)
+    String id;
+
+    @Valid List<Extension> extension;
+    @Valid List<Extension> modifierExtension;
 
     @Pattern(regexp = Fhir.DATETIME)
-    String expirationDate;
+    String date;
+
+    @Valid Reference detail;
+    Boolean reported;
+  }
+
+  @Data
+  @Builder
+  @NoArgsConstructor(access = AccessLevel.PRIVATE)
+  @AllArgsConstructor
+  @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+  public static class VaccinationProtocol implements BackboneElement {
+    @Pattern(regexp = Fhir.ID)
+    String id;
+
+    @Valid List<Extension> extension;
+    @Valid List<Extension> modifierExtension;
+
+    @NotNull
+    @Min(1)
+    Integer doseSequence;
+
+    String description;
+    @Valid Reference authority;
+    String series;
+
+    @Min(1)
+    Integer seriesDoses;
+
+    @NotEmpty @Valid List<CodeableConcept> targetDisease;
+    @NotNull @Valid CodeableConcept doseStatus;
+    @Valid CodeableConcept doseStatusReason;
   }
 
   @Data
   @NoArgsConstructor
   @EqualsAndHashCode(callSuper = true)
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-  @JsonDeserialize(builder = Medication.Bundle.BundleBuilder.class)
-  public static class Bundle extends AbstractBundle<Medication.Entry> {
+  @JsonDeserialize(builder = Immunization.Bundle.BundleBuilder.class)
+  public static class Bundle extends AbstractBundle<Immunization.Entry> {
     @Builder
     public Bundle(
         @Pattern(regexp = Fhir.ID) String id,
@@ -105,7 +164,7 @@ public class Medication implements Resource {
         @NotNull BundleType type,
         @Min(0) Integer total,
         @Valid List<BundleLink> link,
-        @Valid List<Entry> entry,
+        @Valid List<Immunization.Entry> entry,
         @NotBlank String resourceType,
         @Valid Signature signature) {
       super(id, meta, implicitRules, language, type, total, link, entry, resourceType, signature);
@@ -113,28 +172,12 @@ public class Medication implements Resource {
   }
 
   @Data
-  @Builder
-  @NoArgsConstructor(access = AccessLevel.PRIVATE)
-  @AllArgsConstructor
-  @JsonAutoDetect(fieldVisibility = Visibility.ANY)
-  public static class Content implements BackboneElement {
-    @Pattern(regexp = Fhir.ID)
-    String id;
-
-    @Valid List<Extension> extension;
-    @Valid List<Extension> modifierExtension;
-
-    @NotNull @Valid Reference item;
-
-    @Valid SimpleQuantity amount;
-  }
-
-  @Data
   @NoArgsConstructor
   @EqualsAndHashCode(callSuper = true)
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-  @JsonDeserialize(builder = Medication.Entry.EntryBuilder.class)
-  public static class Entry extends AbstractEntry<Medication> {
+  @JsonDeserialize(builder = Immunization.Entry.EntryBuilder.class)
+  public static class Entry extends AbstractEntry<Immunization> {
+
     @Builder
     public Entry(
         @Pattern(regexp = Fhir.ID) String id,
@@ -142,7 +185,7 @@ public class Medication implements Resource {
         @Valid List<Extension> modifierExtension,
         @Valid List<BundleLink> link,
         @Pattern(regexp = Fhir.URI) String fullUrl,
-        @Valid Medication resource,
+        @Valid Immunization resource,
         @Valid Search search,
         @Valid Request request,
         @Valid Response response) {
@@ -150,53 +193,15 @@ public class Medication implements Resource {
     }
   }
 
-  @Data
-  @Builder
-  @NoArgsConstructor(access = AccessLevel.PRIVATE)
-  @AllArgsConstructor
-  @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-  public static class Ingredient implements BackboneElement {
-    @Pattern(regexp = Fhir.ID)
-    String id;
-
-    @Valid List<Extension> extension;
-    @Valid List<Extension> modifierExtension;
-
-    @NotNull @Valid Reference item;
-    @Valid Ratio amount;
-  }
-
-  @Data
-  @Builder
-  @NoArgsConstructor(access = AccessLevel.PRIVATE)
-  @AllArgsConstructor
-  @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-  public static class MedicationPackage implements BackboneElement {
-    @Pattern(regexp = Fhir.ID)
-    String id;
-
-    @Valid List<Extension> extension;
-    @Valid List<Extension> modifierExtension;
-
-    @Valid CodeableConcept container;
-
-    @Valid List<Content> content;
-  }
-
-  @Data
-  @Builder
-  @NoArgsConstructor(access = AccessLevel.PRIVATE)
-  @AllArgsConstructor
-  @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-  public static class Product implements BackboneElement {
-    @Pattern(regexp = Fhir.ID)
-    String id;
-
-    @Valid List<Extension> extension;
-    @Valid List<Extension> modifierExtension;
-    @Valid CodeableConcept form;
-
-    @Valid Ingredient ingredient;
-    @Valid List<Batch> batch;
+  @SuppressWarnings("unused")
+  public enum Status {
+    @JsonProperty("in-progress")
+    in_progress,
+    @JsonProperty("on-hold")
+    on_hold,
+    completed,
+    @JsonProperty("entered-in-error")
+    entered_in_error,
+    stopped
   }
 }
