@@ -8,7 +8,6 @@ import gov.va.api.health.argonaut.api.bundle.BundleLink;
 import gov.va.api.health.argonaut.api.bundle.BundleLink.LinkRelation;
 import gov.va.api.health.argonaut.api.resources.Immunization.Bundle;
 import gov.va.api.health.argonaut.api.resources.Immunization.Entry;
-import gov.va.api.health.argonaut.api.samples.SampleDataTypes;
 import gov.va.api.health.argonaut.api.samples.SampleImmunizations;
 import java.util.Collections;
 import lombok.extern.slf4j.Slf4j;
@@ -17,14 +16,13 @@ import org.junit.Test;
 @Slf4j
 public class ImmunizationTest {
 
-  private final SampleImmunizations immunizationData = SampleImmunizations.get();
-  private final SampleDataTypes dataTypes = SampleDataTypes.get();
+  private final SampleImmunizations data = SampleImmunizations.get();
 
   @Test
   public void bundlerCanBuildImmunizationBundles() {
     Entry entry =
         Entry.builder()
-            .extension(Collections.singletonList(immunizationData.extension()))
+            .extension(Collections.singletonList(data.extension()))
             .fullUrl("http://immunization.com")
             .id("123")
             .link(
@@ -33,10 +31,10 @@ public class ImmunizationTest {
                         .relation(LinkRelation.self)
                         .url(("http://immunization.com/1"))
                         .build()))
-            .resource(immunizationData.immunization())
-            .search(dataTypes.search())
-            .request(dataTypes.request())
-            .response(dataTypes.response())
+            .resource(data.immunization())
+            .search(data.search())
+            .request(data.request())
+            .response(data.response())
             .build();
 
     Bundle bundle =
@@ -58,6 +56,6 @@ public class ImmunizationTest {
 
   @Test
   public void immunization() {
-    assertRoundTrip(immunizationData.immunization());
+    assertRoundTrip(data.immunization());
   }
 }
