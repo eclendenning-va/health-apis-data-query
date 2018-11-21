@@ -2,6 +2,7 @@ package gov.va.health.api.sentinel;
 
 import gov.va.api.health.argonaut.api.bundle.AbstractBundle;
 import gov.va.api.health.argonaut.api.resources.Medication;
+import gov.va.api.health.argonaut.api.resources.Observation;
 import gov.va.api.health.argonaut.api.resources.OperationOutcome;
 import gov.va.api.health.argonaut.api.resources.Patient;
 import java.util.Arrays;
@@ -31,8 +32,9 @@ public class ArgonautValidateIT {
     TestIds ids = IdRegistrar.of(Sentinel.get().system()).registeredIds();
 
     return Arrays.asList(
-        validate("Patient", ids.patient(), Patient.Bundle.class),
-        validate("Medication", ids.medication(), Medication.Bundle.class)
+        validate("Medication", ids.medication(), Medication.Bundle.class),
+        validate("Observation", ids.observation(), Observation.Bundle.class),
+        validate("Patient", ids.patient(), Patient.Bundle.class)
         //
         );
   }

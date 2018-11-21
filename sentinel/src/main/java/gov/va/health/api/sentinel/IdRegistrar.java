@@ -33,11 +33,14 @@ class IdRegistrar {
         .uuid();
   }
 
+  private ResourceIdentity id(String type, String id) {
+    return ResourceIdentity.builder().system("CDW").resource(type).identifier(id).build();
+  }
+
   /** Register a CDW identity and return the registered UUID. */
   @SuppressWarnings("SameParameterValue")
   String register(String resource, String id) {
-    ResourceIdentity identity =
-        ResourceIdentity.builder().system("CDW").resource(resource).identifier(id).build();
+    ResourceIdentity identity = id(resource, id);
     log.info("Registering {}", identity);
     List<Registration> registrations =
         system()
@@ -51,19 +54,11 @@ class IdRegistrar {
 
   private TestIds registerCdwIds() {
     TestIds cdwIds = system().cdwIds();
-    ResourceIdentity patient =
-        ResourceIdentity.builder()
-            .system("CDW")
-            .resource("PATIENT")
-            .identifier(cdwIds.patient())
-            .build();
-    ResourceIdentity medication =
-        ResourceIdentity.builder()
-            .system("CDW")
-            .resource("MEDICATION")
-            .identifier(cdwIds.medication())
-            .build();
-    List<ResourceIdentity> identities = Arrays.asList(patient, medication);
+    ResourceIdentity patient = id("PATIENT", cdwIds.patient());
+    ResourceIdentity medication = id("MEDICATION", cdwIds.medication());
+    ResourceIdentity observation = id("OBSERVATION", cdwIds.observation());
+
+    List<ResourceIdentity> identities = Arrays.asList(patient, medication, observation);
     log.info("Registering {}", identities);
     List<Registration> registrations =
         system()
@@ -77,6 +72,7 @@ class IdRegistrar {
             .unknown(cdwIds.unknown())
             .patient(findUuid(registrations, patient))
             .medication(findUuid(registrations, medication))
+            .observation(findUuid(registrations, observation))
             .pii(cdwIds.pii())
             .build();
     log.info("Using {}", publicIds);
