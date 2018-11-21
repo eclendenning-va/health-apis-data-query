@@ -3,11 +3,21 @@ package gov.va.api.health.argonaut.api.samples;
 import static java.util.Collections.singletonList;
 
 import gov.va.api.health.argonaut.api.bundle.AbstractEntry;
+import gov.va.api.health.argonaut.api.datatypes.Address;
+import gov.va.api.health.argonaut.api.datatypes.Address.AddressType;
+import gov.va.api.health.argonaut.api.datatypes.Address.AddressUse;
 import gov.va.api.health.argonaut.api.datatypes.Annotation;
+import gov.va.api.health.argonaut.api.datatypes.Attachment;
 import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
 import gov.va.api.health.argonaut.api.datatypes.Coding;
+import gov.va.api.health.argonaut.api.datatypes.ContactPoint;
+import gov.va.api.health.argonaut.api.datatypes.ContactPoint.ContactPointSystem;
+import gov.va.api.health.argonaut.api.datatypes.ContactPoint.ContactPointUse;
+import gov.va.api.health.argonaut.api.datatypes.HumanName;
+import gov.va.api.health.argonaut.api.datatypes.HumanName.NameUse;
 import gov.va.api.health.argonaut.api.datatypes.Identifier;
 import gov.va.api.health.argonaut.api.datatypes.Identifier.IdentifierUse;
+import gov.va.api.health.argonaut.api.datatypes.Period;
 import gov.va.api.health.argonaut.api.datatypes.Quantity;
 import gov.va.api.health.argonaut.api.datatypes.Range;
 import gov.va.api.health.argonaut.api.datatypes.Ratio;
@@ -19,7 +29,10 @@ import gov.va.api.health.argonaut.api.elements.Meta;
 import gov.va.api.health.argonaut.api.elements.Narrative;
 import gov.va.api.health.argonaut.api.elements.Narrative.NarrativeStatus;
 import gov.va.api.health.argonaut.api.elements.Reference;
+import gov.va.api.health.argonaut.api.resources.OperationOutcome.Issue;
+import gov.va.api.health.argonaut.api.resources.OperationOutcome.Issue.IssueSeverity;
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import lombok.NoArgsConstructor;
@@ -27,6 +40,22 @@ import lombok.NoArgsConstructor;
 @SuppressWarnings({"WeakerAccess", "unused"})
 @NoArgsConstructor(staticName = "get")
 public final class SampleDataTypes {
+  public Address address() {
+    return Address.builder()
+        .id("1234")
+        .extension(singletonList(extension()))
+        .use(AddressUse.home)
+        .type(AddressType.both)
+        .text("Hello")
+        .line(Arrays.asList("hello", "goodbye"))
+        .city("Hello City")
+        .district("Hello District")
+        .state("Hello State")
+        .postalCode("12345")
+        .country("Hello Country")
+        .period(period())
+        .build();
+  }
 
   public Annotation annotation() {
     return Annotation.builder()
@@ -47,6 +76,19 @@ public final class SampleDataTypes {
         .build();
   }
 
+  public Attachment attachment() {
+    return Attachment.builder()
+        .contentType("HelloType")
+        .language("HelloLanguage")
+        .data("SSBqdXN0IGF0ZSBhIHBlYW51dAo=")
+        .url("http://HelloUrl.com")
+        .size(1)
+        .hash("SSBqdXN0IGF0ZSBhIHBlYW51dAo=")
+        .title("HelloTitle")
+        .creation("2000-01-01T00:00:00-00:00")
+        .build();
+  }
+
   public CodeableConcept codeableConcept() {
     return CodeableConcept.builder().coding(codingList()).text("code text test").build();
   }
@@ -63,6 +105,20 @@ public final class SampleDataTypes {
 
   public List<Coding> codingList() {
     return Collections.singletonList(coding());
+  }
+
+  public ContactPoint contactPoint() {
+    return ContactPoint.builder()
+        .system(ContactPointSystem.other)
+        .value("HelloValue")
+        .use(ContactPointUse.home)
+        .rank(1)
+        .period(period())
+        .build();
+  }
+
+  public CodeableConcept details() {
+    return CodeableConcept.builder().coding(singletonList(coding())).text("HelloText").build();
   }
 
   public Extension extension() {
@@ -95,12 +151,35 @@ public final class SampleDataTypes {
         .build();
   }
 
+  public HumanName humanName() {
+    return HumanName.builder()
+        .use(NameUse.anonymous)
+        .text("HelloText")
+        .family(singletonList("HelloFamily"))
+        .given(singletonList("HelloGiven"))
+        .prefix(singletonList("HelloPrefix"))
+        .suffix(singletonList("HelloSuffix"))
+        .period(period())
+        .build();
+  }
+
   public Identifier identifier() {
     return Identifier.builder()
         .id("5678")
         .use(IdentifierUse.official)
         .use(Identifier.IdentifierUse.official)
         .extension(singletonList(extension()))
+        .build();
+  }
+
+  public Issue issue() {
+    return Issue.builder()
+        .severity(IssueSeverity.error)
+        .code("HelloCode")
+        .details(details())
+        .diagnostics("HelloDiagnostics")
+        .location(singletonList("HelloLocation"))
+        .expression(singletonList("HelloExpression"))
         .build();
   }
 
@@ -116,6 +195,15 @@ public final class SampleDataTypes {
 
   public Narrative narrative() {
     return Narrative.builder().status(NarrativeStatus.additional).div("<p>HelloDiv<p>").build();
+  }
+
+  public Period period() {
+    return Period.builder()
+        .id("5678")
+        .extension(singletonList(Extension.builder().url("http://wtf.com").valueInteger(1).build()))
+        .start("2000-01-01T00:00:00-00:00")
+        .end("2001-01-01T00:00:00-00:00")
+        .build();
   }
 
   public Quantity quantity() {

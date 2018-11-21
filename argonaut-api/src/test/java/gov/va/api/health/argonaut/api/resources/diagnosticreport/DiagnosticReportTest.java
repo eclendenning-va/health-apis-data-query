@@ -1,34 +1,89 @@
 package gov.va.api.health.argonaut.api.resources.diagnosticreport;
 
+import static gov.va.api.health.argonaut.api.RoundTrip.assertRoundTrip;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import gov.va.api.health.argonaut.api.ZeroOrOneVerifier;
+import gov.va.api.health.argonaut.api.bundle.AbstractBundle;
+import gov.va.api.health.argonaut.api.bundle.BundleLink;
+import gov.va.api.health.argonaut.api.resources.DiagnosticReport;
 import gov.va.api.health.argonaut.api.samples.SampleDiagnosticReports;
+import java.util.Collections;
 import java.util.Set;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.ValidatorFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 
+@Slf4j
 public class DiagnosticReportTest {
 
-  private SampleDiagnosticReports diagnosticReportsData = SampleDiagnosticReports.get();
+  private final SampleDiagnosticReports data = SampleDiagnosticReports.get();
+
+  @Test
+  public void bundlerCanBuildDiagnosticReportBundles() {
+    DiagnosticReport.Entry entry =
+        DiagnosticReport.Entry.builder()
+            .extension(Collections.singletonList(data.extension()))
+            .fullUrl("http://diagnosticreports.com")
+            .id("123")
+            .link(
+                Collections.singletonList(
+                    BundleLink.builder()
+                        .relation(BundleLink.LinkRelation.self)
+                        .url(("http://diagnosticreport/1"))
+                        .build()))
+            .resource(data.diagnosticReport())
+            .search(data.search())
+            .request(data.request())
+            .response(data.response())
+            .build();
+
+    DiagnosticReport.Bundle bundle =
+        DiagnosticReport.Bundle.builder()
+            .entry(Collections.singletonList(entry))
+            .link(
+                Collections.singletonList(
+                    BundleLink.builder()
+                        .relation(BundleLink.LinkRelation.self)
+                        .url(("http://diagnosticreport.com/2"))
+                        .build()))
+            .type(AbstractBundle.BundleType.searchset)
+            .build();
+
+    assertRoundTrip(bundle);
+  }
+
+  @Test
+  public void diagnosticReport() {
+    assertRoundTrip(data.diagnosticReport());
+  }
+
+  @Test
+  public void relatedGroups() {
+    ZeroOrOneVerifier.builder()
+        .sample(data.diagnosticReport())
+        .fieldPrefix("effective")
+        .build()
+        .verify();
+  }
 
   @Test
   public void validationFailsGivenBadCategory() {
-    assertThat(violationsOf(diagnosticReportsData.diagnosticReport())).isNotEmpty();
+    assertThat(violationsOf(data.diagnosticReport().category(data.codeableConcept()))).isNotEmpty();
   }
 
   @Test
   public void validationFailsGivenNoCategory() {
-    assertThat(violationsOf(diagnosticReportsData.diagnosticReport().category(null))).isNotEmpty();
+    assertThat(violationsOf(data.diagnosticReport().category(null))).isNotEmpty();
   }
 
   @Test
   public void validationPassesGivenGoodCategory() {
     assertThat(
             violationsOf(
-                diagnosticReportsData
-                    .diagnosticReport()
+                data.diagnosticReport()
                     .category()
                     .coding()
                     .get(0)

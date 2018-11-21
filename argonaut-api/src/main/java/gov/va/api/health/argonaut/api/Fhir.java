@@ -16,7 +16,8 @@ public class Fhir {
   public static final String URI = ".+";
 
   @Schema(description = "http://hl7.org/fhir/DSTU2/datatypes.html#base64binary")
-  public static final String BASE64 = "[^-A-Za-z0-9+/=]|=[^=]|={3,}$";
+  public static final String BASE64 =
+      "(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)";
 
   @Schema(description = "http://hl7.org/fhir/DSTU2/datatypes.html#date")
   public static final String DATE = "-?[0-9]{4}(-(0[1-9]|1[0-2])(-(0[0-9]|[1-2][0-9]|3[0-1]))?)?";

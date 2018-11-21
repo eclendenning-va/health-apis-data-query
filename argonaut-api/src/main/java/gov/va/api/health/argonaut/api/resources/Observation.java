@@ -58,7 +58,7 @@ import org.apache.commons.lang3.StringUtils;
 @RelatedFields({
   @ZeroOrOneOf(
     fields = {"effectiveDateTime", "effectivePeriod"},
-    message = "Only one effective value may be specified"
+    message = "Only one effective field may be specified"
   ),
   @ZeroOrOneOf(
     fields = {
@@ -73,7 +73,7 @@ import org.apache.commons.lang3.StringUtils;
       "valueString",
       "valueTime"
     },
-    message = "Only one value value may be specified"
+    message = "Only one value field may be specified"
   )
 })
 public class Observation implements Resource {
@@ -93,16 +93,12 @@ public class Observation implements Resource {
   @Valid List<SimpleResource> contained;
   @Valid List<Extension> extension;
   @Valid List<Extension> modifierExtension;
-
   @Valid List<Identifier> identifier;
-
   @NotNull Code status;
-
   @Valid @NotNull CodeableConcept category;
   @Valid @NotNull CodeableConcept code;
   @Valid @NotNull Reference subject;
   @Valid Reference encounter;
-
   @Valid Period effectivePeriod;
 
   @Pattern(regexp = Fhir.DATETIME)
@@ -112,7 +108,6 @@ public class Observation implements Resource {
   String issued;
 
   @Valid List<Reference> performer;
-
   @Valid Quantity valueQuantity;
   @Valid CodeableConcept valueCodeableConcept;
   String valueString;
@@ -134,22 +129,48 @@ public class Observation implements Resource {
   String comments;
   @Valid CodeableConcept bodySite;
   @Valid CodeableConcept method;
-
   @Valid Reference specimen;
   @Valid Reference device;
-
   @Valid List<ObservationReferenceRange> referenceRange;
   @Valid List<ObservationRelated> related;
   @Valid List<ObservationComponent> component;
 
   @JsonIgnore
-  @AssertTrue(message = "Category coding is not valid.")
+  @AssertTrue(message = "Category system should be http://hl7.org/fhir/observation-category.")
   private boolean isValidCategory() {
     if (category == null) {
       return true;
     }
     return StringUtils.equals(
         "http://hl7.org/fhir/observation-category", (category.coding().get(0).system()));
+  }
+
+  @SuppressWarnings("unused")
+  public enum Code {
+    registered,
+    preliminary,
+    amended,
+    cancelled,
+    unknown,
+    @JsonProperty("final")
+    _final,
+    @JsonProperty("entered-in-error")
+    entered_in_error
+  }
+
+  @SuppressWarnings("unused")
+  public enum Type {
+    @JsonProperty("has-member")
+    has_member,
+    @JsonProperty("derived-from")
+    derived_from,
+    @JsonProperty("sequel-to")
+    sequel_to,
+    replaces,
+    @JsonProperty("qualified-by")
+    qualified_by,
+    @JsonProperty("interfered-by")
+    interfered_by
   }
 
   @Data
@@ -281,31 +302,5 @@ public class Observation implements Resource {
     Type type;
 
     @Valid @NotNull Reference target;
-  }
-
-  public enum Code {
-    registered,
-    preliminary,
-    amended,
-    cancelled,
-    unknown,
-    @JsonProperty("final")
-    _final,
-    @JsonProperty("entered-in-error")
-    entered_in_error
-  }
-
-  public enum Type {
-    @JsonProperty("has-member")
-    has_member,
-    @JsonProperty("derived-from")
-    derived_from,
-    @JsonProperty("sequel-to")
-    sequel_to,
-    replaces,
-    @JsonProperty("qualified-by")
-    qualified_by,
-    @JsonProperty("interfered-by")
-    interfered_by
   }
 }

@@ -1,31 +1,25 @@
 package gov.va.api.health.argonaut.api;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static gov.va.api.health.argonaut.api.RoundTrip.assertRoundTrip;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.va.api.health.argonaut.api.bundle.AbstractBundle;
-import gov.va.api.health.argonaut.api.bundle.AbstractEntry;
 import gov.va.api.health.argonaut.api.bundle.BundleLink;
 import gov.va.api.health.argonaut.api.resources.Medication;
-import gov.va.api.health.argonaut.api.samples.SampleDataTypes;
 import gov.va.api.health.argonaut.api.samples.SampleMedications;
-import gov.va.api.health.autoconfig.configuration.JacksonConfig;
 import java.util.Collections;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 
 @Slf4j
-public class MedicationBundleTest {
+public class MedicationTest {
 
-  private final SampleMedications medicationData = SampleMedications.get();
-  private final SampleDataTypes dataTypes = SampleDataTypes.get();
+  private final SampleMedications data = SampleMedications.get();
 
   @Test
   public void bundlerCanBuildMedicationBundles() {
     Medication.Entry entry =
         Medication.Entry.builder()
-            .extension(Collections.singletonList(medicationData.extension()))
+            .extension(Collections.singletonList(data.extension()))
             .fullUrl("http://medication.com")
             .id("123")
             .link(
@@ -34,10 +28,10 @@ public class MedicationBundleTest {
                         .relation(BundleLink.LinkRelation.self)
                         .url(("http://medication.com/1"))
                         .build()))
-            .resource(medicationData.medication())
-            .search(dataTypes.search())
-            .request(dataTypes.request())
-            .response(dataTypes.response())
+            .resource(data.medication())
+            .search(data.search())
+            .request(data.request())
+            .response(data.response())
             .build();
 
     Medication.Bundle bundle =
@@ -52,16 +46,11 @@ public class MedicationBundleTest {
             .type(AbstractBundle.BundleType.searchset)
             .build();
 
-    roundTrip(bundle);
-    AbstractEntry.Search.builder().build().id();
+    assertRoundTrip(bundle);
   }
 
-  @SneakyThrows
-  private <T> void roundTrip(T object) {
-    ObjectMapper mapper = new JacksonConfig().objectMapper();
-    String json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(object);
-    log.info("{}", json);
-    Object evilTwin = mapper.readValue(json, object.getClass());
-    assertThat(evilTwin).isEqualTo(object);
+  @Test
+  public void medication() {
+    assertRoundTrip(data.medication());
   }
 }

@@ -2,6 +2,8 @@ package gov.va.api.health.argonaut.api.samples;
 
 import static java.util.Collections.singletonList;
 
+import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
+import gov.va.api.health.argonaut.api.datatypes.Coding;
 import gov.va.api.health.argonaut.api.resources.Observation;
 import gov.va.api.health.argonaut.api.resources.Observation.Code;
 import gov.va.api.health.argonaut.api.resources.Observation.ObservationComponent;
@@ -22,6 +24,30 @@ public class SampleObservations {
 
   @Delegate SampleDataTypes dataTypes = SampleDataTypes.get();
 
+  private CodeableConcept category() {
+    return CodeableConcept.builder()
+        .coding(
+            singletonList(
+                Coding.builder()
+                    .system("http://hl7.org/fhir/observation-category")
+                    .code("ok")
+                    .build()))
+        .text("dat category")
+        .build();
+  }
+
+  public ObservationComponent component() {
+    return ObservationComponent.builder()
+        .id("0000")
+        .extension(singletonList(extension()))
+        .modifierExtension(singletonList(extension()))
+        .code(codeableConcept())
+        .valueCodeableConcept(codeableConcept())
+        .dataAbsentReason(codeableConcept())
+        .referenceRange(singletonList(referenceRange()))
+        .build();
+  }
+
   public Observation observation() {
     return Observation.builder()
         .id("1234")
@@ -36,7 +62,7 @@ public class SampleObservations {
             Arrays.asList(extension(), extensionWithQuantity(), extensionWithRatio()))
         .identifier(singletonList(identifier()))
         .status(Code.registered)
-        .category(codeableConcept())
+        .category(category())
         .code(codeableConcept())
         .subject(reference())
         .encounter(reference())
@@ -54,18 +80,6 @@ public class SampleObservations {
         .referenceRange(singletonList(referenceRange()))
         .related(singletonList(related()))
         .component(singletonList(component()))
-        .build();
-  }
-
-  public ObservationComponent component() {
-    return ObservationComponent.builder()
-        .id("0000")
-        .extension(singletonList(extension()))
-        .modifierExtension(singletonList(extension()))
-        .code(codeableConcept())
-        .valueCodeableConcept(codeableConcept())
-        .dataAbsentReason(codeableConcept())
-        .referenceRange(singletonList(referenceRange()))
         .build();
   }
 
