@@ -63,7 +63,13 @@ class IdRegistrar {
             .resource("MEDICATION")
             .identifier(cdwIds.medication())
             .build();
-    List<ResourceIdentity> identities = Arrays.asList(patient, medication);
+    ResourceIdentity diagnosticReport =
+        ResourceIdentity.builder()
+            .system("CDW")
+            .resource("DIAGNOSTIC_REPORT")
+            .identifier(cdwIds.diagnosticReport())
+            .build();
+    List<ResourceIdentity> identities = Arrays.asList(patient, medication, diagnosticReport);
     log.info("Registering {}", identities);
     List<Registration> registrations =
         system()
@@ -77,6 +83,7 @@ class IdRegistrar {
             .unknown(cdwIds.unknown())
             .patient(findUuid(registrations, patient))
             .medication(findUuid(registrations, medication))
+            .diagnosticReport(findUuid(registrations, diagnosticReport))
             .pii(cdwIds.pii())
             .build();
     log.info("Using {}", publicIds);

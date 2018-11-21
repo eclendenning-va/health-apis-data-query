@@ -19,6 +19,7 @@ public class SystemDefinitions {
                   .unknown("5555555555555")
                   .patient("185601V825290")
                   .medication("212846")
+                  .diagnosticReport("1000000031384:L")
                   .pii(
                       PersonallyIdentifiableInformation.builder()
                           .gender("male")
