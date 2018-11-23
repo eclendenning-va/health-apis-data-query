@@ -6,6 +6,7 @@ import gov.va.api.health.argonaut.api.bundle.AbstractEntry;
 import gov.va.api.health.argonaut.api.datatypes.Address;
 import gov.va.api.health.argonaut.api.datatypes.Address.AddressType;
 import gov.va.api.health.argonaut.api.datatypes.Address.AddressUse;
+import gov.va.api.health.argonaut.api.datatypes.Age;
 import gov.va.api.health.argonaut.api.datatypes.Annotation;
 import gov.va.api.health.argonaut.api.datatypes.Attachment;
 import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
@@ -57,19 +58,14 @@ public final class SampleDataTypes {
         .build();
   }
 
+  public Age age() {
+    return Age.builder().value(11.11).unit("HelloUnit").build();
+  }
+
   public Annotation annotation() {
     return Annotation.builder()
         .id("8888")
         .extension(singletonList(extension()))
-        .authorString("Test Author")
-        .time("2015-04-15T04:00:00Z")
-        .text("annotation test text")
-        .build();
-  }
-
-  public Annotation annotationWithBothAuthorValues() {
-    return Annotation.builder()
-        .authorReference(reference())
         .authorString("Test Author")
         .time("2015-04-15T04:00:00Z")
         .text("annotation test text")
