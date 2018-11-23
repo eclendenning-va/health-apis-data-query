@@ -2,13 +2,15 @@ package gov.va.api.health.argonaut.service.controller.observation;
 
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
 
 import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
 import gov.va.api.health.argonaut.api.datatypes.Coding;
 import gov.va.api.health.argonaut.api.datatypes.Quantity;
+import gov.va.api.health.argonaut.api.datatypes.SimpleQuantity;
 import gov.va.api.health.argonaut.api.elements.Reference;
 import gov.va.api.health.argonaut.api.resources.Observation;
+import gov.va.api.health.argonaut.api.resources.Observation.ObservationComponent;
+import gov.va.api.health.argonaut.api.resources.Observation.ObservationReferenceRange;
 import gov.va.api.health.argonaut.api.resources.Observation.Status;
 import gov.va.dvp.cdw.xsd.model.CdwObservation104Root.CdwObservations.CdwObservation;
 import gov.va.dvp.cdw.xsd.model.CdwObservation104Root.CdwObservations.CdwObservation.CdwCategory;
@@ -59,6 +61,46 @@ public class ObservationTransformerTest {
   }
 
   @Test
+  public void component() {
+    assertThat(tx.component(null)).isNull();
+    assertThat(tx.component(new CdwComponent())).isNull();
+    assertThat(tx.component(cdw.componentWithCodeableConcept()))
+        .isEqualTo(expected.componentWithCodeableConcept());
+    assertThat(tx.component(cdw.componentWithQuantity()))
+        .isEqualTo(expected.componentWithQuantity());
+  }
+
+  @Test
+  public void componentCode() {
+    assertThat(tx.componentCode(null)).isNull();
+    assertThat(tx.componentCode(new CdwComponent.CdwCode())).isNull();
+    assertThat(tx.componentCode(cdw.componentCode())).isEqualTo(expected.componentCode());
+  }
+
+  @Test
+  public void componentValueCodeableConcept() {
+    assertThat(tx.componentValueCodeableConcept(null)).isNull();
+    assertThat(tx.componentValueCodeableConcept(new CdwValueCodeableConcept())).isNull();
+    assertThat(tx.componentValueCodeableConcept(cdw.componentCodeableConcept()))
+        .isEqualTo(expected.componentCodeableConcept());
+  }
+
+  @Test
+  public void componentValueQuantity() {
+    assertThat(tx.componentValueQuantity(null)).isNull();
+    assertThat(tx.componentValueQuantity(new CdwComponent.CdwValueQuantity())).isNull();
+    assertThat(tx.componentValueQuantity(cdw.componentQuantity()))
+        .isEqualTo(expected.componentQuantity());
+  }
+
+  @Test
+  public void components() {
+    assertThat(tx.components(null)).isNull();
+    assertThat(tx.components(new CdwComponents())).isNull();
+    assertThat(tx.components(cdw.components())).isEqualTo(expected.components());
+  }
+
+  @Test
   public void interpretation() {
     assertThat(tx.interpretation(null)).isNull();
     assertThat(tx.interpretation(cdw.interpretation())).isEqualTo(expected.interpretation());
@@ -69,8 +111,6 @@ public class ObservationTransformerTest {
     assertThat(tx.apply(cdw.observation())).isEqualTo(expected.observation());
     assertThat(tx.apply(cdw.observationWithValueCodeableConcept()))
         .isEqualTo(expected.observationWithValueCodeableConcept());
-
-    fail("not done");
   }
 
   @Test
@@ -84,6 +124,28 @@ public class ObservationTransformerTest {
   public void reference() {
     assertThat(tx.reference(null)).isNull();
     assertThat(tx.reference(cdw.reference("x", "y"))).isEqualTo(expected.reference("x", "y"));
+  }
+
+  @Test
+  public void referenceRange() {
+    assertThat(tx.referenceRange(null)).isNull();
+    assertThat(tx.referenceRange(new CdwReferenceRange())).isNull();
+    assertThat(tx.referenceRange(cdw.referenceRange())).isEqualTo(expected.referenceRange());
+  }
+
+  @Test
+  public void referenceRangeQuantity() {
+    assertThat(tx.referenceRangeQuantity(null)).isNull();
+    assertThat(tx.referenceRangeQuantity(new CdwObservationRefRangeQuantity())).isNull();
+    assertThat(tx.referenceRangeQuantity(cdw.referenceRangeQuantity(1)))
+        .isEqualTo(expected.simpleQuantity(1));
+  }
+
+  @Test
+  public void referenceRanges() {
+    assertThat(tx.referenceRanges(null)).isNull();
+    assertThat(tx.referenceRanges(new CdwReferenceRanges())).isNull();
+    assertThat(tx.referenceRanges(cdw.referenceRanges())).isEqualTo(expected.referenceRanges());
   }
 
   @Test
@@ -335,6 +397,62 @@ public class ObservationTransformerTest {
       return Coding.builder().system(system).code(code).display(display).build();
     }
 
+    private CodeableConcept componentCode() {
+      return CodeableConcept.builder()
+          .text("Systolic blood pressure")
+          .coding(singletonList(componentCodeCoding()))
+          .build();
+    }
+
+    private Coding componentCodeCoding() {
+      return Coding.builder()
+          .code("8480-6")
+          .display("Systolic blood pressure")
+          .system("http://loinc.org")
+          .build();
+    }
+
+    private CodeableConcept componentCodeableConcept() {
+      return CodeableConcept.builder()
+          .text("component cc")
+          .coding(singletonList(componentCodeableConceptCoding()))
+          .build();
+    }
+
+    private Coding componentCodeableConceptCoding() {
+      return coding("http://example.com", "cccc1", "component codeable concept coding");
+    }
+
+    private Quantity componentQuantity() {
+      return Quantity.builder()
+          .code("mm[Hg]")
+          .system("http://unitsofmeasure.org")
+          .unit("mm[Hg]")
+          .value(67D)
+          .comparator(">")
+          .build();
+    }
+
+    private ObservationComponent componentWithCodeableConcept() {
+      return ObservationComponent.builder()
+          .id("component1")
+          .code(componentCode())
+          .valueCodeableConcept(componentCodeableConcept())
+          .build();
+    }
+
+    private ObservationComponent componentWithQuantity() {
+      return ObservationComponent.builder()
+          .id("component1")
+          .code(componentCode())
+          .valueQuantity(componentQuantity())
+          .build();
+    }
+
+    List<ObservationComponent> components() {
+      return singletonList(componentWithQuantity());
+    }
+
     public CodeableConcept interpretation() {
       return codeableConcept(coding("http://hl7.org/fhir/v2/0078", "L", "Low")).text("L");
     }
@@ -353,6 +471,10 @@ public class ObservationTransformerTest {
           .performer(performers())
           .valueQuantity(valueQuantity())
           .interpretation(interpretation())
+          .comments("observe, ladies and gentlemen")
+          // .specimen() // Intentionally omitted since specimen resources are not supported
+          .referenceRange(referenceRanges())
+          .component(components())
           .build();
     }
 
@@ -366,6 +488,26 @@ public class ObservationTransformerTest {
 
     Reference reference(String ref, String display) {
       return Reference.builder().reference(ref).display(display).build();
+    }
+
+    private ObservationReferenceRange referenceRange() {
+      return ObservationReferenceRange.builder()
+          .high(simpleQuantity(10))
+          .low(simpleQuantity(1))
+          .build();
+    }
+
+    private List<ObservationReferenceRange> referenceRanges() {
+      return singletonList(referenceRange());
+    }
+
+    private SimpleQuantity simpleQuantity(int value) {
+      return SimpleQuantity.builder()
+          .system("http://unitsofmeasure.org")
+          .code("k/cmm")
+          .unit("k/cmm")
+          .value((double) value)
+          .build();
     }
 
     CodeableConcept valueCodeableConcept() {

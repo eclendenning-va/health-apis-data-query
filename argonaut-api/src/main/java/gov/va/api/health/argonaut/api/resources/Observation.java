@@ -73,10 +73,11 @@ import org.apache.commons.lang3.StringUtils;
       message = "Only one value field may be specified")
 })
 public class Observation implements Resource {
+  @NotBlank String resourceType;
+
   @Pattern(regexp = Fhir.ID)
   String id;
 
-  @NotBlank String resourceType;
   @Valid Meta meta;
 
   @Pattern(regexp = Fhir.URI)
