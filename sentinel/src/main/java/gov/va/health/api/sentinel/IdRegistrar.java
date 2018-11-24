@@ -68,12 +68,11 @@ class IdRegistrar {
             .expect(201)
             .expectListOf(Registration.class);
     TestIds publicIds =
-        TestIds.builder()
-            .unknown(cdwIds.unknown())
+        cdwIds
+            .toBuilder()
             .patient(findUuid(registrations, patient))
             .medication(findUuid(registrations, medication))
             .observation(findUuid(registrations, observation))
-            .pii(cdwIds.pii())
             .build();
     log.info("Using {}", publicIds);
     return publicIds;

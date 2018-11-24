@@ -1,6 +1,8 @@
 package gov.va.health.api.sentinel;
 
+import gov.va.health.api.sentinel.TestIds.Observations;
 import gov.va.health.api.sentinel.TestIds.PersonallyIdentifiableInformation;
+import gov.va.health.api.sentinel.TestIds.Range;
 import lombok.NoArgsConstructor;
 import lombok.Value;
 
@@ -27,6 +29,13 @@ public class SystemDefinitions {
                           .given("JOHN Q")
                           .name("VETERAN,JOHN")
                           .family("VETERAN")
+                          .build())
+                  .observations(
+                      Observations.builder()
+                          .loinc1("72166-2")
+                          .loinc2("777-3")
+                          .onDate("2015-04-15")
+                          .dateRange(Range.allTime())
                           .build())
                   .build())
           .build();

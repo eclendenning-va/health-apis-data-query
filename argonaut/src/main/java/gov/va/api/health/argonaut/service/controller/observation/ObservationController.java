@@ -16,6 +16,7 @@ import gov.va.dvp.cdw.xsd.model.CdwObservation104Root;
 import java.util.Collections;
 import java.util.function.Function;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -121,6 +122,64 @@ public class ObservationController {
         count,
         servletRequest);
   }
+
+  /** Search by patient. */
+  @GetMapping(params = {"patient"})
+  public Observation.Bundle searchByPatient(
+      @RequestParam("patient") String patient,
+      @RequestParam(value = "page", defaultValue = "1") int page,
+      @RequestParam(value = "_count", defaultValue = "15") int count,
+      HttpServletRequest servletRequest) {
+    return bundle(
+        Parameters.builder().add("patient", patient).add("page", page).add("_count", count).build(),
+        page,
+        count,
+        servletRequest);
+  }
+
+  /** Search by patient and category and data if available. */
+  @GetMapping(params = {"patient", "category", "date"})
+  public Observation.Bundle searchByPatientAndCategory(
+      @RequestParam("patient") String patient,
+      @RequestParam("category") String category,
+      @RequestParam(value = "date", required = false) @Size(max = 2) String[] date,
+      @RequestParam(value = "page", defaultValue = "1") int page,
+      @RequestParam(value = "_count", defaultValue = "15") int count,
+      HttpServletRequest servletRequest) {
+    return bundle(
+        Parameters.builder()
+            .add("patient", patient)
+            .add("category", category)
+            .addAll("date", date)
+            .add("page", page)
+            .add("_count", count)
+            .build(),
+        page,
+        count,
+        servletRequest);
+  }
+
+  /** Search by patient and category and data if available. */
+  @GetMapping(params = {"patient", "code"})
+  public Observation.Bundle searchByPatientAndCode(
+      @RequestParam("patient") String patient,
+      @RequestParam("code") String code,
+      @RequestParam(value = "page", defaultValue = "1") int page,
+      @RequestParam(value = "_count", defaultValue = "15") int count,
+      HttpServletRequest servletRequest) {
+    return bundle(
+        Parameters.builder()
+            .add("patient", patient)
+            .add("code", code)
+            .add("page", page)
+            .add("_count", count)
+            .build(),
+        page,
+        count,
+        servletRequest);
+  }
+
+  // TODO CUSTOMER CATEGORY VALIDATION
 
   /** Hey, this is a validate endpoint. It validates. */
   @PostMapping(
