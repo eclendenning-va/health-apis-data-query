@@ -142,6 +142,7 @@ public final class SampleDataTypes {
                 .comparator(">=")
                 .id("Q1")
                 .unit("things")
+                .system("http://example.com")
                 .value(1.0)
                 .build())
         .build();
@@ -293,7 +294,11 @@ public final class SampleDataTypes {
   }
 
   public SimpleQuantity simpleQuantity() {
-    return SimpleQuantity.builder().value(11.11).unit("HelloUnit").build();
+    return SimpleQuantity.builder()
+        .value(11.11)
+        .unit("HelloUnit")
+        .system("http://example.com")
+        .build();
   }
 
   public List<SimpleResource> simpleResourceList() {

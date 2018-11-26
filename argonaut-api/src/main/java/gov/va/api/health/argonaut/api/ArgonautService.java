@@ -35,6 +35,70 @@ import javax.ws.rs.Path;
 @Path("api")
 public interface ArgonautService {
 
+  @Operation(
+    summary = "Allergy Intolerance read",
+    description =
+        "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-allergyintolerance.html"
+  )
+  @GET
+  @Path("AllergyIntolerance/{id}")
+  @ApiResponse(
+    responseCode = "200",
+    description = "Record found",
+    content =
+        @Content(
+          mediaType = "application/json+fhir",
+          schema = @Schema(implementation = AllergyIntolerance.class)
+        )
+  )
+  @ApiResponse(responseCode = "400", description = "Not found")
+  @ApiResponse(responseCode = "404", description = "Bad request")
+  AllergyIntolerance allergyIntoleranceRead(
+      @Parameter(in = ParameterIn.PATH, name = "id", required = true) String id);
+
+  @Operation(
+    summary = "Allergy Intolerance search",
+    description =
+        "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-allergyintolerance.html"
+  )
+  @GET
+  @Path("AllergyIntolerance")
+  @ApiResponse(
+    responseCode = "200",
+    description = "Record found",
+    content =
+        @Content(
+          mediaType = "application/json+fhir",
+          schema = @Schema(implementation = AllergyIntolerance.Bundle.class)
+        )
+  )
+  @ApiResponse(responseCode = "400", description = "Not found")
+  @ApiResponse(responseCode = "404", description = "Bad request")
+  AllergyIntolerance.Bundle allergyIntoleranceSearch(
+      @Parameter(in = ParameterIn.QUERY, name = "patient") String id);
+
+  @Operation(
+    summary = "Allergy Intolerance validate",
+    description =
+        "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-allergyintolerance.html"
+  )
+  @POST
+  @Consumes("application/json+fhir")
+  @Path("AllergyIntolerance/$validate")
+  @ApiResponse(
+    responseCode = "200",
+    description = "Record found",
+    content =
+        @Content(
+          mediaType = "application/json+fhir",
+          schema = @Schema(implementation = OperationOutcome.class)
+        )
+  )
+  @ApiResponse(responseCode = "404", description = "Bad request")
+  OperationOutcome allergyIntoleranceValidate(
+      @RequestBody(required = true) AllergyIntolerance.Bundle bundle);
+  // END CONDITION
+
   // BEGIN CONDITION
   @Operation(
     summary = "Condition Read",
@@ -96,7 +160,6 @@ public interface ArgonautService {
   )
   @ApiResponse(responseCode = "404", description = "Bad request")
   OperationOutcome conditionValidate(@RequestBody(required = true) Condition.Bundle bundle);
-  // END CONDITION
 
   @Operation(
     summary = "Diagnostic Report Read",
@@ -166,6 +229,68 @@ public interface ArgonautService {
       @RequestBody(required = true) DiagnosticReport.Bundle bundle);
 
   @Operation(
+    summary = "Immunization read",
+    description =
+        "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-immunization.html"
+  )
+  @GET
+  @Path("Immunization/{id}")
+  @ApiResponse(
+    responseCode = "200",
+    description = "Record found",
+    content =
+        @Content(
+          mediaType = "application/json+fhir",
+          schema = @Schema(implementation = Immunization.class)
+        )
+  )
+  @ApiResponse(responseCode = "400", description = "Not found")
+  @ApiResponse(responseCode = "404", description = "Bad request")
+  Immunization immunizationRead(
+      @Parameter(in = ParameterIn.PATH, name = "id", required = true) String id);
+
+  @Operation(
+    summary = "Immunization search",
+    description =
+        "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-immunization.html"
+  )
+  @GET
+  @Path("Immunization")
+  @ApiResponse(
+    responseCode = "200",
+    description = "Record found",
+    content =
+        @Content(
+          mediaType = "application/json+fhir",
+          schema = @Schema(implementation = Immunization.Bundle.class)
+        )
+  )
+  @ApiResponse(responseCode = "400", description = "Not found")
+  @ApiResponse(responseCode = "404", description = "Bad request")
+  Immunization.Bundle immunizationSearch(
+      @Parameter(in = ParameterIn.QUERY, name = "patient") String id);
+
+  @Operation(
+    summary = "Immunization validate",
+    description =
+        "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-immunization.html"
+  )
+  @POST
+  @Consumes("application/json+fhir")
+  @Path("Immunization/$validate")
+  @ApiResponse(
+    responseCode = "200",
+    description = "Record found",
+    content =
+        @Content(
+          mediaType = "application/json+fhir",
+          schema = @Schema(implementation = OperationOutcome.class)
+        )
+  )
+  @ApiResponse(responseCode = "404", description = "Bad request")
+  OperationOutcome immunizationValidate(@RequestBody(required = true) Immunization.Bundle bundle);
+
+  @Operation(
     summary = "Medication read",
     description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-medication.html"
   )
@@ -184,6 +309,41 @@ public interface ArgonautService {
   @ApiResponse(responseCode = "404", description = "Bad request")
   Medication medicationRead(
       @Parameter(in = ParameterIn.PATH, name = "id", required = true) String id);
+
+  @Operation(
+    summary = "Patient read",
+    description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-patient.html"
+  )
+  @POST
+  @Consumes("application/json+fhir")
+  @Path("Medication/$validate")
+  @ApiResponse(
+    responseCode = "200",
+    description = "Record found",
+    content =
+        @Content(
+          mediaType = "application/json+fhir",
+          schema = @Schema(implementation = OperationOutcome.class)
+        )
+  )
+  @ApiResponse(responseCode = "404", description = "Bad request")
+  OperationOutcome medicationValidate(@RequestBody(required = true) Medication.Bundle bundle);
+
+  @Operation(summary = "Conformance", description = "http://hl7.org/fhir/DSTU2/conformance.html")
+  @GET
+  @Path("metadata")
+  @ApiResponse(
+    responseCode = "200",
+    description = "Record found",
+    content =
+        @Content(
+          mediaType = "application/json+fhir",
+          schema = @Schema(implementation = Conformance.class)
+        )
+  )
+  @ApiResponse(responseCode = "400", description = "Not found")
+  @ApiResponse(responseCode = "404", description = "Bad request")
+  Conformance metadata();
 
   @Operation(
     summary = "Observation read",
@@ -247,43 +407,8 @@ public interface ArgonautService {
   Observation.Bundle observationSearch(
       @Parameter(in = ParameterIn.QUERY, name = "_id") String id,
       @Parameter(in = ParameterIn.QUERY, name = "category") String category,
-      @Parameter(in = ParameterIn.QUERY, name = "code") String[] code,
+      @Parameter(in = ParameterIn.QUERY, name = "code") String code,
       @Parameter(in = ParameterIn.QUERY, name = "date") String[] date);
-
-  @Operation(
-    summary = "Patient read",
-    description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-patient.html"
-  )
-  @POST
-  @Consumes("application/json+fhir")
-  @Path("Medication/$validate")
-  @ApiResponse(
-    responseCode = "200",
-    description = "Record found",
-    content =
-        @Content(
-          mediaType = "application/json+fhir",
-          schema = @Schema(implementation = OperationOutcome.class)
-        )
-  )
-  @ApiResponse(responseCode = "404", description = "Bad request")
-  OperationOutcome medicationValidate(@RequestBody(required = true) Medication.Bundle bundle);
-
-  @Operation(summary = "Conformance", description = "http://hl7.org/fhir/DSTU2/conformance.html")
-  @GET
-  @Path("metadata")
-  @ApiResponse(
-    responseCode = "200",
-    description = "Record found",
-    content =
-        @Content(
-          mediaType = "application/json+fhir",
-          schema = @Schema(implementation = Conformance.class)
-        )
-  )
-  @ApiResponse(responseCode = "400", description = "Not found")
-  @ApiResponse(responseCode = "404", description = "Bad request")
-  Conformance metadata();
 
   @Operation(
     summary = "Patient read",
@@ -348,131 +473,6 @@ public interface ArgonautService {
   )
   @ApiResponse(responseCode = "404", description = "Bad request")
   OperationOutcome patientValidate(@RequestBody(required = true) Patient.Bundle bundle);
-
-  @Operation(
-    summary = "Allergy Intolerance read",
-    description =
-        "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-allergyintolerance.html"
-  )
-  @GET
-  @Path("AllergyIntolerance/{id}")
-  @ApiResponse(
-    responseCode = "200",
-    description = "Record found",
-    content =
-        @Content(
-          mediaType = "application/json+fhir",
-          schema = @Schema(implementation = AllergyIntolerance.class)
-        )
-  )
-  @ApiResponse(responseCode = "400", description = "Not found")
-  @ApiResponse(responseCode = "404", description = "Bad request")
-  AllergyIntolerance allergyIntoleranceRead(
-      @Parameter(in = ParameterIn.PATH, name = "id", required = true) String id);
-
-  @Operation(
-    summary = "Allergy Intolerance search",
-    description =
-        "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-allergyintolerance.html"
-  )
-  @GET
-  @Path("AllergyIntolerance")
-  @ApiResponse(
-    responseCode = "200",
-    description = "Record found",
-    content =
-        @Content(
-          mediaType = "application/json+fhir",
-          schema = @Schema(implementation = AllergyIntolerance.Bundle.class)
-        )
-  )
-  @ApiResponse(responseCode = "400", description = "Not found")
-  @ApiResponse(responseCode = "404", description = "Bad request")
-  AllergyIntolerance.Bundle allergyIntoleranceSearch(
-      @Parameter(in = ParameterIn.QUERY, name = "patient") String id);
-
-  @Operation(
-    summary = "Allergy Intolerance validate",
-    description =
-        "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-allergyintolerance.html"
-  )
-  @POST
-  @Consumes("application/json+fhir")
-  @Path("AllergyIntolerance/$validate")
-  @ApiResponse(
-    responseCode = "200",
-    description = "Record found",
-    content =
-        @Content(
-          mediaType = "application/json+fhir",
-          schema = @Schema(implementation = OperationOutcome.class)
-        )
-  )
-  @ApiResponse(responseCode = "404", description = "Bad request")
-  OperationOutcome allergyIntoleranceValidate(
-      @RequestBody(required = true) AllergyIntolerance.Bundle bundle);
-
-  @Operation(
-    summary = "Immunization read",
-    description =
-        "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-immunization.html"
-  )
-  @GET
-  @Path("Immunization/{id}")
-  @ApiResponse(
-    responseCode = "200",
-    description = "Record found",
-    content =
-        @Content(
-          mediaType = "application/json+fhir",
-          schema = @Schema(implementation = Immunization.class)
-        )
-  )
-  @ApiResponse(responseCode = "400", description = "Not found")
-  @ApiResponse(responseCode = "404", description = "Bad request")
-  Immunization immunizationRead(
-      @Parameter(in = ParameterIn.PATH, name = "id", required = true) String id);
-
-  @Operation(
-    summary = "Immunization search",
-    description =
-        "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-immunization.html"
-  )
-  @GET
-  @Path("Immunization")
-  @ApiResponse(
-    responseCode = "200",
-    description = "Record found",
-    content =
-        @Content(
-          mediaType = "application/json+fhir",
-          schema = @Schema(implementation = Immunization.Bundle.class)
-        )
-  )
-  @ApiResponse(responseCode = "400", description = "Not found")
-  @ApiResponse(responseCode = "404", description = "Bad request")
-  Immunization.Bundle immunizationSearch(
-      @Parameter(in = ParameterIn.QUERY, name = "patient") String id);
-
-  @Operation(
-    summary = "Immunization validate",
-    description =
-        "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-immunization.html"
-  )
-  @POST
-  @Consumes("application/json+fhir")
-  @Path("Immunization/$validate")
-  @ApiResponse(
-    responseCode = "200",
-    description = "Record found",
-    content =
-        @Content(
-          mediaType = "application/json+fhir",
-          schema = @Schema(implementation = OperationOutcome.class)
-        )
-  )
-  @ApiResponse(responseCode = "404", description = "Bad request")
-  OperationOutcome immunizationValidate(@RequestBody(required = true) Immunization.Bundle bundle);
 
   class ArgonautServiceException extends RuntimeException {
     ArgonautServiceException(String message) {
