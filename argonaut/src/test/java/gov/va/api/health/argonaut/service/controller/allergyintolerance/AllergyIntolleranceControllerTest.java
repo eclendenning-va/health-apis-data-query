@@ -6,7 +6,6 @@ import static org.mockito.Mockito.when;
 
 import gov.va.api.health.argonaut.api.resources.AllergyIntolerance;
 import gov.va.api.health.argonaut.service.controller.Parameters;
-import gov.va.api.health.argonaut.service.controller.allergyintollerance.AllergyIntoleranceController;
 import gov.va.api.health.argonaut.service.mranderson.client.MrAndersonClient;
 import gov.va.api.health.argonaut.service.mranderson.client.Query;
 import gov.va.dvp.cdw.xsd.model.CdwAllergyIntolerance103Root;

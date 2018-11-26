@@ -1,11 +1,10 @@
-package gov.va.api.health.argonaut.service.controller.allergyintollerance;
+package gov.va.api.health.argonaut.service.controller.allergyintolerance;
 
 import static gov.va.api.health.argonaut.service.controller.Transformers.firstPayloadItem;
 import static gov.va.api.health.argonaut.service.controller.Transformers.hasPayload;
 
 import gov.va.api.health.argonaut.api.resources.AllergyIntolerance;
 import gov.va.api.health.argonaut.service.controller.Parameters;
-import gov.va.api.health.argonaut.service.controller.medication.MedicationController.Transformer;
 import gov.va.api.health.argonaut.service.mranderson.client.MrAndersonClient;
 import gov.va.api.health.argonaut.service.mranderson.client.Query;
 import gov.va.dvp.cdw.xsd.model.CdwAllergyIntolerance103Root;

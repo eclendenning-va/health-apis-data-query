@@ -1,4 +1,4 @@
-package gov.va.api.health.argonaut.service.controller.allergyintollerance;
+package gov.va.api.health.argonaut.service.controller.allergyintolerance;
 
 import static gov.va.api.health.argonaut.service.controller.Transformers.asDateTimeString;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convertAll;
@@ -24,10 +24,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class AllergyIntoleranceTransformer implements AllergyIntoleranceController.Transformer {
-  @Override
-  public AllergyIntolerance apply(CdwAllergyIntolerance allergyIntolerance) {
-    return allergyIntolerance(allergyIntolerance);
-  }
 
   private AllergyIntolerance allergyIntolerance(CdwAllergyIntolerance source) {
     return AllergyIntolerance.builder()
@@ -50,8 +46,13 @@ public class AllergyIntoleranceTransformer implements AllergyIntoleranceControll
                 source.getCategory(),
                 category -> AllergyIntolerance.Category.valueOf(category.value())))
         .note(note(source.getNotes()))
-        .reaction(reactions(source.getReactions()))
+        .reaction(reaction(source.getReactions()))
         .build();
+  }
+
+  @Override
+  public AllergyIntolerance apply(CdwAllergyIntolerance allergyIntolerance) {
+    return allergyIntolerance(allergyIntolerance);
   }
 
   Reference authorReference(CdwReference source) {
@@ -102,7 +103,10 @@ public class AllergyIntoleranceTransformer implements AllergyIntoleranceControll
             .build());
   }
 
-  List<Reaction> reactions(CdwReactions optionalSource) {
+  List<Reaction> reaction(CdwReactions optionalSource) {
+    if (optionalSource == null) {
+      return Collections.emptyList();
+    }
     return convertAll(
         ifPresent(optionalSource, CdwReactions::getReaction),
         cdw ->
