@@ -19,21 +19,6 @@ public class DiagnosticReportTransformerTest {
   private DiagnosticReport diagnosticReport = SampleDiagnosticReports.get().diagnosticReport();
 
   @Test
-  public void resultTransformsToReferenceList() {
-    assertThat(transformer().result(cdw.getResults())).isEqualTo(diagnosticReport.result());
-  }
-
-  @Test
-  public void specimenTransformsToReferenceList() {
-    assertThat(transformer().specimen(cdw.getSpecimens())).isEqualTo(diagnosticReport.specimen());
-  }
-
-  @Test
-  public void requestTransformsToReferenceList() {
-    assertThat(transformer().request(cdw.getRequests())).isEqualTo(diagnosticReport.request());
-  }
-
-  @Test
   public void cdwReferenceTransformsToReference() {
     CdwReference cdwRef = new CdwReference();
     cdwRef.setReference("ref-test");
@@ -106,9 +91,6 @@ public class DiagnosticReportTransformerTest {
       sampleDR.setEffective(effective());
       sampleDR.setIssued(issued());
       sampleDR.setPerformer(cdwReference());
-      sampleDR.setRequests(requests());
-      sampleDR.setSpecimens(specimens());
-      sampleDR.setResults(results());
       return sampleDR;
     }
 
@@ -120,33 +102,6 @@ public class DiagnosticReportTransformerTest {
     @SneakyThrows
     private XMLGregorianCalendar effective() {
       return DatatypeFactory.newInstance().newXMLGregorianCalendar("2013-06-21T19:03:16Z");
-    }
-
-    private CdwDiagnosticReport102Root.CdwDiagnosticReports.CdwDiagnosticReport.CdwResults
-        results() {
-      CdwDiagnosticReport102Root.CdwDiagnosticReports.CdwDiagnosticReport.CdwResults results =
-          new CdwDiagnosticReport102Root.CdwDiagnosticReports.CdwDiagnosticReport.CdwResults();
-      results.getResult().add(cdwReference());
-      return results;
-    }
-
-    private CdwDiagnosticReport102Root.CdwDiagnosticReports.CdwDiagnosticReport.CdwSpecimens
-        specimens() {
-      CdwDiagnosticReport102Root.CdwDiagnosticReports.CdwDiagnosticReport.CdwSpecimens specimens =
-          new CdwDiagnosticReport102Root.CdwDiagnosticReports.CdwDiagnosticReport.CdwSpecimens();
-      specimens.getSpecimen().add(cdwReference());
-      specimens.getSpecimen().add(cdwReference());
-      specimens.getSpecimen().add(cdwReference());
-      return specimens;
-    }
-
-    private CdwDiagnosticReport102Root.CdwDiagnosticReports.CdwDiagnosticReport.CdwRequests
-        requests() {
-      CdwDiagnosticReport102Root.CdwDiagnosticReports.CdwDiagnosticReport.CdwRequests request =
-          new CdwDiagnosticReport102Root.CdwDiagnosticReports.CdwDiagnosticReport.CdwRequests();
-      request.getRequest().add(cdwReference());
-      request.getRequest().add(cdwReference());
-      return request;
     }
 
     private CdwReference cdwReference() {
