@@ -42,6 +42,55 @@ public class ArgonautReadAndSearchIT {
         // DiagnosticReport
         expect(200, DiagnosticReport.class, "/api/DiagnosticReport/{id}", ids.diagnosticReport()),
         expect(404, OperationOutcome.class, "/api/DiagnosticReport/{id}", ids.unknown()),
+        expect(
+            200,
+            DiagnosticReport.Bundle.class,
+            "api/DiagnosticReport?_id={id}",
+            ids.diagnosticReport()),
+        expect(200, OperationOutcome.class, "api/DiagnosticReport?_id={id}", ids.unknown()),
+        expect(
+            200,
+            DiagnosticReport.Bundle.class,
+            "api/DiagnosticReport?identifier={id}",
+            ids.diagnosticReport()),
+        expect(404, OperationOutcome.class, "/api/DiagnosticReport?identifier={id}", ids.unknown()),
+        expect(
+            200,
+            DiagnosticReport.Bundle.class,
+            "/api/DiagnosticReport?patient={patient}",
+            ids.patient()),
+        expect(
+            200,
+            DiagnosticReport.Bundle.class,
+            "/api/DiagnosticReport?patient={patient}&category=LAB",
+            ids.patient()),
+        expect(
+            200,
+            DiagnosticReport.Bundle.class,
+            "/api/DiagnosticReport?patient={patient}&code={loinc1}",
+            ids.patient(),
+            ids.diagnosticReports().loinc1()),
+        expect(
+            200,
+            DiagnosticReport.Bundle.class,
+            "/api/DiagnosticReport?patient={patient}&code={loinc1},{loinc2}",
+            ids.patient(),
+            ids.diagnosticReports().loinc1(),
+            ids.diagnosticReports().loinc2()),
+        expect(
+            200,
+            DiagnosticReport.Bundle.class,
+            "/api/DiagnosticReport?patient={patient}&category=LAB&date={onDate}",
+            ids.patient(),
+            ids.diagnosticReports().onDate()),
+        expect(
+            200,
+            DiagnosticReport.Bundle.class,
+            "/api/DiagnosticReport?patient={patient}&category=LAB&date={fromDate}&date={toDate}",
+            ids.patient(),
+            ids.diagnosticReports().fromDate(),
+            ids.diagnosticReports().toDate()),
+
         // Medication
         expect(200, Medication.class, "/api/Medication/{id}", ids.medication()),
         expect(404, OperationOutcome.class, "/api/Medication/{id}", ids.unknown()),

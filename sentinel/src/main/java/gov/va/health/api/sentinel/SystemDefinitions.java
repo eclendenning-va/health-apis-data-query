@@ -1,5 +1,6 @@
 package gov.va.health.api.sentinel;
 
+import gov.va.health.api.sentinel.TestIds.DiagnosticReports;
 import gov.va.health.api.sentinel.TestIds.Observations;
 import gov.va.health.api.sentinel.TestIds.PersonallyIdentifiableInformation;
 import gov.va.health.api.sentinel.TestIds.Range;
@@ -37,6 +38,14 @@ public class SystemDefinitions {
                           .loinc2("777-3")
                           .onDate("2015-04-15")
                           .dateRange(Range.allTime())
+                          .build())
+                  .diagnosticReports(
+                      DiagnosticReports.builder()
+                          .loinc1("10000-8")
+                          .loinc2("99999-9")
+                          .onDate("eq1970-01-01")
+                          .fromDate("gt1970-01-01")
+                          .toDate("lt2038-01-01")
                           .build())
                   .build())
           .build();

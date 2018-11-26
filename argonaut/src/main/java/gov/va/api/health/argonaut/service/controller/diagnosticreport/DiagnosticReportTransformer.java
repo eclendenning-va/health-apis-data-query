@@ -97,7 +97,7 @@ public class DiagnosticReportTransformer implements DiagnosticReportController.T
   }
 
   DiagnosticReport.Code status(CdwDiagnosticReport source) {
-    EnumSearcher<DiagnosticReport.Code> e = EnumSearcher.of(DiagnosticReport.Code.class).build();
+    EnumSearcher<DiagnosticReport.Code> e = EnumSearcher.of(DiagnosticReport.Code.class);
     return ifPresent(source.getStatus(), status -> e.find(status.value()));
   }
 }

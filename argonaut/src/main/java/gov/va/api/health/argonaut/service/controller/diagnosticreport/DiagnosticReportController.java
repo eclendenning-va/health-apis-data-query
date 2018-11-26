@@ -68,7 +68,8 @@ public class DiagnosticReportController {
         return bundler.bundle(
             BundleContext.of(
                 linkConfig,
-                root.getDiagnosticReports() == null ? Collections.emptyList() : root.getDiagnosticReports().getDiagnosticReport(),
+                root.getDiagnosticReports() == null ? Collections.emptyList() :
+                    root.getDiagnosticReports().getDiagnosticReport(),
                 transformer,
                 DiagnosticReport.Entry::new,
                 DiagnosticReport.Bundle::new));
@@ -142,7 +143,8 @@ public class DiagnosticReportController {
         @RequestParam(value = "page", defaultValue = "1") int page,
         @RequestParam(value = "_count", defaultValue = "15") int count,
         HttpServletRequest servletRequest
-    ) { return bundle(
+    ) {
+      return bundle(
         Parameters.builder()
             .add("patient", patient)
             .add("category", category)
@@ -176,11 +178,11 @@ public class DiagnosticReportController {
     }
 
     /** Search by Patient+Category+Date. */
-    @GetMapping(params = {"patient", "code"})
+    @GetMapping(params = {"patient", "code", "date"})
     public DiagnosticReport.Bundle searchByPatientAndCategoryAndDate(
-        @RequestParam("patient") String patient,
-        @RequestParam("code") String code,
-        @RequestParam(value = "date", required = false) @Size(max=2) String[] date,
+        @RequestParam("patient")String patient,
+        @RequestParam("code")String code,
+        @RequestParam(value = "date", required = false) @Size(max = 2) String[] date,
         @RequestParam(value = "page", defaultValue = "1") int page,
         @RequestParam(value = "_count", defaultValue = "15") int count,
         HttpServletRequest servletRequest
@@ -198,7 +200,7 @@ public class DiagnosticReportController {
             servletRequest);
     }
 
-    /** Validate Endpoint */
+    /** Validate Endpoint. */
     @PostMapping(
         value = "/$validate",
         consumes = {"application/json", "application/json+fhir", "application/fhir+json"}

@@ -60,7 +60,8 @@ class IdRegistrar {
     ResourceIdentity observation = id("OBSERVATION", cdwIds.observation());
     ResourceIdentity diagnosticReport = id("DIAGNOSTIC_REPORT", cdwIds.diagnosticReport());
 
-    List<ResourceIdentity> identities = Arrays.asList(patient, medication, observation);
+    List<ResourceIdentity> identities =
+        Arrays.asList(patient, medication, observation, diagnosticReport);
     log.info("Registering {}", identities);
     List<Registration> registrations =
         system()

@@ -18,7 +18,6 @@ import gov.va.api.health.autoconfig.configuration.JacksonConfig;
 import gov.va.dvp.cdw.xsd.model.CdwDiagnosticReport102Root;
 import gov.va.dvp.cdw.xsd.model.CdwDiagnosticReport102Root.CdwDiagnosticReports;
 import gov.va.dvp.cdw.xsd.model.CdwDiagnosticReport102Root.CdwDiagnosticReports.CdwDiagnosticReport;
-import java.lang.reflect.Parameter;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collections;
@@ -78,9 +77,7 @@ public class DiagnosticReportControllerTest {
     @SuppressWarnings("unchecked")
     ArgumentCaptor<
             BundleContext<
-                CdwDiagnosticReport,
-                DiagnosticReport,
-                DiagnosticReport.Entry,
+                CdwDiagnosticReport, DiagnosticReport, DiagnosticReport.Entry,
                 DiagnosticReport.Bundle>>
         captor = ArgumentCaptor.forClass(BundleContext.class);
 
@@ -95,7 +92,8 @@ public class DiagnosticReportControllerTest {
             .queryParams(params)
             .build();
     assertThat(captor.getValue().linkConfig()).isEqualTo(expectedLinkConfig);
-    assertThat(captor.getValue().xmlItems()).isEqualTo(root.getDiagnosticReports().getDiagnosticReport());
+    assertThat(captor.getValue().xmlItems())
+        .isEqualTo(root.getDiagnosticReports().getDiagnosticReport());
     assertThat(captor.getValue().newBundle().get()).isInstanceOf(DiagnosticReport.Bundle.class);
     assertThat(captor.getValue().newEntry().get()).isInstanceOf(DiagnosticReport.Entry.class);
     assertThat(captor.getValue().transformer()).isSameAs(tx);
@@ -105,8 +103,12 @@ public class DiagnosticReportControllerTest {
     return Bundle.builder()
         .type(BundleType.searchset)
         .resourceType("Bundle")
-        .entry(Collections.singletonList(
-            DiagnosticReport.Entry.builder().fullUrl("http://example.com").resource(resource).build()))
+        .entry(
+            Collections.singletonList(
+                DiagnosticReport.Entry.builder()
+                    .fullUrl("http://example.com")
+                    .resource(resource)
+                    .build()))
         .build();
   }
 
@@ -114,40 +116,53 @@ public class DiagnosticReportControllerTest {
   public void searchById() {
     assertSearch(
         () -> controller.searchById("me", 1, 10, servletRequest),
-        Parameters.builder().add("_id", "me").add("page", 1).add("_count", 10).build()
-    );
+        Parameters.builder().add("_id", "me").add("page", 1).add("_count", 10).build());
   }
 
   @Test
   public void searchByIdentifier() {
     assertSearch(
         () -> controller.searchByIdentifier("me", 1, 10, servletRequest),
-        Parameters.builder().add("identifier", "me").add("page", 1).add("_count", 10).build()
-    );
+        Parameters.builder().add("identifier", "me").add("page", 1).add("_count", 10).build());
   }
 
   @Test
   public void searchByIdAndCategory() {
     assertSearch(
         () -> controller.searchByPatientAndCategory("me", "example", 1, 10, servletRequest),
-        Parameters.builder().add("patient", "me").add("category", "example").add("page", 1).add("_count", 10).build()
-    );
+        Parameters.builder()
+            .add("patient", "me")
+            .add("category", "example")
+            .add("page", 1)
+            .add("_count", 10)
+            .build());
   }
 
   @Test
   public void searchByPatientAndCode() {
     assertSearch(
         () -> controller.searchByPatientAndCode("me", "foo", 1, 10, servletRequest),
-        Parameters.builder().add("patient", "me").add("code", "foo").add("page", 1).add("_count", 10).build()
-    );
+        Parameters.builder()
+            .add("patient", "me")
+            .add("code", "foo")
+            .add("page", 1)
+            .add("_count", 10)
+            .build());
   }
 
   @Test
   public void searchByPatientAndCategoryAndDate() {
     assertSearch(
-        () -> controller.searchByPatientAndCategoryAndDate("me", "foo", new String[] {"1000", "2000"}, 1, 10, servletRequest),
-        Parameters.builder().add("patient", "me").add("code", "foo").addAll("date", "1000", "2000").add("page", 1).add("_count", 10).build()
-    );
+        () ->
+            controller.searchByPatientAndCategoryAndDate(
+                "me", "foo", new String[] {"1000", "2000"}, 1, 10, servletRequest),
+        Parameters.builder()
+            .add("patient", "me")
+            .add("code", "foo")
+            .addAll("date", "1000", "2000")
+            .add("page", 1)
+            .add("_count", 10)
+            .build());
   }
 
   @Test
@@ -155,20 +170,22 @@ public class DiagnosticReportControllerTest {
   public void validateAcceptsValidBundle() {
     DiagnosticReport resource =
         JacksonConfig.createMapper()
-            .readValue(getClass().getResourceAsStream("/cdw/old-diagnosticreport-1.02.json"), DiagnosticReport.class);
+            .readValue(
+                getClass().getResourceAsStream("/cdw/old-diagnosticreport-1.02.json"),
+                DiagnosticReport.class);
 
     Bundle bundle = bundleOf(resource);
     assertThat(controller.validate(bundle)).isEqualTo(Validator.ok());
   }
-
-
 
   @Test(expected = ConstraintViolationException.class)
   @SneakyThrows
   public void validateThrowsExceptionForInvalidBundle() {
     DiagnosticReport resource =
         JacksonConfig.createMapper()
-            .readValue(getClass().getResourceAsStream("/cdw/old-diagnosticreport-1.02.json"), DiagnosticReport.class);
+            .readValue(
+                getClass().getResourceAsStream("/cdw/old-diagnosticreport-1.02.json"),
+                DiagnosticReport.class);
     resource.resourceType(null);
 
     Bundle bundle = bundleOf(resource);
@@ -188,8 +205,11 @@ public class DiagnosticReportControllerTest {
     Bundle actual = controller.searchById("me", 1, 10, servletRequest);
     assertThat(actual).isSameAs(mockBundle);
     @SuppressWarnings("unchecked")
-    ArgumentCaptor<BundleContext<CdwDiagnosticReport, DiagnosticReport, DiagnosticReport.Entry, DiagnosticReport.Bundle>> captor =
-        ArgumentCaptor.forClass(BundleContext.class);
+    ArgumentCaptor<
+            BundleContext<
+                CdwDiagnosticReport, DiagnosticReport, DiagnosticReport.Entry,
+                DiagnosticReport.Bundle>>
+        captor = ArgumentCaptor.forClass(BundleContext.class);
 
     verify(bundler).bundle(captor.capture());
     LinkConfig expectedLinkConfig =
