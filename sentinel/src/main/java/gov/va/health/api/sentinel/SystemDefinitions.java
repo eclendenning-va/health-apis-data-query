@@ -23,6 +23,7 @@ public class SystemDefinitions {
                   .patient("185601V825290")
                   .medication("212846")
                   .observation("1201051417263:V")
+                  .immunization("1000000043979")
                   .pii(
                       PersonallyIdentifiableInformation.builder()
                           .gender("male")

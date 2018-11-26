@@ -88,7 +88,7 @@ public class ImmunizationController {
         Query.forType(CdwImmunization103Root.class)
             .profile(Query.Profile.ARGONAUT)
             .resource("Immunization")
-            .version("1.04")
+            .version("1.03")
             .parameters(params)
             .build();
     return mrAndersonClient.search(query);
