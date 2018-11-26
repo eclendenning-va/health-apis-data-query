@@ -5,6 +5,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import gov.va.api.health.argonaut.api.resources.DiagnosticReport;
+import gov.va.api.health.argonaut.service.controller.Bundler;
 import gov.va.api.health.argonaut.service.controller.Parameters;
 import gov.va.api.health.argonaut.service.mranderson.client.MrAndersonClient;
 import gov.va.api.health.argonaut.service.mranderson.client.Query;
@@ -22,14 +23,16 @@ public class DiagnosticReportControllerTest {
   @Mock MrAndersonClient client;
   @Mock DiagnosticReportController.Transformer tx;
   @Mock HttpServletRequest servletRequest;
+  @Mock Bundler bundler;
 
   DiagnosticReportController controller;
 
   @Before
   public void _init() {
     MockitoAnnotations.initMocks(this);
-    controller = new DiagnosticReportController(tx, client);
+    controller = new DiagnosticReportController(tx, client, bundler);
   }
+
 
   @Test
   public void read() {
