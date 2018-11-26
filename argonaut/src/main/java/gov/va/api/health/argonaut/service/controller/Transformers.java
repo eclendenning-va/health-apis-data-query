@@ -102,6 +102,16 @@ public final class Transformers {
     return mapper.apply(source);
   }
 
+  /** Return true if at least one value in the given list is non-null. */
+  public static boolean allNull(Object... values) {
+    for (Object v : values) {
+      if (v != null) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   /**
    * Indicates the CDW payload is missing, but no errors were reported. This exception indicates
    * there is a bug in CDW, Mr. Anderson, or the Mr. Anderson client.

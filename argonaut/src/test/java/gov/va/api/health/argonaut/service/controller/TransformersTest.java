@@ -22,6 +22,14 @@ import org.junit.Test;
 public class TransformersTest {
 
   @Test
+  public void allNull() {
+    assertThat(Transformers.allNull()).isTrue();
+    assertThat(Transformers.allNull(null, null, null, null)).isTrue();
+    assertThat(Transformers.allNull(null, 1, null, null)).isFalse();
+    assertThat(Transformers.allNull(1, "x", "z", 2.0)).isFalse();
+  }
+
+  @Test
   public void asDateStringReturnsNullWhenCalendarIsNull() {
     assertThat(asDateString(null)).isNull();
   }
