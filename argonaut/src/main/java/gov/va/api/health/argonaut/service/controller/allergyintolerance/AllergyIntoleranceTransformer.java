@@ -16,7 +16,9 @@ import gov.va.dvp.cdw.xsd.model.CdwAllergyIntolerance103Root.CdwAllergyIntoleran
 import gov.va.dvp.cdw.xsd.model.CdwAllergyIntolerance103Root.CdwAllergyIntolerances.CdwAllergyIntolerance.CdwReactions;
 import gov.va.dvp.cdw.xsd.model.CdwAllergyIntolerance103Root.CdwAllergyIntolerances.CdwAllergyIntolerance.CdwReactions.CdwReaction.CdwManifestations;
 import gov.va.dvp.cdw.xsd.model.CdwAllergyIntolerance103Root.CdwAllergyIntolerances.CdwAllergyIntolerance.CdwReactions.CdwReaction.CdwManifestations.CdwManifestation;
+import gov.va.dvp.cdw.xsd.model.CdwAllergyIntolerance103Root.CdwAllergyIntolerances.CdwAllergyIntolerance.CdwSubstance;
 import gov.va.dvp.cdw.xsd.model.CdwAllergyManifestationSystem;
+import gov.va.dvp.cdw.xsd.model.CdwAllergySubstanceSystem;
 import gov.va.dvp.cdw.xsd.model.CdwReference;
 import java.util.Collections;
 import java.util.List;
@@ -32,6 +34,7 @@ public class AllergyIntoleranceTransformer implements AllergyIntoleranceControll
         .onset(asDateTimeString(source.getOnset()))
         .recordedDate(asDateTimeString(source.getRecordedDate()))
         .recorder(recorder(source.getRecorder()))
+        .substance(substance(source.getSubstance()))
         .patient(patient(source.getPatient()))
         .status(
             ifPresent(
@@ -124,5 +127,21 @@ public class AllergyIntoleranceTransformer implements AllergyIntoleranceControll
         .display(source.getDisplay())
         .reference(source.getReference())
         .build();
+  }
+
+  CodeableConcept substance(CdwSubstance source) {
+    return CodeableConcept.builder()
+        .coding(substanceCoding(source.getCoding()))
+        .text("substance text")
+        .build();
+  }
+
+  List<Coding> substanceCoding(CdwSubstance.CdwCoding source) {
+    return Collections.singletonList(
+        Coding.builder()
+            .system(ifPresent(source.getSystem(), CdwAllergySubstanceSystem::value))
+            .code(source.getCode())
+            .display(source.getDisplay())
+            .build());
   }
 }

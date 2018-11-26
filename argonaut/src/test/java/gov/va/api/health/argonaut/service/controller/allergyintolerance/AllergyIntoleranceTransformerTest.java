@@ -15,12 +15,14 @@ import gov.va.api.health.argonaut.api.resources.AllergyIntolerance.Status;
 import gov.va.api.health.argonaut.api.resources.AllergyIntolerance.Type;
 import gov.va.dvp.cdw.xsd.model.CdwAllergyIntolerance103Root.CdwAllergyIntolerances.CdwAllergyIntolerance;
 import gov.va.dvp.cdw.xsd.model.CdwAllergyIntolerance103Root.CdwAllergyIntolerances.CdwAllergyIntolerance.CdwReactions.CdwReaction.CdwManifestations;
+import gov.va.dvp.cdw.xsd.model.CdwAllergyIntolerance103Root.CdwAllergyIntolerances.CdwAllergyIntolerance.CdwSubstance;
 import gov.va.dvp.cdw.xsd.model.CdwAllergyIntoleranceCategory;
 import gov.va.dvp.cdw.xsd.model.CdwAllergyIntoleranceCertainty;
 import gov.va.dvp.cdw.xsd.model.CdwAllergyIntoleranceCriticality;
 import gov.va.dvp.cdw.xsd.model.CdwAllergyIntoleranceStatus;
 import gov.va.dvp.cdw.xsd.model.CdwAllergyIntoleranceType;
 import gov.va.dvp.cdw.xsd.model.CdwAllergyManifestationSystem;
+import gov.va.dvp.cdw.xsd.model.CdwAllergySubstanceSystem;
 import gov.va.dvp.cdw.xsd.model.CdwReference;
 import java.math.BigInteger;
 import java.util.Collections;
@@ -103,6 +105,20 @@ public class AllergyIntoleranceTransformerTest {
     assertThat(transformer().reaction(null).isEmpty());
   }
 
+  @Test
+  public void substanceTransformsToCodeableConcept() {
+    CodeableConcept testSubstance = transformer().substance(cdw.substance());
+    CodeableConcept expectedSubstance = expectedAllergyIntolerance.substance();
+    assertThat(testSubstance).isEqualTo(expectedSubstance);
+  }
+
+  @Test
+  public void substanceCodingTransformsToCodingList() {
+    List<Coding> testCoding = transformer().substanceCoding(cdw.substance().getCoding());
+    List<Coding> expectedCoding = expectedAllergyIntolerance.substanceCoding();
+    assertThat(testCoding).isEqualTo(expectedCoding);
+  }
+
   private AllergyIntoleranceTransformer transformer() {
     return new AllergyIntoleranceTransformer();
   }
@@ -115,6 +131,7 @@ public class AllergyIntoleranceTransformerTest {
           .onset("2018-11-07")
           .recordedDate("2018-11-07")
           .recorder(recorder())
+          .substance(substance())
           .patient(patient())
           .status(Status.active)
           .criticality(Criticality.CRITH)
@@ -174,6 +191,19 @@ public class AllergyIntoleranceTransformerTest {
           .reference("recorder reference")
           .build();
     }
+
+    CodeableConcept substance() {
+      return CodeableConcept.builder().coding(substanceCoding()).text("substance text").build();
+    }
+
+    List<Coding> substanceCoding() {
+      return Collections.singletonList(
+          Coding.builder()
+              .system("http://hl7.org/fhir/ndfrt")
+              .code("substance code")
+              .display("substance display")
+              .build());
+    }
   }
 
   private static class XmlSampleData {
@@ -193,6 +223,7 @@ public class AllergyIntoleranceTransformerTest {
       allergyIntolerance.setRecordedDate(recordedDate());
       allergyIntolerance.setRecorder(recorder());
       allergyIntolerance.setPatient(patient());
+      allergyIntolerance.setSubstance(substance());
       allergyIntolerance.setStatus(CdwAllergyIntoleranceStatus.ACTIVE);
       allergyIntolerance.setCriticality(CdwAllergyIntoleranceCriticality.CRITH);
       allergyIntolerance.setType(CdwAllergyIntoleranceType.ALLERGY);
@@ -225,6 +256,19 @@ public class AllergyIntoleranceTransformerTest {
 
       manifestations.getManifestation().add(manifestation);
       return manifestations;
+    }
+
+    CdwSubstance substance() {
+      CdwSubstance substance = new CdwSubstance();
+      CdwSubstance.CdwCoding cdwSubstanceCoding = new CdwSubstance.CdwCoding();
+
+      cdwSubstanceCoding.setCode("substance code");
+      cdwSubstanceCoding.setDisplay("substance display");
+      cdwSubstanceCoding.setSystem(CdwAllergySubstanceSystem.HTTP_HL_7_ORG_FHIR_NDFRT);
+
+      substance.setCoding(cdwSubstanceCoding);
+      substance.setText("substance text");
+      return substance;
     }
 
     CdwAllergyIntolerance.CdwNotes notes() {
