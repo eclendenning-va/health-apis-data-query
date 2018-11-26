@@ -2,19 +2,18 @@ package gov.va.api.health.argonaut.service.controller;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Arrays;
-import lombok.Builder;
-import lombok.Data;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 
-@Data
-@Builder(toBuilder = true)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class EnumSearcher<T extends Enum<T>> {
 
-  Class<T> anEnum;
+  private final Class<T> desiredType;
 
   /** Start a builder chain to query for a given type. */
-  public static <T extends Enum<T>> EnumSearcher.EnumSearcherBuilder<T> of(Class<T> type) {
-    return EnumSearcher.<T>builder().anEnum(type);
+  public static <T extends Enum<T>> EnumSearcher<T> of(Class<T> type) {
+    return new EnumSearcher<T>(type);
   }
 
   /**
@@ -23,13 +22,13 @@ public class EnumSearcher<T extends Enum<T>> {
    */
   @SneakyThrows
   public T find(String s) {
-    return Arrays.stream(anEnum.getEnumConstants())
+    return Arrays.stream(desiredType.getEnumConstants())
         .filter(e -> isMe(e, s))
         .findFirst()
         .orElseThrow(
             () ->
                 new IllegalArgumentException(
-                    "No enum constant " + anEnum.getCanonicalName() + "." + s));
+                    "No enum constant " + desiredType.getCanonicalName() + "." + s));
   }
 
   @SneakyThrows
