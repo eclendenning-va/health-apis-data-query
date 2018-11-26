@@ -4,16 +4,11 @@ import static gov.va.api.health.argonaut.service.controller.Transformers.firstPa
 import static gov.va.api.health.argonaut.service.controller.Transformers.hasPayload;
 
 import gov.va.api.health.argonaut.api.resources.Condition;
-import gov.va.api.health.argonaut.service.controller.Bundler;
-import gov.va.api.health.argonaut.service.controller.Bundler.BundleContext;
-import gov.va.api.health.argonaut.service.controller.PageLinks.LinkConfig;
 import gov.va.api.health.argonaut.service.controller.Parameters;
 import gov.va.api.health.argonaut.service.mranderson.client.MrAndersonClient;
 import gov.va.api.health.argonaut.service.mranderson.client.Query;
 import gov.va.dvp.cdw.xsd.model.CdwCondition103Root;
-import java.util.Collections;
 import java.util.function.Function;
-import javax.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,32 +34,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class ConditionController {
   private Transformer transformer;
   private MrAndersonClient mrAndersonClient;
-  private Bundler bundler;
-
-  private Condition.Bundle bundle(
-      MultiValueMap<String, String> parameters,
-      int page,
-      int count,
-      HttpServletRequest servletRequest) {
-    CdwCondition103Root root = search(parameters);
-    LinkConfig linkConfig =
-        LinkConfig.builder()
-            .path(servletRequest.getRequestURI())
-            .queryParams(parameters)
-            .page(page)
-            .recordsPerPage(count)
-            .totalRecords(root.getRecordCount().intValue())
-            .build();
-    return bundler.bundle(
-        BundleContext.of(
-            linkConfig,
-            root.getConditions() == null
-                ? Collections.emptyList()
-                : root.getConditions().getCondition(),
-            transformer,
-            Condition.Entry::new,
-            Condition.Bundle::new));
-  }
 
   /** Read by id. */
   @GetMapping(value = {"/{publicId}"})

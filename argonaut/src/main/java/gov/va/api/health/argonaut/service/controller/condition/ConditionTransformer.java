@@ -19,7 +19,9 @@ import gov.va.dvp.cdw.xsd.model.CdwCondition103Root.CdwConditions.CdwCondition.C
 import gov.va.dvp.cdw.xsd.model.CdwConditionCategoryCoding;
 import gov.va.dvp.cdw.xsd.model.CdwConditionClinicalStatus;
 import gov.va.dvp.cdw.xsd.model.CdwConditionVerificationStatus;
+import gov.va.dvp.cdw.xsd.model.CdwReference;
 import java.util.List;
+import javax.validation.constraints.NotNull;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -32,12 +34,13 @@ public class ConditionTransformer implements ConditionController.Transformer {
 
   private Condition condition(CdwCondition source) {
     return Condition.builder()
+        .resourceType("Condition")
         .abatementDateTime(asDateTimeString(source.getAbatementDateTime()))
         .asserter(reference(source.getAsserter()))
         .category(category(source.getCategory()))
         .id(source.getCdwId())
         .clinicalStatus(clinicalStatusCode(source.getClinicalStatus()))
-        .code(code(source.getCode().get(0)))
+        .code(code(source.getCode()))
         .dateRecorded(asDateString(source.getDateRecorded()))
         .encounter(reference(source.getEncounter()))
         .onsetDateTime(asDateTimeString(source.getOnsetDateTime()))
@@ -46,54 +49,62 @@ public class ConditionTransformer implements ConditionController.Transformer {
         .build();
   }
 
-  Reference reference(gov.va.dvp.cdw.xsd.model.CdwReference source) {
+  Reference reference(CdwReference maybeCdw) {
     return convert(
-        source,
-        cdw ->
+        maybeCdw,
+        source ->
             Reference.builder()
-                .display(source.getDisplay())
                 .reference(source.getReference())
+                .display(source.getDisplay())
                 .build());
   }
 
-  CodeableConcept code(CdwCodeableConcept source) {
-    return convert(
-        source,
-        cdw ->
-            CodeableConcept.builder().text(cdw.getText()).coding(coding(cdw.getCoding())).build());
-  }
-
-  List<Coding> coding(List<gov.va.dvp.cdw.xsd.model.CdwCoding> source) {
-    return convertAll(
-        source,
-        cdw ->
-            Coding.builder()
-                .code(cdw.getCode())
-                .system(cdw.getSystem())
-                .display(cdw.getDisplay())
-                .build());
-  }
-
-  CodeableConcept category(CdwCategory source) {
+  CodeableConcept code(List<CdwCodeableConcept> maybeCdw) {
+    if (maybeCdw == null) {
+      return null;
+    }
+    if (maybeCdw.get(0).getText() == null && maybeCdw.get(0).getCoding().isEmpty()) {
+      return null;
+    }
     return CodeableConcept.builder()
-        .coding(categoryCodings(source.getCoding()))
-        .text(source.getText())
+        .text(maybeCdw.get(0).getText())
+        .coding(
+            convertAll(
+                maybeCdw.get(0).getCoding(),
+                source -> coding(source.getSystem(), source.getCode(), source.getDisplay())))
         .build();
   }
 
-  ClinicalStatusCode clinicalStatusCode(CdwConditionClinicalStatus source) {
-    EnumSearcher<ClinicalStatusCode> e = EnumSearcher.of(ClinicalStatusCode.class).build();
+  private Coding coding(String system, String code, String display) {
+    return Coding.builder().system(system).code(code).display(display).build();
+  }
+
+  CodeableConcept category(CdwCategory maybeSource) {
+    if (maybeSource == null || maybeSource.getCoding().isEmpty()) {
+      return null;
+    }
+    return CodeableConcept.builder()
+        .coding(categoryCodings(maybeSource.getCoding()))
+        .text(maybeSource.getText())
+        .build();
+  }
+
+  ClinicalStatusCode clinicalStatusCode(@NotNull CdwConditionClinicalStatus source) {
+    EnumSearcher<ClinicalStatusCode> e = EnumSearcher.of(ClinicalStatusCode.class);
     return ifPresent(source, status -> e.find(status.value()));
   }
 
-  VerificationStatusCode verificationStatusCode(CdwConditionVerificationStatus source) {
-    EnumSearcher<VerificationStatusCode> e = EnumSearcher.of(VerificationStatusCode.class).build();
+  VerificationStatusCode verificationStatusCode(@NotNull CdwConditionVerificationStatus source) {
+    EnumSearcher<VerificationStatusCode> e = EnumSearcher.of(VerificationStatusCode.class);
     return ifPresent(source, status -> e.find(status.value()));
   }
 
-  List<Coding> categoryCodings(List<CdwConditionCategoryCoding> optionalSource) {
+  List<Coding> categoryCodings(List<CdwConditionCategoryCoding> maybeSource) {
+    if (maybeSource == null) {
+      return null;
+    }
     return convertAll(
-        optionalSource,
+        maybeSource,
         cdw ->
             Coding.builder()
                 .system(cdw.getSystem())
