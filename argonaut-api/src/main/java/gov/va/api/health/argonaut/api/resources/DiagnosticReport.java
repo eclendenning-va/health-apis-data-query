@@ -19,6 +19,8 @@ import gov.va.api.health.argonaut.api.elements.Extension;
 import gov.va.api.health.argonaut.api.elements.Meta;
 import gov.va.api.health.argonaut.api.elements.Narrative;
 import gov.va.api.health.argonaut.api.elements.Reference;
+import gov.va.api.health.argonaut.api.validation.ExactlyOneOf;
+import gov.va.api.health.argonaut.api.validation.ExactlyOneOfs;
 import gov.va.api.health.argonaut.api.validation.ZeroOrOneOf;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
@@ -49,6 +51,10 @@ import org.apache.commons.lang3.StringUtils;
   fields = {"effectiveDateTime", "effectivePeriod"},
   message = "Only one effective value may be specified"
 )
+@ExactlyOneOfs({
+  @ExactlyOneOf(fields = {"status", "_status"}),
+  @ExactlyOneOf(fields = {"issued", "_issued"})
+})
 public class DiagnosticReport implements Resource {
 
   @Pattern(regexp = Fhir.ID)
@@ -69,7 +75,12 @@ public class DiagnosticReport implements Resource {
   @Valid List<Extension> modifierExtension;
   @Valid List<Identifier> identifier;
 
-  @NotNull Code status;
+  Code status;
+
+  @SuppressWarnings("checkstyle:membername")
+  @Valid
+  Extension _status;
+
   @NotNull @Valid CodeableConcept category;
   @NotNull @Valid CodeableConcept code;
   @NotNull @Valid Reference subject;
@@ -82,8 +93,9 @@ public class DiagnosticReport implements Resource {
   @Valid Period effectivePeriod;
 
   @Pattern(regexp = Fhir.INSTANT)
-  @NotNull
   String issued;
+
+  @Valid Extension _issued;
 
   @NotNull @Valid Reference performer;
 

@@ -2,6 +2,8 @@ package gov.va.api.health.argonaut.api.samples;
 
 import static java.util.Collections.singletonList;
 
+import gov.va.api.health.argonaut.api.DataAbsentReason;
+import gov.va.api.health.argonaut.api.DataAbsentReason.Reason;
 import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
 import gov.va.api.health.argonaut.api.datatypes.Coding;
 import gov.va.api.health.argonaut.api.resources.DiagnosticReport;
@@ -27,6 +29,15 @@ public class SampleDiagnosticReports {
                     .build()))
         .text("dat category")
         .build();
+  }
+
+  private CodeableConcept codeCodeableConcept() {
+    return CodeableConcept.builder().coding(codeCodingList()).text("panel").build();
+  }
+
+  private List<Coding> codeCodingList() {
+    return singletonList(
+        Coding.builder().system("http://HelloSystem.com").code("Hello Code").build());
   }
 
   public DiagnosticReport diagnosticReport() {
@@ -61,13 +72,12 @@ public class SampleDiagnosticReports {
         .build();
   }
 
-  private CodeableConcept codeCodeableConcept() {
-    return CodeableConcept.builder().coding(codeCodingList()).text("panel").build();
-  }
-
-  private List<Coding> codeCodingList() {
-    return singletonList(
-        Coding.builder().system("http://HelloSystem.com").code("Hello Code").build());
+  public DiagnosticReport diagnosticReportWithDataAbsentReasons() {
+    return diagnosticReport()
+        .status(null)
+        ._status(DataAbsentReason.of(Reason.unsupported))
+        .issued(null)
+        ._issued(DataAbsentReason.of(Reason.unsupported));
   }
 
   private List<DiagnosticReport.Image> image() {
