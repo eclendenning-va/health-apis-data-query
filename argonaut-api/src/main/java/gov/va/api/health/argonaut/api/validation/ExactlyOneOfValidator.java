@@ -1,6 +1,6 @@
 package gov.va.api.health.argonaut.api.validation;
 
-public class ZeroOrOneOfValidator extends AbstractSetFieldCounter<ZeroOrOneOf> {
+public class ExactlyOneOfValidator extends AbstractSetFieldCounter<ExactlyOneOf> {
 
   @Override
   protected String[] fields() {
@@ -9,6 +9,6 @@ public class ZeroOrOneOfValidator extends AbstractSetFieldCounter<ZeroOrOneOf> {
 
   @Override
   protected boolean isNumberOfFieldsSetValid(int numberOfFieldsSet) {
-    return numberOfFieldsSet <= 1;
+    return numberOfFieldsSet == 1;
   }
 }
