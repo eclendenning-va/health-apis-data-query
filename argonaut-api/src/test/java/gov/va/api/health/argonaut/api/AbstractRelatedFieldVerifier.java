@@ -38,6 +38,11 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 
+/**
+ * This is a base for creating verifier tests for groups of related fields, such as ZeroOrOneOf. It
+ * provides a foundation for setting and unsetting groups of fields. Values are determined by type
+ * the type of field.
+ */
 @Slf4j
 public abstract class AbstractRelatedFieldVerifier<T> {
   /** A valid sample. We will mutate this throughout the test. */
@@ -53,6 +58,10 @@ public abstract class AbstractRelatedFieldVerifier<T> {
    */
   @Getter private final Map<String, Supplier<?>> stringTypes = createKnownStringTypes();
 
+  /**
+   * The fieldSelector predicate will be checked for each field declared in the sample's class. A
+   * true return value will include the field in the group, so setting and unsetting.
+   */
   protected AbstractRelatedFieldVerifier(T sample, Predicate<String> fieldSelector) {
     this.sample = sample;
     fields =
@@ -103,6 +112,7 @@ public abstract class AbstractRelatedFieldVerifier<T> {
     return suppliers;
   }
 
+  /** Validate and verify the given number of problems are reported. */
   @SneakyThrows
   protected void assertProblems(int count) {
     Set<ConstraintViolation<T>> problems =
@@ -127,6 +137,7 @@ public abstract class AbstractRelatedFieldVerifier<T> {
     return field;
   }
 
+  /** Set the field to an automatically deterined value based on it's type. */
   protected void setField(String name) {
     Field field = field(name);
     Supplier<?> supplier;
@@ -148,8 +159,9 @@ public abstract class AbstractRelatedFieldVerifier<T> {
     setField(name, supplier.get());
   }
 
+  /** Set the field to given value. */
   @SneakyThrows
-  private void setField(String field, Object value) {
+  protected void setField(String field, Object value) {
     log.trace("Setting {} to {}", field, value);
     setter(field).invoke(sample, value);
   }
@@ -175,9 +187,15 @@ public abstract class AbstractRelatedFieldVerifier<T> {
     return setter;
   }
 
+  /** Unset all related fields. */
   protected void unsetFields() {
     fields.forEach(field -> setField(field, null));
   }
 
+  /**
+   * Implementations should verify the combinations of setting and unsetting fields. Use {@link
+   * #unsetFields()}, {@link #setField(String)}, and/or {@link #setField(String, Object)} along with
+   * {@link #assertProblems(int)} to check classes.
+   */
   public abstract void verify();
 }
