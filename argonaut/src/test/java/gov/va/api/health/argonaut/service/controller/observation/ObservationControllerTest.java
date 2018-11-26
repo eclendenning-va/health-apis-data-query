@@ -140,6 +140,74 @@ public class ObservationControllerTest {
   }
 
   @Test
+  public void searchByPatient() {
+    assertSearch(
+        () -> controller.searchByPatient("me", 1, 10, servletRequest),
+        Parameters.builder().add("patient", "me").add("page", 1).add("_count", 10).build());
+  }
+
+  @Test
+  public void searchByPatientAndCategoryDateRange() {
+    assertSearch(
+        () ->
+            controller.searchByPatientAndCategory(
+                "me",
+                "laboratory,vital-signs",
+                new String[] {"2005", "2006"},
+                1,
+                10,
+                servletRequest),
+        Parameters.builder()
+            .add("patient", "me")
+            .add("category", "laboratory,vital-signs")
+            .addAll("date", "2005", "2006")
+            .add("page", 1)
+            .add("_count", 10)
+            .build());
+  }
+
+  @Test
+  public void searchByPatientAndCategoryNoDate() {
+    assertSearch(
+        () ->
+            controller.searchByPatientAndCategory(
+                "me", "laboratory,vital-signs", null, 1, 10, servletRequest),
+        Parameters.builder()
+            .add("patient", "me")
+            .add("category", "laboratory,vital-signs")
+            .add("page", 1)
+            .add("_count", 10)
+            .build());
+  }
+
+  @Test
+  public void searchByPatientAndCategoryOneDate() {
+    assertSearch(
+        () ->
+            controller.searchByPatientAndCategory(
+                "me", "laboratory,vital-signs", new String[] {"2005"}, 1, 10, servletRequest),
+        Parameters.builder()
+            .add("patient", "me")
+            .add("category", "laboratory,vital-signs")
+            .addAll("date", "2005")
+            .add("page", 1)
+            .add("_count", 10)
+            .build());
+  }
+
+  @Test
+  public void searchByPatientAndCode() {
+    assertSearch(
+        () -> controller.searchByPatientAndCode("me", "123,456", 1, 10, servletRequest),
+        Parameters.builder()
+            .add("patient", "me")
+            .add("code", "123,456")
+            .add("page", 1)
+            .add("_count", 10)
+            .build());
+  }
+
+  @Test
   @SneakyThrows
   public void validateAcceptsValidBundle() {
     Observation resource =
