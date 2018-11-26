@@ -4,6 +4,7 @@ import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import gov.va.api.health.argonaut.api.datatypes.Address;
+import gov.va.api.health.argonaut.api.datatypes.Age;
 import gov.va.api.health.argonaut.api.datatypes.Attachment;
 import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
 import gov.va.api.health.argonaut.api.datatypes.Coding;
@@ -102,6 +103,7 @@ public class ZeroOrOneVerifier<T> {
     suppliers.put(ContactPoint.class, dataTypes::contactPoint);
     suppliers.put(Reference.class, dataTypes::reference);
     suppliers.put(SampledData.class, dataTypes::sampledData);
+    suppliers.put(Age.class, dataTypes::age);
     return suppliers;
   }
 
