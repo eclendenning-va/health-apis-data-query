@@ -41,6 +41,14 @@ public class JacksonConfigTest {
     assertThat(supplier.get()).isNotNull();
   }
 
+  @Test
+  @SneakyThrows
+  public void trimsWhiteSpace() {
+    CandyYaml in = CandyYaml.builder().ya("   spaces    ").ml(1).build();
+    ObjectMapper mapper = JacksonConfig.createMapper();
+    assertThat(mapper.writeValueAsString(in)).isEqualTo("{\"ya\":\"spaces\",\"ml\":1}");
+  }
+
   @SuppressWarnings("WeakerAccess")
   @Value
   @Builder

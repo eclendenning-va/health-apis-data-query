@@ -37,13 +37,17 @@ public class Parameters {
 
   /** Add a repeated key/value entry, where multiple values are associated to the given key. */
   public Parameters addAll(String key, List<String> values) {
-    params.addAll(key, values);
+    if (values != null && !values.isEmpty()) {
+      params.addAll(key, values);
+    }
     return this;
   }
 
   /** Add a repeated key/value entry, where multiple values are associated to the given key. */
   public Parameters addAll(String key, String... values) {
-    params.addAll(key, Arrays.asList(values));
+    if (values != null && values.length > 0) {
+      params.addAll(key, Arrays.asList(values));
+    }
     return this;
   }
 
