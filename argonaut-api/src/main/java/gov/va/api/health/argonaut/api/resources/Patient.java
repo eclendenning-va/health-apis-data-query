@@ -21,8 +21,8 @@ import gov.va.api.health.argonaut.api.elements.Extension;
 import gov.va.api.health.argonaut.api.elements.Meta;
 import gov.va.api.health.argonaut.api.elements.Narrative;
 import gov.va.api.health.argonaut.api.elements.Reference;
-import gov.va.api.health.argonaut.api.validation.RelatedFields;
 import gov.va.api.health.argonaut.api.validation.ZeroOrOneOf;
+import gov.va.api.health.argonaut.api.validation.ZeroOrOneOfs;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import java.util.Optional;
@@ -48,7 +48,7 @@ import lombok.NoArgsConstructor;
 @Schema(
   description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-patient.html"
 )
-@RelatedFields({
+@ZeroOrOneOfs({
   @ZeroOrOneOf(
     fields = {"deceasedBoolean", "deceasedDateTime"},
     message = "Only one deceased value may be specified"

@@ -70,6 +70,7 @@ public class DiagnosticReport implements Resource {
   @Valid List<Identifier> identifier;
 
   @NotNull Code status;
+
   @NotNull @Valid CodeableConcept category;
   @NotNull @Valid CodeableConcept code;
   @NotNull @Valid Reference subject;
@@ -82,7 +83,7 @@ public class DiagnosticReport implements Resource {
   @Valid Period effectivePeriod;
 
   @Pattern(regexp = Fhir.INSTANT)
-  @NotNull
+  @NotBlank
   String issued;
 
   @NotNull @Valid Reference performer;

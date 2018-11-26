@@ -18,7 +18,8 @@ import gov.va.api.health.argonaut.api.elements.Extension;
 import gov.va.api.health.argonaut.api.elements.Meta;
 import gov.va.api.health.argonaut.api.elements.Narrative;
 import gov.va.api.health.argonaut.api.elements.Reference;
-import gov.va.api.health.argonaut.api.validation.ZeroOrOneOf;
+import gov.va.api.health.argonaut.api.validation.ExactlyOneOf;
+import gov.va.api.health.argonaut.api.validation.ExactlyOneOfs;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import javax.validation.Valid;
@@ -40,8 +41,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @Schema(
-    description =
-        "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-immunization.html")
+  description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-immunization.html"
+)
+@ExactlyOneOfs({
+  @ExactlyOneOf(fields = {"status", "_status"}),
+  @ExactlyOneOf(fields = {"reported", "_reported"})
+})
 public class Immunization implements Resource {
   @Pattern(regexp = Fhir.ID)
   String id;
@@ -60,7 +65,8 @@ public class Immunization implements Resource {
   @Valid List<Extension> extension;
   @Valid List<Extension> modifierExtension;
   @Valid List<Identifier> identifier;
-  @NotNull @Valid Status status;
+  @Valid Status status;
+  @Valid Extension _status;
 
   @NotBlank
   @Pattern(regexp = Fhir.DATETIME)
@@ -70,7 +76,7 @@ public class Immunization implements Resource {
   @NotNull @Valid Reference patient;
   @NotNull Boolean wasNotGiven;
   Boolean reported;
-  Extension _reported;
+  @Valid Extension _reported;
   @Valid Reference performer;
   @Valid Reference requester;
   @Valid Reference encounter;

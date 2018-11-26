@@ -1,0 +1,9 @@
+<!DOCTYPE suppressions PUBLIC
+  "-//Checkstyle//DTD SuppressionFilter Configuration 1.2//EN"
+  "https://checkstyle.org/dtds/suppressions_1_2.dtd">
+<suppressions>
+  <!--
+    Immunization report _status and _reported are data absent reason fields.
+  -->
+  <suppress checks="MemberName" files=".*/Immunization.java" message="Member name '(_status|_reported)'"/>
+</suppressions>

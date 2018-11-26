@@ -1,5 +1,6 @@
 package gov.va.health.api.sentinel;
 
+import gov.va.api.health.argonaut.api.resources.DiagnosticReport;
 import gov.va.api.health.argonaut.api.resources.Immunization;
 import gov.va.api.health.argonaut.api.resources.Medication;
 import gov.va.api.health.argonaut.api.resources.Observation;
@@ -39,6 +40,9 @@ public class ArgonautReadAndSearchIT {
   public static List<Object[]> parameters() {
     TestIds ids = IdRegistrar.of(Sentinel.get().system()).registeredIds();
     return Arrays.asList(
+        // DiagnosticReport
+        expect(200, DiagnosticReport.class, "/api/DiagnosticReport/{id}", ids.diagnosticReport()),
+        expect(404, OperationOutcome.class, "/api/DiagnosticReport/{id}", ids.unknown()),
         // Immunization
         expect(200, Immunization.class, "/api/Immunization/{id}", ids.immunization()),
         expect(404, OperationOutcome.class, "/api/Immunization/{id}", ids.unknown()),

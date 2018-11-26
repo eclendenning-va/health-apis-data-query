@@ -179,8 +179,6 @@ public class ObservationController {
         servletRequest);
   }
 
-  // TODO CUSTOMER CATEGORY VALIDATION
-
   /** Hey, this is a validate endpoint. It validates. */
   @PostMapping(
     value = "/$validate",

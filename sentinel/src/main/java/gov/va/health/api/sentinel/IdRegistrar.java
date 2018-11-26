@@ -54,12 +54,14 @@ class IdRegistrar {
 
   private TestIds registerCdwIds() {
     TestIds cdwIds = system().cdwIds();
+    ResourceIdentity diagnosticReport = id("DIAGNOSTIC_REPORT", cdwIds.diagnosticReport());
     ResourceIdentity immunization = id("IMMUNIZATION", cdwIds.immunization());
     ResourceIdentity medication = id("MEDICATION", cdwIds.medication());
     ResourceIdentity observation = id("OBSERVATION", cdwIds.observation());
     ResourceIdentity patient = id("PATIENT", cdwIds.patient());
 
-    List<ResourceIdentity> identities = Arrays.asList(patient, medication, observation);
+    List<ResourceIdentity> identities =
+        Arrays.asList(diagnosticReport, immunization, patient, medication, observation);
     log.info("Registering {}", identities);
     List<Registration> registrations =
         system()
@@ -71,6 +73,7 @@ class IdRegistrar {
     TestIds publicIds =
         cdwIds
             .toBuilder()
+            .diagnosticReport(findUuid(registrations, diagnosticReport))
             .immunization(findUuid(registrations, immunization))
             .medication(findUuid(registrations, medication))
             .observation(findUuid(registrations, observation))

@@ -11,14 +11,29 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.junit.Test;
 
-public class ZeroOrOneOfValidatorTest {
+public class ExactlyOneOfValidatorTest {
+
+  @Test
+  public void exactlyOneOfDoesNotFindProblemsForProperlyCreatedObjects() {
+    assertThat(violationsOf(new SingleGroup(1, null))).isEmpty();
+    assertThat(violationsOf(new SingleGroup(null, 1))).isEmpty();
+  }
+
+  @Test
+  public void exactlyOneOfFindsProblemsWhenConstraintsAreViolated() {
+    assertThat(violationsOf(new SingleGroup(1, 1))).isNotEmpty();
+    assertThat(violationsOf(new SingleGroup(null, null))).isNotEmpty();
+  }
+
+  @Test(expected = ValidationException.class)
+  public void exactlyOneWithUnknownFieldThrowsException() {
+    violationsOf(new PoorlyDefinedGroup(1, null));
+  }
 
   @Test
   public void relatedFieldsDoesNotFindProblemsForProperlyCreatedObjects() {
     assertThat(violationsOf(new MultipleGroups("a", null, "b", null))).isEmpty();
-    assertThat(violationsOf(new MultipleGroups(null, "a", null, null))).isEmpty();
-    assertThat(violationsOf(new MultipleGroups(null, null, "b", null))).isEmpty();
-    assertThat(violationsOf(new MultipleGroups(null, null, null, null))).isEmpty();
+    assertThat(violationsOf(new MultipleGroups(null, "a", null, "b"))).isEmpty();
   }
 
   @Test
@@ -26,6 +41,9 @@ public class ZeroOrOneOfValidatorTest {
     assertThat(violationsOf(new MultipleGroups("a", "a", "b", null))).isNotEmpty();
     assertThat(violationsOf(new MultipleGroups("a", "a", "b", "b"))).isNotEmpty();
     assertThat(violationsOf(new MultipleGroups("a", null, "b", "b"))).isNotEmpty();
+    assertThat(violationsOf(new MultipleGroups(null, null, null, null))).isNotEmpty();
+    assertThat(violationsOf(new MultipleGroups(null, "a", null, null))).isNotEmpty();
+    assertThat(violationsOf(new MultipleGroups(null, null, "b", null))).isNotEmpty();
   }
 
   <T> Set<ConstraintViolation<T>> violationsOf(T object) {
@@ -33,26 +51,9 @@ public class ZeroOrOneOfValidatorTest {
     return factory.getValidator().validate(object);
   }
 
-  @Test
-  public void zeroOrOneOfDoesNotFindProblemsForProperlyCreatedObjects() {
-    assertThat(violationsOf(new SingleGroup(1, null))).isEmpty();
-    assertThat(violationsOf(new SingleGroup(null, 1))).isEmpty();
-    assertThat(violationsOf(new SingleGroup(null, null))).isEmpty();
-  }
-
-  @Test
-  public void zeroOrOneOfFindsProblemsWhenConstraintsAreViolated() {
-    assertThat(violationsOf(new SingleGroup(1, 1))).isNotEmpty();
-  }
-
-  @Test(expected = ValidationException.class)
-  public void zeroOrOneWithUnknownFieldThrowsException() {
-    violationsOf(new PoorlyDefinedGroup(1, null));
-  }
-
-  @ZeroOrOneOfs({
-    @ZeroOrOneOf(fields = {"a1", "a2"}),
-    @ZeroOrOneOf(fields = {"b1", "b2"}),
+  @ExactlyOneOfs({
+    @ExactlyOneOf(fields = {"a1", "a2"}),
+    @ExactlyOneOf(fields = {"b1", "b2"}),
   })
   @Data
   @AllArgsConstructor
@@ -63,7 +64,7 @@ public class ZeroOrOneOfValidatorTest {
     String b2;
   }
 
-  @ZeroOrOneOf(fields = {"a1", "a2"})
+  @ExactlyOneOf(fields = {"a1", "a2"})
   @Data
   @AllArgsConstructor
   private class SingleGroup {
@@ -71,7 +72,7 @@ public class ZeroOrOneOfValidatorTest {
     Integer a2;
   }
 
-  @ZeroOrOneOf(fields = {"x1", "x2"})
+  @ExactlyOneOf(fields = {"x1", "x2"})
   @Data
   @AllArgsConstructor
   private class PoorlyDefinedGroup {

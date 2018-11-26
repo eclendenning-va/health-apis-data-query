@@ -19,8 +19,8 @@ import gov.va.api.health.argonaut.api.elements.Extension;
 import gov.va.api.health.argonaut.api.elements.Meta;
 import gov.va.api.health.argonaut.api.elements.Narrative;
 import gov.va.api.health.argonaut.api.elements.Reference;
-import gov.va.api.health.argonaut.api.validation.RelatedFields;
 import gov.va.api.health.argonaut.api.validation.ZeroOrOneOf;
+import gov.va.api.health.argonaut.api.validation.ZeroOrOneOfs;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import javax.validation.Valid;
@@ -43,7 +43,7 @@ import lombok.NoArgsConstructor;
 @Schema(
   description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-condition.html"
 )
-@RelatedFields({
+@ZeroOrOneOfs({
   @ZeroOrOneOf(
     fields = {"onsetDateTime", "onsetAge", "onsetPeriod", "onsetRange", "onsetString"},
     message = "Only one onset value may be specified"
@@ -117,36 +117,23 @@ public class Condition implements Resource {
   @Valid List<CodeableConcept> bodySite;
   String notes;
 
-  @Data
-  @Builder
-  @NoArgsConstructor(access = AccessLevel.PRIVATE)
-  @AllArgsConstructor
-  @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-  public static class Evidence implements BackboneElement {
-    @Pattern(regexp = Fhir.ID)
-    String id;
-
-    @Valid List<Extension> modifierExtension;
-    @Valid List<Extension> extension;
-
-    @Valid CodeableConcept code;
-    @Valid List<Reference> detail;
+  @SuppressWarnings("unused")
+  public enum ClinicalStatusCode {
+    active,
+    relapse,
+    remission,
+    resolved
   }
 
-  @Data
-  @Builder
-  @NoArgsConstructor(access = AccessLevel.PRIVATE)
-  @AllArgsConstructor
-  @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-  public static class Stage implements BackboneElement {
-    @Pattern(regexp = Fhir.ID)
-    String id;
-
-    @Valid List<Extension> modifierExtension;
-    @Valid List<Extension> extension;
-
-    @Valid CodeableConcept summary;
-    @Valid List<Reference> assessment;
+  @SuppressWarnings("unused")
+  public enum VerificationStatusCode {
+    provisional,
+    differential,
+    confirmed,
+    refuted,
+    @JsonProperty("entered-in-error")
+    entered_in_error,
+    unknown
   }
 
   @Data
@@ -194,22 +181,35 @@ public class Condition implements Resource {
     }
   }
 
-  @SuppressWarnings("unused")
-  public enum ClinicalStatusCode {
-    active,
-    relapse,
-    remission,
-    resolved
+  @Data
+  @Builder
+  @NoArgsConstructor(access = AccessLevel.PRIVATE)
+  @AllArgsConstructor
+  @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+  public static class Evidence implements BackboneElement {
+    @Pattern(regexp = Fhir.ID)
+    String id;
+
+    @Valid List<Extension> modifierExtension;
+    @Valid List<Extension> extension;
+
+    @Valid CodeableConcept code;
+    @Valid List<Reference> detail;
   }
 
-  @SuppressWarnings("unused")
-  public enum VerificationStatusCode {
-    provisional,
-    differential,
-    confirmed,
-    refuted,
-    @JsonProperty("entered-in-error")
-    entered_in_error,
-    unknown
+  @Data
+  @Builder
+  @NoArgsConstructor(access = AccessLevel.PRIVATE)
+  @AllArgsConstructor
+  @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+  public static class Stage implements BackboneElement {
+    @Pattern(regexp = Fhir.ID)
+    String id;
+
+    @Valid List<Extension> modifierExtension;
+    @Valid List<Extension> extension;
+
+    @Valid CodeableConcept summary;
+    @Valid List<Reference> assessment;
   }
 }

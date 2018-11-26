@@ -2,7 +2,7 @@ package gov.va.api.health.argonaut.api.resources;
 
 import static gov.va.api.health.argonaut.api.RoundTrip.assertRoundTrip;
 
-import gov.va.api.health.argonaut.api.ZeroOrOneVerifier;
+import gov.va.api.health.argonaut.api.ZeroOrOneOfVerifier;
 import gov.va.api.health.argonaut.api.bundle.AbstractBundle.BundleType;
 import gov.va.api.health.argonaut.api.bundle.BundleLink;
 import gov.va.api.health.argonaut.api.bundle.BundleLink.LinkRelation;
@@ -59,8 +59,8 @@ public class PatientTest {
 
   @Test
   public void relatedGroups() {
-    ZeroOrOneVerifier.builder().sample(data.patient()).fieldPrefix("deceased").build().verify();
-    ZeroOrOneVerifier.builder()
+    ZeroOrOneOfVerifier.builder().sample(data.patient()).fieldPrefix("deceased").build().verify();
+    ZeroOrOneOfVerifier.builder()
         .sample(data.patient())
         .fieldPrefix("multipleBirth")
         .build()

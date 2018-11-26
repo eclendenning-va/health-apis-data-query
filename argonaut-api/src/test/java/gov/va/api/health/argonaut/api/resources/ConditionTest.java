@@ -2,7 +2,7 @@ package gov.va.api.health.argonaut.api.resources;
 
 import static gov.va.api.health.argonaut.api.RoundTrip.assertRoundTrip;
 
-import gov.va.api.health.argonaut.api.ZeroOrOneVerifier;
+import gov.va.api.health.argonaut.api.ZeroOrOneOfVerifier;
 import gov.va.api.health.argonaut.api.bundle.AbstractBundle;
 import gov.va.api.health.argonaut.api.bundle.BundleLink;
 import gov.va.api.health.argonaut.api.resources.Condition.Bundle;
@@ -57,7 +57,11 @@ public class ConditionTest {
 
   @Test
   public void relatedGroups() {
-    ZeroOrOneVerifier.builder().sample(data.condition()).fieldPrefix("onset").build().verify();
-    ZeroOrOneVerifier.builder().sample(data.condition()).fieldPrefix("abatement").build().verify();
+    ZeroOrOneOfVerifier.builder().sample(data.condition()).fieldPrefix("onset").build().verify();
+    ZeroOrOneOfVerifier.builder()
+        .sample(data.condition())
+        .fieldPrefix("abatement")
+        .build()
+        .verify();
   }
 }
