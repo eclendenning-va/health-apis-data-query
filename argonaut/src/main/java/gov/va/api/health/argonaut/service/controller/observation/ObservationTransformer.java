@@ -41,7 +41,6 @@ public class ObservationTransformer implements ObservationController.Transformer
 
   @Override
   public Observation apply(CdwObservation cdw) {
-    // TODO DO NOT MAP SPECIMEN
     /*
      * Specimen reference is omitted since we do not support the a specimen resource and
      * do not want dead links
