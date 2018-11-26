@@ -2,8 +2,6 @@ package gov.va.api.health.argonaut.api.samples;
 
 import static java.util.Collections.singletonList;
 
-import gov.va.api.health.argonaut.api.DataAbsentReason;
-import gov.va.api.health.argonaut.api.DataAbsentReason.Reason;
 import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
 import gov.va.api.health.argonaut.api.datatypes.Coding;
 import gov.va.api.health.argonaut.api.resources.DiagnosticReport;
@@ -70,14 +68,6 @@ public class SampleDiagnosticReports {
         .codedDiagnosis(Arrays.asList(codeableConcept(), codeableConcept()))
         .presentedForm(Arrays.asList(attachment(), attachment()))
         .build();
-  }
-
-  public DiagnosticReport diagnosticReportWithDataAbsentReasons() {
-    return diagnosticReport()
-        .status(null)
-        ._status(DataAbsentReason.of(Reason.unsupported))
-        .issued(null)
-        ._issued(DataAbsentReason.of(Reason.unsupported));
   }
 
   private List<DiagnosticReport.Image> image() {

@@ -19,39 +19,38 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-
 @RestController
 @RequestMapping(
-        value = {"/api/DiagnosticReport"},
-        produces = {"application/json", "application/json+fhir", "application/fhir+json"}
+  value = {"/api/DiagnosticReport"},
+  produces = {"application/json", "application/json+fhir", "application/fhir+json"}
 )
-@AllArgsConstructor(onConstructor = @_({@Autowired}))
+@AllArgsConstructor(onConstructor = @__({@Autowired}))
 @Slf4j
 public class DiagnosticReportController {
-    private Transformer transformer;
-    private MrAndersonClient mrAndersonClient;
+  private Transformer transformer;
+  private MrAndersonClient mrAndersonClient;
 
-    /** Read by id. */
-    @GetMapping(value = {"/{publicId}"})
-    public DiagnosticReport read(@PathVariable("publicId") String publicId) {
-        return transformer.apply(
-                firstPayloadItem(
-                        hasPayload(
-                                search(Parameters.forIdentity(publicId))
-                                    .getDiagnosticReports().getDiagnosticReport()
-                        )));
-    }
+  /** Read by id. */
+  @GetMapping(value = {"/{publicId}"})
+  public DiagnosticReport read(@PathVariable("publicId") String publicId) {
+    return transformer.apply(
+        firstPayloadItem(
+            hasPayload(
+                search(Parameters.forIdentity(publicId))
+                    .getDiagnosticReports()
+                    .getDiagnosticReport())));
+  }
 
-    private CdwDiagnosticReport102Root search(MultiValueMap<String, String> params) {
-        Query<CdwDiagnosticReport102Root> query =
-                Query.forType(CdwDiagnosticReport102Root.class)
-                        .profile(Query.Profile.ARGONAUT)
-                        .resource("DiagnosticReport")
-                        .version("1.02")
-                        .parameters(params)
-                        .build();
-        return mrAndersonClient.search(query);
-    }
+  private CdwDiagnosticReport102Root search(MultiValueMap<String, String> params) {
+    Query<CdwDiagnosticReport102Root> query =
+        Query.forType(CdwDiagnosticReport102Root.class)
+            .profile(Query.Profile.ARGONAUT)
+            .resource("DiagnosticReport")
+            .version("1.02")
+            .parameters(params)
+            .build();
+    return mrAndersonClient.search(query);
+  }
 
-    public interface Transformer extends Function<CdwDiagnosticReport, DiagnosticReport> {}
+  public interface Transformer extends Function<CdwDiagnosticReport, DiagnosticReport> {}
 }

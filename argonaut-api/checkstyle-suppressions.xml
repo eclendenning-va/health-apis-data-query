@@ -3,7 +3,7 @@
   "https://checkstyle.org/dtds/suppressions_1_2.dtd">
 <suppressions>
   <!--
-    Diagnostic report _status and _issued are data absent reason fields.
+    Example: Diagnostic report _status and _issued are data absent reason fields.
+    <suppress checks="MemberName" files=".*/DiagnosticReport.java" message="Member name '(_status|_issued)'"/>
   -->
-  <suppress checks="MemberName" files=".*/DiagnosticReport.java" message="Member name '(_status|_issued)'"/>
 </suppressions>
