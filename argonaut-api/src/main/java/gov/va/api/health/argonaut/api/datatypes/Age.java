@@ -19,8 +19,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-@Schema(description = "http://hl7.org/fhir/DSTU2/datatypes.html#Quantity")
-public class Quantity implements Element {
+@Schema(description = "http://hl7.org/fhir/DSTU2/datatypes.html#Age")
+public class Age implements Element {
   @Pattern(regexp = Fhir.ID)
   String id;
 
@@ -32,9 +32,6 @@ public class Quantity implements Element {
   String comparator;
 
   String unit;
-
-  @Pattern(regexp = Fhir.URI)
-  String system;
 
   @Pattern(regexp = Fhir.CODE)
   String code;

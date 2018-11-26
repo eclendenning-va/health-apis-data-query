@@ -77,10 +77,11 @@ import org.apache.commons.lang3.StringUtils;
   )
 })
 public class Observation implements Resource {
+  @NotBlank String resourceType;
+
   @Pattern(regexp = Fhir.ID)
   String id;
 
-  @NotBlank String resourceType;
   @Valid Meta meta;
 
   @Pattern(regexp = Fhir.URI)
@@ -94,7 +95,7 @@ public class Observation implements Resource {
   @Valid List<Extension> extension;
   @Valid List<Extension> modifierExtension;
   @Valid List<Identifier> identifier;
-  @NotNull Code status;
+  @NotNull Observation.Status status;
   @Valid @NotNull CodeableConcept category;
   @Valid @NotNull CodeableConcept code;
   @Valid @NotNull Reference subject;
@@ -123,7 +124,6 @@ public class Observation implements Resource {
   String valueDateTime;
 
   @Valid Period valuePeriod;
-
   @Valid CodeableConcept dataAbsentReason;
   @Valid CodeableConcept interpretation;
   String comments;
@@ -146,7 +146,7 @@ public class Observation implements Resource {
   }
 
   @SuppressWarnings("unused")
-  public enum Code {
+  public enum Status {
     registered,
     preliminary,
     amended,

@@ -1,18 +1,25 @@
 package gov.va.api.health.autoconfig.configuration;
 
+import static org.apache.commons.lang3.StringUtils.trim;
+
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import com.fasterxml.jackson.databind.introspect.AnnotatedClass;
 import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.ser.std.StdScalarSerializer;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -80,6 +87,7 @@ public class JacksonConfig {
     return mapper
         .registerModule(new Jdk8Module())
         .registerModule(new JavaTimeModule())
+        .registerModule(new StringTrimModule())
         .setAnnotationIntrospector(new LombokAnnotationIntrospector())
         .enable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
         .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
@@ -144,6 +152,21 @@ public class JacksonConfig {
       } catch (NoSuchMethodException e) {
         return false;
       }
+    }
+  }
+
+  /** A module that adds a whitespace trimming String serializer. */
+  private static class StringTrimModule extends SimpleModule {
+    StringTrimModule() {
+      addSerializer(
+          String.class,
+          new StdScalarSerializer<String>(String.class, false) {
+            @Override
+            public void serialize(String value, JsonGenerator gen, SerializerProvider provider)
+                throws IOException {
+              gen.writeString(trim((String) value));
+            }
+          });
     }
   }
 }

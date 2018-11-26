@@ -5,10 +5,10 @@ import static java.util.Collections.singletonList;
 import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
 import gov.va.api.health.argonaut.api.datatypes.Coding;
 import gov.va.api.health.argonaut.api.resources.Observation;
-import gov.va.api.health.argonaut.api.resources.Observation.Code;
 import gov.va.api.health.argonaut.api.resources.Observation.ObservationComponent;
 import gov.va.api.health.argonaut.api.resources.Observation.ObservationReferenceRange;
 import gov.va.api.health.argonaut.api.resources.Observation.ObservationRelated;
+import gov.va.api.health.argonaut.api.resources.Observation.Status;
 import gov.va.api.health.argonaut.api.resources.Observation.Type;
 import java.util.Arrays;
 import lombok.NoArgsConstructor;
@@ -61,7 +61,7 @@ public class SampleObservations {
         .modifierExtension(
             Arrays.asList(extension(), extensionWithQuantity(), extensionWithRatio()))
         .identifier(singletonList(identifier()))
-        .status(Code.registered)
+        .status(Status.registered)
         .category(category())
         .code(codeableConcept())
         .subject(reference())
