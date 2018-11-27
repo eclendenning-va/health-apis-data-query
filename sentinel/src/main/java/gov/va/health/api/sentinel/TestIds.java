@@ -10,6 +10,7 @@ import lombok.Value;
 @Value
 @Builder(toBuilder = true)
 public class TestIds {
+  @NonNull String allergyIntolerance;
   @NonNull String patient;
   @NonNull String medication;
   @NonNull String diagnosticReport;
