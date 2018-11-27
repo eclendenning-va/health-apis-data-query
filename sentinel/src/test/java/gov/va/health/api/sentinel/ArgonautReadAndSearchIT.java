@@ -49,6 +49,21 @@ public class ArgonautReadAndSearchIT {
             "/api/AllergyIntolerance/{id}",
             ids.allergyIntolerance()),
         expect(404, OperationOutcome.class, "/api/AllergyIntolerance/{id}", ids.unknown()),
+        expect(
+            200,
+            AllergyIntolerance.Bundle.class,
+            "/api/AllergyIntolerance?_id={id}",
+            ids.allergyIntolerance()),
+        expect(
+            200,
+            AllergyIntolerance.Bundle.class,
+            "/api/AllergyIntolerance?identifier={id}",
+            ids.allergyIntolerance()),
+        expect(
+            200,
+            AllergyIntolerance.Bundle.class,
+            "/api/AllergyIntolerance?patient={patient}",
+            ids.patient()),
         // Condition
         expect(200, Condition.class, "/api/Condition/{id}", ids.condition()),
         expect(404, OperationOutcome.class, "/api/Condition/{id}", ids.unknown()),
@@ -199,9 +214,7 @@ public class ArgonautReadAndSearchIT {
             Patient.Bundle.class,
             "/api/Patient?name={name}&gender={gender}",
             ids.pii().name(),
-            ids.pii().gender())
-        //
-        );
+            ids.pii().gender()));
   }
 
   private TestClient argonaut() {
