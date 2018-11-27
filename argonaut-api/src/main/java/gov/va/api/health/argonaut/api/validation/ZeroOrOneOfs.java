@@ -33,7 +33,7 @@ import java.lang.annotation.Target;
 @Target({TYPE, ANNOTATION_TYPE})
 @Retention(RUNTIME)
 @Documented
-public @interface RelatedFields {
+public @interface ZeroOrOneOfs {
   /** Collections of related field annotions. */
   ZeroOrOneOf[] value();
 }

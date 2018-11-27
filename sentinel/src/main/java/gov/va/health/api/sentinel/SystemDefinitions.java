@@ -1,5 +1,6 @@
 package gov.va.health.api.sentinel;
 
+import gov.va.health.api.sentinel.TestIds.DiagnosticReports;
 import gov.va.health.api.sentinel.TestIds.Observations;
 import gov.va.health.api.sentinel.TestIds.PersonallyIdentifiableInformation;
 import gov.va.health.api.sentinel.TestIds.Range;
@@ -20,10 +21,12 @@ public class SystemDefinitions {
               TestIds.builder()
                   .allergyIntolerance("1000001782544")
                   .unknown("5555555555555")
+                  .diagnosticReport("1000000031384:L")
                   .patient("185601V825290")
                   .medication("212846")
                   .observation("1201051417263:V")
                   .condition("1400007575530:P")
+                  .immunization("1000000043979")
                   .pii(
                       PersonallyIdentifiableInformation.builder()
                           .gender("male")
@@ -38,6 +41,14 @@ public class SystemDefinitions {
                           .loinc2("777-3")
                           .onDate("2015-04-15")
                           .dateRange(Range.allTime())
+                          .build())
+                  .diagnosticReports(
+                      DiagnosticReports.builder()
+                          .loinc1("10000-8")
+                          .loinc2("99999-9")
+                          .onDate("eq1970-01-01")
+                          .fromDate("gt1970-01-01")
+                          .toDate("lt2038-01-01")
                           .build())
                   .build())
           .build();

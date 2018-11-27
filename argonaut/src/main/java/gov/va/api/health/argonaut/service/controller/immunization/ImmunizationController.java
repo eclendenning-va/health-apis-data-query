@@ -1,9 +1,9 @@
-package gov.va.api.health.argonaut.service.controller.condition;
+package gov.va.api.health.argonaut.service.controller.immunization;
 
 import static gov.va.api.health.argonaut.service.controller.Transformers.firstPayloadItem;
 import static gov.va.api.health.argonaut.service.controller.Transformers.hasPayload;
 
-import gov.va.api.health.argonaut.api.resources.Condition;
+import gov.va.api.health.argonaut.api.resources.Immunization;
 import gov.va.api.health.argonaut.api.resources.OperationOutcome;
 import gov.va.api.health.argonaut.service.controller.Bundler;
 import gov.va.api.health.argonaut.service.controller.Bundler.BundleContext;
@@ -12,7 +12,7 @@ import gov.va.api.health.argonaut.service.controller.Parameters;
 import gov.va.api.health.argonaut.service.controller.Validator;
 import gov.va.api.health.argonaut.service.mranderson.client.MrAndersonClient;
 import gov.va.api.health.argonaut.service.mranderson.client.Query;
-import gov.va.dvp.cdw.xsd.model.CdwCondition103Root;
+import gov.va.dvp.cdw.xsd.model.CdwImmunization103Root;
 import java.util.Collections;
 import java.util.function.Function;
 import javax.servlet.http.HttpServletRequest;
@@ -29,36 +29,65 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Request Mappings for the Argonaut Condition Profile, see
- * https://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-condition.html for
+ * Request Mappings for the Argonaut Immunization Profile, see
+ * https://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-Immunization.html for
  * implementation details.
  */
 @SuppressWarnings("WeakerAccess")
 @RestController
 @RequestMapping(
-  value = {"/api/Condition"},
+  value = {"/api/Immunization"},
   produces = {"application/json", "application/json+fhir", "application/fhir+json"}
 )
 @AllArgsConstructor(onConstructor = @__({@Autowired}))
 @Slf4j
-public class ConditionController {
+public class ImmunizationController {
+
   private Transformer transformer;
   private MrAndersonClient mrAndersonClient;
+  private Bundler bundler;
+
+  private Immunization.Bundle bundle(
+      MultiValueMap<String, String> parameters,
+      int page,
+      int count,
+      HttpServletRequest servletRequest) {
+
+    CdwImmunization103Root root = search(parameters);
+    LinkConfig linkConfig =
+        LinkConfig.builder()
+            .path(servletRequest.getRequestURI())
+            .queryParams(parameters)
+            .page(page)
+            .recordsPerPage(count)
+            .totalRecords(root.getRecordCount().intValue())
+            .build();
+    return bundler.bundle(
+        BundleContext.of(
+            linkConfig,
+            root.getImmunizations() == null
+                ? Collections.emptyList()
+                : root.getImmunizations().getImmunization(),
+            transformer,
+            Immunization.Entry::new,
+            Immunization.Bundle::new));
+  }
 
   /** Read by id. */
   @GetMapping(value = {"/{publicId}"})
-  public Condition read(@PathVariable("publicId") String publicId) {
+  public Immunization read(@PathVariable("publicId") String publicId) {
 
     return transformer.apply(
         firstPayloadItem(
-            hasPayload(search(Parameters.forIdentity(publicId)).getConditions().getCondition())));
+            hasPayload(
+                search(Parameters.forIdentity(publicId)).getImmunizations().getImmunization())));
   }
 
-  private CdwCondition103Root search(MultiValueMap<String, String> params) {
-    Query<CdwCondition103Root> query =
-        Query.forType(CdwCondition103Root.class)
+  private CdwImmunization103Root search(MultiValueMap<String, String> params) {
+    Query<CdwImmunization103Root> query =
+        Query.forType(CdwImmunization103Root.class)
             .profile(Query.Profile.ARGONAUT)
-            .resource("Condition")
+            .resource("Immunization")
             .version("1.03")
             .parameters(params)
             .build();
@@ -67,7 +96,7 @@ public class ConditionController {
 
   /** Search by _id. */
   @GetMapping(params = {"_id"})
-  public Condition.Bundle searchById(
+  public Immunization.Bundle searchById(
       @RequestParam("_id") String id,
       @RequestParam(value = "page", defaultValue = "1") int page,
       @RequestParam(value = "_count", defaultValue = "1") int count,
@@ -81,7 +110,7 @@ public class ConditionController {
 
   /** Search by Identifier. */
   @GetMapping(params = {"identifier"})
-  public Condition.Bundle searchByIdentifier(
+  public Immunization.Bundle searchByIdentifier(
       @RequestParam("identifier") String id,
       @RequestParam(value = "page", defaultValue = "1") int page,
       @RequestParam(value = "_count", defaultValue = "1") int count,
@@ -95,7 +124,7 @@ public class ConditionController {
 
   /** Search by patient. */
   @GetMapping(params = {"patient"})
-  public Condition.Bundle searchByPatient(
+  public Immunization.Bundle searchByPatient(
       @RequestParam("patient") String patient,
       @RequestParam(value = "page", defaultValue = "1") int page,
       @RequestParam(value = "_count", defaultValue = "15") int count,
@@ -107,82 +136,15 @@ public class ConditionController {
         servletRequest);
   }
 
-  /** Search by patient and clinical status if available. */
-  @GetMapping(params = {"patient", "clinicalstatus"})
-  public Condition.Bundle searchByPatientAndClinicalStatus(
-      @RequestParam("patient") String patient,
-      @RequestParam("clinicalstatus") String clinicalstatus,
-      @RequestParam(value = "page", defaultValue = "1") int page,
-      @RequestParam(value = "_count", defaultValue = "15") int count,
-      HttpServletRequest servletRequest) {
-    return bundle(
-        Parameters.builder()
-            .add("patient", patient)
-            .add("clinicalstatus", clinicalstatus)
-            .add("page", page)
-            .add("_count", count)
-            .build(),
-        page,
-        count,
-        servletRequest);
-  }
-
-  /** Search by patient and category if available. */
-  @GetMapping(params = {"patient", "category"})
-  public Condition.Bundle searchByPatientAndCategory(
-      @RequestParam("patient") String patient,
-      @RequestParam("category") String category,
-      @RequestParam(value = "page", defaultValue = "1") int page,
-      @RequestParam(value = "_count", defaultValue = "15") int count,
-      HttpServletRequest servletRequest) {
-    return bundle(
-        Parameters.builder()
-            .add("patient", patient)
-            .add("category", category)
-            .add("page", page)
-            .add("_count", count)
-            .build(),
-        page,
-        count,
-        servletRequest);
-  }
-
   /** Hey, this is a validate endpoint. It validates. */
   @PostMapping(
     value = "/$validate",
     consumes = {"application/json", "application/json+fhir", "application/fhir+json"}
   )
-  public OperationOutcome validate(@RequestBody Condition.Bundle bundle) {
+  public OperationOutcome validate(@RequestBody Immunization.Bundle bundle) {
     return Validator.create().validate(bundle);
   }
 
-  private Bundler bundler;
-
-  private Condition.Bundle bundle(
-      MultiValueMap<String, String> parameters,
-      int page,
-      int count,
-      HttpServletRequest servletRequest) {
-    CdwCondition103Root root = search(parameters);
-    LinkConfig linkConfig =
-        LinkConfig.builder()
-            .path(servletRequest.getRequestURI())
-            .queryParams(parameters)
-            .page(page)
-            .recordsPerPage(count)
-            .totalRecords(root.getRecordCount().intValue())
-            .build();
-    return bundler.bundle(
-        BundleContext.of(
-            linkConfig,
-            root.getConditions() == null
-                ? Collections.emptyList()
-                : root.getConditions().getCondition(),
-            transformer,
-            Condition.Entry::new,
-            Condition.Bundle::new));
-  }
-
   public interface Transformer
-      extends Function<CdwCondition103Root.CdwConditions.CdwCondition, Condition> {}
+      extends Function<CdwImmunization103Root.CdwImmunizations.CdwImmunization, Immunization> {}
 }

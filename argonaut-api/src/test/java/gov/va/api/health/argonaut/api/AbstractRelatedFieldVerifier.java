@@ -16,6 +16,7 @@ import gov.va.api.health.argonaut.api.datatypes.Quantity;
 import gov.va.api.health.argonaut.api.datatypes.Range;
 import gov.va.api.health.argonaut.api.datatypes.Ratio;
 import gov.va.api.health.argonaut.api.datatypes.SampledData;
+import gov.va.api.health.argonaut.api.elements.Extension;
 import gov.va.api.health.argonaut.api.elements.Reference;
 import gov.va.api.health.argonaut.api.samples.SampleDataTypes;
 import gov.va.api.health.autoconfig.configuration.JacksonConfig;
@@ -27,25 +28,28 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.constraints.Pattern;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 
 /**
- * This class will verify fields with a given prefix are properly configured in the same ZeroOrOneOf
- * group. This class will fiend related fields with the same prefix and systematically test
- * different combinations to ensure they are validate as expected.
+ * This is a base for creating verifier tests for groups of related fields, such as ZeroOrOneOf. It
+ * provides a foundation for setting and unsetting groups of fields. Values are determined by type
+ * the type of field.
  */
 @Slf4j
-public class ZeroOrOneVerifier<T> {
+public abstract class AbstractRelatedFieldVerifier<T> {
   /** A valid sample. We will mutate this throughout the test. */
-  private final T sample;
+  protected final T sample;
+
+  /** The determined list of related fields based on the prefix. */
+  @Getter private final List<String> fields;
   /** Used to create sample values for fields based on the field type. */
   @Getter private final Map<Class<?>, Supplier<?>> knownTypes = createKnownTypes();
   /**
@@ -54,17 +58,17 @@ public class ZeroOrOneVerifier<T> {
    */
   @Getter private final Map<String, Supplier<?>> stringTypes = createKnownStringTypes();
 
-  /** The determined list of related fields based on the prefix. */
-  @Getter private final List<String> fields;
-
-  /** The prefix of the related fields. */
-  private String fieldPrefix;
-
-  @Builder
-  public ZeroOrOneVerifier(T sample, String fieldPrefix) {
+  /**
+   * The fieldSelector predicate will be checked for each field declared in the sample's class. A
+   * true return value will include the field in the group, so setting and unsetting.
+   */
+  protected AbstractRelatedFieldVerifier(T sample, Predicate<String> fieldSelector) {
     this.sample = sample;
-    this.fieldPrefix = fieldPrefix;
-    fields = findFieldsWithPrefix();
+    fields =
+        Arrays.stream(sample.getClass().getDeclaredFields())
+            .map(Field::getName)
+            .filter(fieldSelector)
+            .collect(toList());
   }
 
   private static Map<String, Supplier<?>> createKnownStringTypes() {
@@ -90,6 +94,7 @@ public class ZeroOrOneVerifier<T> {
     suppliers.put(Integer.class, () -> 1);
     suppliers.put(Boolean.class, () -> true);
     suppliers.put(Double.class, () -> 1.0);
+    suppliers.put(Extension.class, dataTypes::extension);
     suppliers.put(Coding.class, dataTypes::coding);
     suppliers.put(CodeableConcept.class, dataTypes::codeableConcept);
     suppliers.put(Identifier.class, dataTypes::identifier);
@@ -107,8 +112,9 @@ public class ZeroOrOneVerifier<T> {
     return suppliers;
   }
 
+  /** Validate and verify the given number of problems are reported. */
   @SneakyThrows
-  private void assertProblems(int count) {
+  protected void assertProblems(int count) {
     Set<ConstraintViolation<T>> problems =
         Validation.buildDefaultValidatorFactory().getValidator().validate(sample);
     if (problems.size() == count) {
@@ -120,27 +126,19 @@ public class ZeroOrOneVerifier<T> {
     assertThat(problems.size()).isEqualTo(count);
   }
 
+  private Supplier<?> enumSupplier(Class<? extends Enum<?>> type) {
+    return () -> type.getEnumConstants()[0];
+  }
+
   @SneakyThrows
-  private Field field(String name) {
+  protected Field field(String name) {
     Field field = sample.getClass().getDeclaredField(name);
     assertThat(field).withFailMessage("Cannot determine field type: " + name).isNotNull();
     return field;
   }
 
-  private List<String> findFieldsWithPrefix() {
-    return Arrays.stream(sample.getClass().getDeclaredFields())
-        .map(Field::getName)
-        .filter(name -> name.startsWith(fieldPrefix))
-        .collect(toList());
-  }
-
-  @SneakyThrows
-  private void setField(String field, Object value) {
-    log.trace("Setting {} to {}", field, value);
-    setter(field).invoke(sample, value);
-  }
-
-  private void setField(String name) {
+  /** Set the field to an automatically deterined value based on it's type. */
+  protected void setField(String name) {
     Field field = field(name);
     Supplier<?> supplier;
     if (String.class.equals(field.getType())) {
@@ -150,6 +148,8 @@ public class ZeroOrOneVerifier<T> {
         stringType = pattern.regexp();
       }
       supplier = stringTypes().get(stringType);
+    } else if (Enum.class.isAssignableFrom(field.getType())) {
+      supplier = enumSupplier((Class<? extends Enum<?>>) field.getType());
     } else {
       supplier = knownTypes().get(field.getType());
     }
@@ -157,6 +157,13 @@ public class ZeroOrOneVerifier<T> {
         .withFailMessage("Unknown value type for field: " + name + " type: " + field.getType())
         .isNotNull();
     setField(name, supplier.get());
+  }
+
+  /** Set the field to given value. */
+  @SneakyThrows
+  protected void setField(String field, Object value) {
+    log.trace("Setting {} to {}", field, value);
+    setter(field).invoke(sample, value);
   }
 
   /** Finds the getter method of the property provided in order to access the value. */
@@ -180,30 +187,15 @@ public class ZeroOrOneVerifier<T> {
     return setter;
   }
 
-  private void unsetFields() {
+  /** Unset all related fields. */
+  protected void unsetFields() {
     fields.forEach(field -> setField(field, null));
   }
 
-  public void verify() {
-    log.info("Verifying {}", sample.getClass());
-    /* Make sure the sample is valid before we mess it up. */
-    assertProblems(0);
-
-    /* Make sure we are valid if no fields are set. */
-    unsetFields();
-    assertProblems(0);
-
-    /* Make sure setting any two fields is not ok. */
-    log.info("{} fields in group {}: {}", sample.getClass().getSimpleName(), fieldPrefix, fields);
-    assertThat(fields.size())
-        .withFailMessage("Not enough fields in group: " + fieldPrefix)
-        .isGreaterThan(1);
-    String anchor = fields.get(0);
-    for (int i = 1; i < fields.size(); i++) {
-      unsetFields();
-      setField(anchor);
-      setField(fields.get(i));
-      assertProblems(1);
-    }
-  }
+  /**
+   * Implementations should verify the combinations of setting and unsetting fields. Use {@link
+   * #unsetFields()}, {@link #setField(String)}, and/or {@link #setField(String, Object)} along with
+   * {@link #assertProblems(int)} to check classes.
+   */
+  public abstract void verify();
 }

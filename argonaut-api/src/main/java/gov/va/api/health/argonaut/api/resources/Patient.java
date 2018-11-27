@@ -21,8 +21,8 @@ import gov.va.api.health.argonaut.api.elements.Extension;
 import gov.va.api.health.argonaut.api.elements.Meta;
 import gov.va.api.health.argonaut.api.elements.Narrative;
 import gov.va.api.health.argonaut.api.elements.Reference;
-import gov.va.api.health.argonaut.api.validation.RelatedFields;
 import gov.va.api.health.argonaut.api.validation.ZeroOrOneOf;
+import gov.va.api.health.argonaut.api.validation.ZeroOrOneOfs;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import java.util.Optional;
@@ -48,7 +48,7 @@ import lombok.NoArgsConstructor;
 @Schema(
   description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-patient.html"
 )
-@RelatedFields({
+@ZeroOrOneOfs({
   @ZeroOrOneOf(
     fields = {"deceasedBoolean", "deceasedDateTime"},
     message = "Only one deceased value may be specified"
@@ -158,6 +158,7 @@ public class Patient implements Resource {
 
     @Builder
     public Bundle(
+        @NotBlank String resourceType,
         @Pattern(regexp = Fhir.ID) String id,
         @Valid Meta meta,
         @Pattern(regexp = Fhir.URI) String implicitRules,
@@ -166,9 +167,8 @@ public class Patient implements Resource {
         @Min(0) Integer total,
         @Valid List<BundleLink> link,
         @Valid List<Entry> entry,
-        @NotBlank String resourceType,
         @Valid Signature signature) {
-      super(id, meta, implicitRules, language, type, total, link, entry, resourceType, signature);
+      super(resourceType, id, meta, implicitRules, language, type, total, link, entry, signature);
     }
   }
 

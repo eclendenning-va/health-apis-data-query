@@ -1,5 +1,6 @@
 package gov.va.api.health.argonaut.api;
 
+import gov.va.api.health.argonaut.api.elements.Extension;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -41,4 +42,16 @@ public class Fhir {
   public static final String OID = "urn:oid:[0-2](\\.[1-9]\\d*)+";
 
   public static final String XHTML = "<.+>";
+
+  /**
+   * Create a new Extension that indicates a field is absent because it is not supported.
+   *
+   * <p>See https://www.hl7.org/fhir/DSTU2/valueset-data-absent-reason.html
+   */
+  public static Extension unsupportedDataAbsentReason() {
+    return Extension.builder()
+        .url("http://hl7.org/fhir/StructureDefinition/data-absent-reason")
+        .valueCode("unsupported")
+        .build();
+  }
 }

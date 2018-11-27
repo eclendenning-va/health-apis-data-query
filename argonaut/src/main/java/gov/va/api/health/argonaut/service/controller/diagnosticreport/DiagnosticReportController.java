@@ -1,9 +1,10 @@
-package gov.va.api.health.argonaut.service.controller.condition;
+package gov.va.api.health.argonaut.service.controller.diagnosticreport;
 
 import static gov.va.api.health.argonaut.service.controller.Transformers.firstPayloadItem;
 import static gov.va.api.health.argonaut.service.controller.Transformers.hasPayload;
 
-import gov.va.api.health.argonaut.api.resources.Condition;
+import gov.va.api.health.argonaut.api.resources.DiagnosticReport;
+import gov.va.api.health.argonaut.api.resources.DiagnosticReport.Bundle;
 import gov.va.api.health.argonaut.api.resources.OperationOutcome;
 import gov.va.api.health.argonaut.service.controller.Bundler;
 import gov.va.api.health.argonaut.service.controller.Bundler.BundleContext;
@@ -12,10 +13,12 @@ import gov.va.api.health.argonaut.service.controller.Parameters;
 import gov.va.api.health.argonaut.service.controller.Validator;
 import gov.va.api.health.argonaut.service.mranderson.client.MrAndersonClient;
 import gov.va.api.health.argonaut.service.mranderson.client.Query;
-import gov.va.dvp.cdw.xsd.model.CdwCondition103Root;
+import gov.va.dvp.cdw.xsd.model.CdwDiagnosticReport102Root;
+import gov.va.dvp.cdw.xsd.model.CdwDiagnosticReport102Root.CdwDiagnosticReports.CdwDiagnosticReport;
 import java.util.Collections;
 import java.util.function.Function;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,37 +32,66 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Request Mappings for the Argonaut Condition Profile, see
- * https://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-condition.html for
+ * Request Mappings for the Argonaut Diagnostic Report Profile, see
+ * https://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-diagnosticreport.html for
  * implementation details.
  */
 @SuppressWarnings("WeakerAccess")
 @RestController
 @RequestMapping(
-  value = {"/api/Condition"},
+  value = {"/api/DiagnosticReport"},
   produces = {"application/json", "application/json+fhir", "application/fhir+json"}
 )
 @AllArgsConstructor(onConstructor = @__({@Autowired}))
 @Slf4j
-public class ConditionController {
+public class DiagnosticReportController {
+
   private Transformer transformer;
   private MrAndersonClient mrAndersonClient;
+  private Bundler bundler;
 
-  /** Read by id. */
-  @GetMapping(value = {"/{publicId}"})
-  public Condition read(@PathVariable("publicId") String publicId) {
-
-    return transformer.apply(
-        firstPayloadItem(
-            hasPayload(search(Parameters.forIdentity(publicId)).getConditions().getCondition())));
+  private Bundle bundle(
+      MultiValueMap<String, String> parameters,
+      int page,
+      int count,
+      HttpServletRequest servletRequest) {
+    CdwDiagnosticReport102Root root = search(parameters);
+    LinkConfig linkConfig =
+        LinkConfig.builder()
+            .path(servletRequest.getRequestURI())
+            .queryParams(parameters)
+            .page(page)
+            .recordsPerPage(count)
+            .totalRecords(root.getRecordCount().intValue())
+            .build();
+    return bundler.bundle(
+        BundleContext.of(
+            linkConfig,
+            root.getDiagnosticReports() == null
+                ? Collections.emptyList()
+                : root.getDiagnosticReports().getDiagnosticReport(),
+            transformer,
+            DiagnosticReport.Entry::new,
+            DiagnosticReport.Bundle::new));
   }
 
-  private CdwCondition103Root search(MultiValueMap<String, String> params) {
-    Query<CdwCondition103Root> query =
-        Query.forType(CdwCondition103Root.class)
+  /** Read by identifier. */
+  @GetMapping(value = {"/{publicId}"})
+  public DiagnosticReport read(@PathVariable("publicId") String publicId) {
+    return transformer.apply(
+        firstPayloadItem(
+            hasPayload(
+                search(Parameters.forIdentity(publicId))
+                    .getDiagnosticReports()
+                    .getDiagnosticReport())));
+  }
+
+  private CdwDiagnosticReport102Root search(MultiValueMap<String, String> params) {
+    Query<CdwDiagnosticReport102Root> query =
+        Query.forType(CdwDiagnosticReport102Root.class)
             .profile(Query.Profile.ARGONAUT)
-            .resource("Condition")
-            .version("1.03")
+            .resource("DiagnosticReport")
+            .version("1.02")
             .parameters(params)
             .build();
     return mrAndersonClient.search(query);
@@ -67,10 +99,10 @@ public class ConditionController {
 
   /** Search by _id. */
   @GetMapping(params = {"_id"})
-  public Condition.Bundle searchById(
+  public DiagnosticReport.Bundle searchById(
       @RequestParam("_id") String id,
       @RequestParam(value = "page", defaultValue = "1") int page,
-      @RequestParam(value = "_count", defaultValue = "1") int count,
+      @RequestParam(value = "_count", defaultValue = "15") int count,
       HttpServletRequest servletRequest) {
     return bundle(
         Parameters.builder().add("identifier", id).add("page", page).add("_count", count).build(),
@@ -79,15 +111,19 @@ public class ConditionController {
         servletRequest);
   }
 
-  /** Search by Identifier. */
+  /** Search by identifier. */
   @GetMapping(params = {"identifier"})
-  public Condition.Bundle searchByIdentifier(
-      @RequestParam("identifier") String id,
+  public DiagnosticReport.Bundle searchByIdentifier(
+      @RequestParam("identifier") String identifier,
       @RequestParam(value = "page", defaultValue = "1") int page,
-      @RequestParam(value = "_count", defaultValue = "1") int count,
+      @RequestParam(value = "_count", defaultValue = "15") int count,
       HttpServletRequest servletRequest) {
     return bundle(
-        Parameters.builder().add("identifier", id).add("page", page).add("_count", count).build(),
+        Parameters.builder()
+            .add("identifier", identifier)
+            .add("page", page)
+            .add("_count", count)
+            .build(),
         page,
         count,
         servletRequest);
@@ -95,7 +131,7 @@ public class ConditionController {
 
   /** Search by patient. */
   @GetMapping(params = {"patient"})
-  public Condition.Bundle searchByPatient(
+  public DiagnosticReport.Bundle searchByPatient(
       @RequestParam("patient") String patient,
       @RequestParam(value = "page", defaultValue = "1") int page,
       @RequestParam(value = "_count", defaultValue = "15") int count,
@@ -107,29 +143,9 @@ public class ConditionController {
         servletRequest);
   }
 
-  /** Search by patient and clinical status if available. */
-  @GetMapping(params = {"patient", "clinicalstatus"})
-  public Condition.Bundle searchByPatientAndClinicalStatus(
-      @RequestParam("patient") String patient,
-      @RequestParam("clinicalstatus") String clinicalstatus,
-      @RequestParam(value = "page", defaultValue = "1") int page,
-      @RequestParam(value = "_count", defaultValue = "15") int count,
-      HttpServletRequest servletRequest) {
-    return bundle(
-        Parameters.builder()
-            .add("patient", patient)
-            .add("clinicalstatus", clinicalstatus)
-            .add("page", page)
-            .add("_count", count)
-            .build(),
-        page,
-        count,
-        servletRequest);
-  }
-
-  /** Search by patient and category if available. */
+  /** Search by Patient+Category. */
   @GetMapping(params = {"patient", "category"})
-  public Condition.Bundle searchByPatientAndCategory(
+  public DiagnosticReport.Bundle searchByPatientAndCategory(
       @RequestParam("patient") String patient,
       @RequestParam("category") String category,
       @RequestParam(value = "page", defaultValue = "1") int page,
@@ -147,42 +163,56 @@ public class ConditionController {
         servletRequest);
   }
 
-  /** Hey, this is a validate endpoint. It validates. */
+  /** Search by Patient+Code. */
+  @GetMapping(params = {"patient", "code"})
+  public DiagnosticReport.Bundle searchByPatientAndCode(
+      @RequestParam("patient") String patient,
+      @RequestParam("code") String code,
+      @RequestParam(value = "page", defaultValue = "1") int page,
+      @RequestParam(value = "_count", defaultValue = "15") int count,
+      HttpServletRequest servletRequest) {
+    return bundle(
+        Parameters.builder()
+            .add("patient", patient)
+            .add("code", code)
+            .add("page", page)
+            .add("_count", count)
+            .build(),
+        page,
+        count,
+        servletRequest);
+  }
+
+  /** Search by Patient+Category+Date. */
+  @GetMapping(params = {"patient", "code", "date"})
+  public DiagnosticReport.Bundle searchByPatientAndCategoryAndDate(
+      @RequestParam("patient") String patient,
+      @RequestParam("code") String code,
+      @RequestParam(value = "date", required = false) @Size(max = 2) String[] date,
+      @RequestParam(value = "page", defaultValue = "1") int page,
+      @RequestParam(value = "_count", defaultValue = "15") int count,
+      HttpServletRequest servletRequest) {
+    return bundle(
+        Parameters.builder()
+            .add("patient", patient)
+            .add("code", code)
+            .addAll("date", date)
+            .add("page", page)
+            .add("_count", count)
+            .build(),
+        page,
+        count,
+        servletRequest);
+  }
+
+  /** Validate Endpoint. */
   @PostMapping(
     value = "/$validate",
     consumes = {"application/json", "application/json+fhir", "application/fhir+json"}
   )
-  public OperationOutcome validate(@RequestBody Condition.Bundle bundle) {
+  public OperationOutcome validate(@RequestBody Bundle bundle) {
     return Validator.create().validate(bundle);
   }
 
-  private Bundler bundler;
-
-  private Condition.Bundle bundle(
-      MultiValueMap<String, String> parameters,
-      int page,
-      int count,
-      HttpServletRequest servletRequest) {
-    CdwCondition103Root root = search(parameters);
-    LinkConfig linkConfig =
-        LinkConfig.builder()
-            .path(servletRequest.getRequestURI())
-            .queryParams(parameters)
-            .page(page)
-            .recordsPerPage(count)
-            .totalRecords(root.getRecordCount().intValue())
-            .build();
-    return bundler.bundle(
-        BundleContext.of(
-            linkConfig,
-            root.getConditions() == null
-                ? Collections.emptyList()
-                : root.getConditions().getCondition(),
-            transformer,
-            Condition.Entry::new,
-            Condition.Bundle::new));
-  }
-
-  public interface Transformer
-      extends Function<CdwCondition103Root.CdwConditions.CdwCondition, Condition> {}
+  public interface Transformer extends Function<CdwDiagnosticReport, DiagnosticReport> {}
 }

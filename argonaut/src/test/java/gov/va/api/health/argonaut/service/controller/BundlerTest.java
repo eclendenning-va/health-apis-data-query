@@ -110,6 +110,7 @@ public class BundlerTest {
       FugaziEntry entry = new FugaziEntry();
       entry.fullUrl(url);
       entry.resource(a);
+      entry.search(Search.builder().mode(SearchMode.match).build());
       return entry;
     }
   }

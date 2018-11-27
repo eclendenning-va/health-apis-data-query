@@ -2,6 +2,8 @@ package gov.va.api.health.argonaut.api.samples;
 
 import static java.util.Collections.singletonList;
 
+import gov.va.api.health.argonaut.api.DataAbsentReason;
+import gov.va.api.health.argonaut.api.DataAbsentReason.Reason;
 import gov.va.api.health.argonaut.api.resources.Immunization;
 import gov.va.api.health.argonaut.api.resources.Immunization.Explanation;
 import gov.va.api.health.argonaut.api.resources.Immunization.Reaction;
@@ -15,8 +17,19 @@ import lombok.experimental.Delegate;
 public class SampleImmunizations {
   @Delegate SampleDataTypes dataTypes = SampleDataTypes.get();
 
+  public Explanation explanation() {
+    return Explanation.builder()
+        .id("2222")
+        .extension(singletonList(extension()))
+        .modifierExtension(singletonList(extension()))
+        .reason(singletonList(codeableConcept()))
+        .reasonNotGiven(singletonList(codeableConcept()))
+        .build();
+  }
+
   public Immunization immunization() {
     return Immunization.builder()
+        .resourceType("Immunization")
         .id("2222")
         .meta(meta())
         .implicitRules("http://HelloRules.com")
@@ -49,14 +62,12 @@ public class SampleImmunizations {
         .build();
   }
 
-  public Explanation explanation() {
-    return Explanation.builder()
-        .id("2222")
-        .extension(singletonList(extension()))
-        .modifierExtension(singletonList(extension()))
-        .reason(singletonList(codeableConcept()))
-        .reasonNotGiven(singletonList(codeableConcept()))
-        .build();
+  public Immunization immunizationWithDataAbsentReasons() {
+    return immunization()
+        .status(null)
+        ._status(DataAbsentReason.of(Reason.unsupported))
+        .reported(false)
+        ._reported(DataAbsentReason.of(Reason.unsupported));
   }
 
   public Reaction reaction() {

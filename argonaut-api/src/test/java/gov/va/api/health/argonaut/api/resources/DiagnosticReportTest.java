@@ -3,7 +3,7 @@ package gov.va.api.health.argonaut.api.resources;
 import static gov.va.api.health.argonaut.api.RoundTrip.assertRoundTrip;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import gov.va.api.health.argonaut.api.ZeroOrOneVerifier;
+import gov.va.api.health.argonaut.api.ZeroOrOneOfVerifier;
 import gov.va.api.health.argonaut.api.bundle.AbstractBundle;
 import gov.va.api.health.argonaut.api.bundle.BundleLink;
 import gov.va.api.health.argonaut.api.samples.SampleDiagnosticReports;
@@ -61,7 +61,7 @@ public class DiagnosticReportTest {
 
   @Test
   public void relatedGroups() {
-    ZeroOrOneVerifier.builder()
+    ZeroOrOneOfVerifier.builder()
         .sample(data.diagnosticReport())
         .fieldPrefix("effective")
         .build()

@@ -2,6 +2,7 @@ package gov.va.api.health.argonaut.api.resources;
 
 import static gov.va.api.health.argonaut.api.RoundTrip.assertRoundTrip;
 
+import gov.va.api.health.argonaut.api.ExactlyOneOfExtensionVerifier;
 import gov.va.api.health.argonaut.api.bundle.AbstractBundle.BundleType;
 import gov.va.api.health.argonaut.api.bundle.AbstractEntry;
 import gov.va.api.health.argonaut.api.bundle.BundleLink;
@@ -57,5 +58,20 @@ public class ImmunizationTest {
   @Test
   public void immunization() {
     assertRoundTrip(data.immunization());
+    assertRoundTrip(data.immunizationWithDataAbsentReasons());
+  }
+
+  @Test
+  public void relatedFields() {
+    ExactlyOneOfExtensionVerifier.builder()
+        .sample(data.immunization())
+        .field("status")
+        .build()
+        .verify();
+    ExactlyOneOfExtensionVerifier.builder()
+        .sample(data.immunization())
+        .field("reported")
+        .build()
+        .verify();
   }
 }
