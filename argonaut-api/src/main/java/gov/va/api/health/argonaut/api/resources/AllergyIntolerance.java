@@ -84,75 +84,6 @@ public class AllergyIntolerance implements Resource {
   @Valid Annotation note;
   @Valid List<Reaction> reaction;
 
-  @Data
-  @Builder
-  @NoArgsConstructor(access = AccessLevel.PRIVATE)
-  @AllArgsConstructor
-  @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-  public static class Reaction implements BackboneElement {
-    @Pattern(regexp = Fhir.ID)
-    String id;
-
-    @Valid List<Extension> modifierExtension;
-    @Valid List<Extension> extension;
-    @Valid CodeableConcept substance;
-    Certainty certainty;
-    @NotEmpty @Valid List<CodeableConcept> manifestation;
-    String description;
-
-    @Pattern(regexp = Fhir.DATETIME)
-    String onset;
-
-    Severity severity;
-    @Valid CodeableConcept exposureRoute;
-    @Valid Annotation note;
-  }
-
-  @Data
-  @NoArgsConstructor
-  @EqualsAndHashCode(callSuper = true)
-  @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-  @JsonDeserialize(builder = AllergyIntolerance.Bundle.BundleBuilder.class)
-  public static class Bundle extends AbstractBundle<AllergyIntolerance.Entry> {
-
-    @Builder
-    public Bundle(
-        @Pattern(regexp = Fhir.ID) String id,
-        @Valid Meta meta,
-        @Pattern(regexp = Fhir.URI) String implicitRules,
-        @Pattern(regexp = Fhir.CODE) String language,
-        @NotNull BundleType type,
-        @Min(0) Integer total,
-        @Valid List<BundleLink> link,
-        @Valid List<AllergyIntolerance.Entry> entry,
-        @NotBlank String resourceType,
-        @Valid Signature signature) {
-      super(id, meta, implicitRules, language, type, total, link, entry, resourceType, signature);
-    }
-  }
-
-  @Data
-  @NoArgsConstructor
-  @EqualsAndHashCode(callSuper = true)
-  @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-  @JsonDeserialize(builder = AllergyIntolerance.Entry.EntryBuilder.class)
-  public static class Entry extends AbstractEntry<AllergyIntolerance> {
-
-    @Builder
-    public Entry(
-        @Pattern(regexp = Fhir.ID) String id,
-        @Valid List<Extension> extension,
-        @Valid List<Extension> modifierExtension,
-        @Valid List<BundleLink> link,
-        @Pattern(regexp = Fhir.URI) String fullUrl,
-        @Valid AllergyIntolerance resource,
-        @Valid Search search,
-        @Valid Request request,
-        @Valid Response response) {
-      super(id, extension, modifierExtension, link, fullUrl, resource, search, request, response);
-    }
-  }
-
   @SuppressWarnings("unused")
   public enum Status {
     active,
@@ -198,5 +129,74 @@ public class AllergyIntolerance implements Resource {
     mild,
     moderate,
     severe
+  }
+
+  @Data
+  @NoArgsConstructor
+  @EqualsAndHashCode(callSuper = true)
+  @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+  @JsonDeserialize(builder = AllergyIntolerance.Bundle.BundleBuilder.class)
+  public static class Bundle extends AbstractBundle<AllergyIntolerance.Entry> {
+
+    @Builder
+    public Bundle(
+        @NotBlank String resourceType,
+        @Pattern(regexp = Fhir.ID) String id,
+        @Valid Meta meta,
+        @Pattern(regexp = Fhir.URI) String implicitRules,
+        @Pattern(regexp = Fhir.CODE) String language,
+        @NotNull BundleType type,
+        @Min(0) Integer total,
+        @Valid List<BundleLink> link,
+        @Valid List<AllergyIntolerance.Entry> entry,
+        @Valid Signature signature) {
+      super(resourceType, id, meta, implicitRules, language, type, total, link, entry, signature);
+    }
+  }
+
+  @Data
+  @NoArgsConstructor
+  @EqualsAndHashCode(callSuper = true)
+  @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+  @JsonDeserialize(builder = AllergyIntolerance.Entry.EntryBuilder.class)
+  public static class Entry extends AbstractEntry<AllergyIntolerance> {
+
+    @Builder
+    public Entry(
+        @Pattern(regexp = Fhir.ID) String id,
+        @Valid List<Extension> extension,
+        @Valid List<Extension> modifierExtension,
+        @Valid List<BundleLink> link,
+        @Pattern(regexp = Fhir.URI) String fullUrl,
+        @Valid AllergyIntolerance resource,
+        @Valid Search search,
+        @Valid Request request,
+        @Valid Response response) {
+      super(id, extension, modifierExtension, link, fullUrl, resource, search, request, response);
+    }
+  }
+
+  @Data
+  @Builder
+  @NoArgsConstructor(access = AccessLevel.PRIVATE)
+  @AllArgsConstructor
+  @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+  public static class Reaction implements BackboneElement {
+    @Pattern(regexp = Fhir.ID)
+    String id;
+
+    @Valid List<Extension> modifierExtension;
+    @Valid List<Extension> extension;
+    @Valid CodeableConcept substance;
+    Certainty certainty;
+    @NotEmpty @Valid List<CodeableConcept> manifestation;
+    String description;
+
+    @Pattern(regexp = Fhir.DATETIME)
+    String onset;
+
+    Severity severity;
+    @Valid CodeableConcept exposureRoute;
+    @Valid Annotation note;
   }
 }

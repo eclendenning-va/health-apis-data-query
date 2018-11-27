@@ -23,6 +23,8 @@ import lombok.NoArgsConstructor;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @Schema(description = "http://hl7.org/fhir/DSTU2/bundle.html")
 public abstract class AbstractBundle<N extends AbstractEntry<?>> implements Resource {
+  @NotBlank protected String resourceType;
+
   @Pattern(regexp = Fhir.ID)
   protected String id;
 
@@ -41,7 +43,6 @@ public abstract class AbstractBundle<N extends AbstractEntry<?>> implements Reso
 
   @Valid protected List<BundleLink> link;
   @Valid protected List<N> entry;
-  @NotBlank protected String resourceType;
   @Valid protected Signature signature;
 
   @SuppressWarnings("unused")

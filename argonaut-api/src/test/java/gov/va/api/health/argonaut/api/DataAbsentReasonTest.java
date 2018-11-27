@@ -11,7 +11,10 @@ public class DataAbsentReasonTest {
   @Test
   @SneakyThrows
   public void reasonText() {
-    assertThat(DataAbsentReason.of(Reason.not_asked).valueCode()).isEqualTo("not-asked");
-    assertThat(DataAbsentReason.of(Reason.unsupported).valueCode()).isEqualTo("unsupported");
+    assertThat(DataAbsentReason.of(Reason.not_asked).extension().size()).isEqualTo(1);
+    assertThat(DataAbsentReason.of(Reason.not_asked).extension().get(0).valueCode())
+        .isEqualTo("not-asked");
+    assertThat(DataAbsentReason.of(Reason.unsupported).extension().get(0).valueCode())
+        .isEqualTo("unsupported");
   }
 }

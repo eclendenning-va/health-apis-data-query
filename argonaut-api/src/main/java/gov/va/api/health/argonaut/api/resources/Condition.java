@@ -145,6 +145,7 @@ public class Condition implements Resource {
 
     @Builder
     public Bundle(
+        @NotBlank String resourceType,
         @Pattern(regexp = Fhir.ID) String id,
         @Valid Meta meta,
         @Pattern(regexp = Fhir.URI) String implicitRules,
@@ -153,9 +154,8 @@ public class Condition implements Resource {
         @Min(0) Integer total,
         @Valid List<BundleLink> link,
         @Valid List<Entry> entry,
-        @NotBlank String resourceType,
         @Valid Signature signature) {
-      super(id, meta, implicitRules, language, type, total, link, entry, resourceType, signature);
+      super(resourceType, id, meta, implicitRules, language, type, total, link, entry, signature);
     }
   }
 
