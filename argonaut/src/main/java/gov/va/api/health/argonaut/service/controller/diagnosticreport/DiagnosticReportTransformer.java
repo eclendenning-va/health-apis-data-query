@@ -1,7 +1,7 @@
 package gov.va.api.health.argonaut.service.controller.diagnosticreport;
 
-import static gov.va.api.health.argonaut.service.controller.Transformers.asDateString;
 import static gov.va.api.health.argonaut.service.controller.Transformers.asDateTimeString;
+import static gov.va.api.health.argonaut.service.controller.Transformers.convert;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convertAll;
 import static gov.va.api.health.argonaut.service.controller.Transformers.ifPresent;
 
@@ -30,40 +30,6 @@ public class DiagnosticReportTransformer implements DiagnosticReportController.T
     return diagnosticReport(source);
   }
 
-  private DiagnosticReport diagnosticReport(CdwDiagnosticReport source) {
-    return DiagnosticReport.builder()
-        .id(source.getCdwId())
-        .resourceType("Diagnostic Report")
-        .status(status(source))
-        .category(category(source.getCategory()))
-        .code(code(source.getCode()))
-        .subject(reference(source.getSubject()))
-        .encounter(reference(source.getEncounter()))
-        .effectiveDateTime(asDateString(source.getEffective()))
-        .issued(asDateTimeString(source.getIssued()))
-        .performer(reference(source.getPerformer()))
-        .build();
-  }
-
-  Reference reference(CdwReference source) {
-    return Reference.builder()
-        .reference(source.getReference())
-        .display(source.getDisplay())
-        .build();
-  }
-
-  CodeableConcept code(CdwDiagnosticReportCode source) {
-    return CodeableConcept.builder()
-        .coding(codeCodings(source.getCoding()))
-        .text(source.getText())
-        .build();
-  }
-
-  List<Coding> codeCodings(List<CdwDiagnosticReportCodeCoding> source) {
-    return convertAll(
-        source, cdw -> Coding.builder().system(cdw.getSystem()).code(cdw.getCode()).build());
-  }
-
   CodeableConcept category(CdwDiagnosticReportCategory source) {
     return CodeableConcept.builder()
         .coding(categoryCodings(source.getCoding()))
@@ -81,8 +47,57 @@ public class DiagnosticReportTransformer implements DiagnosticReportController.T
             .build());
   }
 
+  CodeableConcept code(CdwDiagnosticReportCode source) {
+    return CodeableConcept.builder()
+        .coding(codeCodings(source.getCoding()))
+        .text(source.getText())
+        .build();
+  }
+
+  List<Coding> codeCodings(List<CdwDiagnosticReportCodeCoding> source) {
+    return convertAll(
+        source,
+        cdw ->
+            Coding.builder()
+                .system(cdw.getSystem())
+                .code(cdw.getCode())
+                .display(cdw.getDisplay())
+                .build());
+  }
+
+  private DiagnosticReport diagnosticReport(CdwDiagnosticReport source) {
+    /*
+     * While we have reference data for requests, specimens, and results, we do not
+     * have full support for these resources and therefore must be omitted from this
+     * resource.
+     */
+    return DiagnosticReport.builder()
+        .id(source.getCdwId())
+        .resourceType("Diagnostic Report")
+        .status(status(source))
+        .category(category(source.getCategory()))
+        .code(code(source.getCode()))
+        .subject(reference(source.getSubject()))
+        .encounter(reference(source.getEncounter()))
+        .effectiveDateTime(asDateTimeString(source.getEffective()))
+        .issued(asDateTimeString(source.getIssued()))
+        .performer(reference(source.getPerformer()))
+        .build();
+  }
+
+  Reference reference(CdwReference maybeSource) {
+    return convert(
+        maybeSource,
+        source ->
+            Reference.builder()
+                .reference(source.getReference())
+                .display(source.getDisplay())
+                .build());
+  }
+
   DiagnosticReport.Code status(CdwDiagnosticReport source) {
-    EnumSearcher<DiagnosticReport.Code> e = EnumSearcher.of(DiagnosticReport.Code.class);
-    return ifPresent(source.getStatus(), status -> e.find(status.value()));
+    return ifPresent(
+        source.getStatus(),
+        status -> EnumSearcher.of(DiagnosticReport.Code.class).find(status.value()));
   }
 }
