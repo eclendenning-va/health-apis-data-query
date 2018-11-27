@@ -143,8 +143,8 @@ public class AllergyIntoleranceController {
 
   /** Hey, this is a validate endpoint. It validates. */
   @PostMapping(
-      value = "/$validate",
-      consumes = {"application/json", "application/json+fhir", "application/fhir+json"}
+    value = "/$validate",
+    consumes = {"application/json", "application/json+fhir", "application/fhir+json"}
   )
   public OperationOutcome validate(@RequestBody AllergyIntolerance.Bundle bundle) {
     return Validator.create().validate(bundle);

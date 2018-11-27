@@ -4,9 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import gov.va.api.health.argonaut.api.bundle.AbstractBundle.BundleType;
 import gov.va.api.health.argonaut.api.resources.AllergyIntolerance;
 import gov.va.api.health.argonaut.api.resources.AllergyIntolerance.Bundle;
-import gov.va.api.health.argonaut.api.resources.Observation;
 import gov.va.api.health.argonaut.service.controller.Bundler;
 import gov.va.api.health.argonaut.service.controller.Bundler.BundleContext;
 import gov.va.api.health.argonaut.service.controller.PageLinks.LinkConfig;
@@ -20,8 +20,10 @@ import gov.va.dvp.cdw.xsd.model.CdwAllergyIntolerance103Root.CdwAllergyIntoleran
 import gov.va.dvp.cdw.xsd.model.CdwAllergyIntolerance103Root.CdwAllergyIntolerances.CdwAllergyIntolerance;
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.function.Supplier;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.ConstraintViolationException;
 import lombok.SneakyThrows;
 import org.junit.Before;
 import org.junit.Test;
@@ -98,6 +100,19 @@ public class AllergyIntoleranceControllerTest {
     assertThat(captor.getValue().transformer()).isSameAs(tx);
   }
 
+  private Bundle bundleOf(AllergyIntolerance resource) {
+    return Bundle.builder()
+        .type(BundleType.searchset)
+        .resourceType("Bundle")
+        .entry(
+            Collections.singletonList(
+                AllergyIntolerance.Entry.builder()
+                    .fullUrl("hhtp://example.com")
+                    .resource(resource)
+                    .build()))
+        .build();
+  }
+
   @Test
   public void read() {
     CdwAllergyIntolerance103Root root = new CdwAllergyIntolerance103Root();
@@ -122,6 +137,13 @@ public class AllergyIntoleranceControllerTest {
     assertSearch(
         () -> controller.searchById("me", 1, 10, servletRequest),
         Parameters.builder().add("_id", "me").add("page", 1).add("_count", 10).build());
+  }
+
+  @Test
+  public void searchByIdentifier() {
+    assertSearch(
+        () -> controller.searchByIdentifier("me", 1, 10, servletRequest),
+        Parameters.builder().add("identifier", "me").add("page", 1).add("_count", 10).build());
   }
 
   @Test
@@ -162,5 +184,31 @@ public class AllergyIntoleranceControllerTest {
             .build();
     assertThat(captor.getValue().linkConfig()).isEqualTo(expectedLinkConfig);
     assertThat(captor.getValue().xmlItems()).isEmpty();
+  }
+
+  @Test
+  @SneakyThrows
+  public void validateAcceptsValidBundle() {
+    AllergyIntolerance resource =
+        JacksonConfig.createMapper()
+            .readValue(
+                getClass().getResourceAsStream("/cdw/old-allergyintolerance-1.03.json"),
+                AllergyIntolerance.class);
+    Bundle bundle = bundleOf(resource);
+    assertThat(controller.validate(bundle)).isEqualTo(Validator.ok());
+  }
+
+  @Test(expected = ConstraintViolationException.class)
+  @SneakyThrows
+  public void validateThrowsExceptionForInvalidBundle() {
+    AllergyIntolerance resource =
+        JacksonConfig.createMapper()
+            .readValue(
+                getClass().getResourceAsStream("/cdw/old-allergyintolerance-1.03.json"),
+                AllergyIntolerance.class);
+    resource.resourceType(null);
+
+    Bundle bundle = bundleOf(resource);
+    controller.validate(bundle);
   }
 }

@@ -1,6 +1,7 @@
 package gov.va.health.api.sentinel;
 
 import gov.va.api.health.argonaut.api.bundle.AbstractBundle;
+import gov.va.api.health.argonaut.api.resources.AllergyIntolerance;
 import gov.va.api.health.argonaut.api.resources.Medication;
 import gov.va.api.health.argonaut.api.resources.Observation;
 import gov.va.api.health.argonaut.api.resources.OperationOutcome;
@@ -34,7 +35,8 @@ public class ArgonautValidateIT {
     return Arrays.asList(
         validate("Medication", ids.medication(), Medication.Bundle.class),
         validate("Observation", ids.observation(), Observation.Bundle.class),
-        validate("Patient", ids.patient(), Patient.Bundle.class)
+        validate("Patient", ids.patient(), Patient.Bundle.class),
+        validate("AllergyIntolerance", ids.allergyIntolerance(), AllergyIntolerance.Bundle.class)
         //
         );
   }
