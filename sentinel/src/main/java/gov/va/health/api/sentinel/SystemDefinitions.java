@@ -18,6 +18,7 @@ public class SystemDefinitions {
           .argonaut(ServiceDefinition.builder().url("https://localhost").port(8090).build())
           .cdwIds(
               TestIds.builder()
+                  .allergyIntolerance("1000001782544")
                   .unknown("5555555555555")
                   .patient("185601V825290")
                   .medication("212846")
