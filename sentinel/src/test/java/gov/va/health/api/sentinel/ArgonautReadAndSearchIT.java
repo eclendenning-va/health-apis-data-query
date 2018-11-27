@@ -47,7 +47,7 @@ public class ArgonautReadAndSearchIT {
             DiagnosticReport.Bundle.class,
             "api/DiagnosticReport?_id={id}",
             ids.diagnosticReport()),
-        expect(200, OperationOutcome.class, "api/DiagnosticReport?_id={id}", ids.unknown()),
+        expect(404, OperationOutcome.class, "api/DiagnosticReport?_id={id}", ids.unknown()),
         expect(
             200,
             DiagnosticReport.Bundle.class,

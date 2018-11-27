@@ -18,6 +18,7 @@ import gov.va.dvp.cdw.xsd.model.CdwDiagnosticReportCategoryDisplay;
 import gov.va.dvp.cdw.xsd.model.CdwDiagnosticReportCode;
 import gov.va.dvp.cdw.xsd.model.CdwDiagnosticReportCodeCoding;
 import gov.va.dvp.cdw.xsd.model.CdwReference;
+import java.util.Collections;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
@@ -85,15 +86,14 @@ public class DiagnosticReportTransformer implements DiagnosticReportController.T
         .build();
   }
 
-  List<Coding> categoryCodings(List<CdwDiagnosticReportCategoryCoding> optionalSource) {
-    return convertAll(
-        optionalSource,
-        cdw ->
-            Coding.builder()
-                .system(cdw.getSystem())
-                .code(ifPresent(cdw.getCode(), CdwDiagnosticReportCategoryCode::value))
-                .display(ifPresent(cdw.getDisplay(), CdwDiagnosticReportCategoryDisplay::value))
-                .build());
+  List<Coding> categoryCodings(CdwDiagnosticReportCategoryCoding optionalSource) {
+    return Collections.singletonList(
+        Coding.builder()
+            .system(optionalSource.getSystem())
+            .code(ifPresent(optionalSource.getCode(), CdwDiagnosticReportCategoryCode::value))
+            .display(
+                ifPresent(optionalSource.getDisplay(), CdwDiagnosticReportCategoryDisplay::value))
+            .build());
   }
 
   DiagnosticReport.Code status(CdwDiagnosticReport source) {

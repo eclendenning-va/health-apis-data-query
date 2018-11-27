@@ -22,8 +22,8 @@ public class SampleDiagnosticReports {
             singletonList(
                 Coding.builder()
                     .system("http://hl7.org/fhir/ValueSet/diagnostic-service-sections")
-                    .code("CH")
-                    .display("Chemistry")
+                    .code("LAB")
+                    .display("Laboratory")
                     .build()))
         .text("dat category")
         .build();

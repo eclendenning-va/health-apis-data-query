@@ -116,7 +116,7 @@ public class DiagnosticReportControllerTest {
   public void searchById() {
     assertSearch(
         () -> controller.searchById("me", 1, 10, servletRequest),
-        Parameters.builder().add("_id", "me").add("page", 1).add("_count", 10).build());
+        Parameters.builder().add("identifier", "me").add("page", 1).add("_count", 10).build());
   }
 
   @Test
@@ -124,6 +124,13 @@ public class DiagnosticReportControllerTest {
     assertSearch(
         () -> controller.searchByIdentifier("me", 1, 10, servletRequest),
         Parameters.builder().add("identifier", "me").add("page", 1).add("_count", 10).build());
+  }
+
+  @Test
+  public void searchByPatient() {
+    assertSearch(
+        () -> controller.searchByPatient("me", 1, 10, servletRequest),
+        Parameters.builder().add("patient", "me").add("page", 1).add("_count", 10).build());
   }
 
   @Test
@@ -219,7 +226,11 @@ public class DiagnosticReportControllerTest {
             .totalRecords(0)
             .path("/api/DiagnosticReport")
             .queryParams(
-                Parameters.builder().add("_id", "me").add("page", 1).add("_count", 10).build())
+                Parameters.builder()
+                    .add("identifier", "me")
+                    .add("page", 1)
+                    .add("_count", 10)
+                    .build())
             .build();
     assertThat(captor.getValue().linkConfig()).isEqualTo(expectedLinkConfig);
     assertThat(captor.getValue().xmlItems()).isEmpty();

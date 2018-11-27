@@ -171,9 +171,9 @@ public class DiagnosticReportTransformerTest {
       CdwDiagnosticReportCategory category = new CdwDiagnosticReportCategory();
       CdwDiagnosticReportCategoryCoding coding = new CdwDiagnosticReportCategoryCoding();
       coding.setSystem("http://hl7.org/fhir/ValueSet/diagnostic-service-sections");
-      coding.setCode(CdwDiagnosticReportCategoryCode.CH);
-      coding.setDisplay(CdwDiagnosticReportCategoryDisplay.CHEMISTRY);
-      category.getCoding().add(coding);
+      coding.setCode(CdwDiagnosticReportCategoryCode.LAB);
+      coding.setDisplay(CdwDiagnosticReportCategoryDisplay.LABORATORY);
+      category.setCoding(coding);
       category.setText("dat category");
       return category;
     }
