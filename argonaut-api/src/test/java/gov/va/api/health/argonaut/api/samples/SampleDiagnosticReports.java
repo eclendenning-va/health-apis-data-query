@@ -22,7 +22,8 @@ public class SampleDiagnosticReports {
             singletonList(
                 Coding.builder()
                     .system("http://hl7.org/fhir/ValueSet/diagnostic-service-sections")
-                    .code("ok")
+                    .code("LAB")
+                    .display("Laboratory")
                     .build()))
         .text("dat category")
         .build();
@@ -43,21 +44,25 @@ public class SampleDiagnosticReports {
         .identifier(singletonList(identifier()))
         .status(DiagnosticReport.Code._final)
         .category(category())
-        .code(codeableConcept())
+        .code(codeCodeableConcept())
         .subject(reference())
         .encounter(reference())
-        .effectiveDateTime("2000-10-01")
-        .issued("1970-01-01T00:00:00Z")
+        .effectiveDateTime("2013-06-21T20:05:12Z")
+        .issued("2013-06-21T19:03:16Z")
         .performer(reference())
-        .request(Arrays.asList(reference(), reference()))
-        .specimen(Arrays.asList(reference(), reference(), reference()))
-        .result(singletonList(reference()))
-        .imagingStudy(singletonList(reference()))
-        .image(image())
         .conclusion("The end.")
         .codedDiagnosis(Arrays.asList(codeableConcept(), codeableConcept()))
         .presentedForm(Arrays.asList(attachment(), attachment()))
         .build();
+  }
+
+  private CodeableConcept codeCodeableConcept() {
+    return CodeableConcept.builder().coding(codeCodingList()).text("panel").build();
+  }
+
+  private List<Coding> codeCodingList() {
+    return singletonList(
+        Coding.builder().system("http://HelloSystem.com").code("Hello Code").build());
   }
 
   private List<DiagnosticReport.Image> image() {
