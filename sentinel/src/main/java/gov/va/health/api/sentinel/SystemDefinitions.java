@@ -25,6 +25,7 @@ public class SystemDefinitions {
                   .medication("212846")
                   .diagnosticReport("1000000031384:L")
                   .observation("1201051417263:V")
+                  .condition("1400007575530:P")
                   .pii(
                       PersonallyIdentifiableInformation.builder()
                           .gender("male")

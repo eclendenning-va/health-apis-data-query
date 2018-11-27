@@ -56,13 +56,16 @@ class IdRegistrar {
     TestIds cdwIds = system().cdwIds();
 
     ResourceIdentity allergyIntolerance = id("ALLERGY_INTOLERANCE", cdwIds.allergyIntolerance());
+    ResourceIdentity condition = id("CONDITION", cdwIds.condition());
     ResourceIdentity diagnosticReport = id("DIAGNOSTIC_REPORT", cdwIds.diagnosticReport());
     ResourceIdentity medication = id("MEDICATION", cdwIds.medication());
     ResourceIdentity observation = id("OBSERVATION", cdwIds.observation());
     ResourceIdentity patient = id("PATIENT", cdwIds.patient());
 
     List<ResourceIdentity> identities =
-        Arrays.asList(allergyIntolerance, diagnosticReport, medication, observation, patient);
+        Arrays.asList(
+            allergyIntolerance, condition, diagnosticReport, medication, observation, patient);
+
     log.info("Registering {}", identities);
     List<Registration> registrations =
         system()
@@ -75,6 +78,7 @@ class IdRegistrar {
         cdwIds
             .toBuilder()
             .allergyIntolerance(findUuid(registrations, allergyIntolerance))
+            .condition(findUuid(registrations, condition))
             .diagnosticReport(findUuid(registrations, diagnosticReport))
             .medication(findUuid(registrations, medication))
             .observation(findUuid(registrations, observation))

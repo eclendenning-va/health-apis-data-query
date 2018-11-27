@@ -15,6 +15,7 @@ public class TestIds {
   @NonNull String medication;
   @NonNull String diagnosticReport;
   @NonNull String observation;
+  @NonNull String condition;
   @NonNull String unknown;
   @NonNull PersonallyIdentifiableInformation pii;
   @NonNull Observations observations;
