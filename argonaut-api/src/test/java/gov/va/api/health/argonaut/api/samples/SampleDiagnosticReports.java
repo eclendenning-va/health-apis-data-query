@@ -29,6 +29,15 @@ public class SampleDiagnosticReports {
         .build();
   }
 
+  private CodeableConcept codeCodeableConcept() {
+    return CodeableConcept.builder().coding(codeCodingList()).text("panel").build();
+  }
+
+  private List<Coding> codeCodingList() {
+    return singletonList(
+        Coding.builder().system("http://HelloSystem.com").code("Hello Code").build());
+  }
+
   public DiagnosticReport diagnosticReport() {
     return DiagnosticReport.builder()
         .id("1234")
@@ -54,15 +63,6 @@ public class SampleDiagnosticReports {
         .codedDiagnosis(Arrays.asList(codeableConcept(), codeableConcept()))
         .presentedForm(Arrays.asList(attachment(), attachment()))
         .build();
-  }
-
-  private CodeableConcept codeCodeableConcept() {
-    return CodeableConcept.builder().coding(codeCodingList()).text("panel").build();
-  }
-
-  private List<Coding> codeCodingList() {
-    return singletonList(
-        Coding.builder().system("http://HelloSystem.com").code("Hello Code").build());
   }
 
   private List<DiagnosticReport.Image> image() {

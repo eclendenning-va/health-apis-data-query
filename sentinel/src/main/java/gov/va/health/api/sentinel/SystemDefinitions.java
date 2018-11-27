@@ -21,11 +21,12 @@ public class SystemDefinitions {
               TestIds.builder()
                   .allergyIntolerance("1000001782544")
                   .unknown("5555555555555")
+                  .diagnosticReport("1000000031384:L")
                   .patient("185601V825290")
                   .medication("212846")
-                  .diagnosticReport("1000000031384:L")
                   .observation("1201051417263:V")
                   .condition("1400007575530:P")
+                  .immunization("1000000043979")
                   .pii(
                       PersonallyIdentifiableInformation.builder()
                           .gender("male")

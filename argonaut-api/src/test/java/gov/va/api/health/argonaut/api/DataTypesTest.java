@@ -25,7 +25,7 @@ public class DataTypesTest {
 
   @Test
   public void extension() {
-    ZeroOrOneVerifier.builder()
+    ZeroOrOneOfVerifier.builder()
         .sample(SampleDataTypes.get().extension())
         .fieldPrefix("value")
         .build()

@@ -3,6 +3,7 @@ package gov.va.health.api.sentinel;
 import gov.va.api.health.argonaut.api.resources.AllergyIntolerance;
 import gov.va.api.health.argonaut.api.resources.Condition;
 import gov.va.api.health.argonaut.api.resources.DiagnosticReport;
+import gov.va.api.health.argonaut.api.resources.Immunization;
 import gov.va.api.health.argonaut.api.resources.Medication;
 import gov.va.api.health.argonaut.api.resources.Observation;
 import gov.va.api.health.argonaut.api.resources.OperationOutcome;
@@ -102,6 +103,18 @@ public class ArgonautReadAndSearchIT {
             ids.patient(),
             ids.diagnosticReports().fromDate(),
             ids.diagnosticReports().toDate()),
+        // Immunization
+        expect(200, Immunization.class, "/api/Immunization/{id}", ids.immunization()),
+        expect(404, OperationOutcome.class, "/api/Immunization/{id}", ids.unknown()),
+        expect(200, Immunization.Bundle.class, "/api/Immunization?_id={id}", ids.immunization()),
+        expect(
+            200,
+            Immunization.Bundle.class,
+            "/api/Immunization?identifier={id}",
+            ids.immunization()),
+        expect(404, OperationOutcome.class, "/api/Immunization?_id={id}", ids.unknown()),
+        expect(
+            200, Immunization.Bundle.class, "/api/Immunization?patient={patient}", ids.patient()),
         // Medication
         expect(200, Medication.class, "/api/Medication/{id}", ids.medication()),
         expect(404, OperationOutcome.class, "/api/Medication/{id}", ids.unknown()),

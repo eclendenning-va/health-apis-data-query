@@ -70,6 +70,7 @@ public class DiagnosticReport implements Resource {
   @Valid List<Identifier> identifier;
 
   @NotNull Code status;
+
   @NotNull @Valid CodeableConcept category;
   @NotNull @Valid CodeableConcept code;
   @NotNull @Valid Reference subject;
@@ -82,7 +83,7 @@ public class DiagnosticReport implements Resource {
   @Valid Period effectivePeriod;
 
   @Pattern(regexp = Fhir.INSTANT)
-  @NotNull
+  @NotBlank
   String issued;
 
   @NotNull @Valid Reference performer;
@@ -138,6 +139,7 @@ public class DiagnosticReport implements Resource {
 
     @Builder
     public Bundle(
+        @NotBlank String resourceType,
         @Pattern(regexp = Fhir.ID) String id,
         @Valid Meta meta,
         @Pattern(regexp = Fhir.URI) String implicitRules,
@@ -146,9 +148,8 @@ public class DiagnosticReport implements Resource {
         @Min(0) Integer total,
         @Valid List<BundleLink> link,
         @Valid List<Entry> entry,
-        @NotBlank String resourceType,
         @Valid Signature signature) {
-      super(id, meta, implicitRules, language, type, total, link, entry, resourceType, signature);
+      super(resourceType, id, meta, implicitRules, language, type, total, link, entry, signature);
     }
   }
 

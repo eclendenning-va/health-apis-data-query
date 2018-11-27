@@ -3,6 +3,8 @@ package gov.va.api.health.argonaut.service.controller;
 import gov.va.api.health.argonaut.api.bundle.AbstractBundle;
 import gov.va.api.health.argonaut.api.bundle.AbstractBundle.BundleType;
 import gov.va.api.health.argonaut.api.bundle.AbstractEntry;
+import gov.va.api.health.argonaut.api.bundle.AbstractEntry.Search;
+import gov.va.api.health.argonaut.api.bundle.AbstractEntry.SearchMode;
 import gov.va.api.health.argonaut.api.resources.Resource;
 import gov.va.api.health.argonaut.service.controller.PageLinks.LinkConfig;
 import java.util.List;
@@ -43,6 +45,7 @@ public class Bundler {
                   E entry = context.newEntry().get();
                   entry.resource(t);
                   entry.fullUrl(links.readLink(context.linkConfig().path(), t.id()));
+                  entry.search(Search.builder().mode(SearchMode.match).build());
                   return entry;
                 })
             .collect(Collectors.toList()));
