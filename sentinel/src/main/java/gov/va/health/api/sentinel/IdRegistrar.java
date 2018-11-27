@@ -54,7 +54,7 @@ class IdRegistrar {
 
   private TestIds registerCdwIds() {
     TestIds cdwIds = system().cdwIds();
-    ResourceIdentity allergyIntolerance = id("ALLERGYINTOLERANCE", cdwIds.allergyIntolerance());
+    ResourceIdentity allergyIntolerance = id("ALLERGY_INTOLERANCE", cdwIds.allergyIntolerance());
     ResourceIdentity patient = id("PATIENT", cdwIds.patient());
     ResourceIdentity medication = id("MEDICATION", cdwIds.medication());
     ResourceIdentity observation = id("OBSERVATION", cdwIds.observation());
