@@ -22,8 +22,8 @@ public class SampleDiagnosticReports {
             singletonList(
                 Coding.builder()
                     .system("http://hl7.org/fhir/ValueSet/diagnostic-service-sections")
-                    .code("CH")
-                    .display("Chemistry")
+                    .code("LAB")
+                    .display("Laboratory")
                     .build()))
         .text("dat category")
         .build();
@@ -59,11 +59,6 @@ public class SampleDiagnosticReports {
         .effectiveDateTime("2013-06-21T20:05:12Z")
         .issued("2013-06-21T19:03:16Z")
         .performer(reference())
-        .request(Arrays.asList(reference(), reference()))
-        .specimen(Arrays.asList(reference(), reference(), reference()))
-        .result(singletonList(reference()))
-        .imagingStudy(singletonList(reference()))
-        .image(image())
         .conclusion("The end.")
         .codedDiagnosis(Arrays.asList(codeableConcept(), codeableConcept()))
         .presentedForm(Arrays.asList(attachment(), attachment()))

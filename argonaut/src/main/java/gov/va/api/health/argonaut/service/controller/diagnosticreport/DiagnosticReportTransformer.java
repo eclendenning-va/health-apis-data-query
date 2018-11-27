@@ -1,6 +1,5 @@
 package gov.va.api.health.argonaut.service.controller.diagnosticreport;
 
-import static gov.va.api.health.argonaut.service.controller.Transformers.asDateString;
 import static gov.va.api.health.argonaut.service.controller.Transformers.asDateTimeString;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convert;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convertAll;
@@ -19,6 +18,7 @@ import gov.va.dvp.cdw.xsd.model.CdwDiagnosticReportCategoryDisplay;
 import gov.va.dvp.cdw.xsd.model.CdwDiagnosticReportCode;
 import gov.va.dvp.cdw.xsd.model.CdwDiagnosticReportCodeCoding;
 import gov.va.dvp.cdw.xsd.model.CdwReference;
+import java.util.Collections;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
@@ -37,15 +37,14 @@ public class DiagnosticReportTransformer implements DiagnosticReportController.T
         .build();
   }
 
-  List<Coding> categoryCodings(List<CdwDiagnosticReportCategoryCoding> optionalSource) {
-    return convertAll(
-        optionalSource,
-        cdw ->
-            Coding.builder()
-                .system(cdw.getSystem())
-                .code(ifPresent(cdw.getCode(), CdwDiagnosticReportCategoryCode::value))
-                .display(ifPresent(cdw.getDisplay(), CdwDiagnosticReportCategoryDisplay::value))
-                .build());
+  List<Coding> categoryCodings(CdwDiagnosticReportCategoryCoding optionalSource) {
+    return Collections.singletonList(
+        Coding.builder()
+            .system(optionalSource.getSystem())
+            .code(ifPresent(optionalSource.getCode(), CdwDiagnosticReportCategoryCode::value))
+            .display(
+                ifPresent(optionalSource.getDisplay(), CdwDiagnosticReportCategoryDisplay::value))
+            .build());
   }
 
   CodeableConcept code(CdwDiagnosticReportCode source) {
@@ -57,10 +56,21 @@ public class DiagnosticReportTransformer implements DiagnosticReportController.T
 
   List<Coding> codeCodings(List<CdwDiagnosticReportCodeCoding> source) {
     return convertAll(
-        source, cdw -> Coding.builder().system(cdw.getSystem()).code(cdw.getCode()).build());
+        source,
+        cdw ->
+            Coding.builder()
+                .system(cdw.getSystem())
+                .code(cdw.getCode())
+                .display(cdw.getDisplay())
+                .build());
   }
 
   private DiagnosticReport diagnosticReport(CdwDiagnosticReport source) {
+    /*
+     * While we have reference data for requests, specimens, and results, we do not
+     * have full support for these resources and therefore must be omitted from this
+     * resource.
+     */
     return DiagnosticReport.builder()
         .id(source.getCdwId())
         .resourceType("Diagnostic Report")
@@ -69,7 +79,7 @@ public class DiagnosticReportTransformer implements DiagnosticReportController.T
         .code(code(source.getCode()))
         .subject(reference(source.getSubject()))
         .encounter(reference(source.getEncounter()))
-        .effectiveDateTime(asDateString(source.getEffective()))
+        .effectiveDateTime(asDateTimeString(source.getEffective()))
         .issued(asDateTimeString(source.getIssued()))
         .performer(reference(source.getPerformer()))
         .build();
@@ -86,7 +96,8 @@ public class DiagnosticReportTransformer implements DiagnosticReportController.T
   }
 
   DiagnosticReport.Code status(CdwDiagnosticReport source) {
-    EnumSearcher<DiagnosticReport.Code> e = EnumSearcher.of(DiagnosticReport.Code.class);
-    return ifPresent(source.getStatus(), status -> e.find(status.value()));
+    return ifPresent(
+        source.getStatus(),
+        status -> EnumSearcher.of(DiagnosticReport.Code.class).find(status.value()));
   }
 }

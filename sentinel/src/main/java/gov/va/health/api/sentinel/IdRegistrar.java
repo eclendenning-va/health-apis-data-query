@@ -83,11 +83,11 @@ class IdRegistrar {
         cdwIds
             .toBuilder()
             .allergyIntolerance(findUuid(registrations, allergyIntolerance))
+            .condition(findUuid(registrations, condition))
             .diagnosticReport(findUuid(registrations, diagnosticReport))
             .immunization(findUuid(registrations, immunization))
             .medication(findUuid(registrations, medication))
             .observation(findUuid(registrations, observation))
-            .condition(findUuid(registrations, condition))
             .patient(findUuid(registrations, patient))
             .build();
     log.info("Using {}", publicIds);
