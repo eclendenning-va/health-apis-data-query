@@ -67,6 +67,24 @@ public class ArgonautReadAndSearchIT {
         // Condition
         expect(200, Condition.class, "/api/Condition/{id}", ids.condition()),
         expect(404, OperationOutcome.class, "/api/Condition/{id}", ids.unknown()),
+        expect(200, Condition.Bundle.class, "/api/Condition?identifier={id}", ids.condition()),
+        expect(404, OperationOutcome.class, "/api/Condition?_id={id}", ids.unknown()),
+        expect(200, Condition.Bundle.class, "/api/Condition?patient={patient}", ids.patient()),
+        expect(
+            200,
+            Condition.Bundle.class,
+            "/api/Condition?patient={patient}&category=problem",
+            ids.patient()),
+        expect(
+            200,
+            Condition.Bundle.class,
+            "/api/Condition?patient={patient}&category=health-concern",
+            ids.patient()),
+        expect(
+            200,
+            Condition.Bundle.class,
+            "/api/Condition?patient={patient}&clinicalstatus=active",
+            ids.patient()),
         // DiagnosticReport
         expect(200, DiagnosticReport.class, "/api/DiagnosticReport/{id}", ids.diagnosticReport()),
         expect(404, OperationOutcome.class, "/api/DiagnosticReport/{id}", ids.unknown()),
