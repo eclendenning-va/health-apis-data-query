@@ -1,8 +1,10 @@
 package gov.va.api.health.argonaut.service.controller.allergyintolerance;
 
 import static gov.va.api.health.argonaut.service.controller.Transformers.asDateTimeString;
+import static gov.va.api.health.argonaut.service.controller.Transformers.convert;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convertAll;
 import static gov.va.api.health.argonaut.service.controller.Transformers.ifPresent;
+import static java.util.Collections.singletonList;
 
 import gov.va.api.health.argonaut.api.datatypes.Annotation;
 import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
@@ -10,6 +12,7 @@ import gov.va.api.health.argonaut.api.datatypes.Coding;
 import gov.va.api.health.argonaut.api.elements.Reference;
 import gov.va.api.health.argonaut.api.resources.AllergyIntolerance;
 import gov.va.api.health.argonaut.api.resources.AllergyIntolerance.Reaction;
+import gov.va.api.health.argonaut.service.controller.EnumSearcher;
 import gov.va.dvp.cdw.xsd.model.CdwAllergyIntolerance103Root.CdwAllergyIntolerances.CdwAllergyIntolerance;
 import gov.va.dvp.cdw.xsd.model.CdwAllergyIntolerance103Root.CdwAllergyIntolerances.CdwAllergyIntolerance.CdwNotes;
 import gov.va.dvp.cdw.xsd.model.CdwAllergyIntolerance103Root.CdwAllergyIntolerances.CdwAllergyIntolerance.CdwNotes.CdwNote;
@@ -33,21 +36,28 @@ public class AllergyIntoleranceTransformer implements AllergyIntoleranceControll
         .resourceType("AllergyIntolerance")
         .onset(asDateTimeString(source.getOnset()))
         .recordedDate(asDateTimeString(source.getRecordedDate()))
-        .recorder(recorder(source.getRecorder()))
+        .recorder(reference(source.getRecorder()))
         .substance(substance(source.getSubstance()))
-        .patient(patient(source.getPatient()))
+        .patient(reference(source.getPatient()))
         .status(
             ifPresent(
-                source.getStatus(), status -> AllergyIntolerance.Status.valueOf(status.value())))
+                source.getStatus(),
+                status -> EnumSearcher.of(AllergyIntolerance.Status.class).find(status.value())))
         .criticality(
             ifPresent(
                 source.getCriticality(),
-                criticality -> AllergyIntolerance.Criticality.valueOf(criticality.value())))
-        .type(ifPresent(source.getType(), type -> AllergyIntolerance.Type.valueOf(type.value())))
+                criticality ->
+                    EnumSearcher.of(AllergyIntolerance.Criticality.class)
+                        .find(criticality.value())))
+        .type(
+            ifPresent(
+                source.getType(),
+                type -> EnumSearcher.of(AllergyIntolerance.Type.class).find(type.value())))
         .category(
             ifPresent(
                 source.getCategory(),
-                category -> AllergyIntolerance.Category.valueOf(category.value())))
+                category ->
+                    EnumSearcher.of(AllergyIntolerance.Category.class).find(category.value())))
         .note(note(source.getNotes()))
         .reaction(reaction(source.getReactions()))
         .build();
@@ -58,52 +68,16 @@ public class AllergyIntoleranceTransformer implements AllergyIntoleranceControll
     return allergyIntolerance(allergyIntolerance);
   }
 
-  Reference authorReference(CdwReference source) {
-    return Reference.builder()
-        .display(source.getDisplay())
-        .reference(source.getReference())
-        .build();
-  }
-
   Annotation note(CdwNotes source) {
-    if (source == null) {
+    if (source == null || source.getNote().isEmpty()) {
       return null;
     }
-    CdwNote note = source.getNote().get(0);
+    CdwNote firstNote = source.getNote().get(0);
     return Annotation.builder()
-        .text(note.getText())
-        .time(asDateTimeString(note.getTime()))
-        .authorReference(authorReference(note.getAuthor()))
+        .text(firstNote.getText())
+        .time(asDateTimeString(firstNote.getTime()))
+        .authorReference(reference(firstNote.getAuthor()))
         .build();
-  }
-
-  Reference patient(CdwReference source) {
-    return Reference.builder()
-        .display(source.getDisplay())
-        .reference(source.getReference())
-        .build();
-  }
-
-  List<CodeableConcept> reactionManifestation(CdwManifestations source) {
-    if (source == null) {
-      return Collections.emptyList();
-    }
-    return convertAll(
-        ifPresent(source, CdwManifestations::getManifestation),
-        cdwManifestation ->
-            CodeableConcept.builder()
-                .text(cdwManifestation.getText())
-                .coding(reactionManifestationCoding(cdwManifestation.getCoding()))
-                .build());
-  }
-
-  List<Coding> reactionManifestationCoding(CdwManifestation.CdwCoding source) {
-    return Collections.singletonList(
-        Coding.builder()
-            .system(ifPresent(source.getSystem(), CdwAllergyManifestationSystem::value))
-            .code(source.getCode())
-            .display(source.getDisplay())
-            .build());
   }
 
   List<Reaction> reaction(CdwReactions optionalSource) {
@@ -122,22 +96,50 @@ public class AllergyIntoleranceTransformer implements AllergyIntoleranceControll
                 .build());
   }
 
-  Reference recorder(CdwReference source) {
-    return Reference.builder()
-        .display(source.getDisplay())
-        .reference(source.getReference())
-        .build();
+  List<CodeableConcept> reactionManifestation(CdwManifestations source) {
+    if (source == null) {
+      return Collections.emptyList();
+    }
+    return convertAll(
+        ifPresent(source, CdwManifestations::getManifestation),
+        cdwManifestation ->
+            CodeableConcept.builder()
+                .text(cdwManifestation.getText())
+                .coding(reactionManifestationCoding(cdwManifestation.getCoding()))
+                .build());
+  }
+
+  List<Coding> reactionManifestationCoding(CdwManifestation.CdwCoding maybeSource) {
+    return convert(
+        maybeSource,
+        source ->
+            singletonList(
+                Coding.builder()
+                    .system(ifPresent(source.getSystem(), CdwAllergyManifestationSystem::value))
+                    .code(source.getCode())
+                    .display(source.getDisplay())
+                    .build()));
+  }
+
+  Reference reference(CdwReference maybeSource) {
+    return convert(
+        maybeSource,
+        source ->
+            Reference.builder()
+                .display(source.getDisplay())
+                .reference(source.getReference())
+                .build());
   }
 
   CodeableConcept substance(CdwSubstance source) {
     return CodeableConcept.builder()
         .coding(substanceCoding(source.getCoding()))
-        .text("substance text")
+        .text(source.getText())
         .build();
   }
 
   List<Coding> substanceCoding(CdwSubstance.CdwCoding source) {
-    return Collections.singletonList(
+    return singletonList(
         Coding.builder()
             .system(ifPresent(source.getSystem(), CdwAllergySubstanceSystem::value))
             .code(source.getCode())
