@@ -54,12 +54,14 @@ class IdRegistrar {
 
   private TestIds registerCdwIds() {
     TestIds cdwIds = system().cdwIds();
+    ResourceIdentity allergyIntolerance = id("ALLERGY_INTOLERANCE", cdwIds.allergyIntolerance());
     ResourceIdentity patient = id("PATIENT", cdwIds.patient());
     ResourceIdentity medication = id("MEDICATION", cdwIds.medication());
     ResourceIdentity observation = id("OBSERVATION", cdwIds.observation());
     ResourceIdentity condition = id("CONDITION", cdwIds.condition());
 
-    List<ResourceIdentity> identities = Arrays.asList(patient, medication, observation, condition);
+    List<ResourceIdentity> identities =
+        Arrays.asList(allergyIntolerance, condition, patient, medication, observation);
     log.info("Registering {}", identities);
     List<Registration> registrations =
         system()
@@ -71,6 +73,7 @@ class IdRegistrar {
     TestIds publicIds =
         cdwIds
             .toBuilder()
+            .allergyIntolerance(findUuid(registrations, allergyIntolerance))
             .patient(findUuid(registrations, patient))
             .medication(findUuid(registrations, medication))
             .observation(findUuid(registrations, observation))

@@ -45,10 +45,11 @@ import lombok.NoArgsConstructor;
       "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-allergyintolerance.html"
 )
 public class AllergyIntolerance implements Resource {
+  @NotBlank String resourceType;
+
   @Pattern(regexp = Fhir.ID)
   String id;
 
-  @NotBlank String resourceType;
   @Valid Meta meta;
 
   @Pattern(regexp = Fhir.URI)
@@ -84,28 +85,51 @@ public class AllergyIntolerance implements Resource {
   @Valid Annotation note;
   @Valid List<Reaction> reaction;
 
-  @Data
-  @Builder
-  @NoArgsConstructor(access = AccessLevel.PRIVATE)
-  @AllArgsConstructor
-  @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-  public static class Reaction implements BackboneElement {
-    @Pattern(regexp = Fhir.ID)
-    String id;
+  @SuppressWarnings("unused")
+  public enum Status {
+    active,
+    unconfirmed,
+    confirmed,
+    inactive,
+    resolved,
+    refuted,
+    @JsonProperty("entered-in-error")
+    entered_in_error
+  }
 
-    @Valid List<Extension> modifierExtension;
-    @Valid List<Extension> extension;
-    @Valid CodeableConcept substance;
-    Certainty certainty;
-    @NotEmpty @Valid List<CodeableConcept> manifestation;
-    String description;
+  @SuppressWarnings("unused")
+  public enum Criticality {
+    CRITL,
+    CRITH,
+    CRITU
+  }
 
-    @Pattern(regexp = Fhir.DATETIME)
-    String onset;
+  @SuppressWarnings("unused")
+  public enum Type {
+    allergy,
+    intolerance
+  }
 
-    Severity severity;
-    @Valid CodeableConcept exposureRoute;
-    @Valid Annotation note;
+  @SuppressWarnings("unused")
+  public enum Category {
+    food,
+    medication,
+    environment,
+    other
+  }
+
+  @SuppressWarnings("unused")
+  public enum Certainty {
+    unlikely,
+    likely,
+    confirmed
+  }
+
+  @SuppressWarnings("unused")
+  public enum Severity {
+    mild,
+    moderate,
+    severe
   }
 
   @Data
@@ -153,50 +177,27 @@ public class AllergyIntolerance implements Resource {
     }
   }
 
-  @SuppressWarnings("unused")
-  public enum Status {
-    active,
-    unconfirmed,
-    confirmed,
-    inactive,
-    resolved,
-    refuted,
-    @JsonProperty("entered-in-error")
-    entered_in_error
-  }
+  @Data
+  @Builder
+  @NoArgsConstructor(access = AccessLevel.PRIVATE)
+  @AllArgsConstructor
+  @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+  public static class Reaction implements BackboneElement {
+    @Pattern(regexp = Fhir.ID)
+    String id;
 
-  @SuppressWarnings("unused")
-  public enum Criticality {
-    CRITL,
-    CRITH,
-    CRITU
-  }
+    @Valid List<Extension> modifierExtension;
+    @Valid List<Extension> extension;
+    @Valid CodeableConcept substance;
+    Certainty certainty;
+    @NotEmpty @Valid List<CodeableConcept> manifestation;
+    String description;
 
-  @SuppressWarnings("unused")
-  public enum Type {
-    allergy,
-    intolerance
-  }
+    @Pattern(regexp = Fhir.DATETIME)
+    String onset;
 
-  @SuppressWarnings("unused")
-  public enum Category {
-    food,
-    medication,
-    environment,
-    other
-  }
-
-  @SuppressWarnings("unused")
-  public enum Certainty {
-    unlikely,
-    likely,
-    confirmed
-  }
-
-  @SuppressWarnings("unused")
-  public enum Severity {
-    mild,
-    moderate,
-    severe
+    Severity severity;
+    @Valid CodeableConcept exposureRoute;
+    @Valid Annotation note;
   }
 }
