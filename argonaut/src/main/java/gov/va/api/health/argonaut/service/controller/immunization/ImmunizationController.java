@@ -102,7 +102,7 @@ public class ImmunizationController {
       @RequestParam(value = "_count", defaultValue = "1") int count,
       HttpServletRequest servletRequest) {
     return bundle(
-        Parameters.builder().add("_id", id).add("page", page).add("_count", count).build(),
+        Parameters.builder().add("identifier", id).add("page", page).add("_count", count).build(),
         page,
         count,
         servletRequest);
