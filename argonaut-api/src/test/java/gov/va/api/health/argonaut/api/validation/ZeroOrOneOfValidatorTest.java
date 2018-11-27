@@ -50,13 +50,13 @@ public class ZeroOrOneOfValidatorTest {
     violationsOf(new PoorlyDefinedGroup(1, null));
   }
 
-  @RelatedFields({
+  @ZeroOrOneOfs({
     @ZeroOrOneOf(fields = {"a1", "a2"}),
     @ZeroOrOneOf(fields = {"b1", "b2"}),
   })
   @Data
   @AllArgsConstructor
-  class MultipleGroups {
+  private class MultipleGroups {
     String a1;
     String a2;
     String b1;
@@ -66,7 +66,7 @@ public class ZeroOrOneOfValidatorTest {
   @ZeroOrOneOf(fields = {"a1", "a2"})
   @Data
   @AllArgsConstructor
-  class SingleGroup {
+  private class SingleGroup {
     Integer a1;
     Integer a2;
   }
@@ -74,7 +74,7 @@ public class ZeroOrOneOfValidatorTest {
   @ZeroOrOneOf(fields = {"x1", "x2"})
   @Data
   @AllArgsConstructor
-  class PoorlyDefinedGroup {
+  private class PoorlyDefinedGroup {
     Integer a1;
     Integer a2;
   }

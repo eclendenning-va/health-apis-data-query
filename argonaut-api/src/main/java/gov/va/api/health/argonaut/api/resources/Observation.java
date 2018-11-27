@@ -25,8 +25,8 @@ import gov.va.api.health.argonaut.api.elements.Extension;
 import gov.va.api.health.argonaut.api.elements.Meta;
 import gov.va.api.health.argonaut.api.elements.Narrative;
 import gov.va.api.health.argonaut.api.elements.Reference;
-import gov.va.api.health.argonaut.api.validation.RelatedFields;
 import gov.va.api.health.argonaut.api.validation.ZeroOrOneOf;
+import gov.va.api.health.argonaut.api.validation.ZeroOrOneOfs;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import javax.validation.Valid;
@@ -55,7 +55,7 @@ import org.apache.commons.lang3.StringUtils;
   description =
       "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-observationresults.html"
 )
-@RelatedFields({
+@ZeroOrOneOfs({
   @ZeroOrOneOf(
     fields = {"effectiveDateTime", "effectivePeriod"},
     message = "Only one effective field may be specified"
@@ -182,6 +182,7 @@ public class Observation implements Resource {
 
     @Builder
     public Bundle(
+        @NotBlank String resourceType,
         @Pattern(regexp = Fhir.ID) String id,
         @Valid Meta meta,
         @Pattern(regexp = Fhir.URI) String implicitRules,
@@ -190,9 +191,8 @@ public class Observation implements Resource {
         @Min(0) Integer total,
         @Valid List<BundleLink> link,
         @Valid List<Entry> entry,
-        @NotBlank String resourceType,
         @Valid Signature signature) {
-      super(id, meta, implicitRules, language, type, total, link, entry, resourceType, signature);
+      super(resourceType, id, meta, implicitRules, language, type, total, link, entry, signature);
     }
   }
 

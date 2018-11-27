@@ -33,5 +33,8 @@ entries:
   query: /Observation:1.04?category=laboratory&date=2015-04-15&patient=185601V825290
   page: 1
   count: 15
-
-
+# Condition alias
+- file: ../../../../target/cdw/samples/Con103p185601V825290pg2ct2.xml
+  query: /Condition:1.03?identifier=1400007575530:P
+  page: 1
+  count: 1

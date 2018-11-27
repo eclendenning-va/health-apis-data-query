@@ -1,6 +1,9 @@
 package gov.va.health.api.sentinel;
 
 import gov.va.api.health.argonaut.api.resources.AllergyIntolerance;
+import gov.va.api.health.argonaut.api.resources.Condition;
+import gov.va.api.health.argonaut.api.resources.DiagnosticReport;
+import gov.va.api.health.argonaut.api.resources.Immunization;
 import gov.va.api.health.argonaut.api.resources.Medication;
 import gov.va.api.health.argonaut.api.resources.Observation;
 import gov.va.api.health.argonaut.api.resources.OperationOutcome;
@@ -61,6 +64,72 @@ public class ArgonautReadAndSearchIT {
             AllergyIntolerance.Bundle.class,
             "/api/AllergyIntolerance?patient={patient}",
             ids.patient()),
+        // Condition
+        expect(200, Condition.class, "/api/Condition/{id}", ids.condition()),
+        expect(404, OperationOutcome.class, "/api/Condition/{id}", ids.unknown()),
+        // DiagnosticReport
+        expect(200, DiagnosticReport.class, "/api/DiagnosticReport/{id}", ids.diagnosticReport()),
+        expect(404, OperationOutcome.class, "/api/DiagnosticReport/{id}", ids.unknown()),
+        expect(
+            200,
+            DiagnosticReport.Bundle.class,
+            "api/DiagnosticReport?_id={id}",
+            ids.diagnosticReport()),
+        expect(404, OperationOutcome.class, "api/DiagnosticReport?_id={id}", ids.unknown()),
+        expect(
+            200,
+            DiagnosticReport.Bundle.class,
+            "api/DiagnosticReport?identifier={id}",
+            ids.diagnosticReport()),
+        expect(404, OperationOutcome.class, "/api/DiagnosticReport?identifier={id}", ids.unknown()),
+        expect(
+            200,
+            DiagnosticReport.Bundle.class,
+            "/api/DiagnosticReport?patient={patient}",
+            ids.patient()),
+        expect(
+            200,
+            DiagnosticReport.Bundle.class,
+            "/api/DiagnosticReport?patient={patient}&category=LAB",
+            ids.patient()),
+        expect(
+            200,
+            DiagnosticReport.Bundle.class,
+            "/api/DiagnosticReport?patient={patient}&code={loinc1}",
+            ids.patient(),
+            ids.diagnosticReports().loinc1()),
+        expect(
+            200,
+            DiagnosticReport.Bundle.class,
+            "/api/DiagnosticReport?patient={patient}&code={loinc1},{loinc2}",
+            ids.patient(),
+            ids.diagnosticReports().loinc1(),
+            ids.diagnosticReports().loinc2()),
+        expect(
+            200,
+            DiagnosticReport.Bundle.class,
+            "/api/DiagnosticReport?patient={patient}&category=LAB&date={onDate}",
+            ids.patient(),
+            ids.diagnosticReports().onDate()),
+        expect(
+            200,
+            DiagnosticReport.Bundle.class,
+            "/api/DiagnosticReport?patient={patient}&category=LAB&date={fromDate}&date={toDate}",
+            ids.patient(),
+            ids.diagnosticReports().fromDate(),
+            ids.diagnosticReports().toDate()),
+        // Immunization
+        expect(200, Immunization.class, "/api/Immunization/{id}", ids.immunization()),
+        expect(404, OperationOutcome.class, "/api/Immunization/{id}", ids.unknown()),
+        expect(200, Immunization.Bundle.class, "/api/Immunization?_id={id}", ids.immunization()),
+        expect(
+            200,
+            Immunization.Bundle.class,
+            "/api/Immunization?identifier={id}",
+            ids.immunization()),
+        expect(404, OperationOutcome.class, "/api/Immunization?_id={id}", ids.unknown()),
+        expect(
+            200, Immunization.Bundle.class, "/api/Immunization?patient={patient}", ids.patient()),
         // Medication
         expect(200, Medication.class, "/api/Medication/{id}", ids.medication()),
         expect(404, OperationOutcome.class, "/api/Medication/{id}", ids.unknown()),

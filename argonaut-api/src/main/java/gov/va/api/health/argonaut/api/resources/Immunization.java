@@ -18,6 +18,8 @@ import gov.va.api.health.argonaut.api.elements.Extension;
 import gov.va.api.health.argonaut.api.elements.Meta;
 import gov.va.api.health.argonaut.api.elements.Narrative;
 import gov.va.api.health.argonaut.api.elements.Reference;
+import gov.va.api.health.argonaut.api.validation.ExactlyOneOf;
+import gov.va.api.health.argonaut.api.validation.ExactlyOneOfs;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import javax.validation.Valid;
@@ -41,11 +43,16 @@ import lombok.NoArgsConstructor;
 @Schema(
   description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-immunization.html"
 )
+@ExactlyOneOfs({
+  @ExactlyOneOf(fields = {"status", "_status"}),
+  @ExactlyOneOf(fields = {"reported", "_reported"})
+})
 public class Immunization implements Resource {
+  @NotBlank String resourceType;
+
   @Pattern(regexp = Fhir.ID)
   String id;
 
-  @NotBlank String resourceType;
   @Valid Meta meta;
 
   @Pattern(regexp = Fhir.URI)
@@ -59,7 +66,8 @@ public class Immunization implements Resource {
   @Valid List<Extension> extension;
   @Valid List<Extension> modifierExtension;
   @Valid List<Identifier> identifier;
-  @NotNull @Valid Status status;
+  @Valid Status status;
+  @Valid Extension _status;
 
   @NotBlank
   @Pattern(regexp = Fhir.DATETIME)
@@ -68,7 +76,8 @@ public class Immunization implements Resource {
   @NotNull @Valid CodeableConcept vaccineCode;
   @NotNull @Valid Reference patient;
   @NotNull Boolean wasNotGiven;
-  @NotNull Boolean reported;
+  Boolean reported;
+  @Valid Extension _reported;
   @Valid Reference performer;
   @Valid Reference requester;
   @Valid Reference encounter;
@@ -86,6 +95,62 @@ public class Immunization implements Resource {
   @Valid Explanation explanation;
   @Valid List<Reaction> reaction;
   @Valid List<VaccinationProtocol> vaccinationProtocol;
+
+  @SuppressWarnings("unused")
+  public enum Status {
+    @JsonProperty("in-progress")
+    in_progress,
+    @JsonProperty("on-hold")
+    on_hold,
+    completed,
+    @JsonProperty("entered-in-error")
+    entered_in_error,
+    stopped
+  }
+
+  @Data
+  @NoArgsConstructor
+  @EqualsAndHashCode(callSuper = true)
+  @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+  @JsonDeserialize(builder = Immunization.Bundle.BundleBuilder.class)
+  public static class Bundle extends AbstractBundle<Immunization.Entry> {
+    @Builder
+    public Bundle(
+        @NotBlank String resourceType,
+        @Pattern(regexp = Fhir.ID) String id,
+        @Valid Meta meta,
+        @Pattern(regexp = Fhir.URI) String implicitRules,
+        @Pattern(regexp = Fhir.CODE) String language,
+        @NotNull BundleType type,
+        @Min(0) Integer total,
+        @Valid List<BundleLink> link,
+        @Valid List<Entry> entry,
+        @Valid Signature signature) {
+      super(resourceType, id, meta, implicitRules, language, type, total, link, entry, signature);
+    }
+  }
+
+  @Data
+  @NoArgsConstructor
+  @EqualsAndHashCode(callSuper = true)
+  @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+  @JsonDeserialize(builder = Immunization.Entry.EntryBuilder.class)
+  public static class Entry extends AbstractEntry<Immunization> {
+
+    @Builder
+    public Entry(
+        @Pattern(regexp = Fhir.ID) String id,
+        @Valid List<Extension> extension,
+        @Valid List<Extension> modifierExtension,
+        @Valid List<BundleLink> link,
+        @Pattern(regexp = Fhir.URI) String fullUrl,
+        @Valid Immunization resource,
+        @Valid Search search,
+        @Valid Request request,
+        @Valid Response response) {
+      super(id, extension, modifierExtension, link, fullUrl, resource, search, request, response);
+    }
+  }
 
   @Data
   @Builder
@@ -147,61 +212,5 @@ public class Immunization implements Resource {
     @NotEmpty @Valid List<CodeableConcept> targetDisease;
     @NotNull @Valid CodeableConcept doseStatus;
     @Valid CodeableConcept doseStatusReason;
-  }
-
-  @Data
-  @NoArgsConstructor
-  @EqualsAndHashCode(callSuper = true)
-  @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-  @JsonDeserialize(builder = Immunization.Bundle.BundleBuilder.class)
-  public static class Bundle extends AbstractBundle<Immunization.Entry> {
-    @Builder
-    public Bundle(
-        @Pattern(regexp = Fhir.ID) String id,
-        @Valid Meta meta,
-        @Pattern(regexp = Fhir.URI) String implicitRules,
-        @Pattern(regexp = Fhir.CODE) String language,
-        @NotNull BundleType type,
-        @Min(0) Integer total,
-        @Valid List<BundleLink> link,
-        @Valid List<Immunization.Entry> entry,
-        @NotBlank String resourceType,
-        @Valid Signature signature) {
-      super(id, meta, implicitRules, language, type, total, link, entry, resourceType, signature);
-    }
-  }
-
-  @Data
-  @NoArgsConstructor
-  @EqualsAndHashCode(callSuper = true)
-  @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-  @JsonDeserialize(builder = Immunization.Entry.EntryBuilder.class)
-  public static class Entry extends AbstractEntry<Immunization> {
-
-    @Builder
-    public Entry(
-        @Pattern(regexp = Fhir.ID) String id,
-        @Valid List<Extension> extension,
-        @Valid List<Extension> modifierExtension,
-        @Valid List<BundleLink> link,
-        @Pattern(regexp = Fhir.URI) String fullUrl,
-        @Valid Immunization resource,
-        @Valid Search search,
-        @Valid Request request,
-        @Valid Response response) {
-      super(id, extension, modifierExtension, link, fullUrl, resource, search, request, response);
-    }
-  }
-
-  @SuppressWarnings("unused")
-  public enum Status {
-    @JsonProperty("in-progress")
-    in_progress,
-    @JsonProperty("on-hold")
-    on_hold,
-    completed,
-    @JsonProperty("entered-in-error")
-    entered_in_error,
-    stopped
   }
 }

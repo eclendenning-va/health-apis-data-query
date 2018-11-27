@@ -14,9 +14,23 @@ public class TestIds {
   @NonNull String patient;
   @NonNull String medication;
   @NonNull String observation;
+  @NonNull String condition;
+  @NonNull String diagnosticReport;
+  @NonNull String immunization;
   @NonNull String unknown;
   @NonNull PersonallyIdentifiableInformation pii;
   @NonNull Observations observations;
+  @NonNull DiagnosticReports diagnosticReports;
+
+  @Value
+  @Builder
+  public static class DiagnosticReports {
+    @NotNull String loinc1;
+    @NotNull String loinc2;
+    @NotNull String onDate;
+    @NotNull String fromDate;
+    @NotNull String toDate;
+  }
 
   @Value
   @Builder

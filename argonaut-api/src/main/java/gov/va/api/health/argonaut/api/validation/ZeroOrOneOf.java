@@ -43,7 +43,7 @@ public @interface ZeroOrOneOf {
   Class<?>[] groups() default {};
 
   /** Assigns message for when validation fails. */
-  String message() default "Only one value may be specified";
+  String message() default "Only one value in this group may be specified";
 
   /** Assigns default payload to constraints */
   Class<? extends Payload>[] payload() default {};
