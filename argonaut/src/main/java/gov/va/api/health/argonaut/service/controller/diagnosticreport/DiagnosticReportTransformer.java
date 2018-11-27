@@ -42,22 +42,7 @@ public class DiagnosticReportTransformer implements DiagnosticReportController.T
         .effectiveDateTime(asDateString(source.getEffective()))
         .issued(asDateTimeString(source.getIssued()))
         .performer(reference(source.getPerformer()))
-        .request(request(source.getRequests()))
-        .specimen(specimen(source.getSpecimens()))
-        .result(result(source.getResults()))
         .build();
-  }
-
-  List<Reference> result(CdwDiagnosticReport.CdwResults optionalSource) {
-    return convertAll(optionalSource.getResult(), this::reference);
-  }
-
-  List<Reference> specimen(CdwDiagnosticReport.CdwSpecimens optionalSource) {
-    return convertAll(optionalSource.getSpecimen(), this::reference);
-  }
-
-  List<Reference> request(CdwDiagnosticReport.CdwRequests optionalSource) {
-    return convertAll(optionalSource.getRequest(), this::reference);
   }
 
   Reference reference(CdwReference source) {
