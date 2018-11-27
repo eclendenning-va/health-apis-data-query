@@ -32,6 +32,53 @@ public class ConditionTransformer implements ConditionController.Transformer {
     return condition(condition);
   }
 
+  CodeableConcept category(CdwCategory maybeSource) {
+    if (maybeSource == null || maybeSource.getCoding().isEmpty()) {
+      return null;
+    }
+    return CodeableConcept.builder()
+        .coding(categoryCodings(maybeSource.getCoding()))
+        .text(maybeSource.getText())
+        .build();
+  }
+
+  List<Coding> categoryCodings(List<CdwConditionCategoryCoding> maybeSource) {
+    return convertAll(
+        maybeSource,
+        cdw ->
+            Coding.builder()
+                .system(cdw.getSystem())
+                .code(cdw.getCode())
+                .display(cdw.getDisplay())
+                .build());
+  }
+
+  ClinicalStatusCode clinicalStatusCode(@NotNull CdwConditionClinicalStatus source) {
+    return ifPresent(
+        source, status -> EnumSearcher.of(ClinicalStatusCode.class).find(status.value()));
+  }
+
+  CodeableConcept code(List<CdwCodeableConcept> maybeCdw) {
+    if (maybeCdw == null || maybeCdw.isEmpty()) {
+      return null;
+    }
+    CdwCodeableConcept firstCode = maybeCdw.get(0);
+    if (firstCode.getText() == null && firstCode.getCoding().isEmpty()) {
+      return null;
+    }
+    return CodeableConcept.builder()
+        .text(firstCode.getText())
+        .coding(
+            convertAll(
+                firstCode.getCoding(),
+                source -> coding(source.getSystem(), source.getCode(), source.getDisplay())))
+        .build();
+  }
+
+  private Coding coding(String system, String code, String display) {
+    return Coding.builder().system(system).code(code).display(display).build();
+  }
+
   private Condition condition(CdwCondition source) {
     return Condition.builder()
         .resourceType("Condition")
@@ -59,57 +106,8 @@ public class ConditionTransformer implements ConditionController.Transformer {
                 .build());
   }
 
-  CodeableConcept code(List<CdwCodeableConcept> maybeCdw) {
-    if (maybeCdw == null) {
-      return null;
-    }
-    if (maybeCdw.get(0).getText() == null && maybeCdw.get(0).getCoding().isEmpty()) {
-      return null;
-    }
-    return CodeableConcept.builder()
-        .text(maybeCdw.get(0).getText())
-        .coding(
-            convertAll(
-                maybeCdw.get(0).getCoding(),
-                source -> coding(source.getSystem(), source.getCode(), source.getDisplay())))
-        .build();
-  }
-
-  private Coding coding(String system, String code, String display) {
-    return Coding.builder().system(system).code(code).display(display).build();
-  }
-
-  CodeableConcept category(CdwCategory maybeSource) {
-    if (maybeSource == null || maybeSource.getCoding().isEmpty()) {
-      return null;
-    }
-    return CodeableConcept.builder()
-        .coding(categoryCodings(maybeSource.getCoding()))
-        .text(maybeSource.getText())
-        .build();
-  }
-
-  ClinicalStatusCode clinicalStatusCode(@NotNull CdwConditionClinicalStatus source) {
-    EnumSearcher<ClinicalStatusCode> e = EnumSearcher.of(ClinicalStatusCode.class);
-    return ifPresent(source, status -> e.find(status.value()));
-  }
-
   VerificationStatusCode verificationStatusCode(@NotNull CdwConditionVerificationStatus source) {
-    EnumSearcher<VerificationStatusCode> e = EnumSearcher.of(VerificationStatusCode.class);
-    return ifPresent(source, status -> e.find(status.value()));
-  }
-
-  List<Coding> categoryCodings(List<CdwConditionCategoryCoding> maybeSource) {
-    if (maybeSource == null) {
-      return null;
-    }
-    return convertAll(
-        maybeSource,
-        cdw ->
-            Coding.builder()
-                .system(cdw.getSystem())
-                .code(cdw.getCode())
-                .display(cdw.getDisplay())
-                .build());
+    return ifPresent(
+        source, status -> EnumSearcher.of(VerificationStatusCode.class).find(status.value()));
   }
 }

@@ -1,5 +1,6 @@
 package gov.va.api.health.argonaut.service.controller.condition;
 
+import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -38,12 +39,6 @@ public class ConditionTransformerTest {
   }
 
   @Test
-  public void condition() {
-    assertThat(transformer.apply(cdw.condition())).isEqualTo(expected.condition());
-    assertThat(transformer.apply(cdw.condition())).isEqualTo(expected.condition());
-  }
-
-  @Test
   public void clinicalStatusCode() {
     assertThat(transformer.clinicalStatusCode(CdwConditionClinicalStatus.ACTIVE))
         .isEqualTo(ClinicalStatusCode.active);
@@ -53,6 +48,30 @@ public class ConditionTransformerTest {
         .isEqualTo(ClinicalStatusCode.remission);
     assertThat(transformer.clinicalStatusCode(CdwConditionClinicalStatus.RESOLVED))
         .isEqualTo(ClinicalStatusCode.resolved);
+  }
+
+  @Test
+  public void code() {
+    assertThat(transformer.code(null)).isNull();
+    assertThat(transformer.code(emptyList())).isNull();
+    CdwCodeableConcept emptyCodings = cdw.code();
+    emptyCodings.getCoding().clear();
+    CodeableConcept expectedEmptyCodings = expected.code();
+    expectedEmptyCodings.coding(null);
+    assertThat(transformer.code(singletonList(emptyCodings))).isEqualTo(expectedEmptyCodings);
+    assertThat(transformer.code(singletonList(cdw.code()))).isEqualTo(expected.code());
+  }
+
+  @Test
+  public void condition() {
+    assertThat(transformer.apply(cdw.condition())).isEqualTo(expected.condition());
+  }
+
+  @Test
+  public void reference() {
+    assertThat(transformer.reference(null)).isNull();
+    assertThat(transformer.reference(cdw.reference("x", "y")))
+        .isEqualTo(expected.reference("x", "y"));
   }
 
   @Test
@@ -69,19 +88,6 @@ public class ConditionTransformerTest {
         .isEqualTo(VerificationStatusCode.refuted);
     assertThat(transformer.verificationStatusCode(CdwConditionVerificationStatus.UNKNOWN))
         .isEqualTo(VerificationStatusCode.unknown);
-  }
-
-  @Test
-  public void code() {
-    assertThat(transformer.code(null)).isNull();
-    assertThat(transformer.code(singletonList(cdw.code()))).isEqualTo(expected.code());
-  }
-
-  @Test
-  public void reference() {
-    assertThat(transformer.reference(null)).isNull();
-    assertThat(transformer.reference(cdw.reference("x", "y")))
-        .isEqualTo(expected.reference("x", "y"));
   }
 
   @NoArgsConstructor(staticName = "get")
@@ -116,18 +122,6 @@ public class ConditionTransformerTest {
       return cdw;
     }
 
-    private CdwReference reference(String ref, String display) {
-      CdwReference cdw = new CdwReference();
-      cdw.setReference(ref);
-      cdw.setDisplay(display);
-      return cdw;
-    }
-
-    @SneakyThrows
-    private XMLGregorianCalendar dateTime(String timestamp) {
-      return DatatypeFactory.newInstance().newXMLGregorianCalendar(timestamp);
-    }
-
     CdwCondition condition() {
       CdwCondition condition = new CdwCondition();
       condition.setCdwId("1000000289360:P");
@@ -143,6 +137,18 @@ public class ConditionTransformerTest {
       condition.setPatient(reference("Patient/185601V825290", "VETERAN,JOHN Q"));
       condition.setVerificationStatus(CdwConditionVerificationStatus.CONFIRMED);
       return condition;
+    }
+
+    @SneakyThrows
+    private XMLGregorianCalendar dateTime(String timestamp) {
+      return DatatypeFactory.newInstance().newXMLGregorianCalendar(timestamp);
+    }
+
+    private CdwReference reference(String ref, String display) {
+      CdwReference cdw = new CdwReference();
+      cdw.setReference(ref);
+      cdw.setDisplay(display);
+      return cdw;
     }
   }
 
@@ -170,10 +176,6 @@ public class ConditionTransformerTest {
       return Coding.builder().system(system).code(code).display(display).build();
     }
 
-    Reference reference(String ref, String display) {
-      return Reference.builder().reference(ref).display(display).build();
-    }
-
     Condition condition() {
       return Condition.builder()
           .resourceType("Condition")
@@ -189,6 +191,10 @@ public class ConditionTransformerTest {
           .patient(reference("Patient/185601V825290", "VETERAN,JOHN Q"))
           .verificationStatus(VerificationStatusCode.confirmed)
           .build();
+    }
+
+    Reference reference(String ref, String display) {
+      return Reference.builder().reference(ref).display(display).build();
     }
   }
 }
