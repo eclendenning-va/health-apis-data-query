@@ -5,5 +5,5 @@
   <!--
     Immunization report _status and _reported are data absent reason fields.
   -->
-  <suppress checks="MemberName" files=".*/Immunization.java" message="Member name '(_status|_reported)'"/>
+  <suppress checks="MemberName" files=".*(/|\\)Immunization.java" message="Member name '(_status|_reported)'"/>
 </suppressions>
