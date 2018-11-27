@@ -54,6 +54,11 @@ public class ArgonautReadAndSearchIT {
         expect(
             200,
             AllergyIntolerance.Bundle.class,
+            "/api/AllergyIntolerance?identifier={id}",
+            ids.allergyIntolerance()),
+        expect(
+            200,
+            AllergyIntolerance.Bundle.class,
             "/api/AllergyIntolerance?patient={patient}",
             ids.patient()),
         // Medication

@@ -5,10 +5,12 @@ import static gov.va.api.health.argonaut.service.controller.Transformers.hasPayl
 
 import gov.va.api.health.argonaut.api.resources.AllergyIntolerance;
 import gov.va.api.health.argonaut.api.resources.AllergyIntolerance.Bundle;
+import gov.va.api.health.argonaut.api.resources.OperationOutcome;
 import gov.va.api.health.argonaut.service.controller.Bundler;
 import gov.va.api.health.argonaut.service.controller.Bundler.BundleContext;
 import gov.va.api.health.argonaut.service.controller.PageLinks.LinkConfig;
 import gov.va.api.health.argonaut.service.controller.Parameters;
+import gov.va.api.health.argonaut.service.controller.Validator;
 import gov.va.api.health.argonaut.service.mranderson.client.MrAndersonClient;
 import gov.va.api.health.argonaut.service.mranderson.client.Query;
 import gov.va.dvp.cdw.xsd.model.CdwAllergyIntolerance103Root;
@@ -21,6 +23,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -105,6 +109,24 @@ public class AllergyIntoleranceController {
         servletRequest);
   }
 
+  /** Search by identifier. */
+  @GetMapping(params = {"identifier"})
+  public AllergyIntolerance.Bundle searchByIdentifier(
+      @RequestParam("identifier") String identifier,
+      @RequestParam(value = "page", defaultValue = "1") int page,
+      @RequestParam(value = "_count", defaultValue = "1") int count,
+      HttpServletRequest servletRequest) {
+    return bundle(
+        Parameters.builder()
+            .add("identifier", identifier)
+            .add("page", page)
+            .add("_count", count)
+            .build(),
+        page,
+        count,
+        servletRequest);
+  }
+
   /** Search by patient. */
   @GetMapping(params = {"patient"})
   public AllergyIntolerance.Bundle searchByPatient(
@@ -117,6 +139,15 @@ public class AllergyIntoleranceController {
         page,
         count,
         servletRequest);
+  }
+
+  /** Hey, this is a validate endpoint. It validates. */
+  @PostMapping(
+      value = "/$validate",
+      consumes = {"application/json", "application/json+fhir", "application/fhir+json"}
+  )
+  public OperationOutcome validate(@RequestBody AllergyIntolerance.Bundle bundle) {
+    return Validator.create().validate(bundle);
   }
 
   public interface Transformer
