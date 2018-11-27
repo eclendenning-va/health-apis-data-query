@@ -124,7 +124,7 @@ public class AllergyIntolerance implements Resource {
         @NotNull BundleType type,
         @Min(0) Integer total,
         @Valid List<BundleLink> link,
-        @Valid List<AllergyIntolerance.Entry> entry,
+        @Valid List<Entry> entry,
         @NotBlank String resourceType,
         @Valid Signature signature) {
       super(id, meta, implicitRules, language, type, total, link, entry, resourceType, signature);

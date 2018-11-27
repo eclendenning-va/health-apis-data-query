@@ -46,6 +46,16 @@ public class ArgonautReadAndSearchIT {
             "/api/AllergyIntolerance/{id}",
             ids.allergyIntolerance()),
         expect(404, OperationOutcome.class, "/api/AllergyIntolerance/{id}", ids.unknown()),
+        expect(
+            200,
+            AllergyIntolerance.Bundle.class,
+            "/api/AllergyIntolerance?_id={id}",
+            ids.allergyIntolerance()),
+        expect(
+            200,
+            AllergyIntolerance.Bundle.class,
+            "/api/AllergyIntolerance?patient={patient}",
+            ids.patient()),
         // Medication
         expect(200, Medication.class, "/api/Medication/{id}", ids.medication()),
         expect(404, OperationOutcome.class, "/api/Medication/{id}", ids.unknown()),
@@ -131,7 +141,6 @@ public class ArgonautReadAndSearchIT {
             "/api/Patient?name={name}&gender={gender}",
             ids.pii().name(),
             ids.pii().gender())
-        //
         );
   }
 
