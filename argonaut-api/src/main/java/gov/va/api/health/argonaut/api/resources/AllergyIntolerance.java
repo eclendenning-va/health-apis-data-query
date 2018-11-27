@@ -37,11 +37,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor
 @JsonAutoDetect(
-    fieldVisibility = JsonAutoDetect.Visibility.ANY,
-    isGetterVisibility = JsonAutoDetect.Visibility.NONE)
+  fieldVisibility = JsonAutoDetect.Visibility.ANY,
+  isGetterVisibility = JsonAutoDetect.Visibility.NONE
+)
 @Schema(
-    description =
-        "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-allergyintolerance.html")
+  description =
+      "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-allergyintolerance.html"
+)
 public class AllergyIntolerance implements Resource {
   @NotBlank String resourceType;
 
