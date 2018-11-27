@@ -45,10 +45,11 @@ import lombok.NoArgsConstructor;
       "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-allergyintolerance.html"
 )
 public class AllergyIntolerance implements Resource {
+  @NotBlank String resourceType;
+
   @Pattern(regexp = Fhir.ID)
   String id;
 
-  @NotBlank String resourceType;
   @Valid Meta meta;
 
   @Pattern(regexp = Fhir.URI)
