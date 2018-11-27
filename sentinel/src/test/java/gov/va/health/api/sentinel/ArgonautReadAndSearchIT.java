@@ -140,8 +140,7 @@ public class ArgonautReadAndSearchIT {
             Patient.Bundle.class,
             "/api/Patient?name={name}&gender={gender}",
             ids.pii().name(),
-            ids.pii().gender())
-        );
+            ids.pii().gender()));
   }
 
   private TestClient argonaut() {
