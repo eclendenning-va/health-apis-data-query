@@ -136,7 +136,7 @@ public class AllergyIntoleranceControllerTest {
   public void searchById() {
     assertSearch(
         () -> controller.searchById("me", 1, 10, servletRequest),
-        Parameters.builder().add("_id", "me").add("page", 1).add("_count", 10).build());
+        Parameters.builder().add("identifier", "me").add("page", 1).add("_count", 10).build());
   }
 
   @Test
@@ -180,7 +180,11 @@ public class AllergyIntoleranceControllerTest {
             .totalRecords(0)
             .path("/api/AllergyIntolerance")
             .queryParams(
-                Parameters.builder().add("_id", "me").add("page", 1).add("_count", 10).build())
+                Parameters.builder()
+                    .add("identifier", "me")
+                    .add("page", 1)
+                    .add("_count", 10)
+                    .build())
             .build();
     assertThat(captor.getValue().linkConfig()).isEqualTo(expectedLinkConfig);
     assertThat(captor.getValue().xmlItems()).isEmpty();
