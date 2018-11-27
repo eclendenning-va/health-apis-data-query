@@ -58,9 +58,10 @@ class IdRegistrar {
     ResourceIdentity patient = id("PATIENT", cdwIds.patient());
     ResourceIdentity medication = id("MEDICATION", cdwIds.medication());
     ResourceIdentity observation = id("OBSERVATION", cdwIds.observation());
+    ResourceIdentity condition = id("CONDITION", cdwIds.condition());
 
     List<ResourceIdentity> identities =
-        Arrays.asList(allergyIntolerance, patient, medication, observation);
+        Arrays.asList(allergyIntolerance, condition, patient, medication, observation);
     log.info("Registering {}", identities);
     List<Registration> registrations =
         system()
@@ -76,6 +77,7 @@ class IdRegistrar {
             .patient(findUuid(registrations, patient))
             .medication(findUuid(registrations, medication))
             .observation(findUuid(registrations, observation))
+            .condition(findUuid(registrations, condition))
             .build();
     log.info("Using {}", publicIds);
     return publicIds;
