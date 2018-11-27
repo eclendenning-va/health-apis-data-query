@@ -3,9 +3,10 @@ package gov.va.api.health.argonaut.service.controller.diagnosticreport;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
+import gov.va.api.health.argonaut.api.datatypes.Coding;
 import gov.va.api.health.argonaut.api.elements.Reference;
 import gov.va.api.health.argonaut.api.resources.DiagnosticReport;
-import gov.va.api.health.argonaut.api.samples.SampleDiagnosticReports;
+import gov.va.api.health.argonaut.api.resources.DiagnosticReport.Code;
 import gov.va.dvp.cdw.xsd.model.CdwDiagnosticReport102Root;
 import gov.va.dvp.cdw.xsd.model.CdwDiagnosticReportCategory;
 import gov.va.dvp.cdw.xsd.model.CdwDiagnosticReportCategoryCode;
@@ -20,8 +21,11 @@ import gov.va.dvp.cdw.xsd.model.CdwReference;
 import gov.va.dvp.cdw.xsd.model.CdwReturnFormatCodes;
 import gov.va.dvp.cdw.xsd.model.CdwReturnTypeCodes;
 import java.math.BigInteger;
+import java.util.Collections;
+import java.util.List;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
+import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.junit.Test;
 
@@ -30,11 +34,8 @@ public class DiagnosticReportTransformerTest {
   DiagnosticReportTransformer tx = new DiagnosticReportTransformer();
   private CdwDiagnosticReport102Root.CdwDiagnosticReports.CdwDiagnosticReport cdw =
       new CdwSampleData().diagnosticReport();
-  /*
-   * For those who follow... prefer creating your own samples instead of linking the API samples to
-   * this project.
-   */
-  private DiagnosticReport expected = SampleDiagnosticReports.get().diagnosticReport();
+
+  private DiagnosticReport expected = Expected.get().diagnosticReport();
 
   @Test
   public void categoryCodingTransformsToCodingList() {
@@ -153,6 +154,55 @@ public class DiagnosticReportTransformerTest {
     @SneakyThrows
     private XMLGregorianCalendar issued() {
       return DatatypeFactory.newInstance().newXMLGregorianCalendar("2013-06-21T20:05:12Z");
+    }
+  }
+
+  @NoArgsConstructor(staticName = "get")
+  private static class Expected {
+
+    DiagnosticReport diagnosticReport() {
+      return DiagnosticReport.builder()
+          .resourceType("Diagnostic Report")
+          .id("1234")
+          .status(Code._final)
+          .category(category())
+          .code(code())
+          .subject(reference())
+          .encounter(reference())
+          .effectiveDateTime("2013-06-21T19:03:16Z")
+          .issued("2013-06-21T20:05:12Z")
+          .performer(reference())
+          .build();
+    }
+
+    private Reference reference() {
+      return Reference.builder().reference("HelloReference").display("HelloDisplay").build();
+    }
+
+    private CodeableConcept code() {
+      return CodeableConcept.builder().coding(codeCoding()).text("panel").build();
+    }
+
+    private List<Coding> codeCoding() {
+      return Collections.singletonList(
+          Coding.builder()
+              .system("http://HelloSystem.com")
+              .code("Hello Code")
+              .display("Hello Display")
+              .build());
+    }
+
+    private CodeableConcept category() {
+      return CodeableConcept.builder().coding(categoryCoding()).text("dat category").build();
+    }
+
+    private List<Coding> categoryCoding() {
+      return Collections.singletonList(
+          Coding.builder()
+              .system("http://hl7.org/fhir/ValueSet/diagnostic-service-sections")
+              .code("LAB")
+              .display("Laboratory")
+              .build());
     }
   }
 }
