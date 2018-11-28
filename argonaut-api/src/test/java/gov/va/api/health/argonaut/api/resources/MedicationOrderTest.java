@@ -2,6 +2,8 @@ package gov.va.api.health.argonaut.api.resources;
 
 import static gov.va.api.health.argonaut.api.RoundTrip.assertRoundTrip;
 
+import gov.va.api.health.argonaut.api.ExactlyOneOfVerifier;
+import gov.va.api.health.argonaut.api.ZeroOrOneOfVerifier;
 import gov.va.api.health.argonaut.api.bundle.AbstractBundle.BundleType;
 import gov.va.api.health.argonaut.api.bundle.AbstractEntry;
 import gov.va.api.health.argonaut.api.bundle.BundleLink;
@@ -54,5 +56,35 @@ public class MedicationOrderTest {
   @Test
   public void medicationOrder() {
     assertRoundTrip(data.medicationOrder());
+  }
+
+  @Test
+  public void relatedFields() {
+    ExactlyOneOfVerifier.builder().sample(data.medicationOrder()).fieldPrefix("medication").build();
+    ZeroOrOneOfVerifier.builder()
+        .sample(data.medicationOrder())
+        .fieldPrefix("reason")
+        .omission("reasonEnded")
+        .build();
+    ZeroOrOneOfVerifier.builder()
+        .sample(data.medicationOrder().dosageInstruction())
+        .fieldPrefix("asNeeded")
+        .build();
+    ZeroOrOneOfVerifier.builder()
+        .sample(data.medicationOrder().dosageInstruction())
+        .fieldPrefix("site")
+        .build();
+    ZeroOrOneOfVerifier.builder()
+        .sample(data.medicationOrder().dosageInstruction())
+        .fieldPrefix("dose")
+        .build();
+    ZeroOrOneOfVerifier.builder()
+        .sample(data.medicationOrder().dosageInstruction())
+        .fieldPrefix("rate")
+        .build();
+    ZeroOrOneOfVerifier.builder()
+        .sample(data.medicationOrder().dispenseRequest())
+        .fieldPrefix("medication")
+        .build();
   }
 }
