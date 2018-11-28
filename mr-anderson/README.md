@@ -6,7 +6,6 @@ exclusively with public IDs managed by the [Identity Service](../ids/README.md).
 
 Mr. Anderson blends FHIR-like queries with more raw data access.
 
-
 #### Queries
 
 ```
