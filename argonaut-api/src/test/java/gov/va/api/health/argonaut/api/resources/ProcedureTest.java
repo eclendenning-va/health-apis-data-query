@@ -63,6 +63,7 @@ public class ProcedureTest {
     ZeroOrOneOfVerifier.builder()
         .sample(data.procedure())
         .fieldPrefix("reason")
+        .omission("reasonNotPerformed")
         .build()
         .verify();
     ExactlyOneOfExtensionVerifier.builder()

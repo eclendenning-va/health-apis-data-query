@@ -2,7 +2,9 @@ package gov.va.api.health.argonaut.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Collection;
 import lombok.Builder;
+import lombok.Singular;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -11,8 +13,8 @@ public class ExactlyOneOfVerifier<T> extends AbstractRelatedFieldVerifier<T> {
   private String fieldPrefix;
 
   @Builder
-  public ExactlyOneOfVerifier(T sample, String fieldPrefix) {
-    super(sample, name -> name.startsWith(fieldPrefix));
+  public ExactlyOneOfVerifier(T sample, String fieldPrefix, @Singular Collection omissions) {
+    super(sample, name -> name.startsWith(fieldPrefix) && !omissions.contains(name));
     this.fieldPrefix = fieldPrefix;
   }
 

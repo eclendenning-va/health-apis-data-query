@@ -42,19 +42,23 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @JsonAutoDetect(fieldVisibility = Visibility.ANY)
 @Schema(
-    description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-procedure.html")
+  description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-procedure.html"
+)
 @ExactlyOneOfs({
-    @ExactlyOneOf(
-        fields = {"status", "_status"},
-        message = "Status or _Status, but not both."),
-    @ExactlyOneOf(
-        fields = {"performedDateTime", "performedPeriod"},
-        message = "performedDateTime or performedPeriod, but not both.")
+  @ExactlyOneOf(
+    fields = {"status", "_status"},
+    message = "Status or _Status, but not both."
+  ),
+  @ExactlyOneOf(
+    fields = {"performedDateTime", "performedPeriod"},
+    message = "performedDateTime or performedPeriod, but not both."
+  )
 })
 @ZeroOrOneOfs(
     @ZeroOrOneOf(
-        fields = {"reasonCodeableConcept", "reasonReference"},
-        message = "At most one reason may be specified."))
+      fields = {"reasonCodeableConcept", "reasonReference"},
+      message = "At most one reason may be specified."
+    ))
 public class Procedure implements Resource {
   @NotBlank String resourceType;
 
@@ -75,8 +79,7 @@ public class Procedure implements Resource {
   @Valid List<Extension> modifierExtension;
   @Valid List<Identifier> identifier;
 
-  @Valid @NotNull
-  Reference subject;
+  @Valid @NotNull Reference subject;
 
   @Valid Status status;
   @Valid Extension _status;
@@ -117,7 +120,6 @@ public class Procedure implements Resource {
     @JsonProperty("entered-in-error")
     entered_in_error
   }
-
 
   @Data
   @NoArgsConstructor
@@ -163,8 +165,6 @@ public class Procedure implements Resource {
     }
   }
 
-
-
   @Data
   @Builder
   @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -186,7 +186,7 @@ public class Procedure implements Resource {
   @NoArgsConstructor(access = AccessLevel.PRIVATE)
   @AllArgsConstructor
   @JsonAutoDetect(fieldVisibility = Visibility.ANY)
-  public static class FocalDevice implements BackboneElement{
+  public static class FocalDevice implements BackboneElement {
     @Pattern(regexp = Fhir.ID)
     String id;
 

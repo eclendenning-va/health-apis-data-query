@@ -34,8 +34,8 @@ public class SampleProcedures {
         .category(codeableConcept())
         .code(codeableConcept())
         .notPerformed(false)
-        .reasonNotPerformed(Arrays.asList(codeableConcept(),codeableConcept()))
-        .bodySite(Arrays.asList(codeableConcept(),codeableConcept()))
+        .reasonNotPerformed(Arrays.asList(codeableConcept(), codeableConcept()))
+        .bodySite(Arrays.asList(codeableConcept(), codeableConcept()))
         .reasonCodeableConcept(codeableConcept())
         // TODO: reasonReference?
         .performer(Arrays.asList(performer(), performer()))
@@ -43,10 +43,10 @@ public class SampleProcedures {
         .encounter(reference())
         .location(reference())
         .outcome(codeableConcept())
-        .complication(Arrays.asList(codeableConcept(),codeableConcept()))
-        .followUp(Arrays.asList(codeableConcept(),codeableConcept()))
+        .complication(Arrays.asList(codeableConcept(), codeableConcept()))
+        .followUp(Arrays.asList(codeableConcept(), codeableConcept()))
         .request(reference())
-        .notes(Arrays.asList(annotation(),annotation()))
+        .notes(Arrays.asList(annotation(), annotation()))
         .focalDevice(Arrays.asList(focalDevice()))
         .build();
   }
@@ -54,8 +54,8 @@ public class SampleProcedures {
   private FocalDevice focalDevice() {
     return Procedure.FocalDevice.builder()
         .id("2468")
-        .extension(Arrays.asList(extension(),extension()))
-        .modifierExtension(Arrays.asList(extension(),extension()))
+        .extension(Arrays.asList(extension(), extension()))
+        .modifierExtension(Arrays.asList(extension(), extension()))
         .action(codeableConcept())
         .manipulated(reference())
         .build();
@@ -64,8 +64,8 @@ public class SampleProcedures {
   Procedure.Performer performer() {
     return Procedure.Performer.builder()
         .id("9876")
-        .extension(Arrays.asList(extension(),extension()))
-        .modifierExtension(Arrays.asList(extension(),extension()))
+        .extension(Arrays.asList(extension(), extension()))
+        .modifierExtension(Arrays.asList(extension(), extension()))
         .actor(reference())
         .role(codeableConcept())
         .build();
