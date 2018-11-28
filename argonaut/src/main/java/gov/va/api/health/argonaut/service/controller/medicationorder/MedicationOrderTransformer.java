@@ -13,6 +13,7 @@ import gov.va.api.health.argonaut.api.datatypes.Duration;
 import gov.va.api.health.argonaut.api.datatypes.SimpleQuantity;
 import gov.va.api.health.argonaut.api.datatypes.Timing;
 import gov.va.api.health.argonaut.api.elements.Reference;
+import gov.va.api.health.argonaut.api.resources.Medication;
 import gov.va.api.health.argonaut.api.resources.MedicationOrder;
 import gov.va.api.health.argonaut.api.resources.MedicationOrder.DispenseRequest;
 import gov.va.api.health.argonaut.api.resources.MedicationOrder.DosageInstruction;
@@ -44,10 +45,8 @@ public class MedicationOrderTransformer implements MedicationOrderController.Tra
         .resourceType("Medication Order")
         .patient(reference(source.getPatient()))
         .dateWritten(asDateTimeString(source.getDateWritten()))
-        /*.status(
-            ifPresent(
-                source.getStatus(),
-                status -> EnumSearcher.of(MedicationOrder.Status.class).find(status.value())))*/
+        .status(convert(source.getStatus(),
+            status -> EnumSearcher.of(MedicationOrder.Status.class).find(source.getStatus())))
         .dateEnded(asDateString(source.getDateEnded()))
         .prescriber(reference(source.getPrescriber()))
         .medicationReference(reference(source.getMedicationReference()))
