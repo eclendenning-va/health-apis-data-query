@@ -2,7 +2,6 @@ package gov.va.api.health.argonaut.api.resources;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import gov.va.api.health.argonaut.api.Fhir;
 import gov.va.api.health.argonaut.api.bundle.AbstractBundle;
@@ -86,7 +85,9 @@ public class MedicationOrder implements Resource {
   @Pattern(regexp = Fhir.DATETIME)
   String dateWritten;
 
-  @NotNull Status status;
+  @NotNull
+  @Pattern(regexp = Fhir.CODE)
+  String status;
 
   @Pattern(regexp = Fhir.DATETIME)
   String dateEnded;
@@ -104,18 +105,6 @@ public class MedicationOrder implements Resource {
   @Valid DispenseRequest dispenseRequest;
   @Valid Substitution substitution;
   @Valid Reference priorPrescription;
-
-  @SuppressWarnings("unused")
-  public enum Status {
-    active,
-    @JsonProperty("on-hold")
-    on_hold,
-    completed,
-    @JsonProperty("entered-in-error")
-    entered_in_error,
-    stopped,
-    draft
-  }
 
   @Data
   @NoArgsConstructor
