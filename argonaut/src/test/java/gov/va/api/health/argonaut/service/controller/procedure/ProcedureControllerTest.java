@@ -15,10 +15,10 @@ import gov.va.api.health.argonaut.service.controller.Validator;
 import gov.va.api.health.argonaut.service.mranderson.client.MrAndersonClient;
 import gov.va.api.health.argonaut.service.mranderson.client.Query;
 import gov.va.api.health.autoconfig.configuration.JacksonConfig;
-import gov.va.dvp.cdw.xsd.model.CdwProcedure101Root.CdwProcedures.CdwProcedure;
 import gov.va.dvp.cdw.xsd.model.CdwProcedure101Root;
-import java.util.Arrays;
 import gov.va.dvp.cdw.xsd.model.CdwProcedure101Root.CdwProcedures;
+import gov.va.dvp.cdw.xsd.model.CdwProcedure101Root.CdwProcedures.CdwProcedure;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.function.Supplier;
 import javax.servlet.http.HttpServletRequest;
@@ -34,17 +34,13 @@ import org.springframework.util.MultiValueMap;
 
 public class ProcedureControllerTest {
 
-  @Mock
-  MrAndersonClient client;
-
+  @Mock MrAndersonClient client;
 
   @Mock ProcedureController.Transformer tx;
 
   ProcedureController controller;
-  @Mock
-  HttpServletRequest servletRequest;
-  @Mock
-  Bundler bundler;
+  @Mock HttpServletRequest servletRequest;
+  @Mock Bundler bundler;
 
   @Before
   public void _init() {
@@ -79,8 +75,8 @@ public class ProcedureControllerTest {
 
     assertThat(actual).isSameAs(mockBundle);
     @SuppressWarnings("unchecked")
-    ArgumentCaptor<BundleContext<CdwProcedure, Procedure, Procedure.Entry, Procedure.Bundle>> captor =
-        ArgumentCaptor.forClass(BundleContext.class);
+    ArgumentCaptor<BundleContext<CdwProcedure, Procedure, Procedure.Entry, Procedure.Bundle>>
+        captor = ArgumentCaptor.forClass(BundleContext.class);
 
     verify(bundler).bundle(captor.capture());
 
@@ -105,12 +101,7 @@ public class ProcedureControllerTest {
         .resourceType("Bundle")
         .entry(
             Collections.singletonList(
-                Procedure.Entry.builder()
-                .fullUrl("http://example.com")
-                .resource(resource)
-                .build()
-            )
-        )
+                Procedure.Entry.builder().fullUrl("http://example.com").resource(resource).build()))
         .build();
   }
 
@@ -130,7 +121,6 @@ public class ProcedureControllerTest {
     verify(client).search(captor.capture());
     assertThat(captor.getValue().parameters()).isEqualTo(Parameters.forIdentity("hello"));
   }
-
 
   @Test
   public void searchById() {
@@ -158,19 +148,13 @@ public class ProcedureControllerTest {
     assertSearch(
         () ->
             controller.searchByPatientAndDate(
-                "me",
-                new String[] {"2005", "2006"},
-                1,
-                10,
-                servletRequest
-            ),
+                "me", new String[] {"2005", "2006"}, 1, 10, servletRequest),
         Parameters.builder()
             .add("patient", "me")
             .addAll("date", "2005", "2006")
             .add("page", 1)
             .add("_count", 10)
-            .build()
-    );
+            .build());
   }
 
   @Test
@@ -179,8 +163,7 @@ public class ProcedureControllerTest {
     Procedure resource =
         JacksonConfig.createMapper()
             .readValue(
-                getClass().getResourceAsStream("/cdw/old-procedure-1.01.json"),
-                Procedure.class);
+                getClass().getResourceAsStream("/cdw/old-procedure-1.01.json"), Procedure.class);
 
     Procedure.Bundle bundle = bundleOf(resource);
     assertThat(controller.validate(bundle)).isEqualTo(Validator.ok());
@@ -192,8 +175,7 @@ public class ProcedureControllerTest {
     Procedure resource =
         JacksonConfig.createMapper()
             .readValue(
-                getClass().getResourceAsStream("/cdw/old-procedure-1.01.json"),
-                Procedure.class);
+                getClass().getResourceAsStream("/cdw/old-procedure-1.01.json"), Procedure.class);
     resource.resourceType(null);
 
     Procedure.Bundle bundle = bundleOf(resource);
