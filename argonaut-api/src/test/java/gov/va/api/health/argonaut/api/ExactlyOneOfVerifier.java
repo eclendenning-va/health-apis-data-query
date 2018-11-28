@@ -7,19 +7,13 @@ import lombok.Builder;
 import lombok.Singular;
 import lombok.extern.slf4j.Slf4j;
 
-/**
- * This class will verify fields with a given prefix are properly configured in the same ZeroOrOneOf
- * group. This class will fiend related fields with the same prefix and systematically test
- * different combinations to ensure they are validate as expected.
- */
 @Slf4j
-public class ZeroOrOneOfVerifier<T> extends AbstractRelatedFieldVerifier<T> {
+public class ExactlyOneOfVerifier<T> extends AbstractRelatedFieldVerifier<T> {
 
-  /** The prefix of the related fields. */
   private String fieldPrefix;
 
   @Builder
-  public ZeroOrOneOfVerifier(T sample, String fieldPrefix, @Singular Collection omissions) {
+  public ExactlyOneOfVerifier(T sample, String fieldPrefix, @Singular Collection omissions) {
     super(sample, name -> name.startsWith(fieldPrefix) && !omissions.contains(name));
     this.fieldPrefix = fieldPrefix;
   }
@@ -27,12 +21,11 @@ public class ZeroOrOneOfVerifier<T> extends AbstractRelatedFieldVerifier<T> {
   @Override
   public void verify() {
     log.info("Verifying {}", sample.getClass());
-    /* Make sure the sample is valid before we mess it up. */
     assertProblems(0);
 
-    /* Make sure we are valid if no fields are set. */
+    /* Must have at least 1 field set. */
     unsetFields();
-    assertProblems(0);
+    assertProblems(1);
 
     /* Make sure setting any two fields is not ok. */
     log.info("{} fields in group {}: {}", sample.getClass().getSimpleName(), fieldPrefix, fields());
