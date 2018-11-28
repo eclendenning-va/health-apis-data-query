@@ -4,6 +4,8 @@
 <suppressions>
   <!--
     Immunization report _status and _reported are data absent reason fields.
+    Procedure _status is a data absent reason field.
   -->
   <suppress checks="MemberName" files=".*(/|\\)Immunization.java" message="Member name '(_status|_reported)'"/>
+  <suppress checks="MemberName" files=".*(/|\\)Procedure.java" message="Member name '(_status)'"/>
 </suppressions>
