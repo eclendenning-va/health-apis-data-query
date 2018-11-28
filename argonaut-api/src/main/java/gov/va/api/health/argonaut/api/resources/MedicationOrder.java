@@ -9,6 +9,7 @@ import gov.va.api.health.argonaut.api.bundle.AbstractBundle;
 import gov.va.api.health.argonaut.api.bundle.AbstractEntry;
 import gov.va.api.health.argonaut.api.bundle.BundleLink;
 import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
+import gov.va.api.health.argonaut.api.datatypes.Duration;
 import gov.va.api.health.argonaut.api.datatypes.Identifier;
 import gov.va.api.health.argonaut.api.datatypes.Period;
 import gov.va.api.health.argonaut.api.datatypes.Range;
@@ -16,6 +17,7 @@ import gov.va.api.health.argonaut.api.datatypes.Ratio;
 import gov.va.api.health.argonaut.api.datatypes.Signature;
 import gov.va.api.health.argonaut.api.datatypes.SimpleQuantity;
 import gov.va.api.health.argonaut.api.datatypes.SimpleResource;
+import gov.va.api.health.argonaut.api.datatypes.Timing;
 import gov.va.api.health.argonaut.api.elements.BackboneElement;
 import gov.va.api.health.argonaut.api.elements.Extension;
 import gov.va.api.health.argonaut.api.elements.Meta;
@@ -26,14 +28,12 @@ import gov.va.api.health.argonaut.api.validation.ExactlyOneOfs;
 import gov.va.api.health.argonaut.api.validation.ZeroOrOneOf;
 import gov.va.api.health.argonaut.api.validation.ZeroOrOneOfs;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.time.Duration;
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
-import jdk.nashorn.internal.runtime.Timing;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -183,7 +183,7 @@ public class MedicationOrder implements Resource {
       message = "Only one site field may be specified"
     ),
     @ZeroOrOneOf(
-      fields = {"doseRange", "doseSimpleQuantity"},
+      fields = {"doseRange", "doseQuantity"},
       message = "Only one dose field may be specified"
     ),
     @ZeroOrOneOf(
@@ -200,7 +200,6 @@ public class MedicationOrder implements Resource {
 
     String text;
     @Valid CodeableConcept additionalInstructions;
-    // COME BACK HERE - NOT JAVA TIMING - NEED TO MAKE DATATYPE
     @Valid Timing timing;
     Boolean asNeededBoolean;
     @Valid CodeableConcept asNeededCodeableConcept;
@@ -209,7 +208,7 @@ public class MedicationOrder implements Resource {
     @Valid CodeableConcept route;
     @Valid CodeableConcept method;
     @Valid Range doseRange;
-    @Valid SimpleQuantity doseSimpleQuantity;
+    @Valid SimpleQuantity doseQuantity;
     @Valid Ratio rateRatio;
     @Valid Range rateRange;
     @Valid Ratio maxDosePerDay;
