@@ -30,14 +30,12 @@ public class SampleProcedures {
         .identifier(singletonList(identifier()))
         .subject(reference())
         .status(Status.in_progress)
-        // TODO: _status?
         .category(codeableConcept())
         .code(codeableConcept())
         .notPerformed(false)
         .reasonNotPerformed(Arrays.asList(codeableConcept(), codeableConcept()))
         .bodySite(Arrays.asList(codeableConcept(), codeableConcept()))
         .reasonCodeableConcept(codeableConcept())
-        // TODO: reasonReference?
         .performer(Arrays.asList(performer(), performer()))
         .performedDateTime("2000-01-01T00:00:00-00:00")
         .encounter(reference())
@@ -47,7 +45,7 @@ public class SampleProcedures {
         .followUp(Arrays.asList(codeableConcept(), codeableConcept()))
         .request(reference())
         .notes(Arrays.asList(annotation(), annotation()))
-        .focalDevice(Arrays.asList(focalDevice()))
+        .focalDevice(Collections.singletonList(focalDevice()))
         .build();
   }
 
