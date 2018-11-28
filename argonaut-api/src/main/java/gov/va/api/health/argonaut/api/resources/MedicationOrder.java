@@ -86,7 +86,7 @@ public class MedicationOrder implements Resource {
   @Pattern(regexp = Fhir.DATETIME)
   String dateWritten;
 
-  @NotNull @Valid Status status;
+  @NotNull Status status;
 
   @Pattern(regexp = Fhir.DATETIME)
   String dateEnded;
@@ -131,7 +131,7 @@ public class MedicationOrder implements Resource {
         @Pattern(regexp = Fhir.URI) String implicitRules,
         @Pattern(regexp = Fhir.CODE) String language,
         @NotNull BundleType type,
-        @Min(0) Integer total,
+        @Min(1) Integer total,
         @Valid List<BundleLink> link,
         @Valid List<Entry> entry,
         @Valid Signature signature) {
