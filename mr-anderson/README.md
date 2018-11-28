@@ -33,6 +33,15 @@ GET /api/v1/resources/{profile}/{resource}/{resourceVersion}?param=value&param=v
   [Patient](http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-patient.html)
   spec and supported by the backing stored procedure.
 
+####### Headers
+- `Mr-Anderson-Raw` -
+  When set to `true`, Mr. Anderson will not validate or perform resource identity replacement.
+  The results will be returned _as is_ from the database. This feature can be used to help
+  debug CDW responses.
+  ```
+  curl -H 'Mr-Anderson-Raw: true' https://mr-anderson.com/api/v1/resources/argonaut/Patient/1.03?identifier=123
+  ```
+
 
 #### Identifiers
 

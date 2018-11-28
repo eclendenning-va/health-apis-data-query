@@ -34,6 +34,7 @@ public class MrAndersonV1ApiControllerTest {
         .version("1.01")
         .count(15)
         .page(1)
+        .raw(false)
         .parameters(Parameters.builder().add("identity", "123").build())
         .build();
   }
@@ -42,7 +43,7 @@ public class MrAndersonV1ApiControllerTest {
   public void searchesAreForwardedToResourceRepository() {
     when(resources.search(Mockito.any())).thenReturn(Samples.create().patient());
     MultiValueMap<String, String> params = Parameters.builder().add("identity", "123").build();
-    controller.queryResourceVersion(Profile.ARGONAUT, "Patient", "1.01", 1, 15, params);
+    controller.queryResourceVersion(false, Profile.ARGONAUT, "Patient", "1.01", 1, 15, params);
     verify(resources).search(query());
   }
 }
