@@ -5,28 +5,25 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import gov.va.api.health.argonaut.api.bundle.AbstractBundle.BundleType;
-import gov.va.api.health.argonaut.api.resources.Observation;
-import gov.va.api.health.argonaut.api.resources.Observation.Entry;
 import gov.va.api.health.argonaut.api.resources.Procedure;
 import gov.va.api.health.argonaut.api.resources.Procedure.Bundle;
 import gov.va.api.health.argonaut.service.controller.Bundler;
 import gov.va.api.health.argonaut.service.controller.Bundler.BundleContext;
 import gov.va.api.health.argonaut.service.controller.PageLinks.LinkConfig;
 import gov.va.api.health.argonaut.service.controller.Parameters;
-import gov.va.api.health.argonaut.service.controller.observation.ObservationController;
+import gov.va.api.health.argonaut.service.controller.Validator;
 import gov.va.api.health.argonaut.service.mranderson.client.MrAndersonClient;
 import gov.va.api.health.argonaut.service.mranderson.client.Query;
-import gov.va.dvp.cdw.xsd.model.CdwProcedure101Root.CdwProcedures.CdwProcedure104Root;
-import gov.va.dvp.cdw.xsd.model.CdwProcedure101Root.CdwProcedures.CdwProcedures;
+import gov.va.api.health.autoconfig.configuration.JacksonConfig;
 import gov.va.dvp.cdw.xsd.model.CdwProcedure101Root.CdwProcedures.CdwProcedure;
 import gov.va.dvp.cdw.xsd.model.CdwProcedure101Root;
-import gov.va.dvp.cdw.xsd.model.CdwProcedure101Root.CdwProcedures;
-import gov.va.dvp.cdw.xsd.model.CdwProcedure101Root.CdwProcedures.CdwProcedure;
-import java.math.BigInteger;
 import java.util.Arrays;
+import gov.va.dvp.cdw.xsd.model.CdwProcedure101Root.CdwProcedures;
 import java.util.Collections;
 import java.util.function.Supplier;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.ConstraintViolationException;
+import lombok.SneakyThrows;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -132,5 +129,74 @@ public class ProcedureControllerTest {
     ArgumentCaptor<Query<CdwProcedure101Root>> captor = ArgumentCaptor.forClass(Query.class);
     verify(client).search(captor.capture());
     assertThat(captor.getValue().parameters()).isEqualTo(Parameters.forIdentity("hello"));
+  }
+
+
+  @Test
+  public void searchById() {
+    assertSearch(
+        () -> controller.searchById("me", 1, 10, servletRequest),
+        Parameters.builder().add("_id", "me").add("page", 1).add("_count", 10).build());
+  }
+
+  @Test
+  public void searchByIdentifier() {
+    assertSearch(
+        () -> controller.searchByIdentifier("me", 1, 10, servletRequest),
+        Parameters.builder().add("identifier", "me").add("page", 1).add("_count", 10).build());
+  }
+
+  @Test
+  public void searchByPatient() {
+    assertSearch(
+        () -> controller.searchByPatient("me", 1, 10, servletRequest),
+        Parameters.builder().add("patient", "me").add("page", 1).add("_count", 10).build());
+  }
+
+  @Test
+  public void searchByPatientAndDate() {
+    assertSearch(
+        () ->
+            controller.searchByPatientAndDate(
+                "me",
+                new String[] {"2005", "2006"},
+                1,
+                10,
+                servletRequest
+            ),
+        Parameters.builder()
+            .add("patient", "me")
+            .addAll("date", "2005", "2006")
+            .add("page", 1)
+            .add("_count", 10)
+            .build()
+    );
+  }
+
+  @Test
+  @SneakyThrows
+  public void validateAcceptsValidBundle() {
+    Procedure resource =
+        JacksonConfig.createMapper()
+            .readValue(
+                getClass().getResourceAsStream("/cdw/old-procedure-1.01.json"),
+                Procedure.class);
+
+    Procedure.Bundle bundle = bundleOf(resource);
+    assertThat(controller.validate(bundle)).isEqualTo(Validator.ok());
+  }
+
+  @Test(expected = ConstraintViolationException.class)
+  @SneakyThrows
+  public void validateThrowsExceptionForInvalidBundle() {
+    Procedure resource =
+        JacksonConfig.createMapper()
+            .readValue(
+                getClass().getResourceAsStream("/cdw/old-procedure-1.01.json"),
+                Procedure.class);
+    resource.resourceType(null);
+
+    Procedure.Bundle bundle = bundleOf(resource);
+    controller.validate(bundle);
   }
 }
