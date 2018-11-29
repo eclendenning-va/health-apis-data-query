@@ -68,7 +68,7 @@ public class Timing implements Element {
   @NoArgsConstructor(access = AccessLevel.PRIVATE)
   @AllArgsConstructor
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-  @ZeroOrOneOfs(@ZeroOrOneOf(fields = {"boundsQuantity", "boundsRange", "boundsPeriod"}))
+  @ZeroOrOneOf(fields = {"boundsQuantity", "boundsRange", "boundsPeriod"})
   public static class Repeat implements Element {
     @Pattern(regexp = Fhir.ID)
     String id;

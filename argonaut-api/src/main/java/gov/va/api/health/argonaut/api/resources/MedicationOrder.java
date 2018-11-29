@@ -23,7 +23,6 @@ import gov.va.api.health.argonaut.api.elements.Meta;
 import gov.va.api.health.argonaut.api.elements.Narrative;
 import gov.va.api.health.argonaut.api.elements.Reference;
 import gov.va.api.health.argonaut.api.validation.ExactlyOneOf;
-import gov.va.api.health.argonaut.api.validation.ExactlyOneOfs;
 import gov.va.api.health.argonaut.api.validation.ZeroOrOneOf;
 import gov.va.api.health.argonaut.api.validation.ZeroOrOneOfs;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -49,18 +48,14 @@ import lombok.NoArgsConstructor;
   description =
       "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-medicationorder.html"
 )
-@ZeroOrOneOfs({
-  @ZeroOrOneOf(
+@ZeroOrOneOf(
     fields = {"reasonCodeableConcept", "reasonReference"},
     message = "Only one reason field may be specified"
-  )
-})
-@ExactlyOneOfs({
-  @ExactlyOneOf(
+)
+@ExactlyOneOf(
     fields = {"medicationCodeableConcept", "medicationReference"},
     message = "Exactly one medication field must be specified"
-  )
-})
+)
 public class MedicationOrder implements Resource {
   @NotBlank String resourceType;
 
@@ -133,12 +128,10 @@ public class MedicationOrder implements Resource {
   @NoArgsConstructor(access = AccessLevel.PRIVATE)
   @AllArgsConstructor
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-  @ZeroOrOneOfs({
-    @ZeroOrOneOf(
+  @ZeroOrOneOf(
       fields = {"medicationCodeableConcept", "medicationReference"},
       message = "Only one medication field may be specified"
-    )
-  })
+  )
   public static class DispenseRequest implements BackboneElement {
     @Pattern(regexp = Fhir.ID)
     String id;
