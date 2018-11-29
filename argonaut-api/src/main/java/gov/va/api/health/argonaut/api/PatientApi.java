@@ -12,7 +12,7 @@ import javax.ws.rs.Path;
 
 public interface PatientApi {
   @Operation(
-    summary = "Patient read",
+    summary = "Patient Read",
     description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-patient.html",
     tags = {"Patient"}
   )
@@ -32,7 +32,7 @@ public interface PatientApi {
   Patient patientRead(@Parameter(in = ParameterIn.PATH, name = "id", required = true) String id);
 
   @Operation(
-    summary = "Patient search",
+    summary = "Patient Search",
     description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-patient.html",
     tags = {"Patient"}
   )

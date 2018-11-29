@@ -12,7 +12,7 @@ import javax.ws.rs.Path;
 
 public interface ImmunizationApi {
   @Operation(
-    summary = "Immunization read",
+    summary = "Immunization Read",
     description =
         "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-immunization.html",
     tags = {"Immunization"}
@@ -34,7 +34,7 @@ public interface ImmunizationApi {
       @Parameter(in = ParameterIn.PATH, name = "id", required = true) String id);
 
   @Operation(
-    summary = "Immunization search",
+    summary = "Immunization Search",
     description =
         "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-immunization.html",
     tags = {"Immunization"}

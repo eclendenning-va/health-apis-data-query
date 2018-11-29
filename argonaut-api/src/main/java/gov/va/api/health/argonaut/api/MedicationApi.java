@@ -12,7 +12,7 @@ import javax.ws.rs.Path;
 
 public interface MedicationApi {
   @Operation(
-    summary = "Medication read",
+    summary = "Medication Read",
     description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-medication.html",
     tags = {"Medication"}
   )

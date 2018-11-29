@@ -12,7 +12,7 @@ import javax.ws.rs.Path;
 
 public interface ProcedureApi {
   @Operation(
-    summary = "Procedure read",
+    summary = "Procedure Read",
     description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-procedure.html",
     tags = {"Procedure"}
   )
@@ -33,7 +33,7 @@ public interface ProcedureApi {
       @Parameter(in = ParameterIn.PATH, name = "id", required = true) String id);
 
   @Operation(
-    summary = "Procedure search",
+    summary = "Procedure Search",
     description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-procedure.html",
     tags = {"Procedure"}
   )

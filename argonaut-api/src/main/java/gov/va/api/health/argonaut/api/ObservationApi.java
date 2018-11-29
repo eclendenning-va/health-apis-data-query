@@ -11,46 +11,39 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
 public interface ObservationApi {
-
   @Operation(
-    summary = "Observation read",
-    description =
-        "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-observationresults.html",
-    tags = {"Observation"}
-  )
+      summary = "Observation Read",
+      description =
+          "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-observationresults.html",
+      tags = {"Observation"})
   @GET
   @Path("Observation/{id}")
   @ApiResponse(
-    responseCode = "200",
-    description = "Record found",
-    content =
-        @Content(
-          mediaType = "application/fhir+json",
-          schema = @Schema(implementation = Observation.class)
-        )
-  )
+      responseCode = "200",
+      description = "Record found",
+      content =
+          @Content(
+              mediaType = "application/fhir+json",
+              schema = @Schema(implementation = Observation.class)))
   @ApiResponse(responseCode = "400", description = "Not found")
   @ApiResponse(responseCode = "404", description = "Bad request")
   Observation observationRead(
       @Parameter(in = ParameterIn.PATH, name = "id", required = true) String id);
 
   @Operation(
-    summary = "Observation search",
-    description =
-        "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-observationresults.html",
-    tags = {"Observation"}
-  )
+      summary = "Observation Search",
+      description =
+          "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-observationresults.html",
+      tags = {"Observation"})
   @GET
   @Path("Observation")
   @ApiResponse(
-    responseCode = "200",
-    description = "Record found",
-    content =
-        @Content(
-          mediaType = "application/fhir+json",
-          schema = @Schema(implementation = Observation.Bundle.class)
-        )
-  )
+      responseCode = "200",
+      description = "Record found",
+      content =
+          @Content(
+              mediaType = "application/fhir+json",
+              schema = @Schema(implementation = Observation.Bundle.class)))
   @ApiResponse(responseCode = "400", description = "Not found")
   @ApiResponse(responseCode = "404", description = "Bad request")
   Observation.Bundle observationSearch(

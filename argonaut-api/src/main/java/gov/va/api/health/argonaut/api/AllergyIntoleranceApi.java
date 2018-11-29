@@ -12,7 +12,7 @@ import javax.ws.rs.Path;
 
 public interface AllergyIntoleranceApi {
   @Operation(
-    summary = "Allergy Intolerance read",
+    summary = "Allergy Intolerance Read",
     description =
         "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-allergyintolerance.html",
     tags = {"Allergy Intolerance"}
@@ -34,7 +34,7 @@ public interface AllergyIntoleranceApi {
       @Parameter(in = ParameterIn.PATH, name = "id", required = true) String id);
 
   @Operation(
-    summary = "Allergy Intolerance search",
+    summary = "Allergy Intolerance Search",
     description =
         "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-allergyintolerance.html",
     tags = {"Allergy Intolerance"}

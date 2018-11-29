@@ -13,7 +13,7 @@ import javax.ws.rs.Path;
 public interface MedicationStatementApi {
 
   @Operation(
-    summary = "Medication Statement read",
+    summary = "Medication Statement Read",
     description =
         "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-medicationstatement.html",
     tags = {"Medication Statement"}
@@ -35,7 +35,7 @@ public interface MedicationStatementApi {
       @Parameter(in = ParameterIn.PATH, name = "id", required = true) String id);
 
   @Operation(
-    summary = "Medication Statement search",
+    summary = "Medication Statement Search",
     description =
         "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-medicationstatement.html",
     tags = {"Medication Statement"}
