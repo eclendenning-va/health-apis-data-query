@@ -31,6 +31,7 @@ public class QueryTest {
         .version("1.00")
         .count(1)
         .page(2)
+        .raw(false)
         .parameters(parameters)
         .build();
   }

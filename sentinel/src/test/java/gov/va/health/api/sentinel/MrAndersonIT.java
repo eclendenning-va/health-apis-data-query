@@ -2,6 +2,7 @@ package gov.va.health.api.sentinel;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.restassured.http.Method;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 
@@ -65,6 +66,26 @@ public class MrAndersonIT {
             .response()
             .path("root.patients.patient.cdwId");
     assertThat(cdwId).isEqualTo(Sentinel.get().system().cdwIds().patient());
+  }
+
+  @Test
+  public void rawResponseDoesNotReplaceReferences() {
+    String reference =
+        ExpectedResponse.of(
+                mrAnderson()
+                    .service()
+                    .requestSpecification()
+                    .header("Mr-Anderson-Raw", "true")
+                    .contentType("application/xml")
+                    .request()
+                    .request(
+                        Method.GET,
+                        "/api/v1/resources/argonaut/DiagnosticReport/1.02?patient={id}",
+                        ids().patient()))
+            .expect(200)
+            .response()
+            .path("root.diagnosticReports.diagnosticReport[0].encounter.reference");
+    assertThat(reference).isEqualTo("Encounter/1000511190181");
   }
 
   @Test
