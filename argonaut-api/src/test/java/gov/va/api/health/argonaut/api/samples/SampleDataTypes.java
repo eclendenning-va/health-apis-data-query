@@ -127,7 +127,12 @@ public final class SampleDataTypes {
   }
 
   public Duration duration() {
-    return Duration.builder().value(11.11).unit("HelloUnit").build();
+    return Duration.builder()
+        .value(11.11)
+        .unit("HelloUnit")
+        .system("http://HelloSystem.com")
+        .code("d")
+        .build();
   }
 
   public Extension extension() {

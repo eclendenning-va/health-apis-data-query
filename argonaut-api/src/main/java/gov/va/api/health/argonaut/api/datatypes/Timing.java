@@ -5,7 +5,6 @@ import gov.va.api.health.argonaut.api.Fhir;
 import gov.va.api.health.argonaut.api.elements.Element;
 import gov.va.api.health.argonaut.api.elements.Extension;
 import gov.va.api.health.argonaut.api.validation.ZeroOrOneOf;
-import gov.va.api.health.argonaut.api.validation.ZeroOrOneOfs;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import javax.validation.Valid;
@@ -68,7 +67,7 @@ public class Timing implements Element {
   @NoArgsConstructor(access = AccessLevel.PRIVATE)
   @AllArgsConstructor
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-  @ZeroOrOneOfs(@ZeroOrOneOf(fields = {"boundsQuantity", "boundsRange", "boundsPeriod"}))
+  @ZeroOrOneOf(fields = {"boundsQuantity", "boundsRange", "boundsPeriod"})
   public static class Repeat implements Element {
     @Pattern(regexp = Fhir.ID)
     String id;

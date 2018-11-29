@@ -63,6 +63,7 @@ public class SqlResourceRepositoryTest {
         .version("1.23")
         .page(1)
         .count(2)
+        .raw(false)
         .parameters(Parameters.builder().add("any", "thing").build())
         .build();
   }

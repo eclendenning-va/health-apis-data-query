@@ -2,6 +2,7 @@ package gov.va.api.health.argonaut.api.resources;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import gov.va.api.health.argonaut.api.Fhir;
 import gov.va.api.health.argonaut.api.bundle.AbstractBundle;
@@ -23,7 +24,6 @@ import gov.va.api.health.argonaut.api.elements.Meta;
 import gov.va.api.health.argonaut.api.elements.Narrative;
 import gov.va.api.health.argonaut.api.elements.Reference;
 import gov.va.api.health.argonaut.api.validation.ExactlyOneOf;
-import gov.va.api.health.argonaut.api.validation.ExactlyOneOfs;
 import gov.va.api.health.argonaut.api.validation.ZeroOrOneOf;
 import gov.va.api.health.argonaut.api.validation.ZeroOrOneOfs;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -49,18 +49,14 @@ import lombok.NoArgsConstructor;
   description =
       "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-medicationorder.html"
 )
-@ZeroOrOneOfs({
-  @ZeroOrOneOf(
-    fields = {"reasonCodeableConcept", "reasonReference"},
-    message = "Only one reason field may be specified"
-  )
-})
-@ExactlyOneOfs({
-  @ExactlyOneOf(
-    fields = {"medicationCodeableConcept", "medicationReference"},
-    message = "Exactly one medication field must be specified"
-  )
-})
+@ZeroOrOneOf(
+  fields = {"reasonCodeableConcept", "reasonReference"},
+  message = "Only one reason field may be specified"
+)
+@ExactlyOneOf(
+  fields = {"medicationCodeableConcept", "medicationReference"},
+  message = "Exactly one medication field must be specified"
+)
 public class MedicationOrder implements Resource {
   @NotBlank String resourceType;
 
@@ -85,9 +81,7 @@ public class MedicationOrder implements Resource {
   @Pattern(regexp = Fhir.DATETIME)
   String dateWritten;
 
-  @NotNull
-  @Pattern(regexp = Fhir.CODE)
-  String status;
+  @NotNull Status status;
 
   @Pattern(regexp = Fhir.DATETIME)
   String dateEnded;
@@ -106,6 +100,18 @@ public class MedicationOrder implements Resource {
   @Valid Substitution substitution;
   @Valid Reference priorPrescription;
 
+  @SuppressWarnings("unused")
+  public enum Status {
+    active,
+    @JsonProperty("on-hold")
+    on_hold,
+    completed,
+    @JsonProperty("entered-in-error")
+    entered_in_error,
+    stopped,
+    draft
+  }
+
   @Data
   @NoArgsConstructor
   @EqualsAndHashCode(callSuper = true)
@@ -120,7 +126,7 @@ public class MedicationOrder implements Resource {
         @Pattern(regexp = Fhir.URI) String implicitRules,
         @Pattern(regexp = Fhir.CODE) String language,
         @NotNull BundleType type,
-        @Min(1) Integer total,
+        @Min(0) Integer total,
         @Valid List<BundleLink> link,
         @Valid List<Entry> entry,
         @Valid Signature signature) {
@@ -133,12 +139,10 @@ public class MedicationOrder implements Resource {
   @NoArgsConstructor(access = AccessLevel.PRIVATE)
   @AllArgsConstructor
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-  @ZeroOrOneOfs({
-    @ZeroOrOneOf(
-      fields = {"medicationCodeableConcept", "medicationReference"},
-      message = "Only one medication field may be specified"
-    )
-  })
+  @ZeroOrOneOf(
+    fields = {"medicationCodeableConcept", "medicationReference"},
+    message = "Only one medication field may be specified"
+  )
   public static class DispenseRequest implements BackboneElement {
     @Pattern(regexp = Fhir.ID)
     String id;
@@ -150,7 +154,7 @@ public class MedicationOrder implements Resource {
     @Valid Reference medicationReference;
     @Valid Period validityPeriod;
 
-    @Min(0)
+    @Min(1)
     Integer numberOfRepeatsAllowed;
 
     @Valid SimpleQuantity quantity;
