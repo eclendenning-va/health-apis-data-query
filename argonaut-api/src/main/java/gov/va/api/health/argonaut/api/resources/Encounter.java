@@ -40,10 +40,11 @@ import lombok.NoArgsConstructor;
 @Schema(description = "http://www.hl7.org/fhir/DSTU2/encounter.html")
 public class Encounter implements DomainResource {
 
+  @NotBlank String resourceType;
+
   @Pattern(regexp = Fhir.ID)
   String id;
 
-  @NotBlank String resourceType;
   @Valid Meta meta;
 
   @Pattern(regexp = Fhir.URI)
@@ -66,7 +67,8 @@ public class Encounter implements DomainResource {
 
   @Valid List<StatusHistory> statusHistory;
 
-  Encounter.Clazz clazz;
+  @JsonProperty("class")
+  EncounterClass encounterClass;
 
   @Valid List<CodeableConcept> type;
   @Valid List<CodeableConcept> priority;
@@ -109,7 +111,7 @@ public class Encounter implements DomainResource {
     @NotNull @Valid Period period;
   }
 
-  public enum Clazz {
+  public enum EncounterClass {
     ambulatory,
     daytime,
     emergency,

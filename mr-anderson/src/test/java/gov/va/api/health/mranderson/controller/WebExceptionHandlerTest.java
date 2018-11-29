@@ -65,6 +65,7 @@ public class WebExceptionHandlerTest {
             .version("1.01")
             .count(15)
             .page(1)
+            .raw(false)
             .parameters(Parameters.builder().add("identity", "123").build())
             .build();
     return Arrays.asList(
