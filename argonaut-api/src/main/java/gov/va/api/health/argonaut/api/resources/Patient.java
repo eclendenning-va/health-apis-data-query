@@ -154,6 +154,7 @@ public class Patient implements Resource {
   @EqualsAndHashCode(callSuper = true)
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
   @JsonDeserialize(builder = Patient.Bundle.BundleBuilder.class)
+  @Schema(name = "PatientBundle")
   public static class Bundle extends AbstractBundle<Patient.Entry> {
 
     @Builder
@@ -193,6 +194,7 @@ public class Patient implements Resource {
   @NoArgsConstructor(access = AccessLevel.PRIVATE)
   @AllArgsConstructor
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+  @Schema(name = "PatientContact")
   public static class Contact implements BackboneElement {
     @Pattern(regexp = Fhir.ID)
     String id;
@@ -215,6 +217,7 @@ public class Patient implements Resource {
   @EqualsAndHashCode(callSuper = true)
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
   @JsonDeserialize(builder = Patient.Entry.EntryBuilder.class)
+  @Schema(name = "PatientEntry")
   public static class Entry extends AbstractEntry<Patient> {
 
     @Builder

@@ -126,6 +126,7 @@ public class Procedure implements Resource {
   @EqualsAndHashCode(callSuper = true)
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
   @JsonDeserialize(builder = Procedure.Bundle.BundleBuilder.class)
+  @Schema(name = "ProcedureBundle")
   public static class Bundle extends AbstractBundle<Procedure.Entry> {
     @Builder
     public Bundle(
@@ -148,6 +149,7 @@ public class Procedure implements Resource {
   @EqualsAndHashCode(callSuper = true)
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
   @JsonDeserialize(builder = Procedure.Entry.EntryBuilder.class)
+  @Schema(name = "ProcedureEntry")
   public static class Entry extends AbstractEntry<Procedure> {
 
     @Builder
@@ -169,22 +171,6 @@ public class Procedure implements Resource {
   @Builder
   @NoArgsConstructor(access = AccessLevel.PRIVATE)
   @AllArgsConstructor
-  @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-  public static class Performer implements BackboneElement {
-    @Pattern(regexp = Fhir.ID)
-    String id;
-
-    @Valid List<Extension> extension;
-    @Valid List<Extension> modifierExtension;
-
-    @Valid Reference actor;
-    @Valid CodeableConcept role;
-  }
-
-  @Data
-  @Builder
-  @NoArgsConstructor(access = AccessLevel.PRIVATE)
-  @AllArgsConstructor
   @JsonAutoDetect(fieldVisibility = Visibility.ANY)
   public static class FocalDevice implements BackboneElement {
     @Pattern(regexp = Fhir.ID)
@@ -196,5 +182,21 @@ public class Procedure implements Resource {
     @Valid CodeableConcept action;
 
     @Valid @NotNull Reference manipulated;
+  }
+
+  @Data
+  @Builder
+  @NoArgsConstructor(access = AccessLevel.PRIVATE)
+  @AllArgsConstructor
+  @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+  public static class Performer implements BackboneElement {
+    @Pattern(regexp = Fhir.ID)
+    String id;
+
+    @Valid List<Extension> extension;
+    @Valid List<Extension> modifierExtension;
+
+    @Valid Reference actor;
+    @Valid CodeableConcept role;
   }
 }

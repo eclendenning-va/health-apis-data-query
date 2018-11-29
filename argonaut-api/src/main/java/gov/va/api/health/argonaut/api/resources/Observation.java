@@ -178,6 +178,7 @@ public class Observation implements Resource {
   @EqualsAndHashCode(callSuper = true)
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
   @JsonDeserialize(builder = Observation.Bundle.BundleBuilder.class)
+  @Schema(name = "ObservationBundle")
   public static class Bundle extends AbstractBundle<Entry> {
 
     @Builder
@@ -201,6 +202,7 @@ public class Observation implements Resource {
   @EqualsAndHashCode(callSuper = true)
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
   @JsonDeserialize(builder = Observation.Entry.EntryBuilder.class)
+  @Schema(name = "ObservationEntry")
   public static class Entry extends AbstractEntry<Observation> {
 
     @Builder

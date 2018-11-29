@@ -41,24 +41,21 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @Schema(
-  description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-condition.html"
-)
+    description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-condition.html")
 @ZeroOrOneOfs({
   @ZeroOrOneOf(
-    fields = {"onsetDateTime", "onsetAge", "onsetPeriod", "onsetRange", "onsetString"},
-    message = "Only one onset value may be specified"
-  ),
+      fields = {"onsetDateTime", "onsetAge", "onsetPeriod", "onsetRange", "onsetString"},
+      message = "Only one onset value may be specified"),
   @ZeroOrOneOf(
-    fields = {
-      "abatementDateTime",
-      "abatementAge",
-      "abatementBoolean",
-      "abatementPeriod",
-      "abatementRange",
-      "abatementString"
-    },
-    message = "Only one abatement value may be specified"
-  )
+      fields = {
+        "abatementDateTime",
+        "abatementAge",
+        "abatementBoolean",
+        "abatementPeriod",
+        "abatementRange",
+        "abatementString"
+      },
+      message = "Only one abatement value may be specified")
 })
 public class Condition implements Resource {
 
@@ -141,6 +138,7 @@ public class Condition implements Resource {
   @EqualsAndHashCode(callSuper = true)
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
   @JsonDeserialize(builder = Condition.Bundle.BundleBuilder.class)
+  @Schema(name = "ConditionBundle")
   public static class Bundle extends AbstractBundle<Condition.Entry> {
 
     @Builder
@@ -164,6 +162,7 @@ public class Condition implements Resource {
   @EqualsAndHashCode(callSuper = true)
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
   @JsonDeserialize(builder = Condition.Entry.EntryBuilder.class)
+  @Schema(name = "ConditionEntry")
   public static class Entry extends AbstractEntry<Condition> {
 
     @Builder

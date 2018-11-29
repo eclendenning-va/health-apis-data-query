@@ -42,13 +42,11 @@ import org.apache.commons.lang3.StringUtils;
 @AllArgsConstructor
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @Schema(
-  description =
-      "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-diagnosticreport.html"
-)
+    description =
+        "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-diagnosticreport.html")
 @ZeroOrOneOf(
-  fields = {"effectiveDateTime", "effectivePeriod"},
-  message = "Only one effective value may be specified"
-)
+    fields = {"effectiveDateTime", "effectivePeriod"},
+    message = "Only one effective value may be specified")
 public class DiagnosticReport implements Resource {
 
   @Pattern(regexp = Fhir.ID)
@@ -103,8 +101,8 @@ public class DiagnosticReport implements Resource {
 
   @JsonIgnore
   @AssertTrue(
-    message = "Category system should be http://hl7.org/fhir/ValueSet/diagnostic-service-sections."
-  )
+      message =
+          "Category system should be http://hl7.org/fhir/ValueSet/diagnostic-service-sections.")
   private boolean isValidCategory() {
     if (category == null) {
       return true;
@@ -135,6 +133,7 @@ public class DiagnosticReport implements Resource {
   @EqualsAndHashCode(callSuper = true)
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
   @JsonDeserialize(builder = DiagnosticReport.Bundle.BundleBuilder.class)
+  @Schema(name = "DiagnosticReportBundle")
   public static class Bundle extends AbstractBundle<DiagnosticReport.Entry> {
 
     @Builder
@@ -158,6 +157,7 @@ public class DiagnosticReport implements Resource {
   @EqualsAndHashCode(callSuper = true)
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
   @JsonDeserialize(builder = DiagnosticReport.Entry.EntryBuilder.class)
+  @Schema(name = "DiagnosticReportEntry")
   public static class Entry extends AbstractEntry<DiagnosticReport> {
 
     @Builder

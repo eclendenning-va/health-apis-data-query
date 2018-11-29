@@ -37,13 +37,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor
 @JsonAutoDetect(
-  fieldVisibility = JsonAutoDetect.Visibility.ANY,
-  isGetterVisibility = JsonAutoDetect.Visibility.NONE
-)
+    fieldVisibility = JsonAutoDetect.Visibility.ANY,
+    isGetterVisibility = JsonAutoDetect.Visibility.NONE)
 @Schema(
-  description =
-      "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-allergyintolerance.html"
-)
+    description =
+        "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-allergyintolerance.html")
 public class AllergyIntolerance implements Resource {
   @NotBlank String resourceType;
 
@@ -137,6 +135,7 @@ public class AllergyIntolerance implements Resource {
   @EqualsAndHashCode(callSuper = true)
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
   @JsonDeserialize(builder = AllergyIntolerance.Bundle.BundleBuilder.class)
+  @Schema(name = "AllergyIntoleranceBundle")
   public static class Bundle extends AbstractBundle<AllergyIntolerance.Entry> {
 
     @Builder
@@ -160,6 +159,7 @@ public class AllergyIntolerance implements Resource {
   @EqualsAndHashCode(callSuper = true)
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
   @JsonDeserialize(builder = AllergyIntolerance.Entry.EntryBuilder.class)
+  @Schema(name = "AllergyIntoleranceEntry")
   public static class Entry extends AbstractEntry<AllergyIntolerance> {
 
     @Builder
@@ -182,6 +182,7 @@ public class AllergyIntolerance implements Resource {
   @NoArgsConstructor(access = AccessLevel.PRIVATE)
   @AllArgsConstructor
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+  @Schema(name = "AllergyIntoleranceReaction")
   public static class Reaction implements BackboneElement {
     @Pattern(regexp = Fhir.ID)
     String id;

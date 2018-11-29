@@ -124,6 +124,7 @@ public class MedicationStatement implements Resource {
   @EqualsAndHashCode(callSuper = true)
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
   @JsonDeserialize(builder = MedicationStatement.Bundle.BundleBuilder.class)
+  @Schema(name = "MedicationStatementBundle")
   public static class Bundle extends AbstractBundle<MedicationStatement.Entry> {
 
     @Builder
@@ -192,6 +193,7 @@ public class MedicationStatement implements Resource {
   @EqualsAndHashCode(callSuper = true)
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
   @JsonDeserialize(builder = MedicationStatement.Entry.EntryBuilder.class)
+  @Schema(name = "MedicationStatementEntry")
   public static class Entry extends AbstractEntry<MedicationStatement> {
 
     @Builder
