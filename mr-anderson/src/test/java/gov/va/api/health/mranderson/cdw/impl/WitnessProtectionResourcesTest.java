@@ -2,6 +2,7 @@ package gov.va.api.health.mranderson.cdw.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import gov.va.api.health.ids.api.IdentityService;
@@ -67,6 +68,7 @@ public class WitnessProtectionResourcesTest {
         .version("1.23")
         .page(1)
         .count(2)
+        .raw(false)
         .parameters(Parameters.builder().add(identity, value).add("what", "ever").build())
         .build();
   }
@@ -81,6 +83,7 @@ public class WitnessProtectionResourcesTest {
             .version("1.23")
             .page(1)
             .count(2)
+            .raw(false)
             .parameters(Parameters.empty())
             .build());
   }
@@ -95,6 +98,7 @@ public class WitnessProtectionResourcesTest {
             .version("1.23")
             .page(1)
             .count(2)
+            .raw(false)
             .parameters(Parameters.builder().add("patient", "").build())
             .build());
   }
@@ -150,6 +154,18 @@ public class WitnessProtectionResourcesTest {
             .replace("Patient/2100", "Patient/MAGIC7900")
             .replace("Condition/2310", "Condition/MAGIC7790")
             .replace("AllergyIntolerance/2320", "AllergyIntolerance/MAGIC7780"));
+  }
+
+  @Test
+  public void referencesAreNotReplacedWhenRawIsEnabled() {
+    // TODO
+    mockLookup();
+    mockResults(Samples.create().fakeWithReferences());
+    String actual = resources.search(forResource("patient", "123").toBuilder().raw(true).build());
+    verify(repository).execute(forResource("patient", "MAGIC321").toBuilder().raw(true).build());
+    verify(uis).lookup("123");
+    verifyNoMoreInteractions(uis);
+    assertThat(actual).isEqualTo(Samples.create().fakeWithReferences());
   }
 
   private void referencesAreReplacedUsingIdentifierParameter(

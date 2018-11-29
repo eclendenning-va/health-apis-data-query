@@ -35,6 +35,7 @@ public class XmlResponseValidatorTest {
         .version("1.00")
         .page(1)
         .count(2)
+        .raw(false)
         .parameters(Parameters.empty())
         .build();
   }
