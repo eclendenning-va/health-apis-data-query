@@ -9,7 +9,6 @@ import gov.va.api.health.argonaut.api.datatypes.Timing.UnitsOfTime;
 import gov.va.api.health.argonaut.api.resources.MedicationOrder;
 import gov.va.api.health.argonaut.api.resources.MedicationOrder.DispenseRequest;
 import gov.va.api.health.argonaut.api.resources.MedicationOrder.DosageInstruction;
-import gov.va.api.health.argonaut.api.resources.MedicationOrder.Status;
 import gov.va.api.health.argonaut.api.resources.MedicationOrder.Substitution;
 import java.util.LinkedList;
 import java.util.List;
@@ -34,7 +33,7 @@ public class SampleMedicationOrders {
         .modifierExtension(singletonList(extension()))
         .identifier(singletonList(identifier()))
         .dateWritten("2000-10-01")
-        .status(Status.on_hold)
+        .status("active")
         .dateEnded("2000-10-01")
         .reasonEnded(codeableConcept())
         .patient(reference())
