@@ -1,0 +1,57 @@
+package gov.va.api.health.argonaut.api;
+
+import gov.va.api.health.argonaut.api.resources.Immunization;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+
+public interface ImmunizationApi {
+  @Operation(
+    summary = "Immunization read",
+    description =
+        "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-immunization.html",
+    tags = {"Immunization"}
+  )
+  @GET
+  @Path("Immunization/{id}")
+  @ApiResponse(
+    responseCode = "200",
+    description = "Record found",
+    content =
+        @Content(
+          mediaType = "application/json+fhir",
+          schema = @Schema(implementation = Immunization.class)
+        )
+  )
+  @ApiResponse(responseCode = "400", description = "Not found")
+  @ApiResponse(responseCode = "404", description = "Bad request")
+  Immunization immunizationRead(
+      @Parameter(in = ParameterIn.PATH, name = "id", required = true) String id);
+
+  @Operation(
+    summary = "Immunization search",
+    description =
+        "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-immunization.html",
+    tags = {"Immunization"}
+  )
+  @GET
+  @Path("Immunization")
+  @ApiResponse(
+    responseCode = "200",
+    description = "Record found",
+    content =
+        @Content(
+          mediaType = "application/json+fhir",
+          schema = @Schema(implementation = Immunization.Bundle.class)
+        )
+  )
+  @ApiResponse(responseCode = "400", description = "Not found")
+  @ApiResponse(responseCode = "404", description = "Bad request")
+  Immunization.Bundle immunizationSearch(
+      @Parameter(in = ParameterIn.QUERY, name = "patient") String id);
+}
