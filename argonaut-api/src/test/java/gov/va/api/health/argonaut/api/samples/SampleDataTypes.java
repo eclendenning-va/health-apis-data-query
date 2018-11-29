@@ -14,6 +14,7 @@ import gov.va.api.health.argonaut.api.datatypes.Coding;
 import gov.va.api.health.argonaut.api.datatypes.ContactPoint;
 import gov.va.api.health.argonaut.api.datatypes.ContactPoint.ContactPointSystem;
 import gov.va.api.health.argonaut.api.datatypes.ContactPoint.ContactPointUse;
+import gov.va.api.health.argonaut.api.datatypes.Duration;
 import gov.va.api.health.argonaut.api.datatypes.HumanName;
 import gov.va.api.health.argonaut.api.datatypes.HumanName.NameUse;
 import gov.va.api.health.argonaut.api.datatypes.Identifier;
@@ -123,6 +124,15 @@ public final class SampleDataTypes {
 
   public CodeableConcept details() {
     return CodeableConcept.builder().coding(singletonList(coding())).text("HelloText").build();
+  }
+
+  public Duration duration() {
+    return Duration.builder()
+        .value(11.11)
+        .unit("HelloUnit")
+        .system("http://HelloSystem.com")
+        .code("d")
+        .build();
   }
 
   public Extension extension() {
