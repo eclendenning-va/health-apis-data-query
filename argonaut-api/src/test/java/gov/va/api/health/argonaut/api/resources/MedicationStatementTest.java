@@ -1,14 +1,15 @@
 package gov.va.api.health.argonaut.api.resources;
 
 import static gov.va.api.health.argonaut.api.RoundTrip.assertRoundTrip;
-import static junit.framework.TestCase.fail;
 
+import gov.va.api.health.argonaut.api.ExactlyOneOfVerifier;
+import gov.va.api.health.argonaut.api.ZeroOrOneOfVerifier;
 import gov.va.api.health.argonaut.api.bundle.AbstractBundle.BundleType;
 import gov.va.api.health.argonaut.api.bundle.BundleLink;
 import gov.va.api.health.argonaut.api.bundle.BundleLink.LinkRelation;
-import gov.va.api.health.argonaut.api.resources.Observation.Bundle;
-import gov.va.api.health.argonaut.api.resources.Observation.Entry;
-import gov.va.api.health.argonaut.api.samples.SampleObservations;
+import gov.va.api.health.argonaut.api.resources.MedicationStatement.Bundle;
+import gov.va.api.health.argonaut.api.resources.MedicationStatement.Entry;
+import gov.va.api.health.argonaut.api.samples.SampleMedicationStatements;
 import java.util.Collections;
 import java.util.Set;
 import javax.validation.ConstraintViolation;
@@ -20,48 +21,10 @@ import org.junit.Test;
 @Slf4j
 public class MedicationStatementTest {
 
-  private final SampleObservations data = SampleObservations.get();
-
-  /*
-  @Test
-  public void relatedGroups() {
-    ZeroOrOneOfVerifier.builder()
-        .sample(data.observation())
-        .fieldPrefix("effective")
-        .build()
-        .verify();
-    ZeroOrOneOfVerifier.builder().sample(data.observation()).fieldPrefix("value").build().verify();
-  }
+  private final SampleMedicationStatements data = SampleMedicationStatements.get();
 
   @Test
-  public void validationFailsGivenBadCategory() {
-    assertThat(violationsOf(data.observation().category(data.codeableConcept()))).isNotEmpty();
-  }
-
-  @Test
-  public void validationFailsGivenNoCategory() {
-    assertThat(violationsOf(data.observation().category(null))).isNotEmpty();
-  }
-
-  @Test
-  public void validationPassesGivenGoodCategory() {
-    assertThat(
-            violationsOf(
-                data.observation()
-                    .category()
-                    .coding()
-                    .get(0)
-                    .code("http://hl7.org/fhir/observation-category")))
-        .isEmpty();
-  }
-  */
-  @Test
-  public void DELETE_ME_WHEN_DONE() {
-    fail();
-  }
-
-  @Test
-  public void bundlerCanBuildObservationBundles() {
+  public void bundlerCanBuildMedicationStatementBundles() {
     Entry entry =
         Entry.builder()
             .extension(Collections.singletonList(data.extension()))
@@ -73,7 +36,7 @@ public class MedicationStatementTest {
                         .relation(LinkRelation.self)
                         .url(("http://medicationstatement.com/1"))
                         .build()))
-            .resource(data.observation())
+            .resource(data.medicationStatement())
             .search(data.search())
             .request(data.request())
             .response(data.response())
@@ -95,8 +58,28 @@ public class MedicationStatementTest {
   }
 
   @Test
-  public void observation() {
-    assertRoundTrip(data.observation());
+  public void medicationStatement() {
+    assertRoundTrip(data.medicationStatement());
+    assertRoundTrip(data.medicationStatementWithAlternateValues());
+  }
+
+  @Test
+  public void relatedGroups() {
+    ZeroOrOneOfVerifier.builder()
+        .sample(data.medicationStatement())
+        .fieldPrefix("reasonForUse")
+        .build()
+        .verify();
+    ZeroOrOneOfVerifier.builder()
+        .sample(data.medicationStatement())
+        .fieldPrefix("effective")
+        .build()
+        .verify();
+    ExactlyOneOfVerifier.builder()
+        .sample(data.medicationStatement())
+        .fieldPrefix("medication")
+        .build()
+        .verify();
   }
 
   private <T> Set<ConstraintViolation<T>> violationsOf(T object) {

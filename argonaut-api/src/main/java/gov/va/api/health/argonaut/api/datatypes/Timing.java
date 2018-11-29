@@ -27,8 +27,7 @@ public class Timing implements Element {
 
   @Valid List<Extension> extension;
 
-  @Pattern(regexp = Fhir.DATETIME)
-  List<String> event;
+  List<@Pattern(regexp = Fhir.DATETIME) String> event;
 
   @Valid CodeableConcept code;
   @Valid Repeat repeat;
