@@ -32,7 +32,7 @@ public class MedicationOrderControllerTest {
   @Before
   public void _init() {
     MockitoAnnotations.initMocks(this);
-    controller = new MedicationOrderController(tx, client);
+    controller = new MedicationOrderController(tx, client, bundler);
   }
 
   @SuppressWarnings("unchecked")
