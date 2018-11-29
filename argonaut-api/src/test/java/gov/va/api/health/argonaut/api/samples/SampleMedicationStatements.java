@@ -32,7 +32,7 @@ public class SampleMedicationStatements {
         .method(codeableConcept())
         .doseQuantity(simpleQuantity())
         .rateRange(range())
-        .maxDosePerDay(ratio())
+        .maxDosePerPeriod(ratio())
         .build();
   }
 

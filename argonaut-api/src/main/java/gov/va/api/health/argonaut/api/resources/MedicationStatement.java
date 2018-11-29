@@ -30,7 +30,6 @@ import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import lombok.AccessLevel;
@@ -88,7 +87,7 @@ public class MedicationStatement implements Resource {
   @NotNull @Valid Reference patient;
   @Valid Reference informationSource;
 
-  @NotEmpty
+  @NotBlank
   @Pattern(regexp = Fhir.DATETIME)
   String dateAsserted;
 
@@ -185,7 +184,7 @@ public class MedicationStatement implements Resource {
     @Valid SimpleQuantity doseQuantity;
     @Valid Ratio rateRatio;
     @Valid Range rateRange;
-    @Valid Ratio maxDosePerDay;
+    @Valid Ratio maxDosePerPeriod;
   }
 
   @Data
