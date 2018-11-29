@@ -9,6 +9,7 @@ import gov.va.api.health.argonaut.api.resources.Medication;
 import gov.va.api.health.argonaut.api.resources.Observation;
 import gov.va.api.health.argonaut.api.resources.OperationOutcome;
 import gov.va.api.health.argonaut.api.resources.Patient;
+import gov.va.api.health.argonaut.api.resources.Procedure;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -97,9 +98,7 @@ public interface ArgonautService {
   @ApiResponse(responseCode = "404", description = "Bad request")
   OperationOutcome allergyIntoleranceValidate(
       @RequestBody(required = true) AllergyIntolerance.Bundle bundle);
-  // END CONDITION
 
-  // BEGIN CONDITION
   @Operation(
     summary = "Condition Read",
     description = "https://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-condition.html"
@@ -384,7 +383,7 @@ public interface ArgonautService {
         )
   )
   @ApiResponse(responseCode = "404", description = "Bad request")
-  Observation observationRead(@RequestBody(required = true) Observation.Bundle bundle);
+  Observation observationValidate(@RequestBody(required = true) Observation.Bundle bundle);
 
   @Operation(
     summary = "Observation search",
@@ -473,6 +472,66 @@ public interface ArgonautService {
   )
   @ApiResponse(responseCode = "404", description = "Bad request")
   OperationOutcome patientValidate(@RequestBody(required = true) Patient.Bundle bundle);
+
+  // Procedure
+
+  @Operation(
+    summary = "Procedure read",
+    description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-procedure.html"
+  )
+  @GET
+  @Path("Procedure/{id}")
+  @ApiResponse(
+    responseCode = "200",
+    description = "Record found",
+    content =
+        @Content(
+          mediaType = "application/json+fhir",
+          schema = @Schema(implementation = Procedure.class)
+        )
+  )
+  @ApiResponse(responseCode = "400", description = "Not found")
+  @ApiResponse(responseCode = "404", description = "Bad request")
+  Procedure procedureRead(
+      @Parameter(in = ParameterIn.PATH, name = "id", required = true) String id);
+
+  @Operation(
+    summary = "Procedure search",
+    description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-procedure.html"
+  )
+  @GET
+  @Path("Procedure")
+  @ApiResponse(
+    responseCode = "200",
+    description = "Record found",
+    content =
+        @Content(
+          mediaType = "application/json+fhir",
+          schema = @Schema(implementation = Procedure.Bundle.class)
+        )
+  )
+  @ApiResponse(responseCode = "400", description = "Not found")
+  @ApiResponse(responseCode = "404", description = "Bad request")
+  Procedure.Bundle procedureSearch(@Parameter(in = ParameterIn.QUERY, name = "patient") String id);
+
+  @Operation(
+    summary = "Procedure Validate",
+    description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-procedure.html"
+  )
+  @POST
+  @Consumes("application/json+fhir")
+  @Path("Procedure/$validate")
+  @ApiResponse(
+    responseCode = "200",
+    description = "Record found",
+    content =
+        @Content(
+          mediaType = "application/json+fhir",
+          schema = @Schema(implementation = OperationOutcome.class)
+        )
+  )
+  @ApiResponse(responseCode = "404", description = "Bad request")
+  OperationOutcome procedureValidate(@RequestBody(required = true) Procedure.Bundle bundle);
 
   class ArgonautServiceException extends RuntimeException {
     ArgonautServiceException(String message) {

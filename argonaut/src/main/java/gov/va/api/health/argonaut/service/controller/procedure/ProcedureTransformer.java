@@ -18,7 +18,9 @@ import gov.va.dvp.cdw.xsd.model.CdwProcedureStatus;
 import gov.va.dvp.cdw.xsd.model.CdwReference;
 import java.util.Collections;
 import java.util.List;
+import org.springframework.stereotype.Service;
 
+@Service
 public class ProcedureTransformer implements ProcedureController.Transformer {
 
   @Override
