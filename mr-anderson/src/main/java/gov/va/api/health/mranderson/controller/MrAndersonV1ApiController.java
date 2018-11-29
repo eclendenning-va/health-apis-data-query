@@ -16,6 +16,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -56,6 +57,7 @@ public class MrAndersonV1ApiController {
   )
   @SneakyThrows
   public ResponseEntity<String> queryResourceVersion(
+      @RequestHeader(name = "Mr-Anderson-Raw", defaultValue = "false") boolean raw,
       @Valid @PathVariable("profile") Profile profile,
       @Valid @PathVariable("resourceType") @Pattern(regexp = "[A-Za-z]+") String resourceType,
       @Valid @PathVariable("resourceVersion") @Pattern(regexp = "[0-9]+\\.[0-9]+")
@@ -73,6 +75,7 @@ public class MrAndersonV1ApiController {
                 .version(resourceVersion)
                 .page(page)
                 .count(count)
+                .raw(raw)
                 .parameters(allQueryParams)
                 .build());
 
