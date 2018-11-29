@@ -126,7 +126,7 @@ public class MedicationOrder implements Resource {
         @Pattern(regexp = Fhir.URI) String implicitRules,
         @Pattern(regexp = Fhir.CODE) String language,
         @NotNull BundleType type,
-        @Min(1) Integer total,
+        @Min(0) Integer total,
         @Valid List<BundleLink> link,
         @Valid List<Entry> entry,
         @Valid Signature signature) {
@@ -154,7 +154,7 @@ public class MedicationOrder implements Resource {
     @Valid Reference medicationReference;
     @Valid Period validityPeriod;
 
-    @Min(0)
+    @Min(1)
     Integer numberOfRepeatsAllowed;
 
     @Valid SimpleQuantity quantity;
