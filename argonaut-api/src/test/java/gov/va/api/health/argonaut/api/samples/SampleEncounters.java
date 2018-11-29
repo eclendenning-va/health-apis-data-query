@@ -3,7 +3,7 @@ package gov.va.api.health.argonaut.api.samples;
 import static java.util.Collections.singletonList;
 
 import gov.va.api.health.argonaut.api.resources.Encounter;
-import gov.va.api.health.argonaut.api.resources.Encounter.Clazz;
+import gov.va.api.health.argonaut.api.resources.Encounter.EncounterClass;
 import gov.va.api.health.argonaut.api.resources.Encounter.Hospitalization;
 import gov.va.api.health.argonaut.api.resources.Encounter.Location;
 import gov.va.api.health.argonaut.api.resources.Encounter.Participant;
@@ -38,7 +38,7 @@ public class SampleEncounters {
         .identifier(singletonList(identifier()))
         .status(Status.arrived)
         .statusHistory(singletonList(statusHistory()))
-        .clazz(Clazz.ambulatory)
+        .encounterClass(EncounterClass.ambulatory)
         .type(codeableConceptList())
         .priority(codeableConceptList())
         .patient(reference())
