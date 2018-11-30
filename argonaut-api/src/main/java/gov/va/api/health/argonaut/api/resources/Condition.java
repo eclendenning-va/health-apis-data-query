@@ -41,21 +41,24 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @Schema(
-    description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-condition.html")
+  description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-condition.html"
+)
 @ZeroOrOneOfs({
   @ZeroOrOneOf(
-      fields = {"onsetDateTime", "onsetAge", "onsetPeriod", "onsetRange", "onsetString"},
-      message = "Only one onset value may be specified"),
+    fields = {"onsetDateTime", "onsetAge", "onsetPeriod", "onsetRange", "onsetString"},
+    message = "Only one onset value may be specified"
+  ),
   @ZeroOrOneOf(
-      fields = {
-        "abatementDateTime",
-        "abatementAge",
-        "abatementBoolean",
-        "abatementPeriod",
-        "abatementRange",
-        "abatementString"
-      },
-      message = "Only one abatement value may be specified")
+    fields = {
+      "abatementDateTime",
+      "abatementAge",
+      "abatementBoolean",
+      "abatementPeriod",
+      "abatementRange",
+      "abatementString"
+    },
+    message = "Only one abatement value may be specified"
+  )
 })
 public class Condition implements Resource {
 

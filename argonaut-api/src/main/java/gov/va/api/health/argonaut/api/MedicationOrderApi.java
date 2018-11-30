@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
@@ -54,5 +55,7 @@ public interface MedicationOrderApi {
   @ApiResponse(responseCode = "400", description = "Not found")
   @ApiResponse(responseCode = "404", description = "Bad request")
   MedicationOrder.Bundle medicationOrderSearch(
-      @Parameter(in = ParameterIn.QUERY, name = "patient") String id);
+      @Parameter(in = ParameterIn.QUERY, required = true, name = "patient") String id,
+      @Parameter(in = ParameterIn.QUERY, name = "page") @DefaultValue("1") int page,
+      @Parameter(in = ParameterIn.QUERY, name = "_count") @DefaultValue("15") int count);
 }

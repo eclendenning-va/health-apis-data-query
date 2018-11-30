@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
@@ -14,8 +15,7 @@ public interface MedicationStatementApi {
 
   @Operation(
     summary = "Medication Statement Read",
-    description =
-        "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-medicationstatement.html",
+    description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-medicationstatement.html",
     tags = {"Medication Statement"}
   )
   @GET
@@ -36,8 +36,7 @@ public interface MedicationStatementApi {
 
   @Operation(
     summary = "Medication Statement Search",
-    description =
-        "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-medicationstatement.html",
+    description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-medicationstatement.html",
     tags = {"Medication Statement"}
   )
   @GET
@@ -54,5 +53,7 @@ public interface MedicationStatementApi {
   @ApiResponse(responseCode = "400", description = "Not found")
   @ApiResponse(responseCode = "404", description = "Bad request")
   MedicationStatement.Bundle medicationStatementSearch(
-      @Parameter(in = ParameterIn.QUERY, name = "patient") String id);
+      @Parameter(in = ParameterIn.QUERY, required = true, name = "patient") String id,
+      @Parameter(in = ParameterIn.QUERY, name = "page") @DefaultValue("1") int page,
+      @Parameter(in = ParameterIn.QUERY, name = "_count") @DefaultValue("15") int count);
 }
