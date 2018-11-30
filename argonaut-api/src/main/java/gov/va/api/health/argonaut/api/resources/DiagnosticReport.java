@@ -42,11 +42,13 @@ import org.apache.commons.lang3.StringUtils;
 @AllArgsConstructor
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @Schema(
-    description =
-        "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-diagnosticreport.html")
+  description =
+      "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-diagnosticreport.html"
+)
 @ZeroOrOneOf(
-    fields = {"effectiveDateTime", "effectivePeriod"},
-    message = "Only one effective value may be specified")
+  fields = {"effectiveDateTime", "effectivePeriod"},
+  message = "Only one effective value may be specified"
+)
 public class DiagnosticReport implements Resource {
 
   @Pattern(regexp = Fhir.ID)
@@ -101,8 +103,8 @@ public class DiagnosticReport implements Resource {
 
   @JsonIgnore
   @AssertTrue(
-      message =
-          "Category system should be http://hl7.org/fhir/ValueSet/diagnostic-service-sections.")
+    message = "Category system should be http://hl7.org/fhir/ValueSet/diagnostic-service-sections."
+  )
   private boolean isValidCategory() {
     if (category == null) {
       return true;
