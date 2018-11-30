@@ -40,7 +40,7 @@ public class ArgonautHomeController {
    * redirect.
    */
   @GetMapping(
-    value = {"/", "/openapi.json"},
+    value = {"/", "/openapi.json", "/api/openapi.json"},
     produces = "application/json"
   )
   @ResponseBody
@@ -49,7 +49,10 @@ public class ArgonautHomeController {
   }
 
   /** Provide access to the OpenAPI yaml via RESTful interface. */
-  @GetMapping(value = "/openapi.yaml", produces = "application/vnd.oai.openapi")
+  @GetMapping(
+    value = {"/openapi.yaml", "/api/openapi.yaml"},
+    produces = "application/vnd.oai.openapi"
+  )
   @ResponseBody
   public String openapiYaml() throws IOException {
     return openapiContent();
