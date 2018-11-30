@@ -1,6 +1,7 @@
 package gov.va.api.health.argonaut.api;
 
 import gov.va.api.health.argonaut.api.resources.MedicationStatement;
+import gov.va.api.health.argonaut.api.resources.OperationOutcome;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -15,7 +16,8 @@ public interface MedicationStatementApi {
 
   @Operation(
     summary = "Medication Statement Read",
-    description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-medicationstatement.html",
+    description =
+        "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-medicationstatement.html",
     tags = {"Medication Statement"}
   )
   @GET
@@ -29,14 +31,31 @@ public interface MedicationStatementApi {
           schema = @Schema(implementation = MedicationStatement.class)
         )
   )
-  @ApiResponse(responseCode = "400", description = "Not found")
-  @ApiResponse(responseCode = "404", description = "Bad request")
+  @ApiResponse(
+    responseCode = "400",
+    description = "Not found",
+    content =
+        @Content(
+          mediaType = "application/json+fhir",
+          schema = @Schema(implementation = OperationOutcome.class)
+        )
+  )
+  @ApiResponse(
+    responseCode = "404",
+    description = "Bad request",
+    content =
+        @Content(
+          mediaType = "application/json+fhir",
+          schema = @Schema(implementation = OperationOutcome.class)
+        )
+  )
   MedicationStatement medicationStatementRead(
       @Parameter(in = ParameterIn.PATH, name = "id", required = true) String id);
 
   @Operation(
     summary = "Medication Statement Search",
-    description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-medicationstatement.html",
+    description =
+        "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-medicationstatement.html",
     tags = {"Medication Statement"}
   )
   @GET
@@ -50,8 +69,24 @@ public interface MedicationStatementApi {
           schema = @Schema(implementation = MedicationStatement.Bundle.class)
         )
   )
-  @ApiResponse(responseCode = "400", description = "Not found")
-  @ApiResponse(responseCode = "404", description = "Bad request")
+  @ApiResponse(
+    responseCode = "400",
+    description = "Not found",
+    content =
+        @Content(
+          mediaType = "application/json+fhir",
+          schema = @Schema(implementation = OperationOutcome.class)
+        )
+  )
+  @ApiResponse(
+    responseCode = "404",
+    description = "Bad request",
+    content =
+        @Content(
+          mediaType = "application/json+fhir",
+          schema = @Schema(implementation = OperationOutcome.class)
+        )
+  )
   MedicationStatement.Bundle medicationStatementSearch(
       @Parameter(in = ParameterIn.QUERY, required = true, name = "patient") String id,
       @Parameter(in = ParameterIn.QUERY, name = "page") @DefaultValue("1") int page,

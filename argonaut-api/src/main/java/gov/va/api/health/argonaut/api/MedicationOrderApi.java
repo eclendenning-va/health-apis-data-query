@@ -1,6 +1,7 @@
 package gov.va.api.health.argonaut.api;
 
 import gov.va.api.health.argonaut.api.resources.MedicationOrder;
+import gov.va.api.health.argonaut.api.resources.OperationOutcome;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -30,8 +31,24 @@ public interface MedicationOrderApi {
           schema = @Schema(implementation = MedicationOrder.class)
         )
   )
-  @ApiResponse(responseCode = "400", description = "Not found")
-  @ApiResponse(responseCode = "404", description = "Bad request")
+  @ApiResponse(
+    responseCode = "400",
+    description = "Not found",
+    content =
+        @Content(
+          mediaType = "application/json+fhir",
+          schema = @Schema(implementation = OperationOutcome.class)
+        )
+  )
+  @ApiResponse(
+    responseCode = "404",
+    description = "Bad request",
+    content =
+        @Content(
+          mediaType = "application/json+fhir",
+          schema = @Schema(implementation = OperationOutcome.class)
+        )
+  )
   MedicationOrder medicationOrderRead(
       @Parameter(in = ParameterIn.PATH, name = "id", required = true) String id);
 
@@ -52,8 +69,24 @@ public interface MedicationOrderApi {
           schema = @Schema(implementation = MedicationOrder.Bundle.class)
         )
   )
-  @ApiResponse(responseCode = "400", description = "Not found")
-  @ApiResponse(responseCode = "404", description = "Bad request")
+  @ApiResponse(
+    responseCode = "400",
+    description = "Not found",
+    content =
+        @Content(
+          mediaType = "application/json+fhir",
+          schema = @Schema(implementation = OperationOutcome.class)
+        )
+  )
+  @ApiResponse(
+    responseCode = "404",
+    description = "Bad request",
+    content =
+        @Content(
+          mediaType = "application/json+fhir",
+          schema = @Schema(implementation = OperationOutcome.class)
+        )
+  )
   MedicationOrder.Bundle medicationOrderSearch(
       @Parameter(in = ParameterIn.QUERY, required = true, name = "patient") String id,
       @Parameter(in = ParameterIn.QUERY, name = "page") @DefaultValue("1") int page,
