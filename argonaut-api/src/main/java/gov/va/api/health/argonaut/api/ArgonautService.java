@@ -1,7 +1,9 @@
 package gov.va.api.health.argonaut.api;
 
+import io.swagger.v3.oas.annotations.ExternalDocumentation;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.servers.Server;
 import javax.ws.rs.Path;
 
 @OpenAPIDefinition(
@@ -9,7 +11,17 @@ import javax.ws.rs.Path;
       @Info(
         title = "API Management Platform | Health - Argonaut",
         version = "v1",
-        description = "http://www.fhir.org/guides/argonaut/r2/index.html"
+        description =
+            "FHIR (Fast Healthcare Interoperability Resources) specification defines a set of"
+                + " \"Resources\" that represent granular clinical concepts."
+                + " This service is compliant with the FHIR Argonaut Data Query Implementation"
+                + " Guide."
+      ),
+  servers = {@Server(url = "https://health.developer.va.gov", description = "Development server")},
+  externalDocs =
+      @ExternalDocumentation(
+        description = "Specification",
+        url = "http://www.fhir.org/guides/argonaut/r2/index.html"
       )
 )
 @Path("api")
