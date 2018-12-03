@@ -7,11 +7,10 @@ import gov.va.api.health.argonaut.api.Fhir;
 import gov.va.api.health.argonaut.api.bundle.AbstractBundle;
 import gov.va.api.health.argonaut.api.bundle.AbstractEntry;
 import gov.va.api.health.argonaut.api.bundle.BundleLink;
-import gov.va.api.health.argonaut.api.datatypes.Age;
 import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
+import gov.va.api.health.argonaut.api.datatypes.Duration;
 import gov.va.api.health.argonaut.api.datatypes.Identifier;
 import gov.va.api.health.argonaut.api.datatypes.Period;
-import gov.va.api.health.argonaut.api.datatypes.Range;
 import gov.va.api.health.argonaut.api.datatypes.Signature;
 import gov.va.api.health.argonaut.api.datatypes.SimpleResource;
 import gov.va.api.health.argonaut.api.elements.BackboneElement;
@@ -19,8 +18,6 @@ import gov.va.api.health.argonaut.api.elements.Extension;
 import gov.va.api.health.argonaut.api.elements.Meta;
 import gov.va.api.health.argonaut.api.elements.Narrative;
 import gov.va.api.health.argonaut.api.elements.Reference;
-import gov.va.api.health.argonaut.api.validation.ZeroOrOneOf;
-import gov.va.api.health.argonaut.api.validation.ZeroOrOneOfs;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import javax.validation.Valid;
@@ -40,32 +37,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-@Schema(
-  description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-condition.html"
-)
-@ZeroOrOneOfs({
-  @ZeroOrOneOf(
-    fields = {"onsetDateTime", "onsetAge", "onsetPeriod", "onsetRange", "onsetString"},
-    message = "Only one onset value may be specified"
-  ),
-  @ZeroOrOneOf(
-    fields = {
-      "abatementDateTime",
-      "abatementAge",
-      "abatementBoolean",
-      "abatementPeriod",
-      "abatementRange",
-      "abatementString"
-    },
-    message = "Only one abatement value may be specified"
-  )
-})
-public class Condition implements Resource {
+@Schema(description = "http://www.hl7.org/fhir/DSTU2/encounter.html")
+public class Encounter implements DomainResource {
+
+  @NotBlank String resourceType;
 
   @Pattern(regexp = Fhir.ID)
   String id;
 
-  @NotBlank String resourceType;
   @Valid Meta meta;
 
   @Pattern(regexp = Fhir.URI)
@@ -75,74 +54,67 @@ public class Condition implements Resource {
   String language;
 
   @Valid Narrative text;
-  @Valid List<SimpleResource> contained;
-  @Valid List<Extension> extension;
+
+  @Valid java.util.List<SimpleResource> contained;
+
   @Valid List<Extension> modifierExtension;
+
+  @Valid List<Extension> extension;
+
   @Valid List<Identifier> identifier;
 
-  @Valid @NotNull Reference patient;
-  @Valid Reference encounter;
-  @Valid Reference asserter;
+  @NotNull Encounter.Status status;
 
-  @Pattern(regexp = Fhir.DATE)
-  String dateRecorded;
+  @Valid List<StatusHistory> statusHistory;
 
-  @Valid @NotNull CodeableConcept code;
-  @Valid @NotNull CodeableConcept category;
-  @Valid ClinicalStatusCode clinicalStatus;
-  @Valid @NotNull VerificationStatusCode verificationStatus;
-  @Valid CodeableConcept severity;
+  @JsonProperty("class")
+  EncounterClass encounterClass;
 
-  @Pattern(regexp = Fhir.DATETIME)
-  String onsetDateTime;
+  @Valid List<CodeableConcept> type;
+  @Valid List<CodeableConcept> priority;
+  @Valid Reference patient;
+  @Valid List<Reference> episodeOfCare;
+  @Valid List<Reference> incomingReferral;
+  @Valid List<Participant> participant;
+  @Valid Reference appointment;
+  @Valid Period period;
+  @Valid Duration length;
+  @Valid List<CodeableConcept> reason;
+  @Valid List<Reference> indication;
+  @Valid Hospitalization hospitalization;
+  @Valid List<Location> location;
+  @Valid Reference serviceProvider;
+  @Valid Reference partOf;
 
-  @Valid Age onsetAge;
-  @Valid Period onsetPeriod;
-  @Valid Range onsetRange;
-  String onsetString;
-
-  @Pattern(regexp = Fhir.DATETIME)
-  String abatementDateTime;
-
-  @Valid Age abatementAge;
-  Boolean abatementBoolean;
-  @Valid Period abatementPeriod;
-  @Valid Range abatementRange;
-  String abatementString;
-
-  @Valid Stage stage;
-
-  @Valid List<Evidence> evidence;
-
-  @Valid List<CodeableConcept> bodySite;
-  String notes;
-
-  @SuppressWarnings("unused")
-  public enum ClinicalStatusCode {
-    active,
-    relapse,
-    remission,
-    resolved
+  public enum Status {
+    arrived,
+    cancelled,
+    finished,
+    @JsonProperty("in-progress")
+    in_progress,
+    onleave,
+    planned
   }
 
-  @SuppressWarnings("unused")
-  public enum VerificationStatusCode {
-    provisional,
-    differential,
-    confirmed,
-    refuted,
-    @JsonProperty("entered-in-error")
-    entered_in_error,
-    unknown
+  public enum EncounterClass {
+    ambulatory,
+    daytime,
+    emergency,
+    field,
+    home,
+    inpatient,
+    other,
+    outpatient,
+    virtual,
   }
 
   @Data
   @NoArgsConstructor
   @EqualsAndHashCode(callSuper = true)
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-  @JsonDeserialize(builder = Condition.Bundle.BundleBuilder.class)
-  @Schema(name = "ConditionBundle")
-  public static class Bundle extends AbstractBundle<Condition.Entry> {
+  @JsonDeserialize(builder = Encounter.Bundle.BundleBuilder.class)
+  @Schema(name = "EncounterBundle")
+  public static class Bundle extends AbstractBundle<Entry> {
 
     @Builder
     public Bundle(
@@ -164,9 +136,9 @@ public class Condition implements Resource {
   @NoArgsConstructor
   @EqualsAndHashCode(callSuper = true)
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-  @JsonDeserialize(builder = Condition.Entry.EntryBuilder.class)
-  @Schema(name = "ConditionEntry")
-  public static class Entry extends AbstractEntry<Condition> {
+  @JsonDeserialize(builder = Encounter.Entry.EntryBuilder.class)
+  @Schema(name = "EncounterBundle")
+  public static class Entry extends AbstractEntry<Encounter> {
 
     @Builder
     public Entry(
@@ -175,7 +147,7 @@ public class Condition implements Resource {
         @Valid List<Extension> modifierExtension,
         @Valid List<BundleLink> link,
         @Pattern(regexp = Fhir.URI) String fullUrl,
-        @Valid Condition resource,
+        @Valid Encounter resource,
         @Valid Search search,
         @Valid Request request,
         @Valid Response response) {
@@ -188,15 +160,23 @@ public class Condition implements Resource {
   @NoArgsConstructor(access = AccessLevel.PRIVATE)
   @AllArgsConstructor
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-  public static class Evidence implements BackboneElement {
+  public static class Hospitalization implements BackboneElement {
     @Pattern(regexp = Fhir.ID)
     String id;
 
     @Valid List<Extension> modifierExtension;
     @Valid List<Extension> extension;
-
-    @Valid CodeableConcept code;
-    @Valid List<Reference> detail;
+    @Valid Identifier preAdmissionIdentifier;
+    @Valid Reference origin;
+    @Valid CodeableConcept admitSource;
+    @Valid List<Reference> admittingDiagnosis;
+    @Valid CodeableConcept reAdmission;
+    @Valid List<CodeableConcept> dietPreference;
+    @Valid List<CodeableConcept> specialCourtesy;
+    @Valid List<CodeableConcept> specialArrangement;
+    @Valid Reference destination;
+    @Valid CodeableConcept dischargeDisposition;
+    @Valid List<Reference> dischargeDiagnosis;
   }
 
   @Data
@@ -204,14 +184,52 @@ public class Condition implements Resource {
   @NoArgsConstructor(access = AccessLevel.PRIVATE)
   @AllArgsConstructor
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-  public static class Stage implements BackboneElement {
+  public static class Location implements BackboneElement {
     @Pattern(regexp = Fhir.ID)
     String id;
 
     @Valid List<Extension> modifierExtension;
     @Valid List<Extension> extension;
+    @Valid @NotNull Reference location;
+    Encounter.Location.Status status;
+    @Valid Period period;
 
-    @Valid CodeableConcept summary;
-    @Valid List<Reference> assessment;
+    public enum Status {
+      planned,
+      active,
+      reserved,
+      completed
+    }
+  }
+
+  @Data
+  @Builder
+  @NoArgsConstructor(access = AccessLevel.PRIVATE)
+  @AllArgsConstructor
+  @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+  public static class Participant implements BackboneElement {
+    @Pattern(regexp = Fhir.ID)
+    String id;
+
+    @Valid List<Extension> modifierExtension;
+    @Valid List<Extension> extension;
+    @Valid List<CodeableConcept> type;
+    @Valid Period period;
+    @Valid Reference individual;
+  }
+
+  @Data
+  @Builder
+  @NoArgsConstructor(access = AccessLevel.PRIVATE)
+  @AllArgsConstructor
+  @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+  public static class StatusHistory implements BackboneElement {
+    @Pattern(regexp = Fhir.ID)
+    String id;
+
+    @Valid List<Extension> modifierExtension;
+    @Valid List<Extension> extension;
+    @NotNull Encounter.Status status;
+    @NotNull @Valid Period period;
   }
 }

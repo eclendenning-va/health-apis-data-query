@@ -113,6 +113,7 @@ public class Immunization implements Resource {
   @EqualsAndHashCode(callSuper = true)
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
   @JsonDeserialize(builder = Immunization.Bundle.BundleBuilder.class)
+  @Schema(name = "ImmunizationBundle")
   public static class Bundle extends AbstractBundle<Immunization.Entry> {
     @Builder
     public Bundle(
@@ -135,6 +136,7 @@ public class Immunization implements Resource {
   @EqualsAndHashCode(callSuper = true)
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
   @JsonDeserialize(builder = Immunization.Entry.EntryBuilder.class)
+  @Schema(name = "ImmunizationEntry")
   public static class Entry extends AbstractEntry<Immunization> {
 
     @Builder
@@ -172,6 +174,7 @@ public class Immunization implements Resource {
   @NoArgsConstructor(access = AccessLevel.PRIVATE)
   @AllArgsConstructor
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+  @Schema(name = "ImmunizationReaction")
   public static class Reaction implements BackboneElement {
     @Pattern(regexp = Fhir.ID)
     String id;

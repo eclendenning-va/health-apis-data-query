@@ -135,6 +135,7 @@ public class DiagnosticReport implements Resource {
   @EqualsAndHashCode(callSuper = true)
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
   @JsonDeserialize(builder = DiagnosticReport.Bundle.BundleBuilder.class)
+  @Schema(name = "DiagnosticReportBundle")
   public static class Bundle extends AbstractBundle<DiagnosticReport.Entry> {
 
     @Builder
@@ -158,6 +159,7 @@ public class DiagnosticReport implements Resource {
   @EqualsAndHashCode(callSuper = true)
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
   @JsonDeserialize(builder = DiagnosticReport.Entry.EntryBuilder.class)
+  @Schema(name = "DiagnosticReportEntry")
   public static class Entry extends AbstractEntry<DiagnosticReport> {
 
     @Builder
