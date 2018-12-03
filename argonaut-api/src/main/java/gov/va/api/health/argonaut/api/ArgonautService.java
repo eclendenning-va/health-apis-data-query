@@ -26,7 +26,7 @@ import javax.ws.rs.Path;
         url = "http://www.fhir.org/guides/argonaut/r2/index.html"
       )
 )
-@Path("api")
+@Path("/")
 public interface ArgonautService
     extends AllergyIntoleranceApi,
         ConditionApi,
