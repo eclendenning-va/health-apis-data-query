@@ -17,7 +17,9 @@ import javax.ws.rs.Path;
                 + " This service is compliant with the FHIR Argonaut Data Query Implementation"
                 + " Guide."
       ),
-  servers = {@Server(url = "https://health.developer.va.gov", description = "Development server")},
+  servers = {
+    @Server(url = "https://api.va.gov/services/health/v0/", description = "Development server")
+  },
   externalDocs =
       @ExternalDocumentation(
         description = "Specification",
