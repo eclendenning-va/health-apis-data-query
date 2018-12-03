@@ -73,7 +73,7 @@ public class ProcedureController {
   }
 
   /** Read by id. */
-  @GetMapping(value = {"/publicId}"})
+  @GetMapping(value = {"/{publicId}"})
   public Procedure read(@PathVariable("publicId") String publicId) {
     return transformer.apply(
         firstPayloadItem(
@@ -99,7 +99,7 @@ public class ProcedureController {
       @RequestParam(value = "_count", defaultValue = "1") int count,
       HttpServletRequest servletRequest) {
     return bundle(
-        Parameters.builder().add("_id", id).add("page", page).add("_count", count).build(),
+        Parameters.builder().add("identifier", id).add("page", page).add("_count", count).build(),
         page,
         count,
         servletRequest);

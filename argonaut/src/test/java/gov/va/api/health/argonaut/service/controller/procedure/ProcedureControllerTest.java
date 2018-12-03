@@ -126,7 +126,7 @@ public class ProcedureControllerTest {
   public void searchById() {
     assertSearch(
         () -> controller.searchById("me", 1, 10, servletRequest),
-        Parameters.builder().add("_id", "me").add("page", 1).add("_count", 10).build());
+        Parameters.builder().add("identifier", "me").add("page", 1).add("_count", 10).build());
   }
 
   @Test

@@ -21,6 +21,7 @@ public class Query {
   MultiValueMap<String, String> parameters;
   int page;
   int count;
+  @Builder.Default boolean raw = false;
 
   private static Stream<String> toKeyValueString(Map.Entry<String, List<String>> entry) {
     return entry.getValue().stream().map((value) -> entry.getKey() + '=' + value);

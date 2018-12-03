@@ -74,8 +74,12 @@ public class WitnessProtectionResources implements Resources {
     log.info("Search {}", originalQuery);
     validate(originalQuery);
     Query query = replacePublicIdsWithCdwIds(originalQuery);
-    String originalXml = repository.execute(query);
     log.info("Executing {}", query.toQueryString());
+    String originalXml = repository.execute(query);
+    if (query.raw()) {
+      log.info("Validation and reference replacement skipped. Returning raw response.");
+      return originalXml;
+    }
     Document xml = parse(originalQuery, originalXml);
     XmlResponseValidator.builder().query(originalQuery).response(xml).build().validate();
     xml = replaceCdwIdsWithPublicIds(originalQuery, xml);

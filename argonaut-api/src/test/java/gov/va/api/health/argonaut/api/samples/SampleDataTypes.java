@@ -14,6 +14,7 @@ import gov.va.api.health.argonaut.api.datatypes.Coding;
 import gov.va.api.health.argonaut.api.datatypes.ContactPoint;
 import gov.va.api.health.argonaut.api.datatypes.ContactPoint.ContactPointSystem;
 import gov.va.api.health.argonaut.api.datatypes.ContactPoint.ContactPointUse;
+import gov.va.api.health.argonaut.api.datatypes.Duration;
 import gov.va.api.health.argonaut.api.datatypes.HumanName;
 import gov.va.api.health.argonaut.api.datatypes.HumanName.NameUse;
 import gov.va.api.health.argonaut.api.datatypes.Identifier;
@@ -25,6 +26,10 @@ import gov.va.api.health.argonaut.api.datatypes.Ratio;
 import gov.va.api.health.argonaut.api.datatypes.SampledData;
 import gov.va.api.health.argonaut.api.datatypes.SimpleQuantity;
 import gov.va.api.health.argonaut.api.datatypes.SimpleResource;
+import gov.va.api.health.argonaut.api.datatypes.Timing;
+import gov.va.api.health.argonaut.api.datatypes.Timing.EventTiming;
+import gov.va.api.health.argonaut.api.datatypes.Timing.Repeat;
+import gov.va.api.health.argonaut.api.datatypes.Timing.UnitsOfTime;
 import gov.va.api.health.argonaut.api.elements.Extension;
 import gov.va.api.health.argonaut.api.elements.Meta;
 import gov.va.api.health.argonaut.api.elements.Narrative;
@@ -35,6 +40,7 @@ import gov.va.api.health.argonaut.api.resources.OperationOutcome.Issue.IssueSeve
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import lombok.NoArgsConstructor;
 
@@ -123,6 +129,15 @@ public final class SampleDataTypes {
 
   public CodeableConcept details() {
     return CodeableConcept.builder().coding(singletonList(coding())).text("HelloText").build();
+  }
+
+  public Duration duration() {
+    return Duration.builder()
+        .value(11.11)
+        .unit("HelloUnit")
+        .system("http://HelloSystem.com")
+        .code("d")
+        .build();
   }
 
   public Extension extension() {
@@ -236,6 +251,24 @@ public final class SampleDataTypes {
     return singletonList(reference());
   }
 
+  public Repeat repeat() {
+    return Repeat.builder()
+        .id("2222")
+        .extension(singletonList(extension()))
+        .boundsQuantity(duration())
+        .count(1)
+        .duration(11.11)
+        .durationMax(11.11)
+        .durationUnits(UnitsOfTime.min)
+        .frequency(1)
+        .frequencyMax(1)
+        .period(11.11)
+        .periodMax(11.11)
+        .periodUnits(UnitsOfTime.h)
+        .when(EventTiming.AC)
+        .build();
+  }
+
   public AbstractEntry.Request request() {
     return AbstractEntry.Request.builder()
         .id("request1")
@@ -303,5 +336,18 @@ public final class SampleDataTypes {
 
   public List<SimpleResource> simpleResourceList() {
     return singletonList(resource());
+  }
+
+  public Timing timing() {
+    List<String> events = new LinkedList<>();
+    String event = "2015-04-15T04:00:00Z";
+    events.add(event);
+    return Timing.builder()
+        .id("2222")
+        .extension(singletonList(extension()))
+        .event(events)
+        .repeat(repeat())
+        .code(codeableConcept())
+        .build();
   }
 }

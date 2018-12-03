@@ -141,6 +141,7 @@ public class Condition implements Resource {
   @EqualsAndHashCode(callSuper = true)
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
   @JsonDeserialize(builder = Condition.Bundle.BundleBuilder.class)
+  @Schema(name = "ConditionBundle")
   public static class Bundle extends AbstractBundle<Condition.Entry> {
 
     @Builder
@@ -164,6 +165,7 @@ public class Condition implements Resource {
   @EqualsAndHashCode(callSuper = true)
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
   @JsonDeserialize(builder = Condition.Entry.EntryBuilder.class)
+  @Schema(name = "ConditionEntry")
   public static class Entry extends AbstractEntry<Condition> {
 
     @Builder

@@ -3,6 +3,7 @@ package gov.va.api.health.argonaut.service.controller.procedure;
 import static gov.va.api.health.argonaut.service.controller.Transformers.asDateTimeString;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convert;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convertAll;
+import static gov.va.api.health.argonaut.service.controller.Transformers.ifPresent;
 
 import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
 import gov.va.api.health.argonaut.api.datatypes.Coding;
@@ -40,7 +41,10 @@ public class ProcedureTransformer implements ProcedureController.Transformer {
   }
 
   List<CodeableConcept> reasonNotPerformed(CdwReasonNotPerformed maybeReason) {
-    return Collections.singletonList(CodeableConcept.builder().text(maybeReason.getText()).build());
+    return Collections.singletonList(
+        CodeableConcept.builder()
+            .text(ifPresent(maybeReason, CdwReasonNotPerformed::getText))
+            .build());
   }
 
   CodeableConcept code(CdwCode maybeCode) {

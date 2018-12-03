@@ -50,9 +50,42 @@ public class ArgonautReadAndSearchIT {
             "/api/AllergyIntolerance/{id}",
             ids.allergyIntolerance()),
         expect(404, OperationOutcome.class, "/api/AllergyIntolerance/{id}", ids.unknown()),
+        expect(
+            200,
+            AllergyIntolerance.Bundle.class,
+            "/api/AllergyIntolerance?_id={id}",
+            ids.allergyIntolerance()),
+        expect(
+            200,
+            AllergyIntolerance.Bundle.class,
+            "/api/AllergyIntolerance?identifier={id}",
+            ids.allergyIntolerance()),
+        expect(
+            200,
+            AllergyIntolerance.Bundle.class,
+            "/api/AllergyIntolerance?patient={patient}",
+            ids.patient()),
         // Condition
         expect(200, Condition.class, "/api/Condition/{id}", ids.condition()),
         expect(404, OperationOutcome.class, "/api/Condition/{id}", ids.unknown()),
+        expect(200, Condition.Bundle.class, "/api/Condition?identifier={id}", ids.condition()),
+        expect(404, OperationOutcome.class, "/api/Condition?_id={id}", ids.unknown()),
+        expect(200, Condition.Bundle.class, "/api/Condition?patient={patient}", ids.patient()),
+        expect(
+            200,
+            Condition.Bundle.class,
+            "/api/Condition?patient={patient}&category=problem",
+            ids.patient()),
+        expect(
+            200,
+            Condition.Bundle.class,
+            "/api/Condition?patient={patient}&category=health-concern",
+            ids.patient()),
+        expect(
+            200,
+            Condition.Bundle.class,
+            "/api/Condition?patient={patient}&clinicalstatus=active",
+            ids.patient()),
         // DiagnosticReport
         expect(200, DiagnosticReport.class, "/api/DiagnosticReport/{id}", ids.diagnosticReport()),
         expect(404, OperationOutcome.class, "/api/DiagnosticReport/{id}", ids.unknown()),
@@ -205,8 +238,8 @@ public class ArgonautReadAndSearchIT {
         expect(200, Procedure.class, "/api/Procedure/{id}", ids.procedure()),
         expect(404, OperationOutcome.class, "/api/Procedure/{id}", ids.unknown()),
         expect(200, Procedure.Bundle.class, "/api/Procedure?_id={id}", ids.procedure()),
+        expect(404, OperationOutcome.class, "/api/Procedure?_id={id}", ids.unknown()),
         expect(200, Procedure.Bundle.class, "/api/Procedure?identifier={id}", ids.procedure()),
-        expect(404, OperationOutcome.class, "/api/Immunization?_id={id}", ids.unknown()),
         expect(200, Procedure.Bundle.class, "/api/Procedure?patient={patient}", ids.patient()),
         expect(
             200,
