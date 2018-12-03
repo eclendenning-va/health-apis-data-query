@@ -18,7 +18,7 @@ import javax.ws.rs.Path;
                 + " Guide."
       ),
   servers = {
-    @Server(url = "https://api.va.gov/services/health/v0/", description = "Development server")
+    @Server(url = "https://api.va.gov/services/argonaut/", description = "Development server")
   },
   externalDocs =
       @ExternalDocumentation(
@@ -26,7 +26,7 @@ import javax.ws.rs.Path;
         url = "http://www.fhir.org/guides/argonaut/r2/index.html"
       )
 )
-@Path("api")
+@Path("/")
 public interface ArgonautService
     extends AllergyIntoleranceApi,
         ConditionApi,
