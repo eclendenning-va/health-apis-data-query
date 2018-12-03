@@ -25,6 +25,7 @@ import gov.va.dvp.cdw.xsd.model.CdwEncounterStatus;
 import gov.va.dvp.cdw.xsd.model.CdwReference;
 import java.util.Collections;
 import java.util.List;
+import javax.validation.constraints.NotNull;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -45,11 +46,12 @@ public class EncounterTransformer implements EncounterController.Transformer {
     return convert(
         maybeCdw,
         cdw ->
-            Collections.singletonList(Coding.builder()
-                .code(cdw.getCode().value())
-                .system(cdw.getSystem())
-                .display(cdw.getDisplay().value())
-                .build()));
+            Collections.singletonList(
+                Coding.builder()
+                    .code(cdw.getCode().value())
+                    .system(cdw.getSystem())
+                    .display(cdw.getDisplay().value())
+                    .build()));
   }
 
   Reference reference(CdwReference maybeCdw) {
@@ -79,10 +81,11 @@ public class EncounterTransformer implements EncounterController.Transformer {
     return convert(
         maybeCdw,
         source ->
-            Collections.singletonList(Reference.builder()
-                .reference(source.getReference())
-                .display(source.getDisplay())
-                .build()));
+            Collections.singletonList(
+                Reference.builder()
+                    .reference(source.getReference())
+                    .display(source.getDisplay())
+                    .build()));
   }
 
   List<Location> location(CdwLocations maybeCdw) {
@@ -94,10 +97,7 @@ public class EncounterTransformer implements EncounterController.Transformer {
     }
     return convertAll(
         maybeCdw.getLocation(),
-        source ->
-            Location.builder()
-                .location(reference(source.getLocationReference()))
-                .build());
+        source -> Location.builder().location(reference(source.getLocationReference())).build());
   }
 
   List<Reference> indications(CdwIndications maybeCdw) {
@@ -116,8 +116,14 @@ public class EncounterTransformer implements EncounterController.Transformer {
                 .build());
   }
 
-  List<CodeableConcept> encounterParticipantType(List<CdwEncounterParticipantType> maybeCdw){
-    return convertAll(maybeCdw, source->CodeableConcept.builder().coding(encounterParticipantTypeCoding(source.getCoding())).text(source.getText()).build());
+  List<CodeableConcept> encounterParticipantType(List<CdwEncounterParticipantType> maybeCdw) {
+    return convertAll(
+        maybeCdw,
+        source ->
+            CodeableConcept.builder()
+                .coding(encounterParticipantTypeCoding(source.getCoding()))
+                .text(source.getText())
+                .build());
   }
 
   List<Participant> participant(CdwParticipants maybeCdw) {
@@ -141,7 +147,8 @@ public class EncounterTransformer implements EncounterController.Transformer {
   }
 
   Encounter.Status encounterStatus(CdwEncounterStatus source) {
-    return ifPresent(source, status -> EnumSearcher.of(Encounter.Status.class).find(status.value()));
+    return ifPresent(
+        source, status -> EnumSearcher.of(Encounter.Status.class).find(status.value()));
   }
 
   private Encounter encounter(CdwEncounter source) {
