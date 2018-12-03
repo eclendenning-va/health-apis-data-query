@@ -95,6 +95,7 @@ public class Medication implements Resource {
   @EqualsAndHashCode(callSuper = true)
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
   @JsonDeserialize(builder = Medication.Bundle.BundleBuilder.class)
+  @Schema(name = "MedicationBundle")
   public static class Bundle extends AbstractBundle<Medication.Entry> {
     @Builder
     public Bundle(
@@ -134,6 +135,7 @@ public class Medication implements Resource {
   @EqualsAndHashCode(callSuper = true)
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
   @JsonDeserialize(builder = Medication.Entry.EntryBuilder.class)
+  @Schema(name = "MedicationEntry")
   public static class Entry extends AbstractEntry<Medication> {
     @Builder
     public Entry(

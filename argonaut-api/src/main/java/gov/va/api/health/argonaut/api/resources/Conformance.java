@@ -213,6 +213,7 @@ public class Conformance implements Resource {
   @NoArgsConstructor(access = AccessLevel.PRIVATE)
   @AllArgsConstructor
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+  @Schema(name = "ConformanceContact")
   public static class Contact implements BackboneElement {
     @Pattern(regexp = Fhir.ID)
     String id;
