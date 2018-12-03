@@ -1,24 +1,28 @@
 package gov.va.api.health.argonaut.api.resources;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import gov.va.api.health.argonaut.api.Fhir;
 import gov.va.api.health.argonaut.api.bundle.AbstractBundle;
 import gov.va.api.health.argonaut.api.bundle.AbstractEntry;
 import gov.va.api.health.argonaut.api.bundle.BundleLink;
-import gov.va.api.health.argonaut.api.datatypes.Age;
 import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
 import gov.va.api.health.argonaut.api.datatypes.Identifier;
 import gov.va.api.health.argonaut.api.datatypes.Period;
 import gov.va.api.health.argonaut.api.datatypes.Range;
+import gov.va.api.health.argonaut.api.datatypes.Ratio;
 import gov.va.api.health.argonaut.api.datatypes.Signature;
+import gov.va.api.health.argonaut.api.datatypes.SimpleQuantity;
 import gov.va.api.health.argonaut.api.datatypes.SimpleResource;
+import gov.va.api.health.argonaut.api.datatypes.Timing;
 import gov.va.api.health.argonaut.api.elements.BackboneElement;
 import gov.va.api.health.argonaut.api.elements.Extension;
 import gov.va.api.health.argonaut.api.elements.Meta;
 import gov.va.api.health.argonaut.api.elements.Narrative;
 import gov.va.api.health.argonaut.api.elements.Reference;
+import gov.va.api.health.argonaut.api.validation.ExactlyOneOf;
 import gov.va.api.health.argonaut.api.validation.ZeroOrOneOf;
 import gov.va.api.health.argonaut.api.validation.ZeroOrOneOfs;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -39,33 +43,34 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor
-@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+@JsonAutoDetect(
+  fieldVisibility = JsonAutoDetect.Visibility.ANY,
+  isGetterVisibility = Visibility.NONE
+)
 @Schema(
-  description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-condition.html"
+  description =
+      "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-medicationstatement.html"
 )
 @ZeroOrOneOfs({
   @ZeroOrOneOf(
-    fields = {"onsetDateTime", "onsetAge", "onsetPeriod", "onsetRange", "onsetString"},
-    message = "Only one onset value may be specified"
+    fields = {"reasonForUseCodeableConcept", "reasonForUseReference"},
+    message = "Only one reasonForUse value may be specified"
   ),
   @ZeroOrOneOf(
-    fields = {
-      "abatementDateTime",
-      "abatementAge",
-      "abatementBoolean",
-      "abatementPeriod",
-      "abatementRange",
-      "abatementString"
-    },
-    message = "Only one abatement value may be specified"
+    fields = {"effectiveDateTime", "effectivePeriod"},
+    message = "Only one effective value may be specified"
   )
 })
-public class Condition implements Resource {
+@ExactlyOneOf(
+  fields = {"medicationCodeableConcept", "medicationReference"},
+  message = "Exactly one medication value must be specified"
+)
+public class MedicationStatement implements Resource {
+  @NotBlank String resourceType;
 
   @Pattern(regexp = Fhir.ID)
   String id;
 
-  @NotBlank String resourceType;
   @Valid Meta meta;
 
   @Pattern(regexp = Fhir.URI)
@@ -79,70 +84,48 @@ public class Condition implements Resource {
   @Valid List<Extension> extension;
   @Valid List<Extension> modifierExtension;
   @Valid List<Identifier> identifier;
+  @NotNull @Valid Reference patient;
+  @Valid Reference informationSource;
 
-  @Valid @NotNull Reference patient;
-  @Valid Reference encounter;
-  @Valid Reference asserter;
+  @NotBlank
+  @Pattern(regexp = Fhir.DATETIME)
+  String dateAsserted;
 
-  @Pattern(regexp = Fhir.DATE)
-  String dateRecorded;
+  @NotNull Status status;
+  Boolean wasNotTaken;
 
-  @Valid @NotNull CodeableConcept code;
-  @Valid @NotNull CodeableConcept category;
-  @Valid ClinicalStatusCode clinicalStatus;
-  @Valid @NotNull VerificationStatusCode verificationStatus;
-  @Valid CodeableConcept severity;
+  @Valid List<CodeableConcept> reasonNotTaken;
+
+  @Valid CodeableConcept reasonForUseCodeableConcept;
+  @Valid Reference reasonForUseReference;
 
   @Pattern(regexp = Fhir.DATETIME)
-  String onsetDateTime;
+  String effectiveDateTime;
 
-  @Valid Age onsetAge;
-  @Valid Period onsetPeriod;
-  @Valid Range onsetRange;
-  String onsetString;
+  @Valid Period effectivePeriod;
+  String note;
+  @Valid List<Reference> supportingInformation;
 
-  @Pattern(regexp = Fhir.DATETIME)
-  String abatementDateTime;
-
-  @Valid Age abatementAge;
-  Boolean abatementBoolean;
-  @Valid Period abatementPeriod;
-  @Valid Range abatementRange;
-  String abatementString;
-
-  @Valid Stage stage;
-
-  @Valid List<Evidence> evidence;
-
-  @Valid List<CodeableConcept> bodySite;
-  String notes;
+  @Valid CodeableConcept medicationCodeableConcept;
+  @Valid Reference medicationReference;
+  @Valid List<Dosage> dosage;
 
   @SuppressWarnings("unused")
-  public enum ClinicalStatusCode {
+  public enum Status {
     active,
-    relapse,
-    remission,
-    resolved
-  }
-
-  @SuppressWarnings("unused")
-  public enum VerificationStatusCode {
-    provisional,
-    differential,
-    confirmed,
-    refuted,
+    completed,
     @JsonProperty("entered-in-error")
     entered_in_error,
-    unknown
+    intended
   }
 
   @Data
   @NoArgsConstructor
   @EqualsAndHashCode(callSuper = true)
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-  @JsonDeserialize(builder = Condition.Bundle.BundleBuilder.class)
-  @Schema(name = "ConditionBundle")
-  public static class Bundle extends AbstractBundle<Condition.Entry> {
+  @JsonDeserialize(builder = MedicationStatement.Bundle.BundleBuilder.class)
+  @Schema(name = "MedicationStatementBundle")
+  public static class Bundle extends AbstractBundle<MedicationStatement.Entry> {
 
     @Builder
     public Bundle(
@@ -154,19 +137,64 @@ public class Condition implements Resource {
         @NotNull BundleType type,
         @Min(0) Integer total,
         @Valid List<BundleLink> link,
-        @Valid List<Entry> entry,
+        @Valid List<MedicationStatement.Entry> entry,
         @Valid Signature signature) {
       super(resourceType, id, meta, implicitRules, language, type, total, link, entry, signature);
     }
   }
 
   @Data
+  @Builder
+  @NoArgsConstructor(access = AccessLevel.PRIVATE)
+  @AllArgsConstructor
+  @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+  @ZeroOrOneOfs({
+    @ZeroOrOneOf(
+      fields = {"asNeededBoolean", "asNeededCodeableConcept"},
+      message = "Only one asNeeded field may be specified"
+    ),
+    @ZeroOrOneOf(
+      fields = {"siteCodeableConcept", "siteReference"},
+      message = "Only one site field may be specified"
+    ),
+    @ZeroOrOneOf(
+      fields = {"doseRange", "doseQuantity"},
+      message = "Only one dose field may be specified"
+    ),
+    @ZeroOrOneOf(
+      fields = {"rateRatio", "rateRange"},
+      message = "Only one rate field may be specified"
+    )
+  })
+  public static class Dosage implements BackboneElement {
+    @Pattern(regexp = Fhir.ID)
+    String id;
+
+    @Valid List<Extension> extension;
+    @Valid List<Extension> modifierExtension;
+
+    String text;
+    @Valid Timing timing;
+    Boolean asNeededBoolean;
+    @Valid CodeableConcept asNeededCodeableConcept;
+    @Valid CodeableConcept siteCodeableConcept;
+    @Valid Reference siteReference;
+    @Valid CodeableConcept route;
+    @Valid CodeableConcept method;
+    @Valid Range doseRange;
+    @Valid SimpleQuantity doseQuantity;
+    @Valid Ratio rateRatio;
+    @Valid Range rateRange;
+    @Valid Ratio maxDosePerPeriod;
+  }
+
+  @Data
   @NoArgsConstructor
   @EqualsAndHashCode(callSuper = true)
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-  @JsonDeserialize(builder = Condition.Entry.EntryBuilder.class)
-  @Schema(name = "ConditionEntry")
-  public static class Entry extends AbstractEntry<Condition> {
+  @JsonDeserialize(builder = MedicationStatement.Entry.EntryBuilder.class)
+  @Schema(name = "MedicationStatementEntry")
+  public static class Entry extends AbstractEntry<MedicationStatement> {
 
     @Builder
     public Entry(
@@ -175,43 +203,11 @@ public class Condition implements Resource {
         @Valid List<Extension> modifierExtension,
         @Valid List<BundleLink> link,
         @Pattern(regexp = Fhir.URI) String fullUrl,
-        @Valid Condition resource,
+        @Valid MedicationStatement resource,
         @Valid Search search,
         @Valid Request request,
         @Valid Response response) {
       super(id, extension, modifierExtension, link, fullUrl, resource, search, request, response);
     }
-  }
-
-  @Data
-  @Builder
-  @NoArgsConstructor(access = AccessLevel.PRIVATE)
-  @AllArgsConstructor
-  @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-  public static class Evidence implements BackboneElement {
-    @Pattern(regexp = Fhir.ID)
-    String id;
-
-    @Valid List<Extension> modifierExtension;
-    @Valid List<Extension> extension;
-
-    @Valid CodeableConcept code;
-    @Valid List<Reference> detail;
-  }
-
-  @Data
-  @Builder
-  @NoArgsConstructor(access = AccessLevel.PRIVATE)
-  @AllArgsConstructor
-  @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-  public static class Stage implements BackboneElement {
-    @Pattern(regexp = Fhir.ID)
-    String id;
-
-    @Valid List<Extension> modifierExtension;
-    @Valid List<Extension> extension;
-
-    @Valid CodeableConcept summary;
-    @Valid List<Reference> assessment;
   }
 }

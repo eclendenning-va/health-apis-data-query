@@ -96,21 +96,6 @@ public class Encounter implements DomainResource {
     planned
   }
 
-  @Data
-  @Builder
-  @NoArgsConstructor(access = AccessLevel.PRIVATE)
-  @AllArgsConstructor
-  @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-  public static class StatusHistory implements BackboneElement {
-    @Pattern(regexp = Fhir.ID)
-    String id;
-
-    @Valid List<Extension> modifierExtension;
-    @Valid List<Extension> extension;
-    @NotNull Encounter.Status status;
-    @NotNull @Valid Period period;
-  }
-
   public enum EncounterClass {
     ambulatory,
     daytime,
@@ -124,19 +109,50 @@ public class Encounter implements DomainResource {
   }
 
   @Data
-  @Builder
-  @NoArgsConstructor(access = AccessLevel.PRIVATE)
-  @AllArgsConstructor
+  @NoArgsConstructor
+  @EqualsAndHashCode(callSuper = true)
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-  public static class Participant implements BackboneElement {
-    @Pattern(regexp = Fhir.ID)
-    String id;
+  @JsonDeserialize(builder = Encounter.Bundle.BundleBuilder.class)
+  @Schema(name = "EncounterBundle")
+  public static class Bundle extends AbstractBundle<Entry> {
 
-    @Valid List<Extension> modifierExtension;
-    @Valid List<Extension> extension;
-    @Valid List<CodeableConcept> type;
-    @Valid Period period;
-    @Valid Reference individual;
+    @Builder
+    public Bundle(
+        @NotBlank String resourceType,
+        @Pattern(regexp = Fhir.ID) String id,
+        @Valid Meta meta,
+        @Pattern(regexp = Fhir.URI) String implicitRules,
+        @Pattern(regexp = Fhir.CODE) String language,
+        @NotNull BundleType type,
+        @Min(0) Integer total,
+        @Valid List<BundleLink> link,
+        @Valid List<Entry> entry,
+        @Valid Signature signature) {
+      super(resourceType, id, meta, implicitRules, language, type, total, link, entry, signature);
+    }
+  }
+
+  @Data
+  @NoArgsConstructor
+  @EqualsAndHashCode(callSuper = true)
+  @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+  @JsonDeserialize(builder = Encounter.Entry.EntryBuilder.class)
+  @Schema(name = "EncounterBundle")
+  public static class Entry extends AbstractEntry<Encounter> {
+
+    @Builder
+    public Entry(
+        @Pattern(regexp = Fhir.ID) String id,
+        @Valid List<Extension> extension,
+        @Valid List<Extension> modifierExtension,
+        @Valid List<BundleLink> link,
+        @Pattern(regexp = Fhir.URI) String fullUrl,
+        @Valid Encounter resource,
+        @Valid Search search,
+        @Valid Request request,
+        @Valid Response response) {
+      super(id, extension, modifierExtension, link, fullUrl, resource, search, request, response);
+    }
   }
 
   @Data
@@ -187,47 +203,33 @@ public class Encounter implements DomainResource {
   }
 
   @Data
-  @NoArgsConstructor
-  @EqualsAndHashCode(callSuper = true)
+  @Builder
+  @NoArgsConstructor(access = AccessLevel.PRIVATE)
+  @AllArgsConstructor
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-  @JsonDeserialize(builder = Encounter.Bundle.BundleBuilder.class)
-  public static class Bundle extends AbstractBundle<Entry> {
+  public static class Participant implements BackboneElement {
+    @Pattern(regexp = Fhir.ID)
+    String id;
 
-    @Builder
-    public Bundle(
-        @NotBlank String resourceType,
-        @Pattern(regexp = Fhir.ID) String id,
-        @Valid Meta meta,
-        @Pattern(regexp = Fhir.URI) String implicitRules,
-        @Pattern(regexp = Fhir.CODE) String language,
-        @NotNull BundleType type,
-        @Min(0) Integer total,
-        @Valid List<BundleLink> link,
-        @Valid List<Entry> entry,
-        @Valid Signature signature) {
-      super(resourceType, id, meta, implicitRules, language, type, total, link, entry, signature);
-    }
+    @Valid List<Extension> modifierExtension;
+    @Valid List<Extension> extension;
+    @Valid List<CodeableConcept> type;
+    @Valid Period period;
+    @Valid Reference individual;
   }
 
   @Data
-  @NoArgsConstructor
-  @EqualsAndHashCode(callSuper = true)
+  @Builder
+  @NoArgsConstructor(access = AccessLevel.PRIVATE)
+  @AllArgsConstructor
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-  @JsonDeserialize(builder = Encounter.Entry.EntryBuilder.class)
-  public static class Entry extends AbstractEntry<Encounter> {
+  public static class StatusHistory implements BackboneElement {
+    @Pattern(regexp = Fhir.ID)
+    String id;
 
-    @Builder
-    public Entry(
-        @Pattern(regexp = Fhir.ID) String id,
-        @Valid List<Extension> extension,
-        @Valid List<Extension> modifierExtension,
-        @Valid List<BundleLink> link,
-        @Pattern(regexp = Fhir.URI) String fullUrl,
-        @Valid Encounter resource,
-        @Valid Search search,
-        @Valid Request request,
-        @Valid Response response) {
-      super(id, extension, modifierExtension, link, fullUrl, resource, search, request, response);
-    }
+    @Valid List<Extension> modifierExtension;
+    @Valid List<Extension> extension;
+    @NotNull Encounter.Status status;
+    @NotNull @Valid Period period;
   }
 }

@@ -28,6 +28,9 @@ public class ArgonautHomeControllerTest {
     mvc.perform(get("/openapi.json"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.openapi", equalTo("3.0.1")));
+    mvc.perform(get("/api/openapi.json"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.openapi", equalTo("3.0.1")));
   }
 
   @Test
@@ -37,6 +40,9 @@ public class ArgonautHomeControllerTest {
         StreamUtils.copyToString(
             getClass().getResourceAsStream("/openapi.yaml"), StandardCharsets.UTF_8);
     mvc.perform(get("/openapi.yaml"))
+        .andExpect(status().isOk())
+        .andExpect(content().string(equalTo(expected)));
+    mvc.perform(get("/api/openapi.yaml"))
         .andExpect(status().isOk())
         .andExpect(content().string(equalTo(expected)));
   }
