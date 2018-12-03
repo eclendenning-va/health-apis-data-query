@@ -59,6 +59,7 @@ class IdRegistrar {
     ResourceIdentity diagnosticReport = id("DIAGNOSTIC_REPORT", cdwIds.diagnosticReport());
     ResourceIdentity immunization = id("IMMUNIZATION", cdwIds.immunization());
     ResourceIdentity medication = id("MEDICATION", cdwIds.medication());
+    ResourceIdentity medicationOrder = id("MEDICATION_ORDER", cdwIds.medication());
     ResourceIdentity observation = id("OBSERVATION", cdwIds.observation());
     ResourceIdentity patient = id("PATIENT", cdwIds.patient());
 
@@ -70,6 +71,7 @@ class IdRegistrar {
             immunization,
             patient,
             medication,
+            medicationOrder,
             observation);
     log.info("Registering {}", identities);
     List<Registration> registrations =
@@ -87,6 +89,7 @@ class IdRegistrar {
             .diagnosticReport(findUuid(registrations, diagnosticReport))
             .immunization(findUuid(registrations, immunization))
             .medication(findUuid(registrations, medication))
+            .medicationOrder(findUuid(registrations, medicationOrder))
             .observation(findUuid(registrations, observation))
             .patient(findUuid(registrations, patient))
             .build();

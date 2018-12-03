@@ -26,6 +26,7 @@ import gov.va.dvp.cdw.xsd.model.CdwSimpleQuantity;
 import java.util.List;
 
 public class MedicationOrderTransformer implements MedicationOrderController.Transformer {
+  @Override
   public MedicationOrder apply(CdwMedicationOrder source) {
     return medicationOrder(source);
   }

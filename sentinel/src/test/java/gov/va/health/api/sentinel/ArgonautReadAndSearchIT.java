@@ -5,6 +5,7 @@ import gov.va.api.health.argonaut.api.resources.Condition;
 import gov.va.api.health.argonaut.api.resources.DiagnosticReport;
 import gov.va.api.health.argonaut.api.resources.Immunization;
 import gov.va.api.health.argonaut.api.resources.Medication;
+import gov.va.api.health.argonaut.api.resources.MedicationOrder;
 import gov.va.api.health.argonaut.api.resources.Observation;
 import gov.va.api.health.argonaut.api.resources.OperationOutcome;
 import gov.va.api.health.argonaut.api.resources.Patient;
@@ -154,6 +155,8 @@ public class ArgonautReadAndSearchIT {
         expect(200, Medication.Bundle.class, "/api/Medication?_id={id}", ids.medication()),
         expect(200, Medication.Bundle.class, "/api/Medication?identifier={id}", ids.medication()),
         expect(404, OperationOutcome.class, "/api/Medication?_id={id}", ids.unknown()),
+        // Medication Order
+        expect(200, MedicationOrder.class, "/api/MedicationOrder/{id}", ids.medicationOrder()),
         // Observation
         expect(200, Observation.class, "/api/Observation/{id}", ids.observation()),
         expect(404, OperationOutcome.class, "/api/Observation/{id}", ids.unknown()),

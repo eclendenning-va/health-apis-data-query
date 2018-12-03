@@ -8,12 +8,10 @@ import gov.va.api.health.argonaut.service.controller.Bundler;
 import gov.va.api.health.argonaut.service.controller.Bundler.BundleContext;
 import gov.va.api.health.argonaut.service.controller.PageLinks.LinkConfig;
 import gov.va.api.health.argonaut.service.controller.Parameters;
-import gov.va.api.health.argonaut.service.controller.medicationorder.MedicationOrderController.Transformer;
 import gov.va.api.health.argonaut.service.mranderson.client.MrAndersonClient;
 import gov.va.api.health.argonaut.service.mranderson.client.Query;
 import gov.va.api.health.argonaut.service.mranderson.client.Query.Profile;
 import gov.va.dvp.cdw.xsd.model.CdwMedicationOrder103Root;
-import gov.va.dvp.cdw.xsd.model.CdwMedicationOrder103Root.CdwMedicationOrders.CdwMedicationOrder;
 import groovy.util.logging.Slf4j;
 import java.util.Collections;
 import java.util.function.Function;
@@ -27,6 +25,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+
+/**
+ * Request Mappings for the Argonaut Medication Order Profile, see
+ * https://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-medicationorder.html for
+ * implementation details.
+ */
+@SuppressWarnings("WeakerAccess")
 @RestController
 @RequestMapping(
   value = {"/api/MedicationOrder"},
@@ -129,5 +134,5 @@ public class MedicationOrderController {
         servletRequest);
   }
 
-  public interface Transformer extends Function<CdwMedicationOrder, MedicationOrder> {}
+  public interface Transformer extends Function<CdwMedicationOrder103Root.CdwMedicationOrders.CdwMedicationOrder, MedicationOrder> {}
 }

@@ -24,6 +24,7 @@ public class SystemDefinitions {
                   .diagnosticReport("1000000031384:L")
                   .patient("185601V825290")
                   .medication("212846")
+                  .medicationOrder("1200389904206:O")
                   .observation("1201051417263:V")
                   .condition("1400007575530:P")
                   .immunization("1000000043979")
