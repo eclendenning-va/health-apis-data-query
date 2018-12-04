@@ -4,6 +4,7 @@ import static gov.va.api.health.argonaut.service.controller.Transformers.asDateT
 import static gov.va.api.health.argonaut.service.controller.Transformers.convert;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convertAll;
 import static gov.va.api.health.argonaut.service.controller.Transformers.ifPresent;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
 import gov.va.api.health.argonaut.api.datatypes.Coding;
@@ -40,13 +41,6 @@ public class ProcedureTransformer implements ProcedureController.Transformer {
         .build();
   }
 
-  List<CodeableConcept> reasonNotPerformed(CdwReasonNotPerformed maybeReason) {
-    return Collections.singletonList(
-        CodeableConcept.builder()
-            .text(ifPresent(maybeReason, CdwReasonNotPerformed::getText))
-            .build());
-  }
-
   CodeableConcept code(CdwCode maybeCode) {
     return convert(
         maybeCode,
@@ -64,11 +58,14 @@ public class ProcedureTransformer implements ProcedureController.Transformer {
                 .build());
   }
 
-  Status status(CdwProcedureStatus maybeStatus) {
-    if (maybeStatus == null) {
+  List<CodeableConcept> reasonNotPerformed(CdwReasonNotPerformed maybeReason) {
+    if (maybeReason == null || isBlank(maybeReason.getText())) {
       return null;
     }
-    return EnumSearcher.of(Procedure.Status.class).find(maybeStatus.value());
+    return Collections.singletonList(
+        CodeableConcept.builder()
+            .text(ifPresent(maybeReason, CdwReasonNotPerformed::getText))
+            .build());
   }
 
   Reference reference(CdwReference maybeReference) {
@@ -79,5 +76,12 @@ public class ProcedureTransformer implements ProcedureController.Transformer {
                 .reference(source.getReference())
                 .display(source.getDisplay())
                 .build());
+  }
+
+  Status status(CdwProcedureStatus maybeStatus) {
+    if (maybeStatus == null) {
+      return null;
+    }
+    return EnumSearcher.of(Procedure.Status.class).find(maybeStatus.value());
   }
 }

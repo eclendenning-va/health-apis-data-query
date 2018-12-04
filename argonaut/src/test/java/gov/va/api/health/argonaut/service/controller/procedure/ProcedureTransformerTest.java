@@ -27,24 +27,21 @@ public class ProcedureTransformerTest {
   private Expected expected = new Expected();
 
   @Test
+  public void code() {
+    assertThat(tx.code(cdw.procedure().getCode())).isEqualTo(expected.procedure().code());
+  }
+
+  @Test
   public void procedure() {
     assertThat(tx.apply(cdw.procedure())).isEqualTo(expected.procedure());
   }
 
   @Test
   public void reasonNotPerformed() {
+    assertThat(tx.reasonNotPerformed(null)).isNull();
+    assertThat(tx.reasonNotPerformed(new CdwReasonNotPerformed())).isNull();
     assertThat(tx.reasonNotPerformed(cdw.procedure().getReasonNotPerformed()))
         .isEqualTo(expected.procedure().reasonNotPerformed());
-  }
-
-  @Test
-  public void code() {
-    assertThat(tx.code(cdw.procedure().getCode())).isEqualTo(expected.procedure().code());
-  }
-
-  @Test
-  public void status() {
-    assertThat(tx.status(cdw.procedure().getStatus())).isEqualTo(expected.procedure().status());
   }
 
   @Test
@@ -53,7 +50,42 @@ public class ProcedureTransformerTest {
         .isEqualTo(expected.procedure().location());
   }
 
+  @Test
+  public void status() {
+    assertThat(tx.status(null)).isNull();
+    assertThat(tx.status(cdw.procedure().getStatus())).isEqualTo(expected.procedure().status());
+  }
+
   private static class CdwSampleData {
+    private CdwCode code() {
+      CdwCode code = new CdwCode();
+      CdwCode.CdwCoding coding = new CdwCode.CdwCoding();
+      coding.setSystem(CdwCodeSystem.HTTP_WWW_AMA_ASSN_ORG_GO_CPT);
+      coding.setCode("43239");
+      coding.setDisplay("EGD BIOPSY SINGLE/MULTIPLE");
+      code.getCoding().add(coding);
+      return code;
+    }
+
+    @SneakyThrows
+    private XMLGregorianCalendar dateTime(String s) {
+      return DatatypeFactory.newInstance().newXMLGregorianCalendar(s);
+    }
+
+    private CdwReference encounter() {
+      CdwReference ref = new CdwReference();
+      ref.setReference("Encounter/69f76c18-7e54-5da1-817f-91d453f7d9a7");
+      ref.setDisplay("1400065292107");
+      return ref;
+    }
+
+    private CdwReference location() {
+      CdwReference ref = new CdwReference();
+      ref.setReference("Location/81f8f1e2-c749-54e0-a8f6-24016c5174cb");
+      ref.setDisplay("ZZDO NOT USE!!");
+      return ref;
+    }
+
     CdwProcedure procedure() {
       CdwProcedure cdw = new CdwProcedure();
       cdw.setCdwId("b3108f9c-7ec0-5a7e-88c8-9b704a3a11d1");
@@ -74,35 +106,6 @@ public class ProcedureTransformerTest {
       return reason;
     }
 
-    private CdwReference location() {
-      CdwReference ref = new CdwReference();
-      ref.setReference("Location/81f8f1e2-c749-54e0-a8f6-24016c5174cb");
-      ref.setDisplay("ZZDO NOT USE!!");
-      return ref;
-    }
-
-    private CdwReference encounter() {
-      CdwReference ref = new CdwReference();
-      ref.setReference("Encounter/69f76c18-7e54-5da1-817f-91d453f7d9a7");
-      ref.setDisplay("1400065292107");
-      return ref;
-    }
-
-    @SneakyThrows
-    private XMLGregorianCalendar dateTime(String s) {
-      return DatatypeFactory.newInstance().newXMLGregorianCalendar(s);
-    }
-
-    private CdwCode code() {
-      CdwCode code = new CdwCode();
-      CdwCode.CdwCoding coding = new CdwCode.CdwCoding();
-      coding.setSystem(CdwCodeSystem.HTTP_WWW_AMA_ASSN_ORG_GO_CPT);
-      coding.setCode("43239");
-      coding.setDisplay("EGD BIOPSY SINGLE/MULTIPLE");
-      code.getCoding().add(coding);
-      return code;
-    }
-
     private CdwReference subject() {
       CdwReference ref = new CdwReference();
       ref.setReference("Patient/185601V825290");
@@ -112,6 +115,19 @@ public class ProcedureTransformerTest {
   }
 
   private static class Expected {
+
+    private CodeableConcept code() {
+      return CodeableConcept.builder().coding(codeCoding()).build();
+    }
+
+    private List<Coding> codeCoding() {
+      return Collections.singletonList(
+          Coding.builder()
+              .system("http://www.ama-assn.org/go/cpt")
+              .code("43239")
+              .display("EGD BIOPSY SINGLE/MULTIPLE")
+              .build());
+    }
 
     Procedure procedure() {
       return Procedure.builder()
@@ -142,19 +158,6 @@ public class ProcedureTransformerTest {
 
     private List<CodeableConcept> reason() {
       return Collections.singletonList(CodeableConcept.builder().text("NOT NEEDED").build());
-    }
-
-    private CodeableConcept code() {
-      return CodeableConcept.builder().coding(codeCoding()).build();
-    }
-
-    private List<Coding> codeCoding() {
-      return Collections.singletonList(
-          Coding.builder()
-              .system("http://www.ama-assn.org/go/cpt")
-              .code("43239")
-              .display("EGD BIOPSY SINGLE/MULTIPLE")
-              .build());
     }
   }
 }
