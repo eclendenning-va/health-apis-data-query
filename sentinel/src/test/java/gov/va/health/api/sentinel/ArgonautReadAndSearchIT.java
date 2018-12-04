@@ -143,7 +143,6 @@ public class ArgonautReadAndSearchIT {
         expect(200, Encounter.Bundle.class, "/api/Encounter?_id={id}", ids.encounter()),
         expect(200, Encounter.Bundle.class, "/api/Encounter?identifier={id}", ids.encounter()),
         expect(404, OperationOutcome.class, "/api/Encounter?_id={id}", ids.unknown()),
-        expect(200, Encounter.Bundle.class, "/api/Encounter?patient={patient}", ids.patient()),
         // Immunization
         expect(200, Immunization.class, "/api/Immunization/{id}", ids.immunization()),
         expect(404, OperationOutcome.class, "/api/Immunization/{id}", ids.unknown()),

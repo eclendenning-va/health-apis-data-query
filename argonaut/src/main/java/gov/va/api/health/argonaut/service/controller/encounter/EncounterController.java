@@ -119,20 +119,6 @@ public class EncounterController {
         servletRequest);
   }
 
-  /** Search by patient. */
-  @GetMapping(params = {"patient"})
-  public Encounter.Bundle searchByPatient(
-      @RequestParam("patient") String patient,
-      @RequestParam(value = "page", defaultValue = "1") int page,
-      @RequestParam(value = "_count", defaultValue = "15") int count,
-      HttpServletRequest servletRequest) {
-    return bundle(
-        Parameters.builder().add("patient", patient).add("page", page).add("_count", count).build(),
-        page,
-        count,
-        servletRequest);
-  }
-
   /** Hey, this is a validate endpoint. It validates. */
   @PostMapping(
     value = "/$validate",
