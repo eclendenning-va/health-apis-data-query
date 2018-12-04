@@ -9,7 +9,7 @@ import javax.ws.rs.Path;
 @OpenAPIDefinition(
   info =
       @Info(
-        title = "API Management Platform | Health - Argonaut",
+        title = "Argonaut",
         version = "v1",
         description =
             "FHIR (Fast Healthcare Interoperability Resources) specification defines a set of"
@@ -22,7 +22,7 @@ import javax.ws.rs.Path;
   },
   externalDocs =
       @ExternalDocumentation(
-        description = "Specification",
+        description = "Argonaut Data Query Implementation Guide",
         url = "http://www.fhir.org/guides/argonaut/r2/index.html"
       )
 )
