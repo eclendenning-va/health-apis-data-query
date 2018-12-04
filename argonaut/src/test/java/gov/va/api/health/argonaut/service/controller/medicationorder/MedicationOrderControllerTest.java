@@ -59,14 +59,14 @@ public class MedicationOrderControllerTest {
     root.getMedicationOrders()
         .getMedicationOrder()
         .addAll(Arrays.asList(cdwItem1, cdwItem2, cdwItem3));
-    MedicationOrder patient1 = MedicationOrder.builder().build();
-    MedicationOrder patient2 = MedicationOrder.builder().build();
-    MedicationOrder patient3 = MedicationOrder.builder().build();
-    when(tx.apply(cdwItem1)).thenReturn(patient1);
-    when(tx.apply(cdwItem2)).thenReturn(patient2);
-    when(tx.apply(cdwItem3)).thenReturn(patient3);
+    MedicationOrder medicationOrder1 = MedicationOrder.builder().build();
+    MedicationOrder medicationOrder2 = MedicationOrder.builder().build();
+    MedicationOrder medicationOrder3 = MedicationOrder.builder().build();
+    when(tx.apply(cdwItem1)).thenReturn(medicationOrder1);
+    when(tx.apply(cdwItem2)).thenReturn(medicationOrder2);
+    when(tx.apply(cdwItem3)).thenReturn(medicationOrder3);
     when(client.search(Mockito.any())).thenReturn(root);
-    when(servletRequest.getRequestURI()).thenReturn("/api/Patient");
+    when(servletRequest.getRequestURI()).thenReturn("/api/MedicationOrder");
 
     Bundle mockBundle = new Bundle();
     when(bundler.bundle(Mockito.any())).thenReturn(mockBundle);
@@ -86,7 +86,7 @@ public class MedicationOrderControllerTest {
             .page(1)
             .recordsPerPage(10)
             .totalRecords(3)
-            .path("/api/Patient")
+            .path("/api/MedicationOrder")
             .queryParams(params)
             .build();
     assertThat(captor.getValue().linkConfig()).isEqualTo(expectedLinkConfig);
