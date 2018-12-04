@@ -4,13 +4,15 @@ import static gov.va.api.health.argonaut.service.controller.Transformers.firstPa
 import static gov.va.api.health.argonaut.service.controller.Transformers.hasPayload;
 
 import gov.va.api.health.argonaut.api.resources.MedicationOrder;
+import gov.va.api.health.argonaut.api.resources.MedicationOrder.Bundle;
+import gov.va.api.health.argonaut.api.resources.OperationOutcome;
 import gov.va.api.health.argonaut.service.controller.Bundler;
 import gov.va.api.health.argonaut.service.controller.Bundler.BundleContext;
 import gov.va.api.health.argonaut.service.controller.PageLinks.LinkConfig;
 import gov.va.api.health.argonaut.service.controller.Parameters;
+import gov.va.api.health.argonaut.service.controller.Validator;
 import gov.va.api.health.argonaut.service.mranderson.client.MrAndersonClient;
 import gov.va.api.health.argonaut.service.mranderson.client.Query;
-import gov.va.api.health.argonaut.service.mranderson.client.Query.Profile;
 import gov.va.dvp.cdw.xsd.model.CdwMedicationOrder103Root;
 import groovy.util.logging.Slf4j;
 import java.util.Collections;
@@ -21,10 +23,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 
 /**
  * Request Mappings for the Argonaut Medication Order Profile, see
@@ -45,7 +48,7 @@ public class MedicationOrderController {
   private MrAndersonClient mrAndersonClient;
   private Bundler bundler;
 
-  private MedicationOrder.Bundle bundle(
+  private Bundle bundle(
       MultiValueMap<String, String> parameters,
       int page,
       int count,
@@ -84,7 +87,7 @@ public class MedicationOrderController {
   private CdwMedicationOrder103Root search(MultiValueMap<String, String> params) {
     Query<CdwMedicationOrder103Root> query =
         Query.forType(CdwMedicationOrder103Root.class)
-            .profile(Profile.ARGONAUT)
+            .profile(Query.Profile.ARGONAUT)
             .resource("MedicationOrder")
             .version("1.03")
             .parameters(params)
@@ -97,7 +100,7 @@ public class MedicationOrderController {
   public MedicationOrder.Bundle searchById(
       @RequestParam("_id") String id,
       @RequestParam(value = "page", defaultValue = "1") int page,
-      @RequestParam(value = "_count", defaultValue = "1") int count,
+      @RequestParam(value = "_count", defaultValue = "15") int count,
       HttpServletRequest servletRequest) {
     return bundle(
         Parameters.builder().add("identifier", id).add("page", page).add("_count", count).build(),
@@ -109,12 +112,16 @@ public class MedicationOrderController {
   /** Search by identifier. */
   @GetMapping(params = {"identifier"})
   public MedicationOrder.Bundle searchByIdentifier(
-      @RequestParam("identifier") String id,
+      @RequestParam("identifier") String identifier,
       @RequestParam(value = "page", defaultValue = "1") int page,
-      @RequestParam(value = "_count", defaultValue = "1") int count,
+      @RequestParam(value = "_count", defaultValue = "15") int count,
       HttpServletRequest servletRequest) {
     return bundle(
-        Parameters.builder().add("identifier", id).add("page", page).add("_count", count).build(),
+        Parameters.builder()
+            .add("identifier", identifier)
+            .add("page", page)
+            .add("_count", count)
+            .build(),
         page,
         count,
         servletRequest);
@@ -134,5 +141,16 @@ public class MedicationOrderController {
         servletRequest);
   }
 
-  public interface Transformer extends Function<CdwMedicationOrder103Root.CdwMedicationOrders.CdwMedicationOrder, MedicationOrder> {}
+  /** Validate Endpoint. */
+  @PostMapping(
+    value = "/$validate",
+    consumes = {"application/json", "application/json+fhir", "application/fhir+json"}
+  )
+  public OperationOutcome validate(@RequestBody MedicationOrder.Bundle bundle) {
+    return Validator.create().validate(bundle);
+  }
+
+  public interface Transformer
+      extends Function<
+          CdwMedicationOrder103Root.CdwMedicationOrders.CdwMedicationOrder, MedicationOrder> {}
 }
