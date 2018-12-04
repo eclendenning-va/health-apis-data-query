@@ -1,6 +1,5 @@
 package gov.va.api.health.argonaut.api.resources;
 
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import gov.va.api.health.argonaut.api.Fhir;
 import gov.va.api.health.argonaut.api.datatypes.Address;
@@ -31,18 +30,22 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @Schema(
-    description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-immunization.html"
+  description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-immunization.html"
 )
-public class Location implements Resource{
+public class Location implements DomainResource {
   @NotBlank String resourceType;
 
   @Pattern(regexp = Fhir.ID)
   String id;
+
   @Valid Meta meta;
+
   @Pattern(regexp = Fhir.URI)
   String implicitRules;
+
   @Pattern(regexp = Fhir.CODE)
   String language;
+
   @Valid Narrative text;
   @Valid List<SimpleResource> contained;
   @Valid List<Extension> extension;
@@ -54,13 +57,12 @@ public class Location implements Resource{
   String description;
   Mode mode;
   CodeableConcept type;
-  @Valid  List<ContactPoint> telecom;
+  @Valid List<ContactPoint> telecom;
   @Valid Address address;
   @Valid CodeableConcept physicalType;
   @Valid Position position;
   @Valid Reference managingOrganization;
   @Valid Reference partOf;
-
 
   @Data
   @Builder
@@ -70,6 +72,7 @@ public class Location implements Resource{
   public static class Position implements BackboneElement {
     @Pattern(regexp = Fhir.ID)
     String id;
+
     @Valid List<Extension> extension;
     @Valid List<Extension> modifierExtension;
 
@@ -88,6 +91,4 @@ public class Location implements Resource{
     suspended,
     inactive
   }
-
-
 }
