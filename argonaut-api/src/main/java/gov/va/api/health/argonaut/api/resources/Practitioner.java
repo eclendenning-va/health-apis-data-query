@@ -1,6 +1,5 @@
 package gov.va.api.health.argonaut.api.resources;
 
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import gov.va.api.health.argonaut.api.Fhir;
 import gov.va.api.health.argonaut.api.datatypes.Address;
@@ -33,19 +32,21 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-@Schema(
-    description = "https://www.hl7.org/fhir/DSTU2/practitioner.html"
-)
+@Schema(description = "https://www.hl7.org/fhir/DSTU2/practitioner.html")
 public class Practitioner implements DomainResource {
   @NotBlank String resourceType;
 
   @Pattern(regexp = Fhir.ID)
   String id;
+
   @Valid Meta meta;
+
   @Pattern(regexp = Fhir.URI)
   String implicitRules;
+
   @Pattern(regexp = Fhir.CODE)
   String language;
+
   @Valid Narrative text;
   @Valid List<SimpleResource> contained;
   @Valid List<Extension> extension;
@@ -57,8 +58,10 @@ public class Practitioner implements DomainResource {
   @Valid List<ContactPoint> telecom;
   @Valid List<Address> address;
   Gender gender;
+
   @Pattern(regexp = Fhir.DATE)
   String birthDate;
+
   @Valid List<Attachment> photo;
   @Valid List<PractitionerRole> practitionerRole;
   @Valid List<Qualification> qualification;
@@ -72,6 +75,7 @@ public class Practitioner implements DomainResource {
   public static class Qualification implements BackboneElement {
     @Pattern(regexp = Fhir.ID)
     String id;
+
     @Valid List<Extension> extension;
     @Valid List<Extension> modifierExtension;
 
@@ -81,7 +85,6 @@ public class Practitioner implements DomainResource {
     @Valid Reference issuer;
   }
 
-
   @Data
   @Builder
   @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -90,6 +93,7 @@ public class Practitioner implements DomainResource {
   public static class PractitionerRole implements BackboneElement {
     @Pattern(regexp = Fhir.ID)
     String id;
+
     @Valid List<Extension> extension;
     @Valid List<Extension> modifierExtension;
 
@@ -100,11 +104,11 @@ public class Practitioner implements DomainResource {
     @Valid List<Reference> location;
     @Valid List<Reference> healthcareService;
   }
-  public enum Gender{
+
+  public enum Gender {
     male,
     female,
     other,
     unknown
   }
-
 }

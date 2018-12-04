@@ -33,23 +33,24 @@ public class SamplePractitioners {
         .gender(Gender.male)
         .birthDate("2000-10-01")
         .photo(Collections.singletonList(dataTypes.attachment()))
-        .practitionerRole(Collections.singletonList(
-            PractitionerRole.builder()
-                .managingOrganization(dataTypes.reference())
-                .role(dataTypes.codeableConcept())
-                .specialty(dataTypes.codeableConceptList())
-                .period(dataTypes.period())
-                .location(dataTypes.referenceList())
-                .healthcareService(dataTypes.referenceList())
-                .build()))
-        .qualification(Collections.singletonList(
-            Qualification.builder()
-                .identifier(Collections.singletonList(dataTypes.identifier()))
-                .code(dataTypes.codeableConcept())
-                .period(dataTypes.period())
-                .issuer(dataTypes.reference())
-                .build()
-        ))
+        .practitionerRole(
+            Collections.singletonList(
+                PractitionerRole.builder()
+                    .managingOrganization(dataTypes.reference())
+                    .role(dataTypes.codeableConcept())
+                    .specialty(dataTypes.codeableConceptList())
+                    .period(dataTypes.period())
+                    .location(dataTypes.referenceList())
+                    .healthcareService(dataTypes.referenceList())
+                    .build()))
+        .qualification(
+            Collections.singletonList(
+                Qualification.builder()
+                    .identifier(Collections.singletonList(dataTypes.identifier()))
+                    .code(dataTypes.codeableConcept())
+                    .period(dataTypes.period())
+                    .issuer(dataTypes.reference())
+                    .build()))
         .communication(dataTypes.codeableConceptList())
         .build();
   }
