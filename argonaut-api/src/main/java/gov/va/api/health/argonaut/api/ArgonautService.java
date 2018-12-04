@@ -18,7 +18,10 @@ import javax.ws.rs.Path;
                 + " Guide."
       ),
   servers = {
-    @Server(url = "https://api.va.gov/services/argonaut/v0/", description = "Development server")
+    @Server(
+      url = "https://dev-api.va.gov/services/argonaut/v0/",
+      description = "Development server"
+    )
   },
   externalDocs =
       @ExternalDocumentation(
