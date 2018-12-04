@@ -54,17 +54,12 @@ public class Encounter implements DomainResource {
   String language;
 
   @Valid Narrative text;
-
   @Valid java.util.List<SimpleResource> contained;
-
   @Valid List<Extension> modifierExtension;
-
   @Valid List<Extension> extension;
 
   @Valid List<Identifier> identifier;
-
   @NotNull Encounter.Status status;
-
   @Valid List<StatusHistory> statusHistory;
 
   @JsonProperty("class")
@@ -82,7 +77,11 @@ public class Encounter implements DomainResource {
   @Valid List<CodeableConcept> reason;
   @Valid List<Reference> indication;
   @Valid Hospitalization hospitalization;
-  @Valid List<Location> location;
+
+  @JsonProperty("location")
+  @Valid
+  List<EncounterLocation> encounterLocation;
+
   @Valid Reference serviceProvider;
   @Valid Reference partOf;
 
@@ -114,7 +113,7 @@ public class Encounter implements DomainResource {
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
   @JsonDeserialize(builder = Encounter.Bundle.BundleBuilder.class)
   @Schema(name = "EncounterBundle")
-  public static class Bundle extends AbstractBundle<Entry> {
+  public static class Bundle extends AbstractBundle<Encounter.Entry> {
 
     @Builder
     public Bundle(
@@ -137,7 +136,7 @@ public class Encounter implements DomainResource {
   @EqualsAndHashCode(callSuper = true)
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
   @JsonDeserialize(builder = Encounter.Entry.EntryBuilder.class)
-  @Schema(name = "EncounterBundle")
+  @Schema(name = "EncounterEntry")
   public static class Entry extends AbstractEntry<Encounter> {
 
     @Builder
@@ -184,14 +183,14 @@ public class Encounter implements DomainResource {
   @NoArgsConstructor(access = AccessLevel.PRIVATE)
   @AllArgsConstructor
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-  public static class Location implements BackboneElement {
+  public static class EncounterLocation implements BackboneElement {
     @Pattern(regexp = Fhir.ID)
     String id;
 
     @Valid List<Extension> modifierExtension;
     @Valid List<Extension> extension;
     @Valid @NotNull Reference location;
-    Encounter.Location.Status status;
+    Encounter.EncounterLocation.Status status;
     @Valid Period period;
 
     public enum Status {

@@ -4,8 +4,8 @@ import static java.util.Collections.singletonList;
 
 import gov.va.api.health.argonaut.api.resources.Encounter;
 import gov.va.api.health.argonaut.api.resources.Encounter.EncounterClass;
+import gov.va.api.health.argonaut.api.resources.Encounter.EncounterLocation;
 import gov.va.api.health.argonaut.api.resources.Encounter.Hospitalization;
-import gov.va.api.health.argonaut.api.resources.Encounter.Location;
 import gov.va.api.health.argonaut.api.resources.Encounter.Participant;
 import gov.va.api.health.argonaut.api.resources.Encounter.Status;
 import gov.va.api.health.argonaut.api.resources.Encounter.StatusHistory;
@@ -51,7 +51,7 @@ public class SampleEncounters {
         .reason(codeableConceptList())
         .indication(referenceList())
         .hospitalization(hospitalization())
-        .location(singletonList(location()))
+        .encounterLocation(singletonList(encounterLocation()))
         .serviceProvider(reference())
         .partOf(reference())
         .build();
@@ -97,13 +97,13 @@ public class SampleEncounters {
         .build();
   }
 
-  public Location location() {
-    return Location.builder()
+  public EncounterLocation encounterLocation() {
+    return EncounterLocation.builder()
         .id("3333")
         .extension(singletonList(extension()))
         .modifierExtension(singletonList(extension()))
         .location(reference())
-        .status(Location.Status.active)
+        .status(EncounterLocation.Status.active)
         .period(period())
         .build();
   }

@@ -4,6 +4,7 @@ import gov.va.api.health.argonaut.api.bundle.AbstractBundle;
 import gov.va.api.health.argonaut.api.resources.AllergyIntolerance;
 import gov.va.api.health.argonaut.api.resources.Condition;
 import gov.va.api.health.argonaut.api.resources.DiagnosticReport;
+import gov.va.api.health.argonaut.api.resources.Encounter;
 import gov.va.api.health.argonaut.api.resources.Immunization;
 import gov.va.api.health.argonaut.api.resources.Medication;
 import gov.va.api.health.argonaut.api.resources.Observation;
@@ -42,9 +43,8 @@ public class ArgonautValidateIT {
         validate("Medication", ids.medication(), Medication.Bundle.class),
         validate("Observation", ids.observation(), Observation.Bundle.class),
         validate("Patient", ids.patient(), Patient.Bundle.class),
-        validate("AllergyIntolerance", ids.allergyIntolerance(), AllergyIntolerance.Bundle.class)
-        //
-        );
+        validate("AllergyIntolerance", ids.allergyIntolerance(), AllergyIntolerance.Bundle.class),
+        validate("Encounter", ids.encounter(), Encounter.Bundle.class));
   }
 
   @SneakyThrows

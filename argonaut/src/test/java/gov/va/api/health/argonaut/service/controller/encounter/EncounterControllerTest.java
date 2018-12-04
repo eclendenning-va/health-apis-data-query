@@ -11,8 +11,10 @@ import gov.va.api.health.argonaut.service.controller.Bundler;
 import gov.va.api.health.argonaut.service.controller.Bundler.BundleContext;
 import gov.va.api.health.argonaut.service.controller.PageLinks.LinkConfig;
 import gov.va.api.health.argonaut.service.controller.Parameters;
+import gov.va.api.health.argonaut.service.controller.Validator;
 import gov.va.api.health.argonaut.service.mranderson.client.MrAndersonClient;
 import gov.va.api.health.argonaut.service.mranderson.client.Query;
+import gov.va.api.health.autoconfig.configuration.JacksonConfig;
 import gov.va.dvp.cdw.xsd.model.CdwEncounter101Root;
 import gov.va.dvp.cdw.xsd.model.CdwEncounter101Root.CdwEncounters;
 import gov.va.dvp.cdw.xsd.model.CdwEncounter101Root.CdwEncounters.CdwEncounter;
@@ -21,6 +23,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.function.Supplier;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.ConstraintViolationException;
+import lombok.SneakyThrows;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -124,7 +128,7 @@ public class EncounterControllerTest {
   public void searchById() {
     assertSearch(
         () -> controller.searchById("me", 1, 10, servletRequest),
-        Parameters.builder().add("_id", "me").add("page", 1).add("_count", 10).build());
+        Parameters.builder().add("identifier", "me").add("page", 1).add("_count", 10).build());
   }
 
   @Test
@@ -134,30 +138,28 @@ public class EncounterControllerTest {
         Parameters.builder().add("identifier", "me").add("page", 1).add("_count", 10).build());
   }
 
-  //  @Test
-  //  @SneakyThrows
-  //  public void validateAcceptsValidBundle() {
-  //    Encounter resource =
-  //        JacksonConfig.createMapper()
-  //            .readValue(
-  //                getClass().getResourceAsStream("/cdw/old-encounter-1.01.json"),
-  // Encounter.class);
-  //
-  //    Bundle bundle = bundleOf(resource);
-  //    assertThat(controller.validate(bundle)).isEqualTo(Validator.ok());
-  //  }
-  //
-  //  @Test(expected = ConstraintViolationException.class)
-  //  @SneakyThrows
-  //  public void validateThrowsExceptionForInvalidBundle() {
-  //    Encounter resource =
-  //        JacksonConfig.createMapper()
-  //            .readValue(
-  //                getClass().getResourceAsStream("/cdw/old-encounter-1.01.json"),
-  // Encounter.class);
-  //    resource.resourceType(null);
-  //
-  //    Bundle bundle = bundleOf(resource);
-  //    controller.validate(bundle);
-  //  }
+  @Test
+  @SneakyThrows
+  public void validateAcceptsValidBundle() {
+    Encounter resource =
+        JacksonConfig.createMapper()
+            .readValue(
+                getClass().getResourceAsStream("/cdw/old-encounter-1.01.json"), Encounter.class);
+
+    Bundle bundle = bundleOf(resource);
+    assertThat(controller.validate(bundle)).isEqualTo(Validator.ok());
+  }
+
+  @Test(expected = ConstraintViolationException.class)
+  @SneakyThrows
+  public void validateThrowsExceptionForInvalidBundle() {
+    Encounter resource =
+        JacksonConfig.createMapper()
+            .readValue(
+                getClass().getResourceAsStream("/cdw/old-encounter-1.01.json"), Encounter.class);
+    resource.resourceType(null);
+
+    Bundle bundle = bundleOf(resource);
+    controller.validate(bundle);
+  }
 }

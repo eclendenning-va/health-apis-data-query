@@ -11,7 +11,7 @@ import gov.va.api.health.argonaut.api.datatypes.Period;
 import gov.va.api.health.argonaut.api.elements.Reference;
 import gov.va.api.health.argonaut.api.resources.Encounter;
 import gov.va.api.health.argonaut.api.resources.Encounter.EncounterClass;
-import gov.va.api.health.argonaut.api.resources.Encounter.Location;
+import gov.va.api.health.argonaut.api.resources.Encounter.EncounterLocation;
 import gov.va.api.health.argonaut.api.resources.Encounter.Participant;
 import gov.va.api.health.argonaut.service.controller.EnumSearcher;
 import gov.va.dvp.cdw.xsd.model.CdwEncounter101Root.CdwEncounters.CdwEncounter;
@@ -25,7 +25,6 @@ import gov.va.dvp.cdw.xsd.model.CdwEncounterStatus;
 import gov.va.dvp.cdw.xsd.model.CdwReference;
 import java.util.Collections;
 import java.util.List;
-import javax.validation.constraints.NotNull;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -88,7 +87,7 @@ public class EncounterTransformer implements EncounterController.Transformer {
                     .build()));
   }
 
-  List<Location> location(CdwLocations maybeCdw) {
+  List<EncounterLocation> encounterLocation(CdwLocations maybeCdw) {
     if (maybeCdw == null) {
       return null;
     }
@@ -97,7 +96,8 @@ public class EncounterTransformer implements EncounterController.Transformer {
     }
     return convertAll(
         maybeCdw.getLocation(),
-        source -> Location.builder().location(reference(source.getLocationReference())).build());
+        source ->
+            EncounterLocation.builder().location(reference(source.getLocationReference())).build());
   }
 
   List<Reference> indications(CdwIndications maybeCdw) {
@@ -153,13 +153,13 @@ public class EncounterTransformer implements EncounterController.Transformer {
 
   private Encounter encounter(CdwEncounter source) {
     return Encounter.builder()
-        .id(source.getCdwId())
         .resourceType("Encounter")
+        .id(source.getCdwId())
         .appointment(reference(source.getAppointment()))
         .encounterClass(encounterClass(source.getClazz()))
         .episodeOfCare(episodeOfCare(source.getEpisodeOfCare()))
         .indication(indications(source.getIndications()))
-        .location(location(source.getLocations()))
+        .encounterLocation(encounterLocation(source.getLocations()))
         .participant(participant(source.getParticipants()))
         .patient(reference(source.getPatient()))
         .serviceProvider(reference(source.getServiceProvider()))
