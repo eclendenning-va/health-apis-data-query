@@ -9,6 +9,7 @@ import gov.va.api.health.argonaut.api.resources.Medication;
 import gov.va.api.health.argonaut.api.resources.Observation;
 import gov.va.api.health.argonaut.api.resources.OperationOutcome;
 import gov.va.api.health.argonaut.api.resources.Patient;
+import gov.va.api.health.argonaut.api.resources.Procedure;
 import java.util.Arrays;
 import java.util.List;
 import lombok.SneakyThrows;
@@ -36,15 +37,14 @@ public class ArgonautValidateIT {
     TestIds ids = IdRegistrar.of(Sentinel.get().system()).registeredIds();
 
     return Arrays.asList(
+        validate("AllergyIntolerance", ids.allergyIntolerance(), AllergyIntolerance.Bundle.class),
         validate("Condition", ids.condition(), Condition.Bundle.class),
         validate("DiagnosticReport", ids.diagnosticReport(), DiagnosticReport.Bundle.class),
         validate("Immunization", ids.immunization(), Immunization.Bundle.class),
         validate("Medication", ids.medication(), Medication.Bundle.class),
         validate("Observation", ids.observation(), Observation.Bundle.class),
         validate("Patient", ids.patient(), Patient.Bundle.class),
-        validate("AllergyIntolerance", ids.allergyIntolerance(), AllergyIntolerance.Bundle.class)
-        //
-        );
+        validate("Procedure", ids.procedure(), Procedure.Bundle.class));
   }
 
   @SneakyThrows

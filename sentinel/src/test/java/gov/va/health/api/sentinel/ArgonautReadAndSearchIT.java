@@ -8,6 +8,7 @@ import gov.va.api.health.argonaut.api.resources.Medication;
 import gov.va.api.health.argonaut.api.resources.Observation;
 import gov.va.api.health.argonaut.api.resources.OperationOutcome;
 import gov.va.api.health.argonaut.api.resources.Patient;
+import gov.va.api.health.argonaut.api.resources.Procedure;
 import java.util.Arrays;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -232,7 +233,27 @@ public class ArgonautReadAndSearchIT {
             Patient.Bundle.class,
             "/api/Patient?name={name}&gender={gender}",
             ids.pii().name(),
-            ids.pii().gender()));
+            ids.pii().gender()),
+        // Procedure
+        expect(200, Procedure.class, "/api/Procedure/{id}", ids.procedure()),
+        expect(404, OperationOutcome.class, "/api/Procedure/{id}", ids.unknown()),
+        expect(200, Procedure.Bundle.class, "/api/Procedure?_id={id}", ids.procedure()),
+        expect(404, OperationOutcome.class, "/api/Procedure?_id={id}", ids.unknown()),
+        expect(200, Procedure.Bundle.class, "/api/Procedure?identifier={id}", ids.procedure()),
+        expect(200, Procedure.Bundle.class, "/api/Procedure?patient={patient}", ids.patient()),
+        expect(
+            200,
+            Procedure.Bundle.class,
+            "api/Procedure?patient={patient}&date={onDate}",
+            ids.patient(),
+            ids.procedures().onDate()),
+        expect(
+            200,
+            Procedure.Bundle.class,
+            "api/Procedure?patient={patient}&date={fromDate}&date={toDate}",
+            ids.patient(),
+            ids.procedures().fromDate(),
+            ids.procedures().toDate()));
   }
 
   private TestClient argonaut() {
