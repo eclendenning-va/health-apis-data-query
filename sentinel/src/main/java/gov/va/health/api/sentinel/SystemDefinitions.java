@@ -3,6 +3,7 @@ package gov.va.health.api.sentinel;
 import gov.va.health.api.sentinel.TestIds.DiagnosticReports;
 import gov.va.health.api.sentinel.TestIds.Observations;
 import gov.va.health.api.sentinel.TestIds.PersonallyIdentifiableInformation;
+import gov.va.health.api.sentinel.TestIds.Procedures;
 import gov.va.health.api.sentinel.TestIds.Range;
 import lombok.NoArgsConstructor;
 import lombok.Value;
@@ -20,29 +21,10 @@ public class SystemDefinitions {
           .cdwIds(
               TestIds.builder()
                   .allergyIntolerance("1000001782544")
-                  .unknown("5555555555555")
+                  .condition("1400007575530:P")
                   .diagnosticReport("1000000031384:L")
                   .encounter("1200753214085")
                   .patient("185601V825290")
-                  .medication("212846")
-                  .observation("1201051417263:V")
-                  .condition("1400007575530:P")
-                  .immunization("1000000043979")
-                  .pii(
-                      PersonallyIdentifiableInformation.builder()
-                          .gender("male")
-                          .birthdate("1970-01-01")
-                          .given("JOHN Q")
-                          .name("VETERAN,JOHN")
-                          .family("VETERAN")
-                          .build())
-                  .observations(
-                      Observations.builder()
-                          .loinc1("72166-2")
-                          .loinc2("777-3")
-                          .onDate("2015-04-15")
-                          .dateRange(Range.allTime())
-                          .build())
                   .diagnosticReports(
                       DiagnosticReports.builder()
                           .loinc1("10000-8")
@@ -51,6 +33,32 @@ public class SystemDefinitions {
                           .fromDate("gt1970-01-01")
                           .toDate("lt2038-01-01")
                           .build())
+                  .immunization("1000000043979")
+                  .medication("212846")
+                  .observation("1201051417263:V")
+                  .observations(
+                      Observations.builder()
+                          .loinc1("72166-2")
+                          .loinc2("777-3")
+                          .onDate("2015-04-15")
+                          .dateRange(Range.allTime())
+                          .build())
+                  .pii(
+                      PersonallyIdentifiableInformation.builder()
+                          .gender("male")
+                          .birthdate("1970-01-01")
+                          .given("JOHN Q")
+                          .name("VETERAN,JOHN")
+                          .family("VETERAN")
+                          .build())
+                  .procedure("1400000140034")
+                  .procedures(
+                      Procedures.builder()
+                          .onDate("ge2009")
+                          .fromDate("ge2009")
+                          .toDate("le2010")
+                          .build())
+                  .unknown("5555555555555")
                   .build())
           .build();
 }
