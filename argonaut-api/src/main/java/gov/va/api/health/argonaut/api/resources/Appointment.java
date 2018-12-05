@@ -24,6 +24,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -39,7 +40,7 @@ import lombok.NoArgsConstructor;
 @Schema(description = "https://www.hl7.org/fhir/DSTU2/appointment.html")
 public class Appointment implements DomainResource {
   @NotBlank String resourceType;
-  
+
   @Pattern(regexp = Fhir.ID)
   String id;
 
@@ -80,7 +81,10 @@ public class Appointment implements DomainResource {
 
   String comment;
 
-  @Valid @NotNull List<Participant> participant;
+  @Valid
+  @NotNull
+  @Size(min = 1)
+  List<Participant> participant;
 
   public enum Status {
     proposed,
