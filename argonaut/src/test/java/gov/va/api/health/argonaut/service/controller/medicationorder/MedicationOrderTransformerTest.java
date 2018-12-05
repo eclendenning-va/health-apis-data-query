@@ -57,6 +57,21 @@ public class MedicationOrderTransformerTest {
   }
 
   @Test
+  public void doseQuantity() {
+    assertThat(tx.doseQuantity(null)).isNull();
+    assertThat(tx.doseQuantity(new CdwSimpleQuantity())).isNull();
+    assertThat(tx.doseQuantity(cdw.doseQuantity())).isEqualTo(expected.doseQuantity());
+  }
+
+  @Test
+  public void doseQuantityValue() {
+    assertThat(tx.doseQuantityValue(null)).isNull();
+    assertThat(tx.doseQuantityValue("")).isNull();
+    assertThat(tx.doseQuantityValue(cdw.doseQuantity().getValue()))
+        .isEqualTo(expected.doseQuantity().value());
+  }
+
+  @Test
   public void medicationOrder() {
     assertThat(tx.apply(cdw.medicationOrder())).isEqualTo(expected.medicationOrder());
   }
@@ -124,9 +139,6 @@ public class MedicationOrderTransformerTest {
 
     CdwSimpleQuantity doseQuantity() {
       CdwSimpleQuantity doseQuantity = new CdwSimpleQuantity();
-      doseQuantity.setCode("dose quantity code");
-      doseQuantity.setSystem("http://example.com");
-      doseQuantity.setUnit("dose quantity unit");
       doseQuantity.setValue("10");
       return doseQuantity;
     }
@@ -206,12 +218,7 @@ public class MedicationOrderTransformerTest {
     }
 
     private SimpleQuantity doseQuantity() {
-      return SimpleQuantity.builder()
-          .code("dose quantity code")
-          .system("http://example.com")
-          .unit("dose quantity unit")
-          .value(Double.valueOf(10))
-          .build();
+      return SimpleQuantity.builder().value(Double.valueOf(10)).build();
     }
 
     Duration expectedSupplyDuration() {

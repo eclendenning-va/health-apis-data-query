@@ -76,12 +76,17 @@ public class MedicationOrderTransformer implements MedicationOrderController.Tra
   }
 
   SimpleQuantity doseQuantity(CdwSimpleQuantity source) {
-    return SimpleQuantity.builder()
-        .code(source.getCode())
-        .unit(source.getUnit())
-        .system(source.getSystem())
-        .value(Double.valueOf(source.getValue()))
-        .build();
+    if (source == null || source.getValue() == null) {
+      return null;
+    }
+    return SimpleQuantity.builder().value(doseQuantityValue(source.getValue())).build();
+  }
+
+  Double doseQuantityValue(String source) {
+    if (source == null || source.isEmpty()) {
+      return null;
+    }
+    return Double.valueOf(source);
   }
 
   DispenseRequest dispenseRequest(CdwDispenseRequest source) {
