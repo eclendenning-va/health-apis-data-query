@@ -58,12 +58,12 @@ public class Appointment implements Resource {
   @Valid List<Extension> modifierExtension;
   @Valid List<Identifier> identifier;
 
-  Status status;
+  @NotBlank Status status;
 
   @Valid CodeableConcept type;
   @Valid CodeableConcept reason;
 
-  int priority;
+  Integer priority;
 
   String description;
 
@@ -73,9 +73,10 @@ public class Appointment implements Resource {
   @Pattern(regexp = Fhir.INSTANT)
   String end;
 
-  int minutesDuration;
+  @Min(1)
+  Integer minutesDuration;
 
-  @Valid Reference slot;
+  @Valid List<Reference> slot;
 
   String comment;
 

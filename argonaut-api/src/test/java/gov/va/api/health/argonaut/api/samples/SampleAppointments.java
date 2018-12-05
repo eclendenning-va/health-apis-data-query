@@ -35,7 +35,7 @@ public class SampleAppointments {
         .start("1970-01-01T00:00:00Z")
         .end("1970-01-01T00:00:00Z")
         .minutesDuration(5)
-        .slot(dataTypes.reference())
+        .slot(singletonList(dataTypes.reference()))
         .comment("Comment")
         .participant(
             Participant.builder()
