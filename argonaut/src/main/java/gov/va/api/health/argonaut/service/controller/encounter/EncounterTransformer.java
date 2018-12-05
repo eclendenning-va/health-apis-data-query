@@ -91,14 +91,8 @@ public class EncounterTransformer implements EncounterController.Transformer {
   }
 
   List<Reference> indications(CdwIndications maybeCdw) {
-    if (maybeCdw == null) {
-      return null;
-    }
-    if (maybeCdw.getIndication() == null) {
-      return null;
-    }
     return convertAll(
-        maybeCdw.getIndication(),
+        ifPresent(maybeCdw, CdwIndications::getIndication),
         source ->
             Reference.builder()
                 .reference(source.getReference())
@@ -117,14 +111,8 @@ public class EncounterTransformer implements EncounterController.Transformer {
   }
 
   List<Participant> participant(CdwParticipants maybeCdw) {
-    if (maybeCdw == null) {
-      return null;
-    }
-    if (maybeCdw.getParticipant() == null) {
-      return null;
-    }
     return convertAll(
-        maybeCdw.getParticipant(),
+        ifPresent(maybeCdw, CdwParticipants::getParticipant),
         source ->
             Participant.builder()
                 .individual(reference(source.getIndividual()))
