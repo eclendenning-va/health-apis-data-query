@@ -3,6 +3,7 @@ package gov.va.health.api.sentinel;
 import gov.va.api.health.argonaut.api.resources.AllergyIntolerance;
 import gov.va.api.health.argonaut.api.resources.Condition;
 import gov.va.api.health.argonaut.api.resources.DiagnosticReport;
+import gov.va.api.health.argonaut.api.resources.Encounter;
 import gov.va.api.health.argonaut.api.resources.Immunization;
 import gov.va.api.health.argonaut.api.resources.Medication;
 import gov.va.api.health.argonaut.api.resources.Observation;
@@ -137,6 +138,12 @@ public class ArgonautReadAndSearchIT {
             ids.patient(),
             ids.diagnosticReports().fromDate(),
             ids.diagnosticReports().toDate()),
+        // Encounter
+        expect(200, Encounter.class, "/api/Encounter/{id}", ids.encounter()),
+        expect(404, OperationOutcome.class, "/api/Encounter/{id}", ids.unknown()),
+        expect(200, Encounter.Bundle.class, "/api/Encounter?_id={id}", ids.encounter()),
+        expect(200, Encounter.Bundle.class, "/api/Encounter?identifier={id}", ids.encounter()),
+        expect(404, OperationOutcome.class, "/api/Encounter?_id={id}", ids.unknown()),
         // Immunization
         expect(200, Immunization.class, "/api/Immunization/{id}", ids.immunization()),
         expect(404, OperationOutcome.class, "/api/Immunization/{id}", ids.unknown()),
