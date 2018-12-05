@@ -11,17 +11,21 @@ import lombok.Value;
 @Builder(toBuilder = true)
 public class TestIds {
   @NonNull String allergyIntolerance;
-  @NonNull String patient;
+  @NonNull String condition;
+  @NonNull String diagnosticReport;
+  @NonNull String encounter;
+  @NonNull String immunization;
   @NonNull String medication;
   @NonNull String medicationOrder;
   @NonNull String observation;
-  @NonNull String condition;
-  @NonNull String diagnosticReport;
-  @NonNull String immunization;
+  @NonNull String patient;
+  @NonNull String procedure;
   @NonNull String unknown;
-  @NonNull PersonallyIdentifiableInformation pii;
-  @NonNull Observations observations;
+
   @NonNull DiagnosticReports diagnosticReports;
+  @NonNull Observations observations;
+  @NonNull PersonallyIdentifiableInformation pii;
+  @NonNull Procedures procedures;
 
   @Value
   @Builder
@@ -50,6 +54,14 @@ public class TestIds {
     @NonNull String family;
     @NonNull String birthdate;
     @NonNull String gender;
+  }
+
+  @Value
+  @Builder
+  public static class Procedures {
+    @NonNull String onDate;
+    @NonNull String fromDate;
+    @NonNull String toDate;
   }
 
   @Value

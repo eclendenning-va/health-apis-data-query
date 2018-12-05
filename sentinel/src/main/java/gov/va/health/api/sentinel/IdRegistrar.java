@@ -57,22 +57,26 @@ class IdRegistrar {
     ResourceIdentity allergyIntolerance = id("ALLERGY_INTOLERANCE", cdwIds.allergyIntolerance());
     ResourceIdentity condition = id("CONDITION", cdwIds.condition());
     ResourceIdentity diagnosticReport = id("DIAGNOSTIC_REPORT", cdwIds.diagnosticReport());
+    ResourceIdentity encounter = id("ENCOUNTER", cdwIds.encounter());
     ResourceIdentity immunization = id("IMMUNIZATION", cdwIds.immunization());
     ResourceIdentity medication = id("MEDICATION", cdwIds.medication());
     ResourceIdentity medicationOrder = id("MEDICATION_ORDER", cdwIds.medicationOrder());
     ResourceIdentity observation = id("OBSERVATION", cdwIds.observation());
     ResourceIdentity patient = id("PATIENT", cdwIds.patient());
+    ResourceIdentity procedure = id("PROCEDURE", cdwIds.procedure());
 
     List<ResourceIdentity> identities =
         Arrays.asList(
             allergyIntolerance,
             condition,
             diagnosticReport,
+            encounter,
             immunization,
             patient,
             medication,
             medicationOrder,
-            observation);
+            observation,
+            procedure);
     log.info("Registering {}", identities);
     List<Registration> registrations =
         system()
@@ -87,11 +91,13 @@ class IdRegistrar {
             .allergyIntolerance(findUuid(registrations, allergyIntolerance))
             .condition(findUuid(registrations, condition))
             .diagnosticReport(findUuid(registrations, diagnosticReport))
+            .encounter(findUuid(registrations, encounter))
             .immunization(findUuid(registrations, immunization))
             .medication(findUuid(registrations, medication))
             .medicationOrder(findUuid(registrations, medicationOrder))
             .observation(findUuid(registrations, observation))
             .patient(findUuid(registrations, patient))
+            .procedure(findUuid(registrations, procedure))
             .build();
     log.info("Using {}", publicIds);
     return publicIds;

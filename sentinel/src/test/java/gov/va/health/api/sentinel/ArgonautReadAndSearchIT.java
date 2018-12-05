@@ -3,12 +3,14 @@ package gov.va.health.api.sentinel;
 import gov.va.api.health.argonaut.api.resources.AllergyIntolerance;
 import gov.va.api.health.argonaut.api.resources.Condition;
 import gov.va.api.health.argonaut.api.resources.DiagnosticReport;
+import gov.va.api.health.argonaut.api.resources.Encounter;
 import gov.va.api.health.argonaut.api.resources.Immunization;
 import gov.va.api.health.argonaut.api.resources.Medication;
 import gov.va.api.health.argonaut.api.resources.MedicationOrder;
 import gov.va.api.health.argonaut.api.resources.Observation;
 import gov.va.api.health.argonaut.api.resources.OperationOutcome;
 import gov.va.api.health.argonaut.api.resources.Patient;
+import gov.va.api.health.argonaut.api.resources.Procedure;
 import java.util.Arrays;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -137,6 +139,12 @@ public class ArgonautReadAndSearchIT {
             ids.patient(),
             ids.diagnosticReports().fromDate(),
             ids.diagnosticReports().toDate()),
+        // Encounter
+        expect(200, Encounter.class, "/api/Encounter/{id}", ids.encounter()),
+        expect(404, OperationOutcome.class, "/api/Encounter/{id}", ids.unknown()),
+        expect(200, Encounter.Bundle.class, "/api/Encounter?_id={id}", ids.encounter()),
+        expect(200, Encounter.Bundle.class, "/api/Encounter?identifier={id}", ids.encounter()),
+        expect(404, OperationOutcome.class, "/api/Encounter?_id={id}", ids.unknown()),
         // Immunization
         expect(200, Immunization.class, "/api/Immunization/{id}", ids.immunization()),
         expect(404, OperationOutcome.class, "/api/Immunization/{id}", ids.unknown()),
@@ -251,7 +259,27 @@ public class ArgonautReadAndSearchIT {
             Patient.Bundle.class,
             "/api/Patient?name={name}&gender={gender}",
             ids.pii().name(),
-            ids.pii().gender()));
+            ids.pii().gender()),
+        // Procedure
+        expect(200, Procedure.class, "/api/Procedure/{id}", ids.procedure()),
+        expect(404, OperationOutcome.class, "/api/Procedure/{id}", ids.unknown()),
+        expect(200, Procedure.Bundle.class, "/api/Procedure?_id={id}", ids.procedure()),
+        expect(404, OperationOutcome.class, "/api/Procedure?_id={id}", ids.unknown()),
+        expect(200, Procedure.Bundle.class, "/api/Procedure?identifier={id}", ids.procedure()),
+        expect(200, Procedure.Bundle.class, "/api/Procedure?patient={patient}", ids.patient()),
+        expect(
+            200,
+            Procedure.Bundle.class,
+            "api/Procedure?patient={patient}&date={onDate}",
+            ids.patient(),
+            ids.procedures().onDate()),
+        expect(
+            200,
+            Procedure.Bundle.class,
+            "api/Procedure?patient={patient}&date={fromDate}&date={toDate}",
+            ids.patient(),
+            ids.procedures().fromDate(),
+            ids.procedures().toDate()));
   }
 
   private TestClient argonaut() {
