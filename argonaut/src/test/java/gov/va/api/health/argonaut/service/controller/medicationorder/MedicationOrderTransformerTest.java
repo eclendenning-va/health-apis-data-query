@@ -40,20 +40,37 @@ public class MedicationOrderTransformerTest {
     assertThat(tx.additionalInstructions(cdw.additionalInstructions()))
         .isEqualTo(expected.additionalInstructions());
     assertThat(tx.additionalInstructions(null)).isNull();
+    assertThat(tx.additionalInstructions(new CdwCodeableConcept()));
+  }
+
+  @Test
+  public void dateTimeString() {
+    assertThat(tx.dateTimeString(cdw.dateWritten()))
+        .isEqualTo(expected.medicationOrder().dateWritten());
+    assertThat(tx.dateTimeString(null)).isNull();
   }
 
   @Test
   public void dispenseRequest() {
     assertThat(tx.dispenseRequest(cdw.dispenseRequest())).isEqualTo(expected.dispenseRequest());
     assertThat(tx.dispenseRequest(null)).isNull();
+    assertThat(tx.dispenseRequest(new CdwDispenseRequest())).isNull();
   }
 
   @Test
   public void dosageInstructions() {
-    assertThat(tx.dosageInstruction(null)).isNull();
-    assertThat(tx.dosageInstruction(new CdwDosageInstructions())).isNull();
-    assertThat(tx.dosageInstruction(cdw.dosageInstructions()))
+    assertThat(tx.dosageInstructions(null)).isNull();
+    assertThat(tx.dosageInstructions(new CdwDosageInstructions())).isNull();
+    assertThat(tx.dosageInstructions(cdw.dosageInstructions()))
         .isEqualTo(expected.dosageInstructions());
+  }
+
+  @Test
+  public void dosageInstruction() {
+    assertThat(tx.dosageInstruction(null)).isNull();
+    assertThat(tx.dosageInstruction(new CdwDosageInstruction())).isNull();
+    assertThat(tx.dosageInstruction(cdw.dosageInstruction()))
+        .isEqualTo(expected.dosageInstruction());
   }
 
   @Test
@@ -66,9 +83,17 @@ public class MedicationOrderTransformerTest {
   @Test
   public void doseQuantityValue() {
     assertThat(tx.doseQuantityValue(null)).isNull();
-    assertThat(tx.doseQuantityValue("")).isNull();
+    assertThat(tx.doseQuantityValue(new CdwSimpleQuantity().getValue())).isNull();
     assertThat(tx.doseQuantityValue(cdw.doseQuantity().getValue()))
         .isEqualTo(expected.doseQuantity().value());
+  }
+
+  @Test
+  public void expectedSupplyDuration() {
+    assertThat(tx.expectedSupplyDuration(cdw.expectedSupplyDuration()))
+        .isEqualTo(expected.expectedSupplyDuration());
+    assertThat(tx.expectedSupplyDuration(null)).isNull();
+    assertThat(tx.expectedSupplyDuration(new CdwDuration())).isNull();
   }
 
   @Test
@@ -79,15 +104,46 @@ public class MedicationOrderTransformerTest {
   @Test
   public void quantity() {
     assertThat(tx.quantity(cdw.dispenseRequest().getQuantity())).isEqualTo(expected.quantity());
+    assertThat(tx.quantity(null)).isNull();
+    assertThat(tx.quantity("")).isNull();
+  }
+
+  @Test
+  public void reference() {
+    assertThat(tx.reference(null)).isNull();
+    assertThat(tx.reference(new CdwReference())).isNull();
+    assertThat(tx.reference(cdw.cdwReference("patient"))).isEqualTo(expected.reference("patient"));
+  }
+
+  @Test
+  public void route() {
+    assertThat(tx.route(null)).isNull();
+    assertThat(tx.route(new CdwRoute())).isNull();
+    assertThat(tx.route(cdw.route())).isEqualTo(expected.route());
+  }
+
+  @Test
+  public void timing() {
+    assertThat(tx.timing(cdw.timing())).isEqualTo(expected.timing());
+    assertThat(tx.timing(null)).isNull();
+    assertThat(tx.timing(new CdwTiming())).isNull();
   }
 
   @Test
   public void timingCode() {
     assertThat(tx.timingCode(cdw.timingCode())).isEqualTo(expected.timingCode());
+    assertThat(tx.timingCode(new CdwDosageInstruction.CdwTiming().getCode())).isNull();
     assertThat(tx.timingCode(null)).isNull();
   }
 
   private static class CdwSampleData {
+
+    private DatatypeFactory datatypeFactory;
+
+    @SneakyThrows
+    private CdwSampleData() {
+      datatypeFactory = DatatypeFactory.newInstance();
+    }
 
     CdwCodeableConcept additionalInstructions() {
       CdwCodeableConcept additionalInstructions = new CdwCodeableConcept();
@@ -104,12 +160,20 @@ public class MedicationOrderTransformerTest {
 
     @SneakyThrows
     XMLGregorianCalendar dateEnded() {
-      return DatatypeFactory.newInstance().newXMLGregorianCalendar("2013-07-21T19:03:16Z");
+      XMLGregorianCalendar dateEnded = datatypeFactory.newXMLGregorianCalendar();
+      dateEnded.setYear(2018);
+      dateEnded.setMonth(11);
+      dateEnded.setDay(6);
+      return dateEnded;
     }
 
     @SneakyThrows
     private XMLGregorianCalendar dateWritten() {
-      return DatatypeFactory.newInstance().newXMLGregorianCalendar("2013-06-21T19:03:16Z");
+      XMLGregorianCalendar dateWritten = datatypeFactory.newXMLGregorianCalendar();
+      dateWritten.setYear(2018);
+      dateWritten.setMonth(11);
+      dateWritten.setDay(6);
+      return dateWritten;
     }
 
     CdwDispenseRequest dispenseRequest() {
@@ -235,9 +299,9 @@ public class MedicationOrderTransformerTest {
           .resourceType("Medication Order")
           .id("1234")
           .patient(reference("patient"))
-          .dateWritten("2013-06-21T19:03:16Z")
+          .dateWritten("2018-11-06")
           .status(Status.active)
-          .dateEnded("2013-07-21T19:03:16Z")
+          .dateEnded("2018-11-06")
           .prescriber(reference("prescriber"))
           .medicationReference(reference("medication"))
           .dosageInstruction(dosageInstructions())

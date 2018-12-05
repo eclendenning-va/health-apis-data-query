@@ -1,9 +1,8 @@
 package gov.va.api.health.argonaut.service.controller.medicationorder;
 
+import static gov.va.api.health.argonaut.service.controller.Transformers.allNull;
 import static gov.va.api.health.argonaut.service.controller.Transformers.asDateTimeString;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convert;
-import static gov.va.api.health.argonaut.service.controller.Transformers.convertAll;
-import static gov.va.api.health.argonaut.service.controller.Transformers.ifPresent;
 
 import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
 import gov.va.api.health.argonaut.api.datatypes.Duration;
@@ -19,11 +18,15 @@ import gov.va.dvp.cdw.xsd.model.CdwDuration;
 import gov.va.dvp.cdw.xsd.model.CdwMedicationOrder103Root.CdwMedicationOrders.CdwMedicationOrder;
 import gov.va.dvp.cdw.xsd.model.CdwMedicationOrder103Root.CdwMedicationOrders.CdwMedicationOrder.CdwDispenseRequest;
 import gov.va.dvp.cdw.xsd.model.CdwMedicationOrder103Root.CdwMedicationOrders.CdwMedicationOrder.CdwDosageInstructions;
+import gov.va.dvp.cdw.xsd.model.CdwMedicationOrder103Root.CdwMedicationOrders.CdwMedicationOrder.CdwDosageInstructions.CdwDosageInstruction;
 import gov.va.dvp.cdw.xsd.model.CdwMedicationOrder103Root.CdwMedicationOrders.CdwMedicationOrder.CdwDosageInstructions.CdwDosageInstruction.CdwRoute;
 import gov.va.dvp.cdw.xsd.model.CdwMedicationOrder103Root.CdwMedicationOrders.CdwMedicationOrder.CdwDosageInstructions.CdwDosageInstruction.CdwTiming;
 import gov.va.dvp.cdw.xsd.model.CdwReference;
 import gov.va.dvp.cdw.xsd.model.CdwSimpleQuantity;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import javax.xml.datatype.XMLGregorianCalendar;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -38,15 +41,15 @@ public class MedicationOrderTransformer implements MedicationOrderController.Tra
         .id(source.getCdwId())
         .resourceType("Medication Order")
         .patient(reference(source.getPatient()))
-        .dateWritten(asDateTimeString(source.getDateWritten()))
+        .dateWritten(dateTimeString(source.getDateWritten()))
         .status(
             convert(
                 source.getStatus(),
                 status -> EnumSearcher.of(MedicationOrder.Status.class).find(source.getStatus())))
-        .dateEnded(asDateTimeString(source.getDateEnded()))
+        .dateEnded(dateTimeString(source.getDateEnded()))
         .prescriber(reference(source.getPrescriber()))
         .medicationReference(reference(source.getMedicationReference()))
-        .dosageInstruction(dosageInstruction(source.getDosageInstructions()))
+        .dosageInstruction(dosageInstructions(source.getDosageInstructions()))
         .dispenseRequest(dispenseRequest(source.getDispenseRequest()))
         .build();
   }
@@ -58,21 +61,71 @@ public class MedicationOrderTransformer implements MedicationOrderController.Tra
     return CodeableConcept.builder().text(source.getText()).build();
   }
 
-  List<DosageInstruction> dosageInstruction(CdwDosageInstructions source) {
-    if (source == null || source.getDosageInstruction().isEmpty()) {
+  String dateTimeString(XMLGregorianCalendar source) {
+    if (source == null) {
       return null;
     }
-    return convertAll(
-        ifPresent(source, CdwDosageInstructions::getDosageInstruction),
-        cdw ->
-            DosageInstruction.builder()
-                .text(cdw.getText())
-                .additionalInstructions(additionalInstructions(cdw.getAdditionalInstructions()))
-                .timing(timing(cdw.getTiming()))
-                .asNeededBoolean(Boolean.valueOf(cdw.getAsNeededBoolean()))
-                .route(route(cdw.getRoute()))
-                .doseQuantity(doseQuantity(cdw.getDoseQuantity()))
-                .build());
+    return asDateTimeString(source);
+  }
+
+  DispenseRequest dispenseRequest(CdwDispenseRequest source) {
+    if (source == null
+        || allNull(
+            source.getNumberOfRepeatsAllowed(),
+            source.getQuantity(),
+            source.getExpectedSupplyDuration())) {
+      return null;
+    }
+    return DispenseRequest.builder()
+        .numberOfRepeatsAllowed(numberOfRepeatsAllowed(source.getNumberOfRepeatsAllowed()))
+        .quantity(quantity(source.getQuantity()))
+        .expectedSupplyDuration(expectedSupplyDuration(source.getExpectedSupplyDuration()))
+        .build();
+  }
+
+  Integer numberOfRepeatsAllowed(Integer source) {
+    if (source == null || source <= 0) {
+      return null;
+    }
+    return source;
+  }
+
+  List<DosageInstruction> dosageInstructions(CdwDosageInstructions source) {
+    if (source == null || source.getDosageInstruction() == null) {
+      return null;
+    }
+    List<DosageInstruction> dosageInstructions =
+        source
+            .getDosageInstruction()
+            .stream()
+            .map(this::dosageInstruction)
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList());
+    if (dosageInstructions.isEmpty()) {
+      return null;
+    }
+    return dosageInstructions;
+  }
+
+  DosageInstruction dosageInstruction(CdwDosageInstruction source) {
+    if (source == null
+        || allNull(
+            source.getAdditionalInstructions(),
+            source.getAsNeededBoolean(),
+            source.getDoseQuantity(),
+            source.getRoute(),
+            source.getText(),
+            source.getTiming())) {
+      return null;
+    }
+    return DosageInstruction.builder()
+        .text(source.getText())
+        .additionalInstructions(additionalInstructions(source.getAdditionalInstructions()))
+        .timing(timing(source.getTiming()))
+        .asNeededBoolean(Boolean.valueOf(source.getAsNeededBoolean()))
+        .route(route(source.getRoute()))
+        .doseQuantity(doseQuantity(source.getDoseQuantity()))
+        .build();
   }
 
   SimpleQuantity doseQuantity(CdwSimpleQuantity source) {
@@ -89,18 +142,11 @@ public class MedicationOrderTransformer implements MedicationOrderController.Tra
     return Double.valueOf(source);
   }
 
-  DispenseRequest dispenseRequest(CdwDispenseRequest source) {
-    if (source == null) {
+  Duration expectedSupplyDuration(CdwDuration source) {
+    if (source == null
+        || allNull(source.getValue(), source.getCode(), source.getSystem(), source.getUnit())) {
       return null;
     }
-    return DispenseRequest.builder()
-        .numberOfRepeatsAllowed(source.getNumberOfRepeatsAllowed())
-        .quantity(quantity(source.getQuantity()))
-        .expectedSupplyDuration(expectedSupplyDuration(source.getExpectedSupplyDuration()))
-        .build();
-  }
-
-  Duration expectedSupplyDuration(CdwDuration source) {
     return Duration.builder()
         .value(Double.valueOf(source.getValue()))
         .unit(source.getUnit())
@@ -110,10 +156,16 @@ public class MedicationOrderTransformer implements MedicationOrderController.Tra
   }
 
   SimpleQuantity quantity(String source) {
+    if (source == null || source.isEmpty()) {
+      return null;
+    }
     return SimpleQuantity.builder().value(Double.valueOf(source)).build();
   }
 
   Reference reference(CdwReference maybeSource) {
+    if (maybeSource == null || allNull(maybeSource.getDisplay(), maybeSource.getReference())) {
+      return null;
+    }
     return convert(
         maybeSource,
         source ->
@@ -124,10 +176,16 @@ public class MedicationOrderTransformer implements MedicationOrderController.Tra
   }
 
   CodeableConcept route(CdwRoute source) {
+    if (source == null || source.getText() == null) {
+      return null;
+    }
     return CodeableConcept.builder().text(source.getText()).build();
   }
 
   Timing timing(CdwTiming source) {
+    if (source == null || source.getCode() == null) {
+      return null;
+    }
     return Timing.builder().code(timingCode(source.getCode())).build();
   }
 
