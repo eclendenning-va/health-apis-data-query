@@ -1,5 +1,6 @@
 package gov.va.api.health.argonaut.service.controller.encounter;
 
+import static gov.va.api.health.argonaut.service.controller.Transformers.allNull;
 import static gov.va.api.health.argonaut.service.controller.Transformers.asDateTimeString;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convert;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convertAll;
@@ -36,10 +37,8 @@ public class EncounterTransformer implements EncounterController.Transformer {
   }
 
   List<Coding> encounterParticipantTypeCoding(CdwEncounterParticipantType.CdwCoding maybeCdw) {
-    if (maybeCdw == null) {
-      return null;
-    }
-    if (maybeCdw.getCode() == null || maybeCdw.getDisplay() == null) {
+    if (maybeCdw == null
+        || allNull(maybeCdw.getCode(), maybeCdw.getDisplay(), maybeCdw.getSystem())) {
       return null;
     }
     return convert(
@@ -54,9 +53,6 @@ public class EncounterTransformer implements EncounterController.Transformer {
   }
 
   Reference reference(CdwReference maybeCdw) {
-    if (maybeCdw == null) {
-      return null;
-    }
     return convert(
         maybeCdw,
         source ->
@@ -87,15 +83,9 @@ public class EncounterTransformer implements EncounterController.Transformer {
                     .build()));
   }
 
-  List<EncounterLocation> encounterLocation(CdwLocations maybeCdw) {
-    if (maybeCdw == null) {
-      return null;
-    }
-    if (maybeCdw.getLocation() == null) {
-      return null;
-    }
+  List<EncounterLocation> location(CdwLocations maybeCdw) {
     return convertAll(
-        maybeCdw.getLocation(),
+        ifPresent(maybeCdw, CdwLocations::getLocation),
         source ->
             EncounterLocation.builder().location(reference(source.getLocationReference())).build());
   }
@@ -159,7 +149,7 @@ public class EncounterTransformer implements EncounterController.Transformer {
         .encounterClass(encounterClass(source.getClazz()))
         .episodeOfCare(episodeOfCare(source.getEpisodeOfCare()))
         .indication(indications(source.getIndications()))
-        .encounterLocation(encounterLocation(source.getLocations()))
+        .location(location(source.getLocations()))
         .participant(participant(source.getParticipants()))
         .patient(reference(source.getPatient()))
         .serviceProvider(reference(source.getServiceProvider()))

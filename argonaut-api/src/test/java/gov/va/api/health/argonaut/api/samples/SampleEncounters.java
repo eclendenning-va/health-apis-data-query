@@ -51,7 +51,7 @@ public class SampleEncounters {
         .reason(codeableConceptList())
         .indication(referenceList())
         .hospitalization(hospitalization())
-        .encounterLocation(singletonList(encounterLocation()))
+        .location(singletonList(location()))
         .serviceProvider(reference())
         .partOf(reference())
         .build();
@@ -97,7 +97,7 @@ public class SampleEncounters {
         .build();
   }
 
-  public EncounterLocation encounterLocation() {
+  public EncounterLocation location() {
     return EncounterLocation.builder()
         .id("3333")
         .extension(singletonList(extension()))

@@ -78,9 +78,7 @@ public class Encounter implements DomainResource {
   @Valid List<Reference> indication;
   @Valid Hospitalization hospitalization;
 
-  @JsonProperty("location")
-  @Valid
-  List<EncounterLocation> encounterLocation;
+  @Valid List<EncounterLocation> location;
 
   @Valid Reference serviceProvider;
   @Valid Reference partOf;

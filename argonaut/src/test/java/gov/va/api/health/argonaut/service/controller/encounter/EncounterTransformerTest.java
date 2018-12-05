@@ -71,10 +71,10 @@ public class EncounterTransformerTest {
   }
 
   @Test
-  public void encounterLocation() {
-    assertThat(tx.encounterLocation(null)).isNull();
-    assertThat(tx.encounterLocation(new CdwLocations())).isNull();
-    assertThat(tx.encounterLocation(cdw.locations())).isEqualTo(expected.encounterLocation());
+  public void location() {
+    assertThat(tx.location(null)).isNull();
+    assertThat(tx.location(new CdwLocations())).isNull();
+    assertThat(tx.location(cdw.locations())).isEqualTo(expected.location());
   }
 
   @Test
@@ -239,7 +239,7 @@ public class EncounterTransformerTest {
           .period(period())
           .encounterClass(EncounterClass.emergency)
           .status(Status.finished)
-          .encounterLocation(encounterLocation())
+          .location(location())
           .participant(participant())
           .indication(indications())
           .episodeOfCare(episodeOfCare())
@@ -249,7 +249,7 @@ public class EncounterTransformerTest {
           .build();
     }
 
-    private List<EncounterLocation> encounterLocation() {
+    private List<EncounterLocation> location() {
       return singletonList(
           EncounterLocation.builder()
               .location(reference("Location/1200007523:L", "GNV ED"))
