@@ -4,8 +4,8 @@ import static java.util.Collections.singletonList;
 
 import gov.va.api.health.argonaut.api.resources.Appointment;
 import gov.va.api.health.argonaut.api.resources.Appointment.Participant;
+import gov.va.api.health.argonaut.api.resources.Appointment.Participant.ParticipantStatus;
 import gov.va.api.health.argonaut.api.resources.Appointment.Participant.RequiredCode;
-import gov.va.api.health.argonaut.api.resources.Appointment.Participant.StatusCode;
 import gov.va.api.health.argonaut.api.resources.Appointment.Status;
 import java.util.Arrays;
 import lombok.NoArgsConstructor;
@@ -35,15 +35,16 @@ public class SampleAppointments {
         .start("1970-01-01T00:00:00Z")
         .end("1970-01-01T00:00:00Z")
         .minutesDuration(5)
-        .slot(dataTypes.reference())
+        .slot(singletonList(dataTypes.reference()))
         .comment("Comment")
         .participant(
-            Participant.builder()
-                .type(Arrays.asList(dataTypes.codeableConcept(), dataTypes.codeableConcept()))
-                .actor(dataTypes.reference())
-                .required(RequiredCode.information_only)
-                .status(StatusCode.needs_action)
-                .build())
+            singletonList(
+                Participant.builder()
+                    .type(Arrays.asList(dataTypes.codeableConcept(), dataTypes.codeableConcept()))
+                    .actor(dataTypes.reference())
+                    .required(RequiredCode.information_only)
+                    .status(ParticipantStatus.needs_action)
+                    .build()))
         .build();
   }
 }

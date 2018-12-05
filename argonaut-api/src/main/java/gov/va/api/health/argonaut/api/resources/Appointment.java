@@ -17,7 +17,6 @@ import gov.va.api.health.argonaut.api.elements.Extension;
 import gov.va.api.health.argonaut.api.elements.Meta;
 import gov.va.api.health.argonaut.api.elements.Narrative;
 import gov.va.api.health.argonaut.api.elements.Reference;
-import gov.va.api.health.argonaut.api.resources.Appointment.Entry;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import javax.validation.Valid;
@@ -38,9 +37,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @JsonAutoDetect(fieldVisibility = Visibility.ANY)
 @Schema(description = "https://www.hl7.org/fhir/DSTU2/appointment.html")
-public class Appointment implements Resource {
+public class Appointment implements DomainResource {
   @NotBlank String resourceType;
-
+  
   @Pattern(regexp = Fhir.ID)
   String id;
 
@@ -58,12 +57,13 @@ public class Appointment implements Resource {
   @Valid List<Extension> modifierExtension;
   @Valid List<Identifier> identifier;
 
-  Status status;
+  @NotNull Status status;
 
   @Valid CodeableConcept type;
   @Valid CodeableConcept reason;
 
-  int priority;
+  @Min(0)
+  Integer priority;
 
   String description;
 
@@ -73,13 +73,14 @@ public class Appointment implements Resource {
   @Pattern(regexp = Fhir.INSTANT)
   String end;
 
-  int minutesDuration;
+  @Min(1)
+  Integer minutesDuration;
 
-  @Valid Reference slot;
+  @Valid List<Reference> slot;
 
   String comment;
 
-  @Valid @NotNull Participant participant;
+  @Valid @NotNull List<Participant> participant;
 
   public enum Status {
     proposed,
@@ -151,7 +152,7 @@ public class Appointment implements Resource {
     @Valid List<CodeableConcept> type;
     @Valid Reference actor;
     RequiredCode required;
-    @NotNull StatusCode status;
+    @NotNull ParticipantStatus status;
 
     public enum RequiredCode {
       required,
@@ -160,7 +161,7 @@ public class Appointment implements Resource {
       information_only
     }
 
-    public enum StatusCode {
+    public enum ParticipantStatus {
       accepted,
       declined,
       tentative,
