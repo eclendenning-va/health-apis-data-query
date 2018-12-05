@@ -42,14 +42,7 @@ public class SqlResourceRepositoryTest {
     when(dataSource.getConnection()).thenReturn(connection);
     when(connection.prepareCall(Mockito.anyString())).thenReturn(cs);
     JdbcTemplate template = new JdbcTemplate(dataSource);
-    rr = new SqlResourceRepository(template, "schema");
-  }
-
-  @SneakyThrows
-  private void mockResults(String payload) {
-    Clob clob = mock(Clob.class);
-    when(clob.getSubString(Mockito.anyLong(), Mockito.anyInt())).thenReturn(payload);
-    when(cs.getObject(Index.RESPONSE_XML)).thenReturn(clob);
+    rr = new SqlResourceRepository(template, "schema", "stored_procedure");
   }
 
   private Query forAnything() {
@@ -68,19 +61,11 @@ public class SqlResourceRepositoryTest {
         .build();
   }
 
-  @Test
-  public void storedProcedureResultsAreReturnedWhenGood() {
-    mockResults(Samples.create().patient());
-    String xml = rr.execute(forAnything());
-    assertThat(xml).isEqualTo(Samples.create().patient());
-  }
-
-  @Test
   @SneakyThrows
-  public void searchFailedIsReturnedWhenJdbcExceptionOccurs() {
-    when(cs.getObject(Index.RESPONSE_XML)).thenThrow(new SQLException("mock"));
-    thrown.expect(SearchFailed.class);
-    rr.execute(forAnything());
+  private void mockResults(String payload) {
+    Clob clob = mock(Clob.class);
+    when(clob.getSubString(Mockito.anyLong(), Mockito.anyInt())).thenReturn(payload);
+    when(cs.getObject(Index.RESPONSE_XML)).thenReturn(clob);
   }
 
   @Test
@@ -108,5 +93,20 @@ public class SqlResourceRepositoryTest {
     String xml = rr.execute(forAnything(Profile.STU3));
     assertThat(xml).isEqualTo(Samples.create().patient());
     verify(cs).setObject(Index.FHIR_VERSION, 3, Types.TINYINT);
+  }
+
+  @Test
+  @SneakyThrows
+  public void searchFailedIsReturnedWhenJdbcExceptionOccurs() {
+    when(cs.getObject(Index.RESPONSE_XML)).thenThrow(new SQLException("mock"));
+    thrown.expect(SearchFailed.class);
+    rr.execute(forAnything());
+  }
+
+  @Test
+  public void storedProcedureResultsAreReturnedWhenGood() {
+    mockResults(Samples.create().patient());
+    String xml = rr.execute(forAnything());
+    assertThat(xml).isEqualTo(Samples.create().patient());
   }
 }
