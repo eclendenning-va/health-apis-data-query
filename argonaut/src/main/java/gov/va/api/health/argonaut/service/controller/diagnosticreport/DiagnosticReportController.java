@@ -17,7 +17,6 @@ import gov.va.dvp.cdw.xsd.model.CdwDiagnosticReport102Root;
 import gov.va.dvp.cdw.xsd.model.CdwDiagnosticReport102Root.CdwDiagnosticReports.CdwDiagnosticReport;
 import java.util.Collections;
 import java.util.function.Function;
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -50,15 +49,11 @@ public class DiagnosticReportController {
   private MrAndersonClient mrAndersonClient;
   private Bundler bundler;
 
-  private Bundle bundle(
-      MultiValueMap<String, String> parameters,
-      int page,
-      int count,
-      HttpServletRequest servletRequest) {
+  private Bundle bundle(MultiValueMap<String, String> parameters, int page, int count) {
     CdwDiagnosticReport102Root root = search(parameters);
     LinkConfig linkConfig =
         LinkConfig.builder()
-            .path(servletRequest.getRequestURI())
+            .path("DiagnosticReport")
             .queryParams(parameters)
             .page(page)
             .recordsPerPage(count)
@@ -102,13 +97,11 @@ public class DiagnosticReportController {
   public DiagnosticReport.Bundle searchById(
       @RequestParam("_id") String id,
       @RequestParam(value = "page", defaultValue = "1") int page,
-      @RequestParam(value = "_count", defaultValue = "15") int count,
-      HttpServletRequest servletRequest) {
+      @RequestParam(value = "_count", defaultValue = "15") int count) {
     return bundle(
         Parameters.builder().add("identifier", id).add("page", page).add("_count", count).build(),
         page,
-        count,
-        servletRequest);
+        count);
   }
 
   /** Search by identifier. */
@@ -116,8 +109,7 @@ public class DiagnosticReportController {
   public DiagnosticReport.Bundle searchByIdentifier(
       @RequestParam("identifier") String identifier,
       @RequestParam(value = "page", defaultValue = "1") int page,
-      @RequestParam(value = "_count", defaultValue = "15") int count,
-      HttpServletRequest servletRequest) {
+      @RequestParam(value = "_count", defaultValue = "15") int count) {
     return bundle(
         Parameters.builder()
             .add("identifier", identifier)
@@ -125,8 +117,7 @@ public class DiagnosticReportController {
             .add("_count", count)
             .build(),
         page,
-        count,
-        servletRequest);
+        count);
   }
 
   /** Search by patient. */
@@ -134,13 +125,11 @@ public class DiagnosticReportController {
   public DiagnosticReport.Bundle searchByPatient(
       @RequestParam("patient") String patient,
       @RequestParam(value = "page", defaultValue = "1") int page,
-      @RequestParam(value = "_count", defaultValue = "15") int count,
-      HttpServletRequest servletRequest) {
+      @RequestParam(value = "_count", defaultValue = "15") int count) {
     return bundle(
         Parameters.builder().add("patient", patient).add("page", page).add("_count", count).build(),
         page,
-        count,
-        servletRequest);
+        count);
   }
 
   /** Search by Patient+Category. */
@@ -149,8 +138,7 @@ public class DiagnosticReportController {
       @RequestParam("patient") String patient,
       @RequestParam("category") String category,
       @RequestParam(value = "page", defaultValue = "1") int page,
-      @RequestParam(value = "_count", defaultValue = "15") int count,
-      HttpServletRequest servletRequest) {
+      @RequestParam(value = "_count", defaultValue = "15") int count) {
     return bundle(
         Parameters.builder()
             .add("patient", patient)
@@ -159,28 +147,7 @@ public class DiagnosticReportController {
             .add("_count", count)
             .build(),
         page,
-        count,
-        servletRequest);
-  }
-
-  /** Search by Patient+Code. */
-  @GetMapping(params = {"patient", "code"})
-  public DiagnosticReport.Bundle searchByPatientAndCode(
-      @RequestParam("patient") String patient,
-      @RequestParam("code") String code,
-      @RequestParam(value = "page", defaultValue = "1") int page,
-      @RequestParam(value = "_count", defaultValue = "15") int count,
-      HttpServletRequest servletRequest) {
-    return bundle(
-        Parameters.builder()
-            .add("patient", patient)
-            .add("code", code)
-            .add("page", page)
-            .add("_count", count)
-            .build(),
-        page,
-        count,
-        servletRequest);
+        count);
   }
 
   /** Search by Patient+Category+Date. */
@@ -190,8 +157,7 @@ public class DiagnosticReportController {
       @RequestParam("code") String code,
       @RequestParam(value = "date", required = false) @Size(max = 2) String[] date,
       @RequestParam(value = "page", defaultValue = "1") int page,
-      @RequestParam(value = "_count", defaultValue = "15") int count,
-      HttpServletRequest servletRequest) {
+      @RequestParam(value = "_count", defaultValue = "15") int count) {
     return bundle(
         Parameters.builder()
             .add("patient", patient)
@@ -201,8 +167,25 @@ public class DiagnosticReportController {
             .add("_count", count)
             .build(),
         page,
-        count,
-        servletRequest);
+        count);
+  }
+
+  /** Search by Patient+Code. */
+  @GetMapping(params = {"patient", "code"})
+  public DiagnosticReport.Bundle searchByPatientAndCode(
+      @RequestParam("patient") String patient,
+      @RequestParam("code") String code,
+      @RequestParam(value = "page", defaultValue = "1") int page,
+      @RequestParam(value = "_count", defaultValue = "15") int count) {
+    return bundle(
+        Parameters.builder()
+            .add("patient", patient)
+            .add("code", code)
+            .add("page", page)
+            .add("_count", count)
+            .build(),
+        page,
+        count);
   }
 
   /** Validate Endpoint. */

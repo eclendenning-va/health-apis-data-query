@@ -25,10 +25,14 @@ public class ConfigurableBaseUrlPageLinks implements PageLinks {
    * application.
    */
   private final String baseUrl;
+  /** These base path for resources, e.g. api */
+  private String basePath;
 
   @Autowired
-  public ConfigurableBaseUrlPageLinks(@Value("${argonaut.url}") String baseUrl) {
+  public ConfigurableBaseUrlPageLinks(
+      @Value("${argonaut.url}") String baseUrl, @Value("${argonaut.base-path}") String basePath) {
     this.baseUrl = baseUrl;
+    this.basePath = basePath;
   }
 
   @Override
@@ -49,7 +53,7 @@ public class ConfigurableBaseUrlPageLinks implements PageLinks {
 
   @Override
   public String readLink(String resourcePath, String id) {
-    return baseUrl + resourcePath + "/" + id;
+    return baseUrl + "/" + basePath + "/" + resourcePath + "/" + id;
   }
 
   /** This context wraps the link state to allow link creation to be clearly described. */
@@ -97,7 +101,7 @@ public class ConfigurableBaseUrlPageLinks implements PageLinks {
       MultiValueMap<String, String> mutableParams = new LinkedMultiValueMap<>(config.queryParams());
       mutableParams.remove("page");
       mutableParams.remove("_count");
-      StringBuilder msg = new StringBuilder(baseUrl);
+      StringBuilder msg = new StringBuilder(baseUrl).append('/').append(basePath).append('/');
       msg.append(config.path()).append('?');
       String params =
           mutableParams
