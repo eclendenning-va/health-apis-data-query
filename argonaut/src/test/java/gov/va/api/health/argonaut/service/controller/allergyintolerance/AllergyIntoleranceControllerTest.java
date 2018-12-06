@@ -22,7 +22,6 @@ import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.function.Supplier;
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolationException;
 import lombok.SneakyThrows;
 import org.junit.Before;
@@ -39,7 +38,6 @@ public class AllergyIntoleranceControllerTest {
   @Mock AllergyIntoleranceController.Transformer tx;
 
   AllergyIntoleranceController controller;
-  @Mock HttpServletRequest servletRequest;
   @Mock Bundler bundler;
 
   @Before
@@ -68,7 +66,6 @@ public class AllergyIntoleranceControllerTest {
     when(tx.apply(xmlAllergyIntolerance2)).thenReturn(allergyIntolerance2);
     when(tx.apply(xmlAllergyIntolerance3)).thenReturn(allergyIntolerance3);
     when(client.search(Mockito.any())).thenReturn(root);
-    when(servletRequest.getRequestURI()).thenReturn("/api/AllergyIntolerance");
 
     Bundle mockBundle = new Bundle();
     when(bundler.bundle(Mockito.any())).thenReturn(mockBundle);
@@ -89,7 +86,7 @@ public class AllergyIntoleranceControllerTest {
             .page(1)
             .recordsPerPage(10)
             .totalRecords(3)
-            .path("/api/AllergyIntolerance")
+            .path("AllergyIntolerance")
             .queryParams(params)
             .build();
     assertThat(captor.getValue().linkConfig()).isEqualTo(expectedLinkConfig);
@@ -135,21 +132,21 @@ public class AllergyIntoleranceControllerTest {
   @Test
   public void searchById() {
     assertSearch(
-        () -> controller.searchById("me", 1, 10, servletRequest),
+        () -> controller.searchById("me", 1, 10),
         Parameters.builder().add("identifier", "me").add("page", 1).add("_count", 10).build());
   }
 
   @Test
   public void searchByIdentifier() {
     assertSearch(
-        () -> controller.searchByIdentifier("me", 1, 10, servletRequest),
+        () -> controller.searchByIdentifier("me", 1, 10),
         Parameters.builder().add("identifier", "me").add("page", 1).add("_count", 10).build());
   }
 
   @Test
   public void searchByPatient() {
     assertSearch(
-        () -> controller.searchByPatient("me", 1, 10, servletRequest),
+        () -> controller.searchByPatient("me", 1, 10),
         Parameters.builder().add("patient", "me").add("page", 1).add("_count", 10).build());
   }
 
@@ -160,10 +157,9 @@ public class AllergyIntoleranceControllerTest {
     root.setRecordsPerPage(BigInteger.valueOf(10));
     root.setRecordCount(BigInteger.valueOf(0));
     when(client.search(Mockito.any())).thenReturn(root);
-    when(servletRequest.getRequestURI()).thenReturn("/api/AllergyIntolerance");
     Bundle mockBundle = new Bundle();
     when(bundler.bundle(Mockito.any())).thenReturn(mockBundle);
-    Bundle actual = controller.searchById("me", 1, 10, servletRequest);
+    Bundle actual = controller.searchById("me", 1, 10);
     assertThat(actual).isSameAs(mockBundle);
     @SuppressWarnings("unchecked")
     ArgumentCaptor<
@@ -178,7 +174,7 @@ public class AllergyIntoleranceControllerTest {
             .page(1)
             .recordsPerPage(10)
             .totalRecords(0)
-            .path("/api/AllergyIntolerance")
+            .path("AllergyIntolerance")
             .queryParams(
                 Parameters.builder()
                     .add("identifier", "me")
