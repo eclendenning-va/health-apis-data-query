@@ -296,7 +296,7 @@ public class MedicationOrderTransformerTest {
 
     MedicationOrder medicationOrder() {
       return MedicationOrder.builder()
-          .resourceType("Medication Order")
+          .resourceType("MedicationOrder")
           .id("1234")
           .patient(reference("patient"))
           .dateWritten("2018-11-06")

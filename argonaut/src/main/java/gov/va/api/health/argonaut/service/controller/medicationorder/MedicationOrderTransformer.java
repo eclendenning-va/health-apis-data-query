@@ -12,6 +12,7 @@ import gov.va.api.health.argonaut.api.elements.Reference;
 import gov.va.api.health.argonaut.api.resources.MedicationOrder;
 import gov.va.api.health.argonaut.api.resources.MedicationOrder.DispenseRequest;
 import gov.va.api.health.argonaut.api.resources.MedicationOrder.DosageInstruction;
+import gov.va.api.health.argonaut.api.resources.MedicationOrder.Status;
 import gov.va.api.health.argonaut.service.controller.EnumSearcher;
 import gov.va.dvp.cdw.xsd.model.CdwCodeableConcept;
 import gov.va.dvp.cdw.xsd.model.CdwDuration;
@@ -39,13 +40,10 @@ public class MedicationOrderTransformer implements MedicationOrderController.Tra
   MedicationOrder medicationOrder(CdwMedicationOrder source) {
     return MedicationOrder.builder()
         .id(source.getCdwId())
-        .resourceType("Medication Order")
+        .resourceType("MedicationOrder")
         .patient(reference(source.getPatient()))
         .dateWritten(dateTimeString(source.getDateWritten()))
-        .status(
-            convert(
-                source.getStatus(),
-                status -> EnumSearcher.of(MedicationOrder.Status.class).find(source.getStatus())))
+        .status(status(source.getStatus()))
         .dateEnded(dateTimeString(source.getDateEnded()))
         .prescriber(reference(source.getPrescriber()))
         .medicationReference(reference(source.getMedicationReference()))
@@ -62,9 +60,6 @@ public class MedicationOrderTransformer implements MedicationOrderController.Tra
   }
 
   String dateTimeString(XMLGregorianCalendar source) {
-    if (source == null) {
-      return null;
-    }
     return asDateTimeString(source);
   }
 
@@ -180,6 +175,10 @@ public class MedicationOrderTransformer implements MedicationOrderController.Tra
       return null;
     }
     return CodeableConcept.builder().text(source.getText()).build();
+  }
+
+  Status status(String source) {
+    return convert(source, status -> EnumSearcher.of(MedicationOrder.Status.class)).find(source);
   }
 
   Timing timing(CdwTiming source) {
