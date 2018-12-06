@@ -60,6 +60,7 @@ class IdRegistrar {
     ResourceIdentity encounter = id("ENCOUNTER", cdwIds.encounter());
     ResourceIdentity immunization = id("IMMUNIZATION", cdwIds.immunization());
     ResourceIdentity medication = id("MEDICATION", cdwIds.medication());
+    ResourceIdentity medicationStatement = id("MEDICATION_STATEMENT", cdwIds.medicationStatement());
     ResourceIdentity observation = id("OBSERVATION", cdwIds.observation());
     ResourceIdentity patient = id("PATIENT", cdwIds.patient());
     ResourceIdentity procedure = id("PROCEDURE", cdwIds.procedure());
@@ -73,6 +74,7 @@ class IdRegistrar {
             immunization,
             patient,
             medication,
+            medicationStatement,
             observation,
             procedure);
     log.info("Registering {}", identities);

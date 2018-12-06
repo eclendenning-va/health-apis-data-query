@@ -90,7 +90,7 @@ public class MedicationStatementController {
         Query.forType(CdwMedicationStatement102Root.class)
             .profile(Query.Profile.ARGONAUT)
             .resource("MedicationStatement")
-            .version("1.04")
+            .version("1.02")
             .parameters(params)
             .build();
     return mrAndersonClient.search(query);
