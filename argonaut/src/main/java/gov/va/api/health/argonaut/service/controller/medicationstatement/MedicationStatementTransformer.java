@@ -50,7 +50,7 @@ public class MedicationStatementTransformer implements MedicationStatementContro
     return EnumSearcher.of(Status.class).find(cdw.value());
   }
 
-  List<Dosage> dosage(CdwMedicationStatement.CdwDosages maybeCdw){
+  List<Dosage> dosage(CdwMedicationStatement.CdwDosages maybeCdw) {
     return convertAll(
         ifPresent(maybeCdw, CdwDosages::getDosage),
         source ->
@@ -61,7 +61,7 @@ public class MedicationStatementTransformer implements MedicationStatementContro
                 .build());
   }
 
-   CodeableConcept codeableConcept(CdwCodeableConcept maybeSource) {
+  CodeableConcept codeableConcept(CdwCodeableConcept maybeSource) {
     return convert(
         maybeSource,
         source ->
@@ -71,13 +71,9 @@ public class MedicationStatementTransformer implements MedicationStatementContro
                 .build());
   }
 
-   Timing  timing(CdwTiming maybeSource) {
+  Timing timing(CdwTiming maybeSource) {
     return convert(
-        maybeSource,
-        source ->
-            Timing.builder()
-                .code(codeableConcept(source.getCode()))
-                .build());
+        maybeSource, source -> Timing.builder().code(codeableConcept(source.getCode())).build());
   }
 
   List<Coding> codings(List<CdwCoding> source) {
@@ -100,5 +96,4 @@ public class MedicationStatementTransformer implements MedicationStatementContro
                 .display(source.getDisplay())
                 .build());
   }
-
-  }
+}

@@ -58,7 +58,9 @@ public class MedicationStatementControllerTest {
     CdwMedicationStatement cdwItem1 = new CdwMedicationStatement();
     CdwMedicationStatement cdwItem2 = new CdwMedicationStatement();
     CdwMedicationStatement cdwItem3 = new CdwMedicationStatement();
-    root.getMedicationStatements().getMedicationStatement().addAll(Arrays.asList(cdwItem1, cdwItem2, cdwItem3));
+    root.getMedicationStatements()
+        .getMedicationStatement()
+        .addAll(Arrays.asList(cdwItem1, cdwItem2, cdwItem3));
     MedicationStatement patient1 = MedicationStatement.builder().build();
     MedicationStatement patient2 = MedicationStatement.builder().build();
     MedicationStatement patient3 = MedicationStatement.builder().build();
@@ -75,8 +77,10 @@ public class MedicationStatementControllerTest {
 
     assertThat(actual).isSameAs(mockBundle);
     @SuppressWarnings("unchecked")
-    ArgumentCaptor<BundleContext<CdwMedicationStatement, MedicationStatement, MedicationStatement.Entry, Bundle>> captor =
-        ArgumentCaptor.forClass(BundleContext.class);
+    ArgumentCaptor<
+            BundleContext<
+                CdwMedicationStatement, MedicationStatement, MedicationStatement.Entry, Bundle>>
+        captor = ArgumentCaptor.forClass(BundleContext.class);
 
     verify(bundler).bundle(captor.capture());
 
@@ -89,7 +93,8 @@ public class MedicationStatementControllerTest {
             .queryParams(params)
             .build();
     assertThat(captor.getValue().linkConfig()).isEqualTo(expectedLinkConfig);
-    assertThat(captor.getValue().xmlItems()).isEqualTo(root.getMedicationStatements().getMedicationStatement());
+    assertThat(captor.getValue().xmlItems())
+        .isEqualTo(root.getMedicationStatements().getMedicationStatement());
     assertThat(captor.getValue().newBundle().get()).isInstanceOf(Bundle.class);
     assertThat(captor.getValue().newEntry().get()).isInstanceOf(MedicationStatement.Entry.class);
     assertThat(captor.getValue().transformer()).isSameAs(tx);
@@ -120,7 +125,8 @@ public class MedicationStatementControllerTest {
     when(tx.apply(xmlMedicationStatement)).thenReturn(item);
     MedicationStatement actual = controller.read("hello");
     assertThat(actual).isSameAs(item);
-    ArgumentCaptor<Query<CdwMedicationStatement102Root>> captor = ArgumentCaptor.forClass(Query.class);
+    ArgumentCaptor<Query<CdwMedicationStatement102Root>> captor =
+        ArgumentCaptor.forClass(Query.class);
     verify(client).search(captor.capture());
     assertThat(captor.getValue().parameters()).isEqualTo(Parameters.forIdentity("hello"));
   }
@@ -151,11 +157,7 @@ public class MedicationStatementControllerTest {
     assertSearch(
         () ->
             controller.searchByPatientAndInclude(
-                "me",
-                "MedicationStatement:medication",
-                1,
-                10,
-                servletRequest),
+                "me", "MedicationStatement:medication", 1, 10, servletRequest),
         Parameters.builder()
             .add("patient", "me")
             .add("_include", "MedicationStatement:medication")

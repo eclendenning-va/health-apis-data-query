@@ -59,9 +59,9 @@ public class MedicationStatementTransformerTest {
   public void status() {
     assertThat(tx.status(CdwMedicationStatementStatus.ACTIVE)).isEqualTo(Status.active);
     assertThat(tx.status(CdwMedicationStatementStatus.COMPLETED)).isEqualTo(Status.completed);
-    assertThat(tx.status(CdwMedicationStatementStatus.ENTERED_IN_ERROR)).isEqualTo(Status.entered_in_error);
+    assertThat(tx.status(CdwMedicationStatementStatus.ENTERED_IN_ERROR))
+        .isEqualTo(Status.entered_in_error);
     assertThat(tx.status(CdwMedicationStatementStatus.INTENDED)).isEqualTo(Status.intended);
-
   }
 
   @NoArgsConstructor(staticName = "get")
@@ -73,10 +73,10 @@ public class MedicationStatementTransformerTest {
       cdw.setDateAsserted(dateTime("2012-07-12T14:08:08Z"));
       cdw.setDosages(dosages());
       cdw.setEffectiveDateTime(dateTime("2012-07-12T14:08:08Z"));
-      cdw.setMedicationReference(reference("Medication/420489","ALLOPURINOL 100MG TAB"));
+      cdw.setMedicationReference(reference("Medication/420489", "ALLOPURINOL 100MG TAB"));
       cdw.setNote("reports obtaining privately");
       cdw.setRowNumber(BigInteger.ONE);
-      cdw.setPatient(reference("Patient/185601V825290","VETERAN,JOHN Q"));
+      cdw.setPatient(reference("Patient/185601V825290", "VETERAN,JOHN Q"));
       return cdw;
     }
 
@@ -92,13 +92,13 @@ public class MedicationStatementTransformerTest {
       return cdw;
     }
 
-    private CdwDosages dosages(){
+    private CdwDosages dosages() {
       CdwDosages cdw = new CdwDosages();
       cdw.getDosage().add(dosage());
       return cdw;
     }
 
-    private CdwDosage dosage(){
+    private CdwDosage dosage() {
       CdwDosage cdw = new CdwDosage();
       cdw.setRoute(route());
       cdw.setText("100MG");
@@ -106,37 +106,36 @@ public class MedicationStatementTransformerTest {
       return cdw;
     }
 
-    private CdwCodeableConcept route(){
+    private CdwCodeableConcept route() {
       CdwCodeableConcept cdw = new CdwCodeableConcept();
       cdw.setText("BY MOUTH");
       return cdw;
     }
 
-    private CdwTiming timing(){
+    private CdwTiming timing() {
       CdwTiming cdw = new CdwTiming();
       cdw.setCode(timingCode());
       return cdw;
     }
 
-    private CdwCodeableConcept timingCode(){
+    private CdwCodeableConcept timingCode() {
       CdwCodeableConcept cdw = new CdwCodeableConcept();
       cdw.setText("EVERY DAY");
       return cdw;
     }
-
   }
 
   @NoArgsConstructor(staticName = "get")
   private static class Expected {
 
-    private MedicationStatement medicationStatement(){
+    private MedicationStatement medicationStatement() {
       return MedicationStatement.builder()
           .resourceType("Medication Statement")
           .id("1400000182118")
           .status(Status.completed)
-          .patient(reference("Patient/185601V825290","VETERAN,JOHN Q"))
+          .patient(reference("Patient/185601V825290", "VETERAN,JOHN Q"))
           .note("reports obtaining privately")
-          .medicationReference(reference("Medication/420489","ALLOPURINOL 100MG TAB"))
+          .medicationReference(reference("Medication/420489", "ALLOPURINOL 100MG TAB"))
           .effectiveDateTime("2012-07-12T14:08:08Z")
           .dosage(dosage())
           .dateAsserted("2012-07-12T14:08:08Z")
@@ -147,33 +146,20 @@ public class MedicationStatementTransformerTest {
       return Reference.builder().reference(ref).display(display).build();
     }
 
-    private List<Dosage> dosage(){
-      return singletonList(Dosage.builder()
-          .route(route())
-          .text("100MG")
-          .timing(timing())
-          .build());
+    private List<Dosage> dosage() {
+      return singletonList(Dosage.builder().route(route()).text("100MG").timing(timing()).build());
     }
 
-    private CodeableConcept route(){
-      return CodeableConcept.builder()
-          .text("BY MOUTH")
-          .build();
+    private CodeableConcept route() {
+      return CodeableConcept.builder().text("BY MOUTH").build();
     }
 
-    private Timing timing(){
-      return Timing.builder()
-          .code(timingCode())
-          .build();
+    private Timing timing() {
+      return Timing.builder().code(timingCode()).build();
     }
 
-    private CodeableConcept timingCode(){
-      return CodeableConcept.builder()
-          .text("EVERY DAY")
-          .build();
+    private CodeableConcept timingCode() {
+      return CodeableConcept.builder().text("EVERY DAY").build();
     }
-
-
-
   }
 }

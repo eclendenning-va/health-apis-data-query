@@ -36,8 +36,8 @@ import org.springframework.web.bind.annotation.RestController;
 @SuppressWarnings("WeakerAccess")
 @RestController
 @RequestMapping(
-    value = {"/api/MedicationStatement"},
-    produces = {"application/json", "application/json+fhir", "application/fhir+json"}
+  value = {"/api/MedicationStatement"},
+  produces = {"application/json", "application/json+fhir", "application/fhir+json"}
 )
 @AllArgsConstructor(onConstructor = @__({@Autowired}))
 @Slf4j
@@ -80,7 +80,9 @@ public class MedicationStatementController {
     return transformer.apply(
         firstPayloadItem(
             hasPayload(
-                search(Parameters.forIdentity(publicId)).getMedicationStatements().getMedicationStatement())));
+                search(Parameters.forIdentity(publicId))
+                    .getMedicationStatements()
+                    .getMedicationStatement())));
   }
 
   private CdwMedicationStatement102Root search(MultiValueMap<String, String> params) {
@@ -158,13 +160,15 @@ public class MedicationStatementController {
 
   /** Hey, this is a validate endpoint. It validates. */
   @PostMapping(
-      value = "/$validate",
-      consumes = {"application/json", "application/json+fhir", "application/fhir+json"}
+    value = "/$validate",
+    consumes = {"application/json", "application/json+fhir", "application/fhir+json"}
   )
   public OperationOutcome validate(@RequestBody MedicationStatement.Bundle bundle) {
     return Validator.create().validate(bundle);
   }
 
   public interface Transformer
-      extends Function<CdwMedicationStatement102Root.CdwMedicationStatements.CdwMedicationStatement, MedicationStatement> {}
+      extends Function<
+          CdwMedicationStatement102Root.CdwMedicationStatements.CdwMedicationStatement,
+          MedicationStatement> {}
 }
