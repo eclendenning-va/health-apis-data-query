@@ -23,6 +23,8 @@ public class SystemDefinitions {
                   .allergyIntolerance("1000001782544")
                   .condition("1400007575530:P")
                   .diagnosticReport("1000000031384:L")
+                  .encounter("1200753214085")
+                  .patient("185601V825290")
                   .diagnosticReports(
                       DiagnosticReports.builder()
                           .loinc1("10000-8")
@@ -41,7 +43,6 @@ public class SystemDefinitions {
                           .onDate("2015-04-15")
                           .dateRange(Range.allTime())
                           .build())
-                  .patient("185601V825290")
                   .pii(
                       PersonallyIdentifiableInformation.builder()
                           .gender("male")

@@ -57,6 +57,7 @@ class IdRegistrar {
     ResourceIdentity allergyIntolerance = id("ALLERGY_INTOLERANCE", cdwIds.allergyIntolerance());
     ResourceIdentity condition = id("CONDITION", cdwIds.condition());
     ResourceIdentity diagnosticReport = id("DIAGNOSTIC_REPORT", cdwIds.diagnosticReport());
+    ResourceIdentity encounter = id("ENCOUNTER", cdwIds.encounter());
     ResourceIdentity immunization = id("IMMUNIZATION", cdwIds.immunization());
     ResourceIdentity medication = id("MEDICATION", cdwIds.medication());
     ResourceIdentity observation = id("OBSERVATION", cdwIds.observation());
@@ -68,6 +69,7 @@ class IdRegistrar {
             allergyIntolerance,
             condition,
             diagnosticReport,
+            encounter,
             immunization,
             patient,
             medication,
@@ -87,6 +89,7 @@ class IdRegistrar {
             .allergyIntolerance(findUuid(registrations, allergyIntolerance))
             .condition(findUuid(registrations, condition))
             .diagnosticReport(findUuid(registrations, diagnosticReport))
+            .encounter(findUuid(registrations, encounter))
             .immunization(findUuid(registrations, immunization))
             .medication(findUuid(registrations, medication))
             .observation(findUuid(registrations, observation))

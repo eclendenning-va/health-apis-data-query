@@ -13,6 +13,7 @@ public class TestIds {
   @NonNull String allergyIntolerance;
   @NonNull String condition;
   @NonNull String diagnosticReport;
+  @NonNull String encounter;
   @NonNull String immunization;
   @NonNull String medication;
   @NonNull String observation;
