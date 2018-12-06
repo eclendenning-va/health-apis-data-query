@@ -11,6 +11,7 @@ import lombok.Value;
 @Builder(toBuilder = true)
 public class TestIds {
   @NonNull String allergyIntolerance;
+  @NonNull String appointment;
   @NonNull String condition;
   @NonNull String diagnosticReport;
   @NonNull String encounter;

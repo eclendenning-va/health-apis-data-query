@@ -21,6 +21,7 @@ public class SystemDefinitions {
           .cdwIds(
               TestIds.builder()
                   .allergyIntolerance("1000001782544")
+                  .appointment("1200438317388")
                   .condition("1400007575530:P")
                   .diagnosticReport("1000000031384:L")
                   .encounter("1200753214085")
