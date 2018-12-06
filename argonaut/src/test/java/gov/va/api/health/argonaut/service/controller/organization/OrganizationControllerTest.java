@@ -15,9 +15,9 @@ import gov.va.api.health.argonaut.service.controller.Validator;
 import gov.va.api.health.argonaut.service.mranderson.client.MrAndersonClient;
 import gov.va.api.health.argonaut.service.mranderson.client.Query;
 import gov.va.api.health.autoconfig.configuration.JacksonConfig;
-import gov.va.dvp.cdw.xsd.model.CdwOrganization101Root;
-import gov.va.dvp.cdw.xsd.model.CdwOrganization101Root.CdwOrganizations;
-import gov.va.dvp.cdw.xsd.model.CdwOrganization101Root.CdwOrganizations.CdwOrganization;
+import gov.va.dvp.cdw.xsd.model.CdwOrganization100Root;
+import gov.va.dvp.cdw.xsd.model.CdwOrganization100Root.CdwOrganizations;
+import gov.va.dvp.cdw.xsd.model.CdwOrganization100Root.CdwOrganizations.CdwOrganization;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collections;
@@ -51,7 +51,7 @@ public class OrganizationControllerTest {
 
   private void assertSearch(
       Supplier<Organization.Bundle> invocation, MultiValueMap<String, String> params) {
-    CdwOrganization101Root root = new CdwOrganization101Root();
+    CdwOrganization100Root root = new CdwOrganization100Root();
     root.setPageNumber(BigInteger.valueOf(1));
     root.setRecordsPerPage(BigInteger.valueOf(10));
     root.setRecordCount(BigInteger.valueOf(3));
@@ -115,17 +115,17 @@ public class OrganizationControllerTest {
   @SuppressWarnings("unchecked")
   @Test
   public void read() {
-    CdwOrganization101Root root = new CdwOrganization101Root();
+    CdwOrganization100Root root = new CdwOrganization100Root();
     root.setOrganizations(new CdwOrganizations());
-    CdwOrganization101Root.CdwOrganizations.CdwOrganization xmlOrganization =
-        new CdwOrganization101Root.CdwOrganizations.CdwOrganization();
+    CdwOrganization100Root.CdwOrganizations.CdwOrganization xmlOrganization =
+        new CdwOrganization100Root.CdwOrganizations.CdwOrganization();
     root.getOrganizations().getOrganization().add(xmlOrganization);
     Organization organization = Organization.builder().build();
     when(client.search(Mockito.any())).thenReturn(root);
     when(tx.apply(xmlOrganization)).thenReturn(organization);
     Organization actual = controller.read("hello");
     assertThat(actual).isSameAs(organization);
-    ArgumentCaptor<Query<CdwOrganization101Root>> captor = ArgumentCaptor.forClass(Query.class);
+    ArgumentCaptor<Query<CdwOrganization100Root>> captor = ArgumentCaptor.forClass(Query.class);
     verify(client).search(captor.capture());
     assertThat(captor.getValue().parameters()).isEqualTo(Parameters.forIdentity("hello"));
   }

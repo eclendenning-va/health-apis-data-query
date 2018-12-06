@@ -12,7 +12,7 @@ import gov.va.api.health.argonaut.service.controller.Parameters;
 import gov.va.api.health.argonaut.service.controller.Validator;
 import gov.va.api.health.argonaut.service.mranderson.client.MrAndersonClient;
 import gov.va.api.health.argonaut.service.mranderson.client.Query;
-import gov.va.dvp.cdw.xsd.model.CdwOrganization101Root;
+import gov.va.dvp.cdw.xsd.model.CdwOrganization100Root;
 import java.util.Collections;
 import java.util.function.Function;
 import javax.servlet.http.HttpServletRequest;
@@ -50,7 +50,7 @@ public class OrganizationController {
       int page,
       int count,
       HttpServletRequest servletRequest) {
-    CdwOrganization101Root root = search(parameters);
+    CdwOrganization100Root root = search(parameters);
     LinkConfig linkConfig =
         LinkConfig.builder()
             .path(servletRequest.getRequestURI())
@@ -80,9 +80,9 @@ public class OrganizationController {
                 search(Parameters.forIdentity(publicId)).getOrganizations().getOrganization())));
   }
 
-  private CdwOrganization101Root search(MultiValueMap<String, String> params) {
-    Query<CdwOrganization101Root> query =
-        Query.forType(CdwOrganization101Root.class)
+  private CdwOrganization100Root search(MultiValueMap<String, String> params) {
+    Query<CdwOrganization100Root> query =
+        Query.forType(CdwOrganization100Root.class)
             .profile(Query.Profile.ARGONAUT)
             .resource("Organization")
             .version("1.01")
@@ -129,5 +129,5 @@ public class OrganizationController {
   }
 
   public interface Transformer
-      extends Function<CdwOrganization101Root.CdwOrganizations.CdwOrganization, Organization> {}
+      extends Function<CdwOrganization100Root.CdwOrganizations.CdwOrganization, Organization> {}
 }
