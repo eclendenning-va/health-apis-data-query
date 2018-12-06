@@ -94,6 +94,7 @@ class IdRegistrar {
             .encounter(findUuid(registrations, encounter))
             .immunization(findUuid(registrations, immunization))
             .medication(findUuid(registrations, medication))
+            .medicationStatement(findUuid(registrations, medicationStatement))
             .observation(findUuid(registrations, observation))
             .patient(findUuid(registrations, patient))
             .procedure(findUuid(registrations, procedure))
