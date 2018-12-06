@@ -21,7 +21,6 @@ import gov.va.dvp.cdw.xsd.model.CdwPatient103Root.CdwPatients.CdwPatient;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.function.Supplier;
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolationException;
 import lombok.SneakyThrows;
 import org.junit.Before;
@@ -38,7 +37,6 @@ public class PatientControllerTest {
   @Mock MrAndersonClient client;
   @Mock PatientController.Transformer tx;
   @Mock Bundler bundler;
-  @Mock HttpServletRequest servletRequest;
 
   PatientController controller;
 
@@ -65,7 +63,6 @@ public class PatientControllerTest {
     when(tx.apply(xmlPatient2)).thenReturn(patient2);
     when(tx.apply(xmlPatient3)).thenReturn(patient3);
     when(client.search(Mockito.any())).thenReturn(root);
-    when(servletRequest.getRequestURI()).thenReturn("/api/Patient");
 
     Bundle mockBundle = new Bundle();
     when(bundler.bundle(Mockito.any())).thenReturn(mockBundle);
@@ -84,7 +81,7 @@ public class PatientControllerTest {
             .page(1)
             .recordsPerPage(10)
             .totalRecords(3)
-            .path("/api/Patient")
+            .path("Patient")
             .queryParams(params)
             .build();
     assertThat(captor.getValue().linkConfig()).isEqualTo(expectedLinkConfig);
@@ -124,7 +121,7 @@ public class PatientControllerTest {
   @Test
   public void searchByFamilyAndGender() {
     assertSearch(
-        () -> controller.searchByFamilyAndGender("f", "g", 1, 10, servletRequest),
+        () -> controller.searchByFamilyAndGender("f", "g", 1, 10),
         Parameters.builder()
             .add("family", "f")
             .add("gender", "g")
@@ -136,7 +133,7 @@ public class PatientControllerTest {
   @Test
   public void searchByGivenAndGender() {
     assertSearch(
-        () -> controller.searchByGivenAndGender("f", "g", 1, 10, servletRequest),
+        () -> controller.searchByGivenAndGender("f", "g", 1, 10),
         Parameters.builder()
             .add("given", "f")
             .add("gender", "g")
@@ -148,23 +145,21 @@ public class PatientControllerTest {
   @Test
   public void searchById() {
     assertSearch(
-        () -> controller.searchById("me", 1, 10, servletRequest),
+        () -> controller.searchById("me", 1, 10),
         Parameters.builder().add("_id", "me").add("page", 1).add("_count", 10).build());
   }
 
   @Test
   public void searchByIdentifier() {
     assertSearch(
-        () -> controller.searchByIdentifier("me", 1, 10, servletRequest),
+        () -> controller.searchByIdentifier("me", 1, 10),
         Parameters.builder().add("identifier", "me").add("page", 1).add("_count", 10).build());
   }
 
   @Test
   public void searchByNameAndBirthdate() {
     assertSearch(
-        () ->
-            controller.searchByNameAndBirthdate(
-                "me", new String[] {"1975", "2005"}, 1, 10, servletRequest),
+        () -> controller.searchByNameAndBirthdate("me", new String[] {"1975", "2005"}, 1, 10),
         Parameters.builder()
             .add("name", "me")
             .addAll("birthdate", "1975", "2005")
@@ -176,7 +171,7 @@ public class PatientControllerTest {
   @Test
   public void searchByNameAndGender() {
     assertSearch(
-        () -> controller.searchByNameAndGender("f", "g", 1, 10, servletRequest),
+        () -> controller.searchByNameAndGender("f", "g", 1, 10),
         Parameters.builder()
             .add("name", "f")
             .add("gender", "g")
@@ -192,10 +187,9 @@ public class PatientControllerTest {
     root.setRecordsPerPage(10);
     root.setRecordCount(0);
     when(client.search(Mockito.any())).thenReturn(root);
-    when(servletRequest.getRequestURI()).thenReturn("/api/Patient");
     Bundle mockBundle = new Bundle();
     when(bundler.bundle(Mockito.any())).thenReturn(mockBundle);
-    Bundle actual = controller.searchById("me", 1, 10, servletRequest);
+    Bundle actual = controller.searchById("me", 1, 10);
     assertThat(actual).isSameAs(mockBundle);
     @SuppressWarnings("unchecked")
     ArgumentCaptor<BundleContext<CdwPatient, Patient, Patient.Entry, Patient.Bundle>> captor =
@@ -207,7 +201,7 @@ public class PatientControllerTest {
             .page(1)
             .recordsPerPage(10)
             .totalRecords(0)
-            .path("/api/Patient")
+            .path("Patient")
             .queryParams(
                 Parameters.builder().add("_id", "me").add("page", 1).add("_count", 10).build())
             .build();

@@ -16,7 +16,6 @@ import gov.va.api.health.argonaut.service.mranderson.client.Query;
 import gov.va.dvp.cdw.xsd.model.CdwAllergyIntolerance103Root;
 import java.util.Collections;
 import java.util.function.Function;
-import javax.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,15 +47,11 @@ public class AllergyIntoleranceController {
   private MrAndersonClient mrAndersonClient;
   private Bundler bundler;
 
-  private Bundle bundle(
-      MultiValueMap<String, String> parameters,
-      int page,
-      int count,
-      HttpServletRequest servletRequest) {
+  private Bundle bundle(MultiValueMap<String, String> parameters, int page, int count) {
     CdwAllergyIntolerance103Root root = search(parameters);
     LinkConfig linkConfig =
         LinkConfig.builder()
-            .path(servletRequest.getRequestURI())
+            .path("AllergyIntolerance")
             .queryParams(parameters)
             .page(page)
             .recordsPerPage(count)
@@ -100,13 +95,11 @@ public class AllergyIntoleranceController {
   public AllergyIntolerance.Bundle searchById(
       @RequestParam("_id") String id,
       @RequestParam(value = "page", defaultValue = "1") int page,
-      @RequestParam(value = "_count", defaultValue = "1") int count,
-      HttpServletRequest servletRequest) {
+      @RequestParam(value = "_count", defaultValue = "1") int count) {
     return bundle(
         Parameters.builder().add("identifier", id).add("page", page).add("_count", count).build(),
         page,
-        count,
-        servletRequest);
+        count);
   }
 
   /** Search by identifier. */
@@ -114,8 +107,7 @@ public class AllergyIntoleranceController {
   public AllergyIntolerance.Bundle searchByIdentifier(
       @RequestParam("identifier") String identifier,
       @RequestParam(value = "page", defaultValue = "1") int page,
-      @RequestParam(value = "_count", defaultValue = "1") int count,
-      HttpServletRequest servletRequest) {
+      @RequestParam(value = "_count", defaultValue = "1") int count) {
     return bundle(
         Parameters.builder()
             .add("identifier", identifier)
@@ -123,8 +115,7 @@ public class AllergyIntoleranceController {
             .add("_count", count)
             .build(),
         page,
-        count,
-        servletRequest);
+        count);
   }
 
   /** Search by patient. */
@@ -132,13 +123,11 @@ public class AllergyIntoleranceController {
   public AllergyIntolerance.Bundle searchByPatient(
       @RequestParam("patient") String patient,
       @RequestParam(value = "page", defaultValue = "1") int page,
-      @RequestParam(value = "_count", defaultValue = "15") int count,
-      HttpServletRequest servletRequest) {
+      @RequestParam(value = "_count", defaultValue = "15") int count) {
     return bundle(
         Parameters.builder().add("patient", patient).add("page", page).add("_count", count).build(),
         page,
-        count,
-        servletRequest);
+        count);
   }
 
   /** Hey, this is a validate endpoint. It validates. */

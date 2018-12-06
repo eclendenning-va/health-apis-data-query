@@ -15,7 +15,7 @@ public class ConfigurableBaseUrlPageLinksTest {
 
   @Before
   public void _init() {
-    links = new ConfigurableBaseUrlPageLinks("https://awesome.com");
+    links = new ConfigurableBaseUrlPageLinks("https://awesome.com", "api");
   }
 
   @Test
@@ -32,7 +32,7 @@ public class ConfigurableBaseUrlPageLinksTest {
 
   private LinkConfig forCurrentPage(int page, int count, int total) {
     return LinkConfig.builder()
-        .path("/api/Whatever")
+        .path("Whatever")
         .queryParams(
             Parameters.builder()
                 .add("a", "apple")
@@ -97,7 +97,6 @@ public class ConfigurableBaseUrlPageLinksTest {
 
   @Test
   public void readLinkCombinesConfiguredUrl() {
-    assertThat(links.readLink("/api/Whatever", "123"))
-        .isEqualTo("https://awesome.com/api/Whatever/123");
+    assertThat(links.readLink("Whatever", "123")).isEqualTo("https://awesome.com/api/Whatever/123");
   }
 }
