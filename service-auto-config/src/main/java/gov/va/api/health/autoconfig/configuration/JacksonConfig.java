@@ -21,6 +21,7 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -101,6 +102,7 @@ public class JacksonConfig {
    * in the class-level documentation.
    */
   @Bean
+  @ConditionalOnMissingBean
   public ObjectMapper objectMapper() {
     return configureMapper(new ObjectMapper());
   }

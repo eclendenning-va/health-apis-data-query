@@ -22,7 +22,6 @@ import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.function.Supplier;
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolationException;
 import lombok.SneakyThrows;
 import org.junit.Before;
@@ -37,7 +36,6 @@ public class DiagnosticReportControllerTest {
 
   @Mock MrAndersonClient client;
   @Mock DiagnosticReportController.Transformer tx;
-  @Mock HttpServletRequest servletRequest;
   @Mock Bundler bundler;
 
   DiagnosticReportController controller;
@@ -65,7 +63,6 @@ public class DiagnosticReportControllerTest {
     when(tx.apply(xmlDr2)).thenReturn(dr2);
     when(tx.apply(xmlDr3)).thenReturn(dr3);
     when(client.search(Mockito.any())).thenReturn(root);
-    when(servletRequest.getRequestURI()).thenReturn("/api/DiagnosticReport");
 
     Bundle mockBundle = new Bundle();
     when(bundler.bundle(Mockito.any())).thenReturn(mockBundle);
@@ -88,7 +85,7 @@ public class DiagnosticReportControllerTest {
             .page(1)
             .recordsPerPage(10)
             .totalRecords(3)
-            .path("/api/DiagnosticReport")
+            .path("DiagnosticReport")
             .queryParams(params)
             .build();
     assertThat(captor.getValue().linkConfig()).isEqualTo(expectedLinkConfig);
@@ -113,30 +110,34 @@ public class DiagnosticReportControllerTest {
   }
 
   @Test
+  public void read() {
+    CdwDiagnosticReport102Root root = new CdwDiagnosticReport102Root();
+    root.setDiagnosticReports(new CdwDiagnosticReport102Root.CdwDiagnosticReports());
+    CdwDiagnosticReport102Root.CdwDiagnosticReports.CdwDiagnosticReport cdwDR =
+        new CdwDiagnosticReport102Root.CdwDiagnosticReports.CdwDiagnosticReport();
+    root.getDiagnosticReports().getDiagnosticReport().add(cdwDR);
+    DiagnosticReport dr = DiagnosticReport.builder().build();
+    when(client.search(Mockito.any())).thenReturn(root);
+    when(tx.apply(cdwDR)).thenReturn(dr);
+    DiagnosticReport actual = controller.read("hello");
+    assertThat(actual).isSameAs(dr);
+    @SuppressWarnings("unchecked")
+    ArgumentCaptor<Query<CdwDiagnosticReport102Root>> captor = ArgumentCaptor.forClass(Query.class);
+    verify(client).search(captor.capture());
+    assertThat(captor.getValue().parameters()).isEqualTo(Parameters.forIdentity("hello"));
+  }
+
+  @Test
   public void searchById() {
     assertSearch(
-        () -> controller.searchById("me", 1, 10, servletRequest),
+        () -> controller.searchById("me", 1, 10),
         Parameters.builder().add("identifier", "me").add("page", 1).add("_count", 10).build());
-  }
-
-  @Test
-  public void searchByIdentifier() {
-    assertSearch(
-        () -> controller.searchByIdentifier("me", 1, 10, servletRequest),
-        Parameters.builder().add("identifier", "me").add("page", 1).add("_count", 10).build());
-  }
-
-  @Test
-  public void searchByPatient() {
-    assertSearch(
-        () -> controller.searchByPatient("me", 1, 10, servletRequest),
-        Parameters.builder().add("patient", "me").add("page", 1).add("_count", 10).build());
   }
 
   @Test
   public void searchByIdAndCategory() {
     assertSearch(
-        () -> controller.searchByPatientAndCategory("me", "example", 1, 10, servletRequest),
+        () -> controller.searchByPatientAndCategory("me", "example", 1, 10),
         Parameters.builder()
             .add("patient", "me")
             .add("category", "example")
@@ -146,9 +147,38 @@ public class DiagnosticReportControllerTest {
   }
 
   @Test
+  public void searchByIdentifier() {
+    assertSearch(
+        () -> controller.searchByIdentifier("me", 1, 10),
+        Parameters.builder().add("identifier", "me").add("page", 1).add("_count", 10).build());
+  }
+
+  @Test
+  public void searchByPatient() {
+    assertSearch(
+        () -> controller.searchByPatient("me", 1, 10),
+        Parameters.builder().add("patient", "me").add("page", 1).add("_count", 10).build());
+  }
+
+  @Test
+  public void searchByPatientAndCategoryAndDate() {
+    assertSearch(
+        () ->
+            controller.searchByPatientAndCategoryAndDate(
+                "me", "foo", new String[] {"1000", "2000"}, 1, 10),
+        Parameters.builder()
+            .add("patient", "me")
+            .add("code", "foo")
+            .addAll("date", "1000", "2000")
+            .add("page", 1)
+            .add("_count", 10)
+            .build());
+  }
+
+  @Test
   public void searchByPatientAndCode() {
     assertSearch(
-        () -> controller.searchByPatientAndCode("me", "foo", 1, 10, servletRequest),
+        () -> controller.searchByPatientAndCode("me", "foo", 1, 10),
         Parameters.builder()
             .add("patient", "me")
             .add("code", "foo")
@@ -158,18 +188,39 @@ public class DiagnosticReportControllerTest {
   }
 
   @Test
-  public void searchByPatientAndCategoryAndDate() {
-    assertSearch(
-        () ->
-            controller.searchByPatientAndCategoryAndDate(
-                "me", "foo", new String[] {"1000", "2000"}, 1, 10, servletRequest),
-        Parameters.builder()
-            .add("patient", "me")
-            .add("code", "foo")
-            .addAll("date", "1000", "2000")
-            .add("page", 1)
-            .add("_count", 10)
-            .build());
+  public void searchReturnsEmptyResults() {
+    CdwDiagnosticReport102Root root = new CdwDiagnosticReport102Root();
+    root.setPageNumber(BigInteger.valueOf(1));
+    root.setRecordsPerPage(BigInteger.valueOf(10));
+    root.setRecordCount(BigInteger.valueOf(0));
+    when(client.search(Mockito.any())).thenReturn(root);
+    Bundle mockBundle = new Bundle();
+    when(bundler.bundle(Mockito.any())).thenReturn(mockBundle);
+    Bundle actual = controller.searchById("me", 1, 10);
+    assertThat(actual).isSameAs(mockBundle);
+    @SuppressWarnings("unchecked")
+    ArgumentCaptor<
+            BundleContext<
+                CdwDiagnosticReport, DiagnosticReport, DiagnosticReport.Entry,
+                DiagnosticReport.Bundle>>
+        captor = ArgumentCaptor.forClass(BundleContext.class);
+
+    verify(bundler).bundle(captor.capture());
+    LinkConfig expectedLinkConfig =
+        LinkConfig.builder()
+            .page(1)
+            .recordsPerPage(10)
+            .totalRecords(0)
+            .path("DiagnosticReport")
+            .queryParams(
+                Parameters.builder()
+                    .add("identifier", "me")
+                    .add("page", 1)
+                    .add("_count", 10)
+                    .build())
+            .build();
+    assertThat(captor.getValue().linkConfig()).isEqualTo(expectedLinkConfig);
+    assertThat(captor.getValue().xmlItems()).isEmpty();
   }
 
   @Test
@@ -197,60 +248,5 @@ public class DiagnosticReportControllerTest {
 
     Bundle bundle = bundleOf(resource);
     controller.validate(bundle);
-  }
-
-  @Test
-  public void searchReturnsEmptyResults() {
-    CdwDiagnosticReport102Root root = new CdwDiagnosticReport102Root();
-    root.setPageNumber(BigInteger.valueOf(1));
-    root.setRecordsPerPage(BigInteger.valueOf(10));
-    root.setRecordCount(BigInteger.valueOf(0));
-    when(client.search(Mockito.any())).thenReturn(root);
-    when(servletRequest.getRequestURI()).thenReturn("/api/DiagnosticReport");
-    Bundle mockBundle = new Bundle();
-    when(bundler.bundle(Mockito.any())).thenReturn(mockBundle);
-    Bundle actual = controller.searchById("me", 1, 10, servletRequest);
-    assertThat(actual).isSameAs(mockBundle);
-    @SuppressWarnings("unchecked")
-    ArgumentCaptor<
-            BundleContext<
-                CdwDiagnosticReport, DiagnosticReport, DiagnosticReport.Entry,
-                DiagnosticReport.Bundle>>
-        captor = ArgumentCaptor.forClass(BundleContext.class);
-
-    verify(bundler).bundle(captor.capture());
-    LinkConfig expectedLinkConfig =
-        LinkConfig.builder()
-            .page(1)
-            .recordsPerPage(10)
-            .totalRecords(0)
-            .path("/api/DiagnosticReport")
-            .queryParams(
-                Parameters.builder()
-                    .add("identifier", "me")
-                    .add("page", 1)
-                    .add("_count", 10)
-                    .build())
-            .build();
-    assertThat(captor.getValue().linkConfig()).isEqualTo(expectedLinkConfig);
-    assertThat(captor.getValue().xmlItems()).isEmpty();
-  }
-
-  @Test
-  public void read() {
-    CdwDiagnosticReport102Root root = new CdwDiagnosticReport102Root();
-    root.setDiagnosticReports(new CdwDiagnosticReport102Root.CdwDiagnosticReports());
-    CdwDiagnosticReport102Root.CdwDiagnosticReports.CdwDiagnosticReport cdwDR =
-        new CdwDiagnosticReport102Root.CdwDiagnosticReports.CdwDiagnosticReport();
-    root.getDiagnosticReports().getDiagnosticReport().add(cdwDR);
-    DiagnosticReport dr = DiagnosticReport.builder().build();
-    when(client.search(Mockito.any())).thenReturn(root);
-    when(tx.apply(cdwDR)).thenReturn(dr);
-    DiagnosticReport actual = controller.read("hello");
-    assertThat(actual).isSameAs(dr);
-    @SuppressWarnings("unchecked")
-    ArgumentCaptor<Query<CdwDiagnosticReport102Root>> captor = ArgumentCaptor.forClass(Query.class);
-    verify(client).search(captor.capture());
-    assertThat(captor.getValue().parameters()).isEqualTo(Parameters.forIdentity("hello"));
   }
 }
