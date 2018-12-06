@@ -15,7 +15,6 @@ import gov.va.api.health.argonaut.service.mranderson.client.Query;
 import gov.va.dvp.cdw.xsd.model.CdwMedicationStatement102Root;
 import java.util.Collections;
 import java.util.function.Function;
-import javax.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,15 +47,12 @@ public class MedicationStatementController {
   private Bundler bundler;
 
   private MedicationStatement.Bundle bundle(
-      MultiValueMap<String, String> parameters,
-      int page,
-      int count,
-      HttpServletRequest servletRequest) {
+      MultiValueMap<String, String> parameters, int page, int count) {
 
     CdwMedicationStatement102Root root = search(parameters);
     LinkConfig linkConfig =
         LinkConfig.builder()
-            .path(servletRequest.getRequestURI())
+            .path("MedicationStatement")
             .queryParams(parameters)
             .page(page)
             .recordsPerPage(count)
@@ -101,13 +97,11 @@ public class MedicationStatementController {
   public MedicationStatement.Bundle searchById(
       @RequestParam("_id") String id,
       @RequestParam(value = "page", defaultValue = "1") int page,
-      @RequestParam(value = "_count", defaultValue = "1") int count,
-      HttpServletRequest servletRequest) {
+      @RequestParam(value = "_count", defaultValue = "1") int count) {
     return bundle(
         Parameters.builder().add("_id", id).add("page", page).add("_count", count).build(),
         page,
-        count,
-        servletRequest);
+        count);
   }
 
   /** Search by Identifier. */
@@ -115,13 +109,11 @@ public class MedicationStatementController {
   public MedicationStatement.Bundle searchByIdentifier(
       @RequestParam("identifier") String id,
       @RequestParam(value = "page", defaultValue = "1") int page,
-      @RequestParam(value = "_count", defaultValue = "1") int count,
-      HttpServletRequest servletRequest) {
+      @RequestParam(value = "_count", defaultValue = "1") int count) {
     return bundle(
         Parameters.builder().add("identifier", id).add("page", page).add("_count", count).build(),
         page,
-        count,
-        servletRequest);
+        count);
   }
 
   /** Search by patient. */
@@ -129,13 +121,11 @@ public class MedicationStatementController {
   public MedicationStatement.Bundle searchByPatient(
       @RequestParam("patient") String patient,
       @RequestParam(value = "page", defaultValue = "1") int page,
-      @RequestParam(value = "_count", defaultValue = "15") int count,
-      HttpServletRequest servletRequest) {
+      @RequestParam(value = "_count", defaultValue = "15") int count) {
     return bundle(
         Parameters.builder().add("patient", patient).add("page", page).add("_count", count).build(),
         page,
-        count,
-        servletRequest);
+        count);
   }
 
   /** Hey, this is a validate endpoint. It validates. */
