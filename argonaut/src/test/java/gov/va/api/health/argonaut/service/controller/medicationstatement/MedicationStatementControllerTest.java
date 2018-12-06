@@ -61,14 +61,14 @@ public class MedicationStatementControllerTest {
     root.getMedicationStatements()
         .getMedicationStatement()
         .addAll(Arrays.asList(cdwItem1, cdwItem2, cdwItem3));
-    MedicationStatement patient1 = MedicationStatement.builder().build();
-    MedicationStatement patient2 = MedicationStatement.builder().build();
-    MedicationStatement patient3 = MedicationStatement.builder().build();
-    when(tx.apply(cdwItem1)).thenReturn(patient1);
-    when(tx.apply(cdwItem2)).thenReturn(patient2);
-    when(tx.apply(cdwItem3)).thenReturn(patient3);
+    MedicationStatement ms1 = MedicationStatement.builder().build();
+    MedicationStatement ms2 = MedicationStatement.builder().build();
+    MedicationStatement ms3 = MedicationStatement.builder().build();
+    when(tx.apply(cdwItem1)).thenReturn(ms1);
+    when(tx.apply(cdwItem2)).thenReturn(ms2);
+    when(tx.apply(cdwItem3)).thenReturn(ms3);
     when(client.search(Mockito.any())).thenReturn(root);
-    when(servletRequest.getRequestURI()).thenReturn("/api/Patient");
+    when(servletRequest.getRequestURI()).thenReturn("/api/MedicationStatement");
 
     Bundle mockBundle = new Bundle();
     when(bundler.bundle(Mockito.any())).thenReturn(mockBundle);
@@ -89,7 +89,7 @@ public class MedicationStatementControllerTest {
             .page(1)
             .recordsPerPage(10)
             .totalRecords(3)
-            .path("/api/Patient")
+            .path("/api/MedicationStatement")
             .queryParams(params)
             .build();
     assertThat(captor.getValue().linkConfig()).isEqualTo(expectedLinkConfig);
@@ -150,20 +150,6 @@ public class MedicationStatementControllerTest {
     assertSearch(
         () -> controller.searchByPatient("me", 1, 10, servletRequest),
         Parameters.builder().add("patient", "me").add("page", 1).add("_count", 10).build());
-  }
-
-  @Test
-  public void searchByPatientAndInclude() {
-    assertSearch(
-        () ->
-            controller.searchByPatientAndInclude(
-                "me", "MedicationStatement:medication", 1, 10, servletRequest),
-        Parameters.builder()
-            .add("patient", "me")
-            .add("_include", "MedicationStatement:medication")
-            .add("page", 1)
-            .add("_count", 10)
-            .build());
   }
 
   @Test

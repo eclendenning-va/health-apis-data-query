@@ -138,26 +138,6 @@ public class MedicationStatementController {
         servletRequest);
   }
 
-  /** Search by patient and category and data if available. */
-  @GetMapping(params = {"patient", "_include", "date"})
-  public MedicationStatement.Bundle searchByPatientAndInclude(
-      @RequestParam("patient") String patient,
-      @RequestParam("_include") String include,
-      @RequestParam(value = "page", defaultValue = "1") int page,
-      @RequestParam(value = "_count", defaultValue = "15") int count,
-      HttpServletRequest servletRequest) {
-    return bundle(
-        Parameters.builder()
-            .add("patient", patient)
-            .add("_include", include)
-            .add("page", page)
-            .add("_count", count)
-            .build(),
-        page,
-        count,
-        servletRequest);
-  }
-
   /** Hey, this is a validate endpoint. It validates. */
   @PostMapping(
     value = "/$validate",

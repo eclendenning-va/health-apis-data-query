@@ -29,12 +29,9 @@ public class MedicationStatementTransformer implements MedicationStatementContro
 
   @Override
   public MedicationStatement apply(CdwMedicationStatement cdw) {
-    /*
-     * Specimen reference is omitted since we do not support the a specimen resource and
-     * do not want dead links
-     */
+
     return MedicationStatement.builder()
-        .resourceType("Medication Statement")
+        .resourceType("MedicationStatement")
         .id(cdw.getCdwId())
         .dateAsserted(asDateTimeString(cdw.getDateAsserted()))
         .dosage(dosage(cdw.getDosages()))

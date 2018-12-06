@@ -130,7 +130,7 @@ public class MedicationStatementTransformerTest {
 
     private MedicationStatement medicationStatement() {
       return MedicationStatement.builder()
-          .resourceType("Medication Statement")
+          .resourceType("MedicationStatement")
           .id("1400000182118")
           .status(Status.completed)
           .patient(reference("Patient/185601V825290", "VETERAN,JOHN Q"))
