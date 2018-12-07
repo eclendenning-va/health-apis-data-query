@@ -180,7 +180,8 @@ public class ArgonautReadAndSearchIT {
         expect(
             200,
             MedicationOrder.Bundle.class,
-            "/api/MedicationOrder?patient={patient}", ids.medicationOrder()),
+            "/api/MedicationOrder?patient={patient}",
+            ids.patient()),
         // MedicationStatement
         expect(
             200,
