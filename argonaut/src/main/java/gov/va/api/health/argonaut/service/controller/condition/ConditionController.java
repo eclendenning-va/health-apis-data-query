@@ -15,7 +15,6 @@ import gov.va.api.health.argonaut.service.mranderson.client.Query;
 import gov.va.dvp.cdw.xsd.model.CdwCondition103Root;
 import java.util.Collections;
 import java.util.function.Function;
-import javax.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +43,28 @@ import org.springframework.web.bind.annotation.RestController;
 public class ConditionController {
   private Transformer transformer;
   private MrAndersonClient mrAndersonClient;
+  private Bundler bundler;
+
+  private Condition.Bundle bundle(MultiValueMap<String, String> parameters, int page, int count) {
+    CdwCondition103Root root = search(parameters);
+    LinkConfig linkConfig =
+        LinkConfig.builder()
+            .path("Condition")
+            .queryParams(parameters)
+            .page(page)
+            .recordsPerPage(count)
+            .totalRecords(root.getRecordCount().intValue())
+            .build();
+    return bundler.bundle(
+        BundleContext.of(
+            linkConfig,
+            root.getConditions() == null
+                ? Collections.emptyList()
+                : root.getConditions().getCondition(),
+            transformer,
+            Condition.Entry::new,
+            Condition.Bundle::new));
+  }
 
   /** Read by id. */
   @GetMapping(value = {"/{publicId}"})
@@ -70,13 +91,11 @@ public class ConditionController {
   public Condition.Bundle searchById(
       @RequestParam("_id") String id,
       @RequestParam(value = "page", defaultValue = "1") int page,
-      @RequestParam(value = "_count", defaultValue = "1") int count,
-      HttpServletRequest servletRequest) {
+      @RequestParam(value = "_count", defaultValue = "1") int count) {
     return bundle(
         Parameters.builder().add("identifier", id).add("page", page).add("_count", count).build(),
         page,
-        count,
-        servletRequest);
+        count);
   }
 
   /** Search by Identifier. */
@@ -84,13 +103,11 @@ public class ConditionController {
   public Condition.Bundle searchByIdentifier(
       @RequestParam("identifier") String id,
       @RequestParam(value = "page", defaultValue = "1") int page,
-      @RequestParam(value = "_count", defaultValue = "1") int count,
-      HttpServletRequest servletRequest) {
+      @RequestParam(value = "_count", defaultValue = "1") int count) {
     return bundle(
         Parameters.builder().add("identifier", id).add("page", page).add("_count", count).build(),
         page,
-        count,
-        servletRequest);
+        count);
   }
 
   /** Search by patient. */
@@ -98,33 +115,11 @@ public class ConditionController {
   public Condition.Bundle searchByPatient(
       @RequestParam("patient") String patient,
       @RequestParam(value = "page", defaultValue = "1") int page,
-      @RequestParam(value = "_count", defaultValue = "15") int count,
-      HttpServletRequest servletRequest) {
+      @RequestParam(value = "_count", defaultValue = "15") int count) {
     return bundle(
         Parameters.builder().add("patient", patient).add("page", page).add("_count", count).build(),
         page,
-        count,
-        servletRequest);
-  }
-
-  /** Search by patient and clinical status if available. */
-  @GetMapping(params = {"patient", "clinicalstatus"})
-  public Condition.Bundle searchByPatientAndClinicalStatus(
-      @RequestParam("patient") String patient,
-      @RequestParam("clinicalstatus") String clinicalstatus,
-      @RequestParam(value = "page", defaultValue = "1") int page,
-      @RequestParam(value = "_count", defaultValue = "15") int count,
-      HttpServletRequest servletRequest) {
-    return bundle(
-        Parameters.builder()
-            .add("patient", patient)
-            .add("clinicalstatus", clinicalstatus)
-            .add("page", page)
-            .add("_count", count)
-            .build(),
-        page,
-        count,
-        servletRequest);
+        count);
   }
 
   /** Search by patient and category if available. */
@@ -133,8 +128,7 @@ public class ConditionController {
       @RequestParam("patient") String patient,
       @RequestParam("category") String category,
       @RequestParam(value = "page", defaultValue = "1") int page,
-      @RequestParam(value = "_count", defaultValue = "15") int count,
-      HttpServletRequest servletRequest) {
+      @RequestParam(value = "_count", defaultValue = "15") int count) {
     return bundle(
         Parameters.builder()
             .add("patient", patient)
@@ -143,8 +137,25 @@ public class ConditionController {
             .add("_count", count)
             .build(),
         page,
-        count,
-        servletRequest);
+        count);
+  }
+
+  /** Search by patient and clinical status if available. */
+  @GetMapping(params = {"patient", "clinicalstatus"})
+  public Condition.Bundle searchByPatientAndClinicalStatus(
+      @RequestParam("patient") String patient,
+      @RequestParam("clinicalstatus") String clinicalstatus,
+      @RequestParam(value = "page", defaultValue = "1") int page,
+      @RequestParam(value = "_count", defaultValue = "15") int count) {
+    return bundle(
+        Parameters.builder()
+            .add("patient", patient)
+            .add("clinicalstatus", clinicalstatus)
+            .add("page", page)
+            .add("_count", count)
+            .build(),
+        page,
+        count);
   }
 
   /** Hey, this is a validate endpoint. It validates. */
@@ -154,33 +165,6 @@ public class ConditionController {
   )
   public OperationOutcome validate(@RequestBody Condition.Bundle bundle) {
     return Validator.create().validate(bundle);
-  }
-
-  private Bundler bundler;
-
-  private Condition.Bundle bundle(
-      MultiValueMap<String, String> parameters,
-      int page,
-      int count,
-      HttpServletRequest servletRequest) {
-    CdwCondition103Root root = search(parameters);
-    LinkConfig linkConfig =
-        LinkConfig.builder()
-            .path(servletRequest.getRequestURI())
-            .queryParams(parameters)
-            .page(page)
-            .recordsPerPage(count)
-            .totalRecords(root.getRecordCount().intValue())
-            .build();
-    return bundler.bundle(
-        BundleContext.of(
-            linkConfig,
-            root.getConditions() == null
-                ? Collections.emptyList()
-                : root.getConditions().getCondition(),
-            transformer,
-            Condition.Entry::new,
-            Condition.Bundle::new));
   }
 
   public interface Transformer

@@ -17,6 +17,7 @@ public class TestIds {
   @NonNull String immunization;
   @NonNull String medication;
   @NonNull String medicationOrder;
+  @NonNull String medicationStatement;
   @NonNull String observation;
   @NonNull String patient;
   @NonNull String procedure;

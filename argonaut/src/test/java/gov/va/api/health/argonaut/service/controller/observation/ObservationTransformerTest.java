@@ -36,6 +36,7 @@ import java.math.BigInteger;
 import java.util.List;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
+import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.junit.Test;
@@ -172,8 +173,8 @@ public class ObservationTransformerTest {
     assertThat(tx.valueQuantity(cdw.valueQuantity())).isEqualTo(expected.valueQuantity());
   }
 
-  @NoArgsConstructor(staticName = "get")
-  private static class CdwSampleData {
+  @NoArgsConstructor(staticName = "get", access = AccessLevel.PUBLIC)
+  public static class CdwSampleData {
 
     private CdwCategory category() {
       CdwCategory cdw = new CdwCategory();
@@ -286,7 +287,7 @@ public class ObservationTransformerTest {
       return cdw;
     }
 
-    CdwObservation observation() {
+    public CdwObservation observation() {
       CdwObservation cdw = new CdwObservation();
       cdw.setRowNumber(BigInteger.ONE);
       cdw.setCdwId("1201051417263:V");
@@ -378,7 +379,7 @@ public class ObservationTransformerTest {
   }
 
   @NoArgsConstructor(staticName = "get")
-  private static class Expected {
+  public static class Expected {
 
     CodeableConcept category() {
       return codeableConcept(
@@ -457,7 +458,7 @@ public class ObservationTransformerTest {
       return codeableConcept(coding("http://hl7.org/fhir/v2/0078", "L", "Low")).text("L");
     }
 
-    Observation observation() {
+    public Observation observation() {
       return Observation.builder()
           .resourceType("Observation")
           .id("1201051417263:V")
