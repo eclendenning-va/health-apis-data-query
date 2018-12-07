@@ -27,31 +27,10 @@ import gov.va.dvp.cdw.xsd.model.CdwSimpleQuantity;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import javax.xml.datatype.XMLGregorianCalendar;
 import org.springframework.stereotype.Service;
 
 @Service
 public class MedicationOrderTransformer implements MedicationOrderController.Transformer {
-  @Override
-  public MedicationOrder apply(CdwMedicationOrder source) {
-    return medicationOrder(source);
-  }
-
-  MedicationOrder medicationOrder(CdwMedicationOrder source) {
-    return MedicationOrder.builder()
-        .id(source.getCdwId())
-        .resourceType("MedicationOrder")
-        .patient(reference(source.getPatient()))
-        .dateWritten(dateTimeString(source.getDateWritten()))
-        .status(status(source.getStatus()))
-        .dateEnded(dateTimeString(source.getDateEnded()))
-        .prescriber(reference(source.getPrescriber()))
-        .medicationReference(reference(source.getMedicationReference()))
-        .dosageInstruction(dosageInstructions(source.getDosageInstructions()))
-        .dispenseRequest(dispenseRequest(source.getDispenseRequest()))
-        .build();
-  }
-
   CodeableConcept additionalInstructions(CdwCodeableConcept source) {
     if (source == null) {
       return null;
@@ -59,8 +38,9 @@ public class MedicationOrderTransformer implements MedicationOrderController.Tra
     return CodeableConcept.builder().text(source.getText()).build();
   }
 
-  String dateTimeString(XMLGregorianCalendar source) {
-    return asDateTimeString(source);
+  @Override
+  public MedicationOrder apply(CdwMedicationOrder source) {
+    return medicationOrder(source);
   }
 
   DispenseRequest dispenseRequest(CdwDispenseRequest source) {
@@ -76,30 +56,6 @@ public class MedicationOrderTransformer implements MedicationOrderController.Tra
         .quantity(quantity(source.getQuantity()))
         .expectedSupplyDuration(expectedSupplyDuration(source.getExpectedSupplyDuration()))
         .build();
-  }
-
-  Integer numberOfRepeatsAllowed(Integer source) {
-    if (source == null || source <= 0) {
-      return null;
-    }
-    return source;
-  }
-
-  List<DosageInstruction> dosageInstructions(CdwDosageInstructions source) {
-    if (source == null || source.getDosageInstruction() == null) {
-      return null;
-    }
-    List<DosageInstruction> dosageInstructions =
-        source
-            .getDosageInstruction()
-            .stream()
-            .map(this::dosageInstruction)
-            .filter(Objects::nonNull)
-            .collect(Collectors.toList());
-    if (dosageInstructions.isEmpty()) {
-      return null;
-    }
-    return dosageInstructions;
   }
 
   DosageInstruction dosageInstruction(CdwDosageInstruction source) {
@@ -121,6 +77,23 @@ public class MedicationOrderTransformer implements MedicationOrderController.Tra
         .route(route(source.getRoute()))
         .doseQuantity(doseQuantity(source.getDoseQuantity()))
         .build();
+  }
+
+  List<DosageInstruction> dosageInstructions(CdwDosageInstructions source) {
+    if (source == null || source.getDosageInstruction() == null) {
+      return null;
+    }
+    List<DosageInstruction> dosageInstructions =
+        source
+            .getDosageInstruction()
+            .stream()
+            .map(this::dosageInstruction)
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList());
+    if (dosageInstructions.isEmpty()) {
+      return null;
+    }
+    return dosageInstructions;
   }
 
   SimpleQuantity doseQuantity(CdwSimpleQuantity source) {
@@ -148,6 +121,28 @@ public class MedicationOrderTransformer implements MedicationOrderController.Tra
         .system(source.getSystem())
         .code(source.getCode())
         .build();
+  }
+
+  MedicationOrder medicationOrder(CdwMedicationOrder source) {
+    return MedicationOrder.builder()
+        .id(source.getCdwId())
+        .resourceType("MedicationOrder")
+        .patient(reference(source.getPatient()))
+        .dateWritten(asDateTimeString(source.getDateWritten()))
+        .status(status(source.getStatus()))
+        .dateEnded(asDateTimeString(source.getDateEnded()))
+        .prescriber(reference(source.getPrescriber()))
+        .medicationReference(reference(source.getMedicationReference()))
+        .dosageInstruction(dosageInstructions(source.getDosageInstructions()))
+        .dispenseRequest(dispenseRequest(source.getDispenseRequest()))
+        .build();
+  }
+
+  Integer numberOfRepeatsAllowed(Integer source) {
+    if (source == null || source <= 0) {
+      return null;
+    }
+    return source;
   }
 
   SimpleQuantity quantity(String source) {

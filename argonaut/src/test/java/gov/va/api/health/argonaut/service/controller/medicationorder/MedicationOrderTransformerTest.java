@@ -1,5 +1,6 @@
 package gov.va.api.health.argonaut.service.controller.medicationorder;
 
+import static gov.va.api.health.argonaut.service.controller.Transformers.asDateTimeString;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
@@ -45,9 +46,9 @@ public class MedicationOrderTransformerTest {
 
   @Test
   public void dateTimeString() {
-    assertThat(tx.dateTimeString(cdw.dateWritten()))
+    assertThat(asDateTimeString(cdw.dateWritten()))
         .isEqualTo(expected.medicationOrder().dateWritten());
-    assertThat(tx.dateTimeString(null)).isNull();
+    assertThat(asDateTimeString(null)).isNull();
   }
 
   @Test

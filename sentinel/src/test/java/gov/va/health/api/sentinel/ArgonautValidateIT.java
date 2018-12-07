@@ -52,7 +52,6 @@ public class ArgonautValidateIT {
         validate("Observation", ids.observation(), Observation.Bundle.class),
         validate("Patient", ids.patient(), Patient.Bundle.class),
         validate("Procedure", ids.procedure(), Procedure.Bundle.class));
-
   }
 
   @SneakyThrows
