@@ -43,9 +43,6 @@ public class PractitionerTransformer implements PractitionerController.Transform
   }
 
   List<Address> addresses(CdwAddresses optionalSource) {
-    if (optionalSource == null || optionalSource.getAddress().isEmpty()) {
-      return null;
-    }
     return convertAll(
         ifPresent(optionalSource, CdwAddresses::getAddress),
         cdw ->
@@ -66,18 +63,12 @@ public class PractitionerTransformer implements PractitionerController.Transform
   }
 
   List<Reference> healthcareService(CdwHealthcareServices source) {
-    if (source == null || source.getHealthcareService() == null) {
-      return null;
-    }
     return convertAll(
         ifPresent(source, CdwHealthcareServices::getHealthcareService),
         cdw -> Reference.builder().display(cdw.getDisplay()).reference(cdw.getReference()).build());
   }
 
   List<Reference> locations(CdwLocations source) {
-    if (source == null || source.getLocation() == null) {
-      return null;
-    }
     return convertAll(
         ifPresent(source, CdwLocations::getLocation),
         cdw -> Reference.builder().display(cdw.getDisplay()).reference(cdw.getReference()).build());
@@ -109,11 +100,18 @@ public class PractitionerTransformer implements PractitionerController.Transform
             HumanName.builder()
                 .use(ifPresent(cdw.getUse(), use -> HumanName.NameUse.valueOf(use.value())))
                 .text(cdw.getText())
-                .family(singletonList(cdw.getFamily()))
-                .given(singletonList(cdw.getGiven()))
-                .suffix(singletonList(cdw.getSuffix()))
-                .prefix(singletonList(cdw.getPrefix()))
+                .family(nameList(cdw.getFamily()))
+                .given(nameList(cdw.getGiven()))
+                .suffix(nameList(cdw.getSuffix()))
+                .prefix(nameList(cdw.getPrefix()))
                 .build());
+  }
+
+  List<String> nameList(String source) {
+    if (source == null) {
+      return null;
+    }
+    return singletonList(source);
   }
 
   private Practitioner practitioner(CdwPractitioner source) {
@@ -188,9 +186,6 @@ public class PractitionerTransformer implements PractitionerController.Transform
   }
 
   List<ContactPoint> telecoms(CdwTelecoms optionalSource) {
-    if (optionalSource == null || optionalSource.getTelecom().isEmpty()) {
-      return null;
-    }
     return convertAll(
         ifPresent(optionalSource, CdwTelecoms::getTelecom),
         cdw ->

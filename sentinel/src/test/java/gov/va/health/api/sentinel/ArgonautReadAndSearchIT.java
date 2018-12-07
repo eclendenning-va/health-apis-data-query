@@ -10,6 +10,7 @@ import gov.va.api.health.argonaut.api.resources.MedicationStatement;
 import gov.va.api.health.argonaut.api.resources.Observation;
 import gov.va.api.health.argonaut.api.resources.OperationOutcome;
 import gov.va.api.health.argonaut.api.resources.Patient;
+import gov.va.api.health.argonaut.api.resources.Practitioner;
 import gov.va.api.health.argonaut.api.resources.Procedure;
 import java.util.Arrays;
 import java.util.List;
@@ -265,6 +266,16 @@ public class ArgonautReadAndSearchIT {
             "/api/Patient?name={name}&gender={gender}",
             ids.pii().name(),
             ids.pii().gender()),
+        // Practitioner
+        expect(200, Practitioner.class, "/api/Practitioner/{id}", ids.practitioner()),
+        expect(404, OperationOutcome.class, "/api/Practitioner/{id}", ids.unknown()),
+        expect(200, Practitioner.Bundle.class, "/api/Practitioner?_id={id}", ids.practitioner()),
+        expect(
+            200,
+            Practitioner.Bundle.class,
+            "/api/Practitioner?identifier={id}",
+            ids.practitioner()),
+        expect(404, OperationOutcome.class, "/api/Practitioner?_id={id}", ids.unknown()),
         // Procedure
         expect(200, Procedure.class, "/api/Procedure/{id}", ids.procedure()),
         expect(404, OperationOutcome.class, "/api/Procedure/{id}", ids.unknown()),

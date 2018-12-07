@@ -102,6 +102,18 @@ public class PractitionerController {
         count);
   }
 
+  /** Search by Identifier. */
+  @GetMapping(params = {"identifier"})
+  public Practitioner.Bundle searchByIdentifier(
+      @RequestParam("identifier") String id,
+      @RequestParam(value = "page", defaultValue = "1") int page,
+      @RequestParam(value = "_count", defaultValue = "1") int count) {
+    return bundle(
+        Parameters.builder().add("identifier", id).add("page", page).add("_count", count).build(),
+        page,
+        count);
+  }
+
   /** Hey, this is a validate endpoint. It validates. */
   @PostMapping(
     value = "/$validate",

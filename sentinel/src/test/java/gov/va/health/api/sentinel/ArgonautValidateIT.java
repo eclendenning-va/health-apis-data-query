@@ -11,6 +11,7 @@ import gov.va.api.health.argonaut.api.resources.MedicationStatement;
 import gov.va.api.health.argonaut.api.resources.Observation;
 import gov.va.api.health.argonaut.api.resources.OperationOutcome;
 import gov.va.api.health.argonaut.api.resources.Patient;
+import gov.va.api.health.argonaut.api.resources.Practitioner;
 import gov.va.api.health.argonaut.api.resources.Procedure;
 import java.util.Arrays;
 import java.util.List;
@@ -49,6 +50,7 @@ public class ArgonautValidateIT {
             "MedicationStatement", ids.medicationStatement(), MedicationStatement.Bundle.class),
         validate("Observation", ids.observation(), Observation.Bundle.class),
         validate("Patient", ids.patient(), Patient.Bundle.class),
+        validate("Practitioner", ids.practitioner(), Practitioner.Bundle.class),
         validate("Procedure", ids.procedure(), Procedure.Bundle.class));
   }
 

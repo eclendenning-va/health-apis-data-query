@@ -48,13 +48,6 @@ public class PractitionerTransformerTest {
   private Expected expected = new Expected();
 
   @Test
-  public void telecom() {
-    assertThat(tx.telecoms(null)).isNull();
-    assertThat(tx.telecoms(new CdwTelecoms())).isNull();
-    assertThat(tx.telecoms(cdw.telecoms())).isSameAs(expected.telecoms());
-  }
-
-  @Test
   public void address() {
     assertThat(tx.addresses(null)).isNull();
     assertThat(tx.addresses(new CdwAddresses())).isNull();
@@ -99,6 +92,11 @@ public class PractitionerTransformerTest {
   }
 
   @Test
+  public void practitioner() {
+    assertThat(tx.apply(cdw.practitioner())).isEqualTo(expected.practitioner());
+  }
+
+  @Test
   public void practitionerRole() {
     assertThat(tx.practitionerRole(null)).isNull();
     assertThat(tx.practitionerRole(new CdwPractitionerRole())).isNull();
@@ -126,6 +124,13 @@ public class PractitionerTransformerTest {
     assertThat(tx.roleCoding(null)).isNull();
     assertThat(tx.roleCoding(new CdwCoding())).isNull();
     assertThat(tx.roleCoding(cdw.roleCoding())).isEqualTo(expected.roleCoding());
+  }
+
+  @Test
+  public void telecom() {
+    assertThat(tx.telecoms(null)).isNull();
+    assertThat(tx.telecoms(new CdwTelecoms())).isNull();
+    assertThat(tx.telecoms(cdw.telecoms())).isEqualTo(expected.telecoms());
   }
 
   private static class CdwSampleData {
