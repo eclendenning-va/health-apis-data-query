@@ -10,6 +10,7 @@ import gov.va.api.health.argonaut.api.resources.Medication;
 import gov.va.api.health.argonaut.api.resources.MedicationStatement;
 import gov.va.api.health.argonaut.api.resources.Observation;
 import gov.va.api.health.argonaut.api.resources.OperationOutcome;
+import gov.va.api.health.argonaut.api.resources.Organization;
 import gov.va.api.health.argonaut.api.resources.Patient;
 import gov.va.api.health.argonaut.api.resources.Procedure;
 import java.util.Arrays;
@@ -48,6 +49,7 @@ public class ArgonautValidateIT {
         validate(
             "MedicationStatement", ids.medicationStatement(), MedicationStatement.Bundle.class),
         validate("Observation", ids.observation(), Observation.Bundle.class),
+        validate("Organization", ids.organization(), Organization.Bundle.class),
         validate("Patient", ids.patient(), Patient.Bundle.class),
         validate("Procedure", ids.procedure(), Procedure.Bundle.class));
   }

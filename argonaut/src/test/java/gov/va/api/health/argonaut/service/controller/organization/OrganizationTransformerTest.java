@@ -133,6 +133,7 @@ public class OrganizationTransformerTest {
   private static class Expected {
     private Organization organization() {
       return Organization.builder()
+          .resourceType("Organization")
           .id("11666404-1b3e-50ed-a7a6-4acc7b1caec6")
           .active(true)
           .type(type())

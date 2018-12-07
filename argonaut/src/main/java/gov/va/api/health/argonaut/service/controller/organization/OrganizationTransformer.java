@@ -36,6 +36,7 @@ public class OrganizationTransformer implements OrganizationController.Transform
 
   Organization organization(CdwOrganization source) {
     return Organization.builder()
+        .resourceType("Organization")
         .id(source.getCdwId())
         .active(source.isActive())
         .type(type(source.getType()))

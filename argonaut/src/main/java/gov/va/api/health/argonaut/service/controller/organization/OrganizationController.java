@@ -12,6 +12,7 @@ import gov.va.api.health.argonaut.service.controller.Parameters;
 import gov.va.api.health.argonaut.service.controller.Validator;
 import gov.va.api.health.argonaut.service.mranderson.client.MrAndersonClient;
 import gov.va.api.health.argonaut.service.mranderson.client.Query;
+import gov.va.api.health.argonaut.service.mranderson.client.Query.Profile;
 import gov.va.dvp.cdw.xsd.model.CdwOrganization100Root;
 import java.util.Collections;
 import java.util.function.Function;
@@ -83,9 +84,9 @@ public class OrganizationController {
   private CdwOrganization100Root search(MultiValueMap<String, String> params) {
     Query<CdwOrganization100Root> query =
         Query.forType(CdwOrganization100Root.class)
-            .profile(Query.Profile.ARGONAUT)
+            .profile(Profile.DSTU2)
             .resource("Organization")
-            .version("1.01")
+            .version("1.00")
             .parameters(params)
             .build();
     return mrAndersonClient.search(query);
@@ -99,7 +100,7 @@ public class OrganizationController {
       @RequestParam(value = "_count", defaultValue = "1") int count,
       HttpServletRequest servletRequest) {
     return bundle(
-        Parameters.builder().add("_id", id).add("page", page).add("_count", count).build(),
+        Parameters.builder().add("identifier", id).add("page", page).add("_count", count).build(),
         page,
         count,
         servletRequest);

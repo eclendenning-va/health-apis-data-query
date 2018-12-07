@@ -62,6 +62,7 @@ class IdRegistrar {
     ResourceIdentity medication = id("MEDICATION", cdwIds.medication());
     ResourceIdentity medicationStatement = id("MEDICATION_STATEMENT", cdwIds.medicationStatement());
     ResourceIdentity observation = id("OBSERVATION", cdwIds.observation());
+    ResourceIdentity organizataion = id("ORGANIZATION", cdwIds.organization());
     ResourceIdentity patient = id("PATIENT", cdwIds.patient());
     ResourceIdentity procedure = id("PROCEDURE", cdwIds.procedure());
 
@@ -76,6 +77,7 @@ class IdRegistrar {
             medication,
             medicationStatement,
             observation,
+            organizataion,
             procedure);
     log.info("Registering {}", identities);
     List<Registration> registrations =
@@ -96,6 +98,7 @@ class IdRegistrar {
             .medication(findUuid(registrations, medication))
             .medicationStatement(findUuid(registrations, medicationStatement))
             .observation(findUuid(registrations, observation))
+            .organization(findUuid(registrations, organizataion))
             .patient(findUuid(registrations, patient))
             .procedure(findUuid(registrations, procedure))
             .build();
