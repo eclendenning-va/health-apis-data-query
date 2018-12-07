@@ -50,6 +50,12 @@ public class LocationTransformer implements LocationController.Transformer {
   }
 
   Address address(CdwLocationAddress maybeCdw) {
+    if (maybeCdw == null
+        || allNull(
+            maybeCdw.getLine(), maybeCdw.getCity(), maybeCdw.getPostalCode(), maybeCdw.getState())
+        || maybeCdw.getLine().isEmpty()) {
+      return null;
+    }
     return convert(
         maybeCdw,
         source ->
@@ -84,6 +90,9 @@ public class LocationTransformer implements LocationController.Transformer {
   }
 
   CodeableConcept locationPhysicalType(CdwLocationPhysicalType maybeCdw) {
+    if (maybeCdw == null || allNull(maybeCdw.getCoding(), maybeCdw.getText())) {
+      return null;
+    }
     return convert(
         maybeCdw,
         source ->
@@ -123,17 +132,23 @@ public class LocationTransformer implements LocationController.Transformer {
                     .build()));
   }
 
-  List<ContactPoint> telecoms(CdwTelecoms optionalSource) {
+  List<ContactPoint> telecoms(CdwTelecoms maybeCdw) {
+    if (maybeCdw == null) {
+      return null;
+    }
     return convertAll(
-        optionalSource.getTelecom(),
-        cdw ->
+        maybeCdw.getTelecom(),
+        source ->
             ContactPoint.builder()
-                .system(contactPointCode(cdw.getSystem()))
-                .value(cdw.getValue())
+                .system(contactPointCode(source.getSystem()))
+                .value(source.getValue())
                 .build());
   }
 
   CodeableConcept locationType(CdwLocation.CdwType maybeCdw) {
+    if (maybeCdw == null || maybeCdw.getCoding().isEmpty()) {
+      return null;
+    }
     return convert(
         maybeCdw,
         source -> CodeableConcept.builder().coding(locationTypeCoding(source.getCoding())).build());

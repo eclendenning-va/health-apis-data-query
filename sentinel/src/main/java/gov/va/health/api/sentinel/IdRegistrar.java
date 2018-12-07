@@ -59,6 +59,7 @@ class IdRegistrar {
     ResourceIdentity diagnosticReport = id("DIAGNOSTIC_REPORT", cdwIds.diagnosticReport());
     ResourceIdentity encounter = id("ENCOUNTER", cdwIds.encounter());
     ResourceIdentity immunization = id("IMMUNIZATION", cdwIds.immunization());
+    ResourceIdentity location = id("LOCATION", cdwIds.location());
     ResourceIdentity medication = id("MEDICATION", cdwIds.medication());
     ResourceIdentity medicationStatement = id("MEDICATION_STATEMENT", cdwIds.medicationStatement());
     ResourceIdentity observation = id("OBSERVATION", cdwIds.observation());
@@ -72,6 +73,7 @@ class IdRegistrar {
             diagnosticReport,
             encounter,
             immunization,
+            location,
             patient,
             medication,
             medicationStatement,
@@ -93,6 +95,7 @@ class IdRegistrar {
             .diagnosticReport(findUuid(registrations, diagnosticReport))
             .encounter(findUuid(registrations, encounter))
             .immunization(findUuid(registrations, immunization))
+            .location(findUuid(registrations, location))
             .medication(findUuid(registrations, medication))
             .medicationStatement(findUuid(registrations, medicationStatement))
             .observation(findUuid(registrations, observation))

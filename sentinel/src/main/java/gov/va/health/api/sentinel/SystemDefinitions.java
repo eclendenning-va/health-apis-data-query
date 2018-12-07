@@ -34,6 +34,7 @@ public class SystemDefinitions {
                           .toDate("lt2038-01-01")
                           .build())
                   .immunization("1000000043979")
+                  .location("166365:L")
                   .medication("212846")
                   .medicationStatement("1400000182116")
                   .observation("1201051417263:V")
