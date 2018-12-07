@@ -60,6 +60,7 @@ class IdRegistrar {
     ResourceIdentity encounter = id("ENCOUNTER", cdwIds.encounter());
     ResourceIdentity immunization = id("IMMUNIZATION", cdwIds.immunization());
     ResourceIdentity medication = id("MEDICATION", cdwIds.medication());
+    ResourceIdentity medicationOrder = id("MEDICATION_ORDER", cdwIds.medicationOrder());
     ResourceIdentity medicationStatement = id("MEDICATION_STATEMENT", cdwIds.medicationStatement());
     ResourceIdentity observation = id("OBSERVATION", cdwIds.observation());
     ResourceIdentity patient = id("PATIENT", cdwIds.patient());
@@ -74,6 +75,7 @@ class IdRegistrar {
             immunization,
             patient,
             medication,
+            medicationOrder,
             medicationStatement,
             observation,
             procedure);
@@ -94,6 +96,7 @@ class IdRegistrar {
             .encounter(findUuid(registrations, encounter))
             .immunization(findUuid(registrations, immunization))
             .medication(findUuid(registrations, medication))
+            .medicationOrder(findUuid(registrations, medicationOrder))
             .medicationStatement(findUuid(registrations, medicationStatement))
             .observation(findUuid(registrations, observation))
             .patient(findUuid(registrations, patient))

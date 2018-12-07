@@ -162,7 +162,7 @@ public class DiagnosticReportTransformerTest {
 
     DiagnosticReport diagnosticReport() {
       return DiagnosticReport.builder()
-          .resourceType("Diagnostic Report")
+          .resourceType("DiagnosticReport")
           .id("1234")
           .status(Code._final)
           .category(category())
