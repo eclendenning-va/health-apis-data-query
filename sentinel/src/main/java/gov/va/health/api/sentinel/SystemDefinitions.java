@@ -24,7 +24,6 @@ public class SystemDefinitions {
                   .condition("1400007575530:P")
                   .diagnosticReport("1000000031384:L")
                   .encounter("1200753214085")
-                  .patient("185601V825290")
                   .diagnosticReports(
                       DiagnosticReports.builder()
                           .loinc1("10000-8")
@@ -53,6 +52,8 @@ public class SystemDefinitions {
                           .name("VETERAN,JOHN")
                           .family("VETERAN")
                           .build())
+                  .patient("185601V825290")
+                  .practitioner("10092125")
                   .procedure("1400000140034")
                   .procedures(
                       Procedures.builder()
