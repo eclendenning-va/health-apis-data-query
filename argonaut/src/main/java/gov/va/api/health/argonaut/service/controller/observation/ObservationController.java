@@ -15,7 +15,6 @@ import gov.va.api.health.argonaut.service.mranderson.client.Query;
 import gov.va.dvp.cdw.xsd.model.CdwObservation104Root;
 import java.util.Collections;
 import java.util.function.Function;
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -48,16 +47,12 @@ public class ObservationController {
   private MrAndersonClient mrAndersonClient;
   private Bundler bundler;
 
-  private Observation.Bundle bundle(
-      MultiValueMap<String, String> parameters,
-      int page,
-      int count,
-      HttpServletRequest servletRequest) {
+  private Observation.Bundle bundle(MultiValueMap<String, String> parameters, int page, int count) {
 
     CdwObservation104Root root = search(parameters);
     LinkConfig linkConfig =
         LinkConfig.builder()
-            .path(servletRequest.getRequestURI())
+            .path("Observation")
             .queryParams(parameters)
             .page(page)
             .recordsPerPage(count)
@@ -100,13 +95,11 @@ public class ObservationController {
   public Observation.Bundle searchById(
       @RequestParam("_id") String id,
       @RequestParam(value = "page", defaultValue = "1") int page,
-      @RequestParam(value = "_count", defaultValue = "1") int count,
-      HttpServletRequest servletRequest) {
+      @RequestParam(value = "_count", defaultValue = "1") int count) {
     return bundle(
         Parameters.builder().add("_id", id).add("page", page).add("_count", count).build(),
         page,
-        count,
-        servletRequest);
+        count);
   }
 
   /** Search by Identifier. */
@@ -114,13 +107,11 @@ public class ObservationController {
   public Observation.Bundle searchByIdentifier(
       @RequestParam("identifier") String id,
       @RequestParam(value = "page", defaultValue = "1") int page,
-      @RequestParam(value = "_count", defaultValue = "1") int count,
-      HttpServletRequest servletRequest) {
+      @RequestParam(value = "_count", defaultValue = "1") int count) {
     return bundle(
         Parameters.builder().add("identifier", id).add("page", page).add("_count", count).build(),
         page,
-        count,
-        servletRequest);
+        count);
   }
 
   /** Search by patient. */
@@ -128,13 +119,11 @@ public class ObservationController {
   public Observation.Bundle searchByPatient(
       @RequestParam("patient") String patient,
       @RequestParam(value = "page", defaultValue = "1") int page,
-      @RequestParam(value = "_count", defaultValue = "15") int count,
-      HttpServletRequest servletRequest) {
+      @RequestParam(value = "_count", defaultValue = "15") int count) {
     return bundle(
         Parameters.builder().add("patient", patient).add("page", page).add("_count", count).build(),
         page,
-        count,
-        servletRequest);
+        count);
   }
 
   /** Search by patient and category and data if available. */
@@ -144,8 +133,7 @@ public class ObservationController {
       @RequestParam("category") String category,
       @RequestParam(value = "date", required = false) @Size(max = 2) String[] date,
       @RequestParam(value = "page", defaultValue = "1") int page,
-      @RequestParam(value = "_count", defaultValue = "15") int count,
-      HttpServletRequest servletRequest) {
+      @RequestParam(value = "_count", defaultValue = "15") int count) {
     return bundle(
         Parameters.builder()
             .add("patient", patient)
@@ -155,8 +143,7 @@ public class ObservationController {
             .add("_count", count)
             .build(),
         page,
-        count,
-        servletRequest);
+        count);
   }
 
   /** Search by patient and category and data if available. */
@@ -165,8 +152,7 @@ public class ObservationController {
       @RequestParam("patient") String patient,
       @RequestParam("code") String code,
       @RequestParam(value = "page", defaultValue = "1") int page,
-      @RequestParam(value = "_count", defaultValue = "15") int count,
-      HttpServletRequest servletRequest) {
+      @RequestParam(value = "_count", defaultValue = "15") int count) {
     return bundle(
         Parameters.builder()
             .add("patient", patient)
@@ -175,8 +161,7 @@ public class ObservationController {
             .add("_count", count)
             .build(),
         page,
-        count,
-        servletRequest);
+        count);
   }
 
   /** Hey, this is a validate endpoint. It validates. */

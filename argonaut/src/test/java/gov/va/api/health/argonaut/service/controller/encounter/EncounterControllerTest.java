@@ -22,7 +22,6 @@ import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.function.Supplier;
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolationException;
 import lombok.SneakyThrows;
 import org.junit.Before;
@@ -40,7 +39,6 @@ public class EncounterControllerTest {
   @Mock EncounterController.Transformer tx;
 
   EncounterController controller;
-  @Mock HttpServletRequest servletRequest;
   @Mock Bundler bundler;
 
   @Before
@@ -67,7 +65,6 @@ public class EncounterControllerTest {
     when(tx.apply(cdwItem2)).thenReturn(patient2);
     when(tx.apply(cdwItem3)).thenReturn(patient3);
     when(client.search(Mockito.any())).thenReturn(root);
-    when(servletRequest.getRequestURI()).thenReturn("/api/Patient");
 
     Encounter.Bundle mockBundle = new Encounter.Bundle();
     when(bundler.bundle(Mockito.any())).thenReturn(mockBundle);
@@ -86,7 +83,7 @@ public class EncounterControllerTest {
             .page(1)
             .recordsPerPage(10)
             .totalRecords(3)
-            .path("/api/Patient")
+            .path("Encounter")
             .queryParams(params)
             .build();
     assertThat(captor.getValue().linkConfig()).isEqualTo(expectedLinkConfig);
@@ -127,14 +124,14 @@ public class EncounterControllerTest {
   @Test
   public void searchById() {
     assertSearch(
-        () -> controller.searchById("me", 1, 10, servletRequest),
+        () -> controller.searchById("me", 1, 10),
         Parameters.builder().add("identifier", "me").add("page", 1).add("_count", 10).build());
   }
 
   @Test
   public void searchByIdentifier() {
     assertSearch(
-        () -> controller.searchByIdentifier("me", 1, 10, servletRequest),
+        () -> controller.searchByIdentifier("me", 1, 10),
         Parameters.builder().add("identifier", "me").add("page", 1).add("_count", 10).build());
   }
 

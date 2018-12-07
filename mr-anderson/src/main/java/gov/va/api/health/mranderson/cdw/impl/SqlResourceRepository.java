@@ -26,10 +26,20 @@ public class SqlResourceRepository implements ResourceRepository {
 
   private final String schema;
 
+  private final String storedProcedure;
+
+  /**
+   * Create a new instance with a configurable schema and stored procedure name from
+   * application.properties.
+   */
   @Autowired
-  public SqlResourceRepository(JdbcTemplate jdbc, @Value("${cdw.schema:App}") String schema) {
+  public SqlResourceRepository(
+      JdbcTemplate jdbc,
+      @Value("${cdw.schema:App}") String schema,
+      @Value("${cdw.stored-procedure:prc_Entity_Return}") String storedProcedure) {
     this.jdbc = jdbc;
     this.schema = Checks.argumentMatches(schema, "[A-Za-z0-9_]+");
+    this.storedProcedure = storedProcedure;
   }
 
   @Override
@@ -59,7 +69,7 @@ public class SqlResourceRepository implements ResourceRepository {
      * numbers, and underscores and does not allow any SQL sensitive characters that could enable
      * SQL injection.
      */
-    return "{call [" + schema + "].[prc_Entity_Return](?,?,?,?,?,?,?)}";
+    return "{call [" + schema + "].[" + storedProcedure + "](?,?,?,?,?,?,?)}";
   }
 
   interface FhirVersion {
