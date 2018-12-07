@@ -1,8 +1,10 @@
 package gov.va.api.health.argonaut.service.controller;
 
+import java.math.BigInteger;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -75,6 +77,14 @@ public final class Transformers {
     return maybeDateTime.toString();
   }
 
+  /** Return null if the big integer is null, otherwise return the value as an integer. */
+  public static Integer asInteger(BigInteger maybeBigInt) {
+    if (maybeBigInt == null) {
+      return null;
+    }
+    return maybeBigInt.intValue();
+  }
+
   /**
    * Return null if the source list is null or empty, otherwise convert the items in the list and
    * return a new one.
@@ -83,7 +93,9 @@ public final class Transformers {
     if (source == null || source.isEmpty()) {
       return null;
     }
-    return source.stream().map(mapper).collect(Collectors.toList());
+    List<R> probablyItems =
+        source.stream().map(mapper).filter(Objects::nonNull).collect(Collectors.toList());
+    return probablyItems.isEmpty() ? null : probablyItems;
   }
 
   /** Return null if the given object is null, otherwise return the converted value. */

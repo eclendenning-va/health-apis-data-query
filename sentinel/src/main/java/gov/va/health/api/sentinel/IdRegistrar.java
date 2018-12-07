@@ -69,6 +69,7 @@ class IdRegistrar {
     List<ResourceIdentity> identities =
         Arrays.asList(
             allergyIntolerance,
+            appointment,
             condition,
             diagnosticReport,
             encounter,
