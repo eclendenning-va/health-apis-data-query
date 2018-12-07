@@ -1,6 +1,7 @@
 package gov.va.api.health.argonaut.service.controller.practitioner;
 
 import static java.util.Collections.singletonList;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import gov.va.api.health.argonaut.api.datatypes.Address;
 import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
@@ -38,12 +39,94 @@ import java.util.List;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import lombok.SneakyThrows;
+import org.junit.Test;
 
 public class PractitionerTransformerTest {
 
   private PractitionerTransformer tx = new PractitionerTransformer();
   private CdwSampleData cdw = new CdwSampleData();
   private Expected expected = new Expected();
+
+  @Test
+  public void telecom() {
+    assertThat(tx.telecoms(null)).isNull();
+    assertThat(tx.telecoms(new CdwTelecoms())).isNull();
+    assertThat(tx.telecoms(cdw.telecoms())).isSameAs(expected.telecoms());
+  }
+
+  @Test
+  public void address() {
+    assertThat(tx.addresses(null)).isNull();
+    assertThat(tx.addresses(new CdwAddresses())).isNull();
+    assertThat(tx.addresses(cdw.addresses())).isEqualTo(expected.addresses());
+  }
+
+  @Test
+  public void addressLines() {
+    assertThat(tx.addressLines(null)).isNull();
+    assertThat(tx.addressLines(new CdwLines())).isNull();
+    assertThat(tx.addressLines(cdw.addressLines())).isEqualTo(expected.addresses().get(0).line());
+  }
+
+  @Test
+  public void healthcareServices() {
+    assertThat(tx.healthcareService(null)).isNull();
+    assertThat(tx.healthcareService(new CdwHealthcareServices())).isNull();
+    assertThat(tx.healthcareService(cdw.healthcareServices()))
+        .isEqualTo(expected.healthcareServices());
+  }
+
+  @Test
+  public void locations() {
+    assertThat(tx.locations(null)).isNull();
+    assertThat(tx.locations(new CdwLocations())).isNull();
+    assertThat(tx.locations(cdw.locations())).isEqualTo(expected.locations());
+  }
+
+  @Test
+  public void managingOrganization() {
+    assertThat(tx.managingOrganization(null)).isNull();
+    assertThat(tx.managingOrganization(new CdwReference())).isNull();
+    assertThat(tx.managingOrganization(cdw.managingOrganization()))
+        .isEqualTo(expected.managingOrganization());
+  }
+
+  @Test
+  public void name() {
+    assertThat(tx.name(null)).isNull();
+    assertThat(tx.name(new CdwName())).isNull();
+    assertThat(tx.name(cdw.name())).isEqualTo(expected.name());
+  }
+
+  @Test
+  public void practitionerRole() {
+    assertThat(tx.practitionerRole(null)).isNull();
+    assertThat(tx.practitionerRole(new CdwPractitionerRole())).isNull();
+    assertThat(tx.practitionerRole(cdw.practitionerRole()))
+        .isEqualTo(expected.practitionerRoles().get(0));
+  }
+
+  @Test
+  public void practitionerRoles() {
+    assertThat(tx.practitionerRoles(null)).isNull();
+    assertThat(tx.practitionerRoles(new CdwPractitionerRoles())).isNull();
+    assertThat(tx.practitionerRoles(cdw.practitionerRoles()))
+        .isEqualTo(expected.practitionerRoles());
+  }
+
+  @Test
+  public void role() {
+    assertThat(tx.role(null)).isNull();
+    assertThat(tx.role(new CdwPractitionerRoleCoding())).isNull();
+    assertThat(tx.role(cdw.role())).isEqualTo(expected.role());
+  }
+
+  @Test
+  public void roleCoding() {
+    assertThat(tx.roleCoding(null)).isNull();
+    assertThat(tx.roleCoding(new CdwCoding())).isNull();
+    assertThat(tx.roleCoding(cdw.roleCoding())).isEqualTo(expected.roleCoding());
+  }
 
   private static class CdwSampleData {
 
@@ -232,7 +315,7 @@ public class PractitionerTransformerTest {
 
     List<Coding> roleCoding() {
       return singletonList(
-          Coding.builder().code("Doctor").system("Role System").display("Doctor").build());
+          Coding.builder().code("doctor").system("Role System").display("Doctor").build());
     }
 
     List<ContactPoint> telecoms() {

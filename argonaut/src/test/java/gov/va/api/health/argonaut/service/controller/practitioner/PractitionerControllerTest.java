@@ -5,6 +5,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import gov.va.api.health.argonaut.api.resources.Practitioner;
+import gov.va.api.health.argonaut.service.controller.Bundler;
 import gov.va.api.health.argonaut.service.controller.Parameters;
 import gov.va.api.health.argonaut.service.mranderson.client.MrAndersonClient;
 import gov.va.api.health.argonaut.service.mranderson.client.Query;
@@ -26,11 +27,12 @@ public class PractitionerControllerTest {
   @Mock PractitionerController.Transformer tx;
 
   PractitionerController controller;
+  @Mock Bundler bundler;
 
   @Before
   public void _init() {
     MockitoAnnotations.initMocks(this);
-    controller = new PractitionerController(tx, client);
+    controller = new PractitionerController(tx, client, bundler);
   }
 
   @SuppressWarnings("unchecked")

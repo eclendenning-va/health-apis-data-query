@@ -2,10 +2,13 @@ package gov.va.api.health.argonaut.service.controller.practitioner;
 
 import static gov.va.api.health.argonaut.service.controller.Transformers.allNull;
 import static gov.va.api.health.argonaut.service.controller.Transformers.asDateTimeString;
+import static gov.va.api.health.argonaut.service.controller.Transformers.convert;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convertAll;
 import static gov.va.api.health.argonaut.service.controller.Transformers.ifPresent;
+import static java.util.Collections.singletonList;
 
 import gov.va.api.health.argonaut.api.datatypes.Address;
+import gov.va.api.health.argonaut.api.datatypes.Address.AddressUse;
 import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
 import gov.va.api.health.argonaut.api.datatypes.Coding;
 import gov.va.api.health.argonaut.api.datatypes.ContactPoint;
@@ -16,6 +19,7 @@ import gov.va.api.health.argonaut.api.resources.Practitioner.Gender;
 import gov.va.api.health.argonaut.api.resources.Practitioner.PractitionerRole;
 import gov.va.dvp.cdw.xsd.model.CdwPractitioner100Root.CdwPractitioners.CdwPractitioner;
 import gov.va.dvp.cdw.xsd.model.CdwPractitioner100Root.CdwPractitioners.CdwPractitioner.CdwAddresses;
+import gov.va.dvp.cdw.xsd.model.CdwPractitioner100Root.CdwPractitioners.CdwPractitioner.CdwAddresses.CdwAddress.CdwLines;
 import gov.va.dvp.cdw.xsd.model.CdwPractitioner100Root.CdwPractitioners.CdwPractitioner.CdwName;
 import gov.va.dvp.cdw.xsd.model.CdwPractitioner100Root.CdwPractitioners.CdwPractitioner.CdwPractitionerRoles;
 import gov.va.dvp.cdw.xsd.model.CdwPractitioner100Root.CdwPractitioners.CdwPractitioner.CdwPractitionerRoles.CdwPractitionerRole;
@@ -25,7 +29,6 @@ import gov.va.dvp.cdw.xsd.model.CdwPractitioner100Root.CdwPractitioners.CdwPract
 import gov.va.dvp.cdw.xsd.model.CdwPractitionerRoleCoding;
 import gov.va.dvp.cdw.xsd.model.CdwPractitionerRoleCoding.CdwCoding;
 import gov.va.dvp.cdw.xsd.model.CdwReference;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -47,17 +50,23 @@ public class PractitionerTransformer implements PractitionerController.Transform
         ifPresent(optionalSource, CdwAddresses::getAddress),
         cdw ->
             Address.builder()
-                .line(cdw.getLines().getLine())
+                .line(addressLines(cdw.getLines()))
                 .city(cdw.getCity())
                 .state(cdw.getState())
                 .postalCode(cdw.getPostalCode())
+                .use(ifPresent(cdw.getUse(), use -> AddressUse.valueOf(use.value())))
                 .build());
   }
 
+  List<String> addressLines(CdwLines source) {
+    if (source == null || source.getLine().isEmpty()) {
+      return null;
+    }
+    return source.getLine();
+  }
+
   List<Reference> healthcareService(CdwHealthcareServices source) {
-    if (source == null
-        || source.getHealthcareService() == null
-        || source.getHealthcareService().isEmpty()) {
+    if (source == null || source.getHealthcareService() == null) {
       return null;
     }
     return convertAll(
@@ -66,7 +75,7 @@ public class PractitionerTransformer implements PractitionerController.Transform
   }
 
   List<Reference> locations(CdwLocations source) {
-    if (source == null || source.getLocation().isEmpty() || source.getLocation() == null) {
+    if (source == null || source.getLocation() == null) {
       return null;
     }
     return convertAll(
@@ -75,13 +84,12 @@ public class PractitionerTransformer implements PractitionerController.Transform
   }
 
   Reference managingOrganization(CdwReference source) {
-    if (source == null || allNull(source.getReference(), source.getDisplay())) {
+    if (source == null || allNull(source.getDisplay(), source.getReference())) {
       return null;
     }
-    return Reference.builder()
-        .reference(source.getReference())
-        .display(source.getDisplay())
-        .build();
+    return convert(
+        source,
+        cdw -> Reference.builder().reference(cdw.getReference()).display(cdw.getDisplay()).build());
   }
 
   HumanName name(CdwName source) {
@@ -95,14 +103,17 @@ public class PractitionerTransformer implements PractitionerController.Transform
             source.getUse())) {
       return null;
     }
-    return HumanName.builder()
-        .use(ifPresent(source.getUse(), use -> HumanName.NameUse.valueOf(use.value())))
-        .text(source.getText())
-        .family(Collections.singletonList(source.getFamily()))
-        .given(Collections.singletonList(source.getGiven()))
-        .prefix(Collections.singletonList(source.getPrefix()))
-        .suffix(Collections.singletonList(source.getSuffix()))
-        .build();
+    return convert(
+        source,
+        cdw ->
+            HumanName.builder()
+                .use(ifPresent(cdw.getUse(), use -> HumanName.NameUse.valueOf(use.value())))
+                .text(cdw.getText())
+                .family(singletonList(cdw.getFamily()))
+                .given(singletonList(cdw.getGiven()))
+                .suffix(singletonList(cdw.getSuffix()))
+                .prefix(singletonList(cdw.getPrefix()))
+                .build());
   }
 
   private Practitioner practitioner(CdwPractitioner source) {
@@ -157,17 +168,23 @@ public class PractitionerTransformer implements PractitionerController.Transform
     if (source == null || source.getCoding() == null) {
       return null;
     }
-    return CodeableConcept.builder().coding(coding(source.getCoding())).build();
+    return CodeableConcept.builder().coding(roleCoding(source.getCoding())).build();
   }
 
-  List<Coding> coding(CdwCoding source) {
-    if (source == null) {
+  List<Coding> roleCoding(CdwCoding source) {
+    if (source == null || allNull(source.getSystem(), source.getDisplay(), source.getCode())) {
       return null;
     }
-    return Collections.singletonList(
-        Coding.builder()
-            .code(ifPresent(source.getCode(), code -> String.valueOf(code.value())))
-            .build());
+    return convert(
+        source,
+        cdw ->
+            singletonList(
+                Coding.builder()
+                    .code(ifPresent(cdw.getCode(), code -> String.valueOf(code.value())))
+                    .display(
+                        ifPresent(cdw.getDisplay(), display -> String.valueOf(display.value())))
+                    .system(cdw.getSystem())
+                    .build()));
   }
 
   List<ContactPoint> telecoms(CdwTelecoms optionalSource) {
