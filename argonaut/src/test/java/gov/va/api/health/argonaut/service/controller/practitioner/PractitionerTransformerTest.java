@@ -4,6 +4,7 @@ import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import gov.va.api.health.argonaut.api.datatypes.Address;
+import gov.va.api.health.argonaut.api.datatypes.Address.AddressUse;
 import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
 import gov.va.api.health.argonaut.api.datatypes.Coding;
 import gov.va.api.health.argonaut.api.datatypes.ContactPoint;
@@ -26,6 +27,7 @@ import gov.va.dvp.cdw.xsd.model.CdwPractitioner100Root.CdwPractitioners.CdwPract
 import gov.va.dvp.cdw.xsd.model.CdwPractitioner100Root.CdwPractitioners.CdwPractitioner.CdwPractitionerRoles.CdwPractitionerRole.CdwLocations;
 import gov.va.dvp.cdw.xsd.model.CdwPractitioner100Root.CdwPractitioners.CdwPractitioner.CdwTelecoms;
 import gov.va.dvp.cdw.xsd.model.CdwPractitioner100Root.CdwPractitioners.CdwPractitioner.CdwTelecoms.CdwTelecom;
+import gov.va.dvp.cdw.xsd.model.CdwPractitionerAddressUse;
 import gov.va.dvp.cdw.xsd.model.CdwPractitionerGender;
 import gov.va.dvp.cdw.xsd.model.CdwPractitionerNameUse;
 import gov.va.dvp.cdw.xsd.model.CdwPractitionerRoleCoding;
@@ -62,6 +64,22 @@ public class PractitionerTransformerTest {
   }
 
   @Test
+  public void addressUse() {
+    assertThat(tx.addressUse(CdwPractitionerAddressUse.HOME)).isEqualTo(AddressUse.home);
+    assertThat(tx.addressUse(CdwPractitionerAddressUse.OLD)).isEqualTo(AddressUse.old);
+    assertThat(tx.addressUse(CdwPractitionerAddressUse.TEMP)).isEqualTo(AddressUse.temp);
+    assertThat(tx.addressUse(CdwPractitionerAddressUse.WORK)).isEqualTo(AddressUse.work);
+  }
+
+  @Test
+  public void gender() {
+    assertThat(tx.gender(CdwPractitionerGender.FEMALE)).isEqualTo(Gender.female);
+    assertThat(tx.gender(CdwPractitionerGender.MALE)).isEqualTo(Gender.male);
+    assertThat(tx.gender(CdwPractitionerGender.OTHER)).isEqualTo(Gender.other);
+    assertThat(tx.gender(CdwPractitionerGender.UNKNOWN)).isEqualTo(Gender.unknown);
+  }
+
+  @Test
   public void healthcareServices() {
     assertThat(tx.healthcareService(null)).isNull();
     assertThat(tx.healthcareService(new CdwHealthcareServices())).isNull();
@@ -89,6 +107,17 @@ public class PractitionerTransformerTest {
     assertThat(tx.name(null)).isNull();
     assertThat(tx.name(new CdwName())).isNull();
     assertThat(tx.name(cdw.name())).isEqualTo(expected.name());
+  }
+
+  @Test
+  public void nameUse() {
+    assertThat(tx.nameUse(CdwPractitionerNameUse.ANONYMOUS)).isEqualTo(NameUse.anonymous);
+    assertThat(tx.nameUse(CdwPractitionerNameUse.MAIDEN)).isEqualTo(NameUse.maiden);
+    assertThat(tx.nameUse(CdwPractitionerNameUse.NICKNAME)).isEqualTo(NameUse.nickname);
+    assertThat(tx.nameUse(CdwPractitionerNameUse.OFFICIAL)).isEqualTo(NameUse.official);
+    assertThat(tx.nameUse(CdwPractitionerNameUse.OLD)).isEqualTo(NameUse.old);
+    assertThat(tx.nameUse(CdwPractitionerNameUse.TEMP)).isEqualTo(NameUse.temp);
+    assertThat(tx.nameUse(CdwPractitionerNameUse.USUAL)).isEqualTo(NameUse.usual);
   }
 
   @Test
@@ -128,6 +157,36 @@ public class PractitionerTransformerTest {
 
   @Test
   public void telecom() {
+    assertThat(tx.telecom(null)).isNull();
+    assertThat(tx.telecom(new CdwTelecom())).isNull();
+    assertThat(tx.telecom(cdw.telecom())).isEqualTo(expected.telecom());
+  }
+
+  @Test
+  public void telecomSystem() {
+    assertThat(tx.telecomSystem(CdwPractitionerTelecomSystem.EMAIL))
+        .isEqualTo(ContactPointSystem.email);
+    assertThat(tx.telecomSystem(CdwPractitionerTelecomSystem.FAX))
+        .isEqualTo(ContactPointSystem.fax);
+    assertThat(tx.telecomSystem(CdwPractitionerTelecomSystem.OTHER))
+        .isEqualTo(ContactPointSystem.other);
+    assertThat(tx.telecomSystem(CdwPractitionerTelecomSystem.PAGER))
+        .isEqualTo(ContactPointSystem.pager);
+    assertThat(tx.telecomSystem(CdwPractitionerTelecomSystem.PHONE))
+        .isEqualTo(ContactPointSystem.phone);
+  }
+
+  @Test
+  public void telecomUse() {
+    assertThat(tx.telecomUse(CdwPractitionerTelecomUse.HOME)).isEqualTo(ContactPointUse.home);
+    assertThat(tx.telecomUse(CdwPractitionerTelecomUse.MOBILE)).isEqualTo(ContactPointUse.mobile);
+    assertThat(tx.telecomUse(CdwPractitionerTelecomUse.OLD)).isEqualTo(ContactPointUse.old);
+    assertThat(tx.telecomUse(CdwPractitionerTelecomUse.TEMP)).isEqualTo(ContactPointUse.temp);
+    assertThat(tx.telecomUse(CdwPractitionerTelecomUse.WORK)).isEqualTo(ContactPointUse.work);
+  }
+
+  @Test
+  public void telecoms() {
     assertThat(tx.telecoms(null)).isNull();
     assertThat(tx.telecoms(new CdwTelecoms())).isNull();
     assertThat(tx.telecoms(cdw.telecoms())).isEqualTo(expected.telecoms());
@@ -144,16 +203,16 @@ public class PractitionerTransformerTest {
       return address;
     }
 
-    CdwAddresses addresses() {
-      CdwAddresses addresses = new CdwAddresses();
-      addresses.getAddress().add(address());
-      return addresses;
-    }
-
     CdwLines addressLines() {
       CdwLines lines = new CdwLines();
       lines.getLine().add("Address Line");
       return lines;
+    }
+
+    CdwAddresses addresses() {
+      CdwAddresses addresses = new CdwAddresses();
+      addresses.getAddress().add(address());
+      return addresses;
     }
 
     @SneakyThrows
@@ -211,12 +270,6 @@ public class PractitionerTransformerTest {
       return cdw;
     }
 
-    CdwPractitionerRoles practitionerRoles() {
-      CdwPractitionerRoles practitionerRoles = new CdwPractitionerRoles();
-      practitionerRoles.getPractitionerRole().add(practitionerRole());
-      return practitionerRoles;
-    }
-
     CdwPractitionerRole practitionerRole() {
       CdwPractitionerRole practitionerRole = new CdwPractitionerRole();
       practitionerRole.setHealthcareServices(healthcareServices());
@@ -224,6 +277,12 @@ public class PractitionerTransformerTest {
       practitionerRole.setManagingOrganization(managingOrganization());
       practitionerRole.setRole(role());
       return practitionerRole;
+    }
+
+    CdwPractitionerRoles practitionerRoles() {
+      CdwPractitionerRoles practitionerRoles = new CdwPractitionerRoles();
+      practitionerRoles.getPractitionerRole().add(practitionerRole());
+      return practitionerRoles;
     }
 
     CdwPractitionerRoleCoding role() {
@@ -240,13 +299,17 @@ public class PractitionerTransformerTest {
       return coding;
     }
 
-    CdwTelecoms telecoms() {
-      CdwTelecoms telecoms = new CdwTelecoms();
+    private CdwTelecom telecom() {
       CdwTelecom telecom = new CdwTelecom();
       telecom.setSystem(CdwPractitionerTelecomSystem.PHONE);
       telecom.setUse(CdwPractitionerTelecomUse.MOBILE);
       telecom.setValue("Hello Telecom Value");
-      telecoms.getTelecom().add(telecom);
+      return telecom;
+    }
+
+    CdwTelecoms telecoms() {
+      CdwTelecoms telecoms = new CdwTelecoms();
+      telecoms.getTelecom().add(telecom());
       return telecoms;
     }
   }
@@ -323,13 +386,16 @@ public class PractitionerTransformerTest {
           Coding.builder().code("doctor").system("Role System").display("Doctor").build());
     }
 
+    private ContactPoint telecom() {
+      return ContactPoint.builder()
+          .system(ContactPointSystem.phone)
+          .value("Hello Telecom Value")
+          .use(ContactPointUse.mobile)
+          .build();
+    }
+
     List<ContactPoint> telecoms() {
-      return singletonList(
-          ContactPoint.builder()
-              .system(ContactPointSystem.phone)
-              .value("Hello Telecom Value")
-              .use(ContactPointUse.mobile)
-              .build());
+      return singletonList(telecom());
     }
   }
 }

@@ -12,13 +12,18 @@ import gov.va.api.health.argonaut.api.datatypes.Address.AddressUse;
 import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
 import gov.va.api.health.argonaut.api.datatypes.Coding;
 import gov.va.api.health.argonaut.api.datatypes.ContactPoint;
+import gov.va.api.health.argonaut.api.datatypes.ContactPoint.ContactPointSystem;
+import gov.va.api.health.argonaut.api.datatypes.ContactPoint.ContactPointUse;
 import gov.va.api.health.argonaut.api.datatypes.HumanName;
+import gov.va.api.health.argonaut.api.datatypes.HumanName.NameUse;
 import gov.va.api.health.argonaut.api.elements.Reference;
 import gov.va.api.health.argonaut.api.resources.Practitioner;
 import gov.va.api.health.argonaut.api.resources.Practitioner.Gender;
 import gov.va.api.health.argonaut.api.resources.Practitioner.PractitionerRole;
+import gov.va.api.health.argonaut.service.controller.EnumSearcher;
 import gov.va.dvp.cdw.xsd.model.CdwPractitioner100Root.CdwPractitioners.CdwPractitioner;
 import gov.va.dvp.cdw.xsd.model.CdwPractitioner100Root.CdwPractitioners.CdwPractitioner.CdwAddresses;
+import gov.va.dvp.cdw.xsd.model.CdwPractitioner100Root.CdwPractitioners.CdwPractitioner.CdwAddresses.CdwAddress;
 import gov.va.dvp.cdw.xsd.model.CdwPractitioner100Root.CdwPractitioners.CdwPractitioner.CdwAddresses.CdwAddress.CdwLines;
 import gov.va.dvp.cdw.xsd.model.CdwPractitioner100Root.CdwPractitioners.CdwPractitioner.CdwName;
 import gov.va.dvp.cdw.xsd.model.CdwPractitioner100Root.CdwPractitioners.CdwPractitioner.CdwPractitionerRoles;
@@ -26,8 +31,16 @@ import gov.va.dvp.cdw.xsd.model.CdwPractitioner100Root.CdwPractitioners.CdwPract
 import gov.va.dvp.cdw.xsd.model.CdwPractitioner100Root.CdwPractitioners.CdwPractitioner.CdwPractitionerRoles.CdwPractitionerRole.CdwHealthcareServices;
 import gov.va.dvp.cdw.xsd.model.CdwPractitioner100Root.CdwPractitioners.CdwPractitioner.CdwPractitionerRoles.CdwPractitionerRole.CdwLocations;
 import gov.va.dvp.cdw.xsd.model.CdwPractitioner100Root.CdwPractitioners.CdwPractitioner.CdwTelecoms;
+import gov.va.dvp.cdw.xsd.model.CdwPractitioner100Root.CdwPractitioners.CdwPractitioner.CdwTelecoms.CdwTelecom;
+import gov.va.dvp.cdw.xsd.model.CdwPractitionerAddressUse;
+import gov.va.dvp.cdw.xsd.model.CdwPractitionerGender;
+import gov.va.dvp.cdw.xsd.model.CdwPractitionerNameUse;
 import gov.va.dvp.cdw.xsd.model.CdwPractitionerRoleCoding;
 import gov.va.dvp.cdw.xsd.model.CdwPractitionerRoleCoding.CdwCoding;
+import gov.va.dvp.cdw.xsd.model.CdwPractitionerRoleCodingCode;
+import gov.va.dvp.cdw.xsd.model.CdwPractitionerRoleCodingDisplay;
+import gov.va.dvp.cdw.xsd.model.CdwPractitionerTelecomSystem;
+import gov.va.dvp.cdw.xsd.model.CdwPractitionerTelecomUse;
 import gov.va.dvp.cdw.xsd.model.CdwReference;
 import java.util.List;
 import java.util.Objects;
@@ -37,21 +50,16 @@ import org.springframework.stereotype.Service;
 @Service
 public class PractitionerTransformer implements PractitionerController.Transformer {
 
-  @Override
-  public Practitioner apply(CdwPractitioner source) {
-    return practitioner(source);
-  }
-
-  List<Address> addresses(CdwAddresses optionalSource) {
-    return convertAll(
-        ifPresent(optionalSource, CdwAddresses::getAddress),
+  Address address(CdwAddress source) {
+    return convert(
+        source,
         cdw ->
             Address.builder()
                 .line(addressLines(cdw.getLines()))
                 .city(cdw.getCity())
                 .state(cdw.getState())
                 .postalCode(cdw.getPostalCode())
-                .use(ifPresent(cdw.getUse(), use -> AddressUse.valueOf(use.value())))
+                .use(addressUse(cdw.getUse()))
                 .build());
   }
 
@@ -60,6 +68,23 @@ public class PractitionerTransformer implements PractitionerController.Transform
       return null;
     }
     return source.getLine();
+  }
+
+  AddressUse addressUse(CdwPractitionerAddressUse source) {
+    return convert(source, cdw -> EnumSearcher.of(AddressUse.class).find(cdw.value()));
+  }
+
+  List<Address> addresses(CdwAddresses optionalSource) {
+    return convertAll(ifPresent(optionalSource, CdwAddresses::getAddress), this::address);
+  }
+
+  @Override
+  public Practitioner apply(CdwPractitioner source) {
+    return practitioner(source);
+  }
+
+  Gender gender(CdwPractitionerGender source) {
+    return convert(source, cdw -> EnumSearcher.of(Gender.class).find(cdw.value()));
   }
 
   List<Reference> healthcareService(CdwHealthcareServices source) {
@@ -98,7 +123,7 @@ public class PractitionerTransformer implements PractitionerController.Transform
         source,
         cdw ->
             HumanName.builder()
-                .use(ifPresent(cdw.getUse(), use -> HumanName.NameUse.valueOf(use.value())))
+                .use(nameUse(cdw.getUse()))
                 .text(cdw.getText())
                 .family(nameList(cdw.getFamily()))
                 .given(nameList(cdw.getGiven()))
@@ -114,6 +139,10 @@ public class PractitionerTransformer implements PractitionerController.Transform
     return singletonList(source);
   }
 
+  NameUse nameUse(CdwPractitionerNameUse source) {
+    return convert(source, cdw -> EnumSearcher.of(NameUse.class).find(source.value()));
+  }
+
   private Practitioner practitioner(CdwPractitioner source) {
     return Practitioner.builder()
         .id(source.getCdwId())
@@ -122,9 +151,26 @@ public class PractitionerTransformer implements PractitionerController.Transform
         .name(name(source.getName()))
         .telecom(telecoms(source.getTelecoms()))
         .address(addresses(source.getAddresses()))
-        .gender(ifPresent(source.getGender(), gender -> Gender.valueOf(gender.value())))
+        .gender(gender(source.getGender()))
         .birthDate(asDateTimeString(source.getBirthDate()))
         .practitionerRole(practitionerRoles(source.getPractitionerRoles()))
+        .build();
+  }
+
+  PractitionerRole practitionerRole(CdwPractitionerRole source) {
+    if (source == null
+        || allNull(
+            source.getHealthcareServices(),
+            source.getLocations(),
+            source.getManagingOrganization(),
+            source.getRole())) {
+      return null;
+    }
+    return PractitionerRole.builder()
+        .healthcareService(healthcareService(source.getHealthcareServices()))
+        .location(locations(source.getLocations()))
+        .managingOrganization(managingOrganization(source.getManagingOrganization()))
+        .role(role(source.getRole()))
         .build();
   }
 
@@ -145,23 +191,6 @@ public class PractitionerTransformer implements PractitionerController.Transform
     return practitionerRoles;
   }
 
-  PractitionerRole practitionerRole(CdwPractitionerRole source) {
-    if (source == null
-        || allNull(
-            source.getHealthcareServices(),
-            source.getLocations(),
-            source.getManagingOrganization(),
-            source.getRole())) {
-      return null;
-    }
-    return PractitionerRole.builder()
-        .healthcareService(healthcareService(source.getHealthcareServices()))
-        .location(locations(source.getLocations()))
-        .managingOrganization(managingOrganization(source.getManagingOrganization()))
-        .role(role(source.getRole()))
-        .build();
-  }
-
   CodeableConcept role(CdwPractitionerRoleCoding source) {
     if (source == null || source.getCoding() == null) {
       return null;
@@ -178,26 +207,35 @@ public class PractitionerTransformer implements PractitionerController.Transform
         cdw ->
             singletonList(
                 Coding.builder()
-                    .code(ifPresent(cdw.getCode(), code -> String.valueOf(code.value())))
-                    .display(
-                        ifPresent(cdw.getDisplay(), display -> String.valueOf(display.value())))
+                    .code(ifPresent(cdw.getCode(), CdwPractitionerRoleCodingCode::value))
+                    .display(ifPresent(cdw.getDisplay(), CdwPractitionerRoleCodingDisplay::value))
                     .system(cdw.getSystem())
                     .build()));
   }
 
-  List<ContactPoint> telecoms(CdwTelecoms optionalSource) {
-    return convertAll(
-        ifPresent(optionalSource, CdwTelecoms::getTelecom),
+  ContactPoint telecom(CdwTelecom source) {
+    if (source == null || allNull(source.getSystem(), source.getUse(), source.getValue())) {
+      return null;
+    }
+    return convert(
+        source,
         cdw ->
             ContactPoint.builder()
-                .system(
-                    ifPresent(
-                        cdw.getSystem(),
-                        system -> ContactPoint.ContactPointSystem.valueOf(system.value())))
+                .system(telecomSystem(cdw.getSystem()))
                 .value(cdw.getValue())
-                .use(
-                    ifPresent(
-                        cdw.getUse(), use -> ContactPoint.ContactPointUse.valueOf(use.value())))
+                .use(telecomUse(cdw.getUse()))
                 .build());
+  }
+
+  ContactPointSystem telecomSystem(CdwPractitionerTelecomSystem cdw) {
+    return convert(cdw, source -> EnumSearcher.of(ContactPointSystem.class).find(source.value()));
+  }
+
+  ContactPointUse telecomUse(CdwPractitionerTelecomUse cdw) {
+    return ifPresent(cdw, source -> EnumSearcher.of(ContactPointUse.class).find(source.value()));
+  }
+
+  List<ContactPoint> telecoms(CdwTelecoms optionalSource) {
+    return convertAll(ifPresent(optionalSource, CdwTelecoms::getTelecom), this::telecom);
   }
 }
