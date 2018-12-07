@@ -36,6 +36,7 @@ public class SystemDefinitions {
                   .immunization("1000000043979")
                   .location("166365:L")
                   .medication("212846")
+                  .medicationOrder("1200389904206:O")
                   .medicationStatement("1400000182116")
                   .observation("1201051417263:V")
                   .observations(

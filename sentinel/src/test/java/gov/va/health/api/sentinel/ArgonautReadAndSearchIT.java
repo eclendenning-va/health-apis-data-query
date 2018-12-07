@@ -7,6 +7,7 @@ import gov.va.api.health.argonaut.api.resources.Encounter;
 import gov.va.api.health.argonaut.api.resources.Immunization;
 import gov.va.api.health.argonaut.api.resources.Location;
 import gov.va.api.health.argonaut.api.resources.Medication;
+import gov.va.api.health.argonaut.api.resources.MedicationOrder;
 import gov.va.api.health.argonaut.api.resources.MedicationStatement;
 import gov.va.api.health.argonaut.api.resources.Observation;
 import gov.va.api.health.argonaut.api.resources.OperationOutcome;
@@ -170,6 +171,24 @@ public class ArgonautReadAndSearchIT {
         expect(200, Medication.Bundle.class, "/api/Medication?_id={id}", ids.medication()),
         expect(200, Medication.Bundle.class, "/api/Medication?identifier={id}", ids.medication()),
         expect(404, OperationOutcome.class, "/api/Medication?_id={id}", ids.unknown()),
+        // Medication Order
+        expect(200, MedicationOrder.class, "/api/MedicationOrder/{id}", ids.medicationOrder()),
+        expect(404, OperationOutcome.class, "/api/MedicationOrder/{id}", ids.unknown()),
+        expect(
+            200,
+            MedicationOrder.Bundle.class,
+            "/api/MedicationOrder?_id={id}",
+            ids.medicationOrder()),
+        expect(
+            200,
+            MedicationOrder.Bundle.class,
+            "/api/MedicationOrder?identifier={id}",
+            ids.medicationOrder()),
+        expect(
+            200,
+            MedicationOrder.Bundle.class,
+            "/api/MedicationOrder?patient={patient}",
+            ids.patient()),
         // MedicationStatement
         expect(
             200,
