@@ -155,7 +155,7 @@ public class MedicationStatementControllerTest {
     MedicationStatement resource =
         JacksonConfig.createMapper()
             .readValue(
-                getClass().getResourceAsStream("/cdw/old-medicationStatement-1.02.json"),
+                getClass().getResourceAsStream("/cdw/old-medicationstatement-1.02.json"),
                 MedicationStatement.class);
 
     Bundle bundle = bundleOf(resource);
@@ -168,7 +168,7 @@ public class MedicationStatementControllerTest {
     MedicationStatement resource =
         JacksonConfig.createMapper()
             .readValue(
-                getClass().getResourceAsStream("/cdw/old-medicationStatement-1.02.json"),
+                getClass().getResourceAsStream("/cdw/old-medicationstatement-1.02.json"),
                 MedicationStatement.class);
     resource.resourceType(null);
 
