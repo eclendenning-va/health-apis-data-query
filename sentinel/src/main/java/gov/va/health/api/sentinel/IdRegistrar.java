@@ -60,10 +60,12 @@ class IdRegistrar {
     ResourceIdentity encounter = id("ENCOUNTER", cdwIds.encounter());
     ResourceIdentity immunization = id("IMMUNIZATION", cdwIds.immunization());
     ResourceIdentity medication = id("MEDICATION", cdwIds.medication());
+    ResourceIdentity medicationOrder = id("MEDICATION_ORDER", cdwIds.medicationOrder());
     ResourceIdentity medicationStatement = id("MEDICATION_STATEMENT", cdwIds.medicationStatement());
     ResourceIdentity observation = id("OBSERVATION", cdwIds.observation());
     ResourceIdentity organizataion = id("ORGANIZATION", cdwIds.organization());
     ResourceIdentity patient = id("PATIENT", cdwIds.patient());
+    ResourceIdentity practitioner = id("PRACTITIONER", cdwIds.practitioner());
     ResourceIdentity procedure = id("PROCEDURE", cdwIds.procedure());
 
     List<ResourceIdentity> identities =
@@ -75,9 +77,11 @@ class IdRegistrar {
             immunization,
             patient,
             medication,
+            medicationOrder,
             medicationStatement,
             observation,
             organizataion,
+            practitioner,
             procedure);
     log.info("Registering {}", identities);
     List<Registration> registrations =
@@ -96,10 +100,12 @@ class IdRegistrar {
             .encounter(findUuid(registrations, encounter))
             .immunization(findUuid(registrations, immunization))
             .medication(findUuid(registrations, medication))
+            .medicationOrder(findUuid(registrations, medicationOrder))
             .medicationStatement(findUuid(registrations, medicationStatement))
             .observation(findUuid(registrations, observation))
             .organization(findUuid(registrations, organizataion))
             .patient(findUuid(registrations, patient))
+            .practitioner(findUuid(registrations, practitioner))
             .procedure(findUuid(registrations, procedure))
             .build();
     log.info("Using {}", publicIds);

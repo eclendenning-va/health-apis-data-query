@@ -24,7 +24,6 @@ public class SystemDefinitions {
                   .condition("1400007575530:P")
                   .diagnosticReport("1000000031384:L")
                   .encounter("1200753214085")
-                  .patient("185601V825290")
                   .diagnosticReports(
                       DiagnosticReports.builder()
                           .loinc1("10000-8")
@@ -35,6 +34,7 @@ public class SystemDefinitions {
                           .build())
                   .immunization("1000000043979")
                   .medication("212846")
+                  .medicationOrder("1200389904206:O")
                   .medicationStatement("1400000182116")
                   .observation("1201051417263:V")
                   .observations(
@@ -53,6 +53,8 @@ public class SystemDefinitions {
                           .name("VETERAN,JOHN")
                           .family("VETERAN")
                           .build())
+                  .patient("185601V825290")
+                  .practitioner("10092125")
                   .procedure("1400000140034")
                   .procedures(
                       Procedures.builder()
