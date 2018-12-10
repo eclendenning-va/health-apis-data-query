@@ -30,11 +30,7 @@ import org.springframework.stereotype.Service;
 public class OrganizationTransformer implements OrganizationController.Transformer {
 
   @Override
-  public Organization apply(CdwOrganization organization) {
-    return organization(organization);
-  }
-
-  Organization organization(CdwOrganization source) {
+  public Organization apply(CdwOrganization source) {
     return Organization.builder()
         .resourceType("Organization")
         .id(source.getCdwId())
@@ -81,13 +77,10 @@ public class OrganizationTransformer implements OrganizationController.Transform
             .map(this::telecom)
             .filter(Objects::nonNull)
             .collect(Collectors.toList());
-    if (contactPoints.isEmpty()) {
-      return null;
-    }
-    return contactPoints;
+    return contactPoints.isEmpty() ? null : contactPoints;
   }
 
-  ContactPoint telecom(CdwOrganizationTelecom cdw) {
+  private ContactPoint telecom(CdwOrganizationTelecom cdw) {
     if (allNull(cdw.getSystem(), cdw.getUse(), cdw.getValue())) {
       return null;
     }
@@ -98,7 +91,7 @@ public class OrganizationTransformer implements OrganizationController.Transform
         .build();
   }
 
-  ContactPointSystem telecomSystem(String system) {
+  private ContactPointSystem telecomSystem(String system) {
     return (system == null) ? null : ContactPointSystem.phone;
   }
 

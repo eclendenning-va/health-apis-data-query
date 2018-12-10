@@ -32,7 +32,7 @@ public class OrganizationTransformerTest {
   private final OrganizationTransformer tx = new OrganizationTransformer();
 
   @Test
-  public void organization() {
+  public void apply() {
     assertThat(tx.apply(cdw.organization())).isEqualTo(expected.organization());
   }
 
