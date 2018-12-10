@@ -1,5 +1,6 @@
 package gov.va.api.health.argonaut.service.controller.allergyintolerance;
 
+import static gov.va.api.health.argonaut.service.controller.Transformers.allNull;
 import static gov.va.api.health.argonaut.service.controller.Transformers.asDateTimeString;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convert;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convertAll;
@@ -11,7 +12,11 @@ import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
 import gov.va.api.health.argonaut.api.datatypes.Coding;
 import gov.va.api.health.argonaut.api.elements.Reference;
 import gov.va.api.health.argonaut.api.resources.AllergyIntolerance;
+import gov.va.api.health.argonaut.api.resources.AllergyIntolerance.Category;
+import gov.va.api.health.argonaut.api.resources.AllergyIntolerance.Criticality;
 import gov.va.api.health.argonaut.api.resources.AllergyIntolerance.Reaction;
+import gov.va.api.health.argonaut.api.resources.AllergyIntolerance.Status;
+import gov.va.api.health.argonaut.api.resources.AllergyIntolerance.Type;
 import gov.va.api.health.argonaut.service.controller.EnumSearcher;
 import gov.va.dvp.cdw.xsd.model.CdwAllergyIntolerance103Root.CdwAllergyIntolerances.CdwAllergyIntolerance;
 import gov.va.dvp.cdw.xsd.model.CdwAllergyIntolerance103Root.CdwAllergyIntolerances.CdwAllergyIntolerance.CdwNotes;
@@ -20,10 +25,13 @@ import gov.va.dvp.cdw.xsd.model.CdwAllergyIntolerance103Root.CdwAllergyIntoleran
 import gov.va.dvp.cdw.xsd.model.CdwAllergyIntolerance103Root.CdwAllergyIntolerances.CdwAllergyIntolerance.CdwReactions.CdwReaction.CdwManifestations;
 import gov.va.dvp.cdw.xsd.model.CdwAllergyIntolerance103Root.CdwAllergyIntolerances.CdwAllergyIntolerance.CdwReactions.CdwReaction.CdwManifestations.CdwManifestation;
 import gov.va.dvp.cdw.xsd.model.CdwAllergyIntolerance103Root.CdwAllergyIntolerances.CdwAllergyIntolerance.CdwSubstance;
+import gov.va.dvp.cdw.xsd.model.CdwAllergyIntoleranceCategory;
+import gov.va.dvp.cdw.xsd.model.CdwAllergyIntoleranceCriticality;
+import gov.va.dvp.cdw.xsd.model.CdwAllergyIntoleranceStatus;
+import gov.va.dvp.cdw.xsd.model.CdwAllergyIntoleranceType;
 import gov.va.dvp.cdw.xsd.model.CdwAllergyManifestationSystem;
 import gov.va.dvp.cdw.xsd.model.CdwAllergySubstanceSystem;
 import gov.va.dvp.cdw.xsd.model.CdwReference;
-import java.util.Collections;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
@@ -39,25 +47,10 @@ public class AllergyIntoleranceTransformer implements AllergyIntoleranceControll
         .recorder(reference(source.getRecorder()))
         .substance(substance(source.getSubstance()))
         .patient(reference(source.getPatient()))
-        .status(
-            ifPresent(
-                source.getStatus(),
-                status -> EnumSearcher.of(AllergyIntolerance.Status.class).find(status.value())))
-        .criticality(
-            ifPresent(
-                source.getCriticality(),
-                criticality ->
-                    EnumSearcher.of(AllergyIntolerance.Criticality.class)
-                        .find(criticality.value())))
-        .type(
-            ifPresent(
-                source.getType(),
-                type -> EnumSearcher.of(AllergyIntolerance.Type.class).find(type.value())))
-        .category(
-            ifPresent(
-                source.getCategory(),
-                category ->
-                    EnumSearcher.of(AllergyIntolerance.Category.class).find(category.value())))
+        .status(status(source.getStatus()))
+        .criticality(criticality(source.getCriticality()))
+        .type(type(source.getType()))
+        .category(category(source.getCategory()))
         .note(note(source.getNotes()))
         .reaction(reaction(source.getReactions()))
         .build();
@@ -66,6 +59,19 @@ public class AllergyIntoleranceTransformer implements AllergyIntoleranceControll
   @Override
   public AllergyIntolerance apply(CdwAllergyIntolerance allergyIntolerance) {
     return allergyIntolerance(allergyIntolerance);
+  }
+
+  Category category(CdwAllergyIntoleranceCategory source) {
+    return ifPresent(
+        source,
+        category -> EnumSearcher.of(AllergyIntolerance.Category.class).find(category.value()));
+  }
+
+  Criticality criticality(CdwAllergyIntoleranceCriticality source) {
+    return ifPresent(
+        source,
+        criticality ->
+            EnumSearcher.of(AllergyIntolerance.Criticality.class).find(criticality.value()));
   }
 
   Annotation note(CdwNotes source) {
@@ -82,7 +88,7 @@ public class AllergyIntoleranceTransformer implements AllergyIntoleranceControll
 
   List<Reaction> reaction(CdwReactions optionalSource) {
     if (optionalSource == null) {
-      return Collections.emptyList();
+      return null;
     }
     return convertAll(
         ifPresent(optionalSource, CdwReactions::getReaction),
@@ -98,7 +104,7 @@ public class AllergyIntoleranceTransformer implements AllergyIntoleranceControll
 
   List<CodeableConcept> reactionManifestation(CdwManifestations source) {
     if (source == null) {
-      return Collections.emptyList();
+      return null;
     }
     return convertAll(
         ifPresent(source, CdwManifestations::getManifestation),
@@ -110,6 +116,10 @@ public class AllergyIntoleranceTransformer implements AllergyIntoleranceControll
   }
 
   List<Coding> reactionManifestationCoding(CdwManifestation.CdwCoding maybeSource) {
+    if (maybeSource == null
+        || allNull(maybeSource.getCode(), maybeSource.getDisplay(), maybeSource.getSystem())) {
+      return null;
+    }
     return convert(
         maybeSource,
         source ->
@@ -122,6 +132,9 @@ public class AllergyIntoleranceTransformer implements AllergyIntoleranceControll
   }
 
   Reference reference(CdwReference maybeSource) {
+    if (maybeSource == null || allNull(maybeSource.getReference(), maybeSource.getDisplay())) {
+      return null;
+    }
     return convert(
         maybeSource,
         source ->
@@ -131,7 +144,15 @@ public class AllergyIntoleranceTransformer implements AllergyIntoleranceControll
                 .build());
   }
 
+  Status status(CdwAllergyIntoleranceStatus source) {
+    return ifPresent(
+        source, status -> EnumSearcher.of(AllergyIntolerance.Status.class).find(status.value()));
+  }
+
   CodeableConcept substance(CdwSubstance source) {
+    if (source == null || allNull(source.getCoding(), source.getText())) {
+      return null;
+    }
     return CodeableConcept.builder()
         .coding(substanceCoding(source.getCoding()))
         .text(source.getText())
@@ -139,11 +160,19 @@ public class AllergyIntoleranceTransformer implements AllergyIntoleranceControll
   }
 
   List<Coding> substanceCoding(CdwSubstance.CdwCoding source) {
+    if (source == null || allNull(source.getCode(), source.getDisplay(), source.getSystem())) {
+      return null;
+    }
     return singletonList(
         Coding.builder()
             .system(ifPresent(source.getSystem(), CdwAllergySubstanceSystem::value))
             .code(source.getCode())
             .display(source.getDisplay())
             .build());
+  }
+
+  Type type(CdwAllergyIntoleranceType source) {
+    return ifPresent(
+        source, type -> EnumSearcher.of(AllergyIntolerance.Type.class).find(type.value()));
   }
 }

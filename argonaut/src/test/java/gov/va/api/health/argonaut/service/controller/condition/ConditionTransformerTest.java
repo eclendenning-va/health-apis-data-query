@@ -19,6 +19,7 @@ import gov.va.dvp.cdw.xsd.model.CdwConditionClinicalStatus;
 import gov.va.dvp.cdw.xsd.model.CdwConditionVerificationStatus;
 import gov.va.dvp.cdw.xsd.model.CdwReference;
 import java.math.BigInteger;
+import java.util.List;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import lombok.NoArgsConstructor;
@@ -54,12 +55,14 @@ public class ConditionTransformerTest {
   public void code() {
     assertThat(transformer.code(null)).isNull();
     assertThat(transformer.code(emptyList())).isNull();
-    CdwCodeableConcept emptyCodings = cdw.code();
-    emptyCodings.getCoding().clear();
-    CodeableConcept expectedEmptyCodings = expected.code();
-    expectedEmptyCodings.coding(null);
-    assertThat(transformer.code(singletonList(emptyCodings))).isEqualTo(expectedEmptyCodings);
     assertThat(transformer.code(singletonList(cdw.code()))).isEqualTo(expected.code());
+  }
+
+  @Test
+  public void coding() {
+    assertThat(transformer.coding(singletonList(cdw.codeCoding()))).isEqualTo(expected.coding());
+    assertThat(transformer.coding(null)).isNull();
+    assertThat(transformer.coding(emptyList())).isNull();
   }
 
   @Test
@@ -72,6 +75,7 @@ public class ConditionTransformerTest {
     assertThat(transformer.reference(null)).isNull();
     assertThat(transformer.reference(cdw.reference("x", "y")))
         .isEqualTo(expected.reference("x", "y"));
+    assertThat(transformer.reference(new CdwReference())).isNull();
   }
 
   @Test
@@ -95,6 +99,7 @@ public class ConditionTransformerTest {
 
     private CdwCategory category() {
       CdwCategory cdw = new CdwCategory();
+      cdw.setText("Category");
       cdw.getCoding().add(categoryCoding());
       return cdw;
     }
@@ -110,11 +115,11 @@ public class ConditionTransformerTest {
     private CdwCodeableConcept code() {
       CdwCodeableConcept cdw = new CdwCodeableConcept();
       cdw.setText("Asthma");
-      cdw.getCoding().add(coding());
+      cdw.getCoding().add(codeCoding());
       return cdw;
     }
 
-    private CdwCoding coding() {
+    private CdwCoding codeCoding() {
       CdwCoding cdw = new CdwCoding();
       cdw.setSystem("http://www.cdc.gov/nchs/icd/icd9.htm");
       cdw.setCode("493.20");
@@ -155,25 +160,29 @@ public class ConditionTransformerTest {
   @NoArgsConstructor(staticName = "get")
   private static class Expected {
     CodeableConcept category() {
-      return codeableConcept(
-          coding("http://hl7.org/fhir/condition-category", "diagnosis", "Diagnosis"));
+      return CodeableConcept.builder().coding(categoryCoding()).text("Category").build();
+    }
+
+    List<Coding> categoryCoding() {
+      return singletonList(
+          Coding.builder()
+              .code("diagnosis")
+              .system("http://hl7.org/fhir/condition-category")
+              .display("Diagnosis")
+              .build());
     }
 
     CodeableConcept code() {
-      return codeableConcept(
-              coding(
-                  "http://www.cdc.gov/nchs/icd/icd9.htm",
-                  "493.20",
-                  "CHRONIC OBSTRUCTIVE ASTHMA, UNSPECIFIED"))
-          .text("Asthma");
+      return CodeableConcept.builder().coding(coding()).text("Asthma").build();
     }
 
-    CodeableConcept codeableConcept(Coding coding) {
-      return CodeableConcept.builder().coding(singletonList(coding)).build();
-    }
-
-    Coding coding(String system, String code, String display) {
-      return Coding.builder().system(system).code(code).display(display).build();
+    List<Coding> coding() {
+      return singletonList(
+          Coding.builder()
+              .system("http://www.cdc.gov/nchs/icd/icd9.htm")
+              .code("493.20")
+              .display("CHRONIC OBSTRUCTIVE ASTHMA, UNSPECIFIED")
+              .build());
     }
 
     Condition condition() {

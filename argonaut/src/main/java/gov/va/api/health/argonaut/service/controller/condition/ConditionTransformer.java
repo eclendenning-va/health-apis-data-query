@@ -1,5 +1,6 @@
 package gov.va.api.health.argonaut.service.controller.condition;
 
+import static gov.va.api.health.argonaut.service.controller.Transformers.allNull;
 import static gov.va.api.health.argonaut.service.controller.Transformers.asDateString;
 import static gov.va.api.health.argonaut.service.controller.Transformers.asDateTimeString;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convert;
@@ -14,6 +15,7 @@ import gov.va.api.health.argonaut.api.resources.Condition.ClinicalStatusCode;
 import gov.va.api.health.argonaut.api.resources.Condition.VerificationStatusCode;
 import gov.va.api.health.argonaut.service.controller.EnumSearcher;
 import gov.va.dvp.cdw.xsd.model.CdwCodeableConcept;
+import gov.va.dvp.cdw.xsd.model.CdwCoding;
 import gov.va.dvp.cdw.xsd.model.CdwCondition103Root.CdwConditions.CdwCondition;
 import gov.va.dvp.cdw.xsd.model.CdwCondition103Root.CdwConditions.CdwCondition.CdwCategory;
 import gov.va.dvp.cdw.xsd.model.CdwConditionCategoryCoding;
@@ -59,24 +61,26 @@ public class ConditionTransformer implements ConditionController.Transformer {
   }
 
   CodeableConcept code(List<CdwCodeableConcept> maybeCdw) {
-    if (maybeCdw == null || maybeCdw.isEmpty()) {
-      return null;
-    }
-    CdwCodeableConcept firstCode = maybeCdw.get(0);
-    if (firstCode.getText() == null && firstCode.getCoding().isEmpty()) {
+    if (maybeCdw == null
+        || maybeCdw.isEmpty()
+        || allNull(maybeCdw.get(0).getCoding(), maybeCdw.get(0).getText())) {
       return null;
     }
     return CodeableConcept.builder()
-        .text(firstCode.getText())
-        .coding(
-            convertAll(
-                firstCode.getCoding(),
-                source -> coding(source.getSystem(), source.getCode(), source.getDisplay())))
+        .text(maybeCdw.get(0).getText())
+        .coding(coding(maybeCdw.get(0).getCoding()))
         .build();
   }
 
-  private Coding coding(String system, String code, String display) {
-    return Coding.builder().system(system).code(code).display(display).build();
+  List<Coding> coding(List<CdwCoding> source) {
+    return convertAll(
+        source,
+        cdwCoding ->
+            Coding.builder()
+                .system(cdwCoding.getSystem())
+                .display(cdwCoding.getDisplay())
+                .code(cdwCoding.getCode())
+                .build());
   }
 
   private Condition condition(CdwCondition source) {
@@ -97,6 +101,9 @@ public class ConditionTransformer implements ConditionController.Transformer {
   }
 
   Reference reference(CdwReference maybeCdw) {
+    if (maybeCdw == null || allNull(maybeCdw.getDisplay(), maybeCdw.getReference())) {
+      return null;
+    }
     return convert(
         maybeCdw,
         source ->
