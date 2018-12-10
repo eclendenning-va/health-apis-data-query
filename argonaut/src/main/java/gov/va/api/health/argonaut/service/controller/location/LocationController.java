@@ -93,7 +93,7 @@ public class LocationController {
       @RequestParam(value = "page", defaultValue = "1") int page,
       @RequestParam(value = "_count", defaultValue = "1") int count) {
     return bundle(
-        Parameters.builder().add("_id", id).add("page", page).add("_count", count).build(),
+        Parameters.builder().add("identifier", id).add("page", page).add("_count", count).build(),
         page,
         count);
   }
