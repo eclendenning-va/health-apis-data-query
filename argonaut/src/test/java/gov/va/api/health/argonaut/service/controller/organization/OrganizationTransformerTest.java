@@ -32,8 +32,10 @@ public class OrganizationTransformerTest {
   private final OrganizationTransformer tx = new OrganizationTransformer();
 
   @Test
-  public void apply() {
-    assertThat(tx.apply(cdw.organization())).isEqualTo(expected.organization());
+  public void addressLine() {
+    assertThat(tx.addressLine(null)).isNull();
+    assertThat(tx.addressLine(new CdwOrganizationAddress())).isNull();
+    assertThat(tx.addressLine(cdw.address())).isEqualTo(expected.lines());
   }
 
   @Test
@@ -44,10 +46,37 @@ public class OrganizationTransformerTest {
   }
 
   @Test
-  public void addressLine() {
-    assertThat(tx.addressLine(null)).isNull();
-    assertThat(tx.addressLine(new CdwOrganizationAddress())).isNull();
-    assertThat(tx.addressLine(cdw.address())).isEqualTo(expected.lines());
+  public void apply() {
+    assertThat(tx.apply(cdw.organization())).isEqualTo(expected.organization());
+  }
+
+  @Test
+  public void codings() {
+    assertThat(tx.codings(null)).isNull();
+    assertThat(tx.codings(new CdwCoding())).isNull();
+    assertThat(tx.codings(cdw.typeCoding())).isEqualTo(expected.typeCoding());
+  }
+
+  @Test
+  public void contactPointSystem() {
+    assertThat(tx.contactPointSystem(null)).isNull();
+    assertThat(tx.contactPointSystem(" ")).isNull();
+    assertThat(tx.contactPointSystem("phone")).isEqualTo(ContactPointSystem.phone);
+    assertThat(tx.contactPointSystem("fax")).isEqualTo(ContactPointSystem.fax);
+    assertThat(tx.contactPointSystem("email")).isEqualTo(ContactPointSystem.email);
+    assertThat(tx.contactPointSystem("pager")).isEqualTo(ContactPointSystem.pager);
+    assertThat(tx.contactPointSystem("other")).isEqualTo(ContactPointSystem.other);
+  }
+
+  @Test
+  public void contactPointUse() {
+    assertThat(tx.contactPointUse(null)).isNull();
+    assertThat(tx.contactPointUse(CdwOrganizationTelecomUse.WORK)).isEqualTo(ContactPointUse.work);
+    assertThat(tx.contactPointUse(CdwOrganizationTelecomUse.HOME)).isEqualTo(ContactPointUse.home);
+    assertThat(tx.contactPointUse(CdwOrganizationTelecomUse.MOBILE))
+        .isEqualTo(ContactPointUse.mobile);
+    assertThat(tx.contactPointUse(CdwOrganizationTelecomUse.TEMP)).isEqualTo(ContactPointUse.temp);
+    assertThat(tx.contactPointUse(CdwOrganizationTelecomUse.OLD)).isEqualTo(ContactPointUse.old);
   }
 
   @Test
@@ -64,73 +93,16 @@ public class OrganizationTransformerTest {
     assertThat(tx.type(cdw.type())).isEqualTo(expected.type());
   }
 
-  @Test
-  public void codings() {
-    assertThat(tx.codings(null)).isNull();
-    assertThat(tx.codings(new CdwCoding())).isNull();
-    assertThat(tx.codings(cdw.typeCoding())).isEqualTo(expected.typeCoding());
-  }
-
-  private static class XmlSampleData {
-    private CdwOrganization organization() {
-      CdwOrganization cdw = new CdwOrganization();
-      cdw.setCdwId("11666404-1b3e-50ed-a7a6-4acc7b1caec6");
-      cdw.setActive(true);
-      cdw.setType(type());
-      cdw.setName("TEXAS HEALTH CHOICE");
-      cdw.setTelecoms(telecoms());
-      cdw.setAddresses(addresses());
-      return cdw;
-    }
-
-    private CdwAddresses addresses() {
-      CdwAddresses cdw = new CdwAddresses();
-      cdw.getAddress().add(address());
-      return cdw;
-    }
-
-    private CdwOrganizationAddress address() {
-      CdwOrganizationAddress cdw = new CdwOrganizationAddress();
-      CdwLines lines = new CdwLines();
-      cdw.setLines(lines);
-      cdw.getLines().getLine().add("GTPA");
-      cdw.getLines().getLine().add("3200 SOUTHWEST FREEWAY");
-      cdw.setCity("HOUSTON");
-      cdw.setState("TX");
-      cdw.setPostalCode("77027");
-      return cdw;
-    }
-
-    private CdwTelecoms telecoms() {
-      CdwTelecoms cdw = new CdwTelecoms();
-      cdw.getTelecom().add(telecom());
-      return cdw;
-    }
-
-    private CdwOrganizationTelecom telecom() {
-      CdwOrganizationTelecom cdw = new CdwOrganizationTelecom();
-      cdw.setSystem("phone");
-      cdw.setValue("(800)466-8397");
-      cdw.setUse(CdwOrganizationTelecomUse.WORK);
-      return cdw;
-    }
-
-    private CdwOrganizationType type() {
-      CdwOrganizationType cdw = new CdwOrganizationType();
-      cdw.setCoding(typeCoding());
-      return cdw;
-    }
-
-    private CdwCoding typeCoding() {
-      CdwCoding cdw = new CdwCoding();
-      cdw.setSystem("http://hl7.org/fhir/organization-type");
-      cdw.setCode(CdwOrganizationTypeCode.INS);
-      cdw.setDisplay(CdwOrganizationTypeDisplay.INSURANCE_COMPANY);
-      return cdw;
-    }
-  }
-
   private static class Expected {
+    private List<Address> addresses() {
+      return Collections.singletonList(
+          Address.builder().line(lines()).city("HOUSTON").state("TX").postalCode("77027").build());
+    }
+
+    private List<String> lines() {
+      return Arrays.asList("GTPA", "3200 SOUTHWEST FREEWAY");
+    }
+
     private Organization organization() {
       return Organization.builder()
           .resourceType("Organization")
@@ -141,15 +113,6 @@ public class OrganizationTransformerTest {
           .telecom(telecoms())
           .address(addresses())
           .build();
-    }
-
-    private List<Address> addresses() {
-      return Collections.singletonList(
-          Address.builder().line(lines()).city("HOUSTON").state("TX").postalCode("77027").build());
-    }
-
-    private List<String> lines() {
-      return Arrays.asList("GTPA", "3200 SOUTHWEST FREEWAY");
     }
 
     private List<ContactPoint> telecoms() {
@@ -172,6 +135,65 @@ public class OrganizationTransformerTest {
               .code("ins")
               .display("Insurance Company")
               .build());
+    }
+  }
+
+  private static class XmlSampleData {
+    private CdwOrganizationAddress address() {
+      CdwOrganizationAddress cdw = new CdwOrganizationAddress();
+      CdwLines lines = new CdwLines();
+      cdw.setLines(lines);
+      cdw.getLines().getLine().add("GTPA");
+      cdw.getLines().getLine().add("3200 SOUTHWEST FREEWAY");
+      cdw.setCity("HOUSTON");
+      cdw.setState("TX");
+      cdw.setPostalCode("77027");
+      return cdw;
+    }
+
+    private CdwAddresses addresses() {
+      CdwAddresses cdw = new CdwAddresses();
+      cdw.getAddress().add(address());
+      return cdw;
+    }
+
+    private CdwOrganization organization() {
+      CdwOrganization cdw = new CdwOrganization();
+      cdw.setCdwId("11666404-1b3e-50ed-a7a6-4acc7b1caec6");
+      cdw.setActive(true);
+      cdw.setType(type());
+      cdw.setName("TEXAS HEALTH CHOICE");
+      cdw.setTelecoms(telecoms());
+      cdw.setAddresses(addresses());
+      return cdw;
+    }
+
+    private CdwOrganizationTelecom telecom() {
+      CdwOrganizationTelecom cdw = new CdwOrganizationTelecom();
+      cdw.setSystem("phone");
+      cdw.setValue("(800)466-8397");
+      cdw.setUse(CdwOrganizationTelecomUse.WORK);
+      return cdw;
+    }
+
+    private CdwTelecoms telecoms() {
+      CdwTelecoms cdw = new CdwTelecoms();
+      cdw.getTelecom().add(telecom());
+      return cdw;
+    }
+
+    private CdwOrganizationType type() {
+      CdwOrganizationType cdw = new CdwOrganizationType();
+      cdw.setCoding(typeCoding());
+      return cdw;
+    }
+
+    private CdwCoding typeCoding() {
+      CdwCoding cdw = new CdwCoding();
+      cdw.setSystem("http://hl7.org/fhir/organization-type");
+      cdw.setCode(CdwOrganizationTypeCode.INS);
+      cdw.setDisplay(CdwOrganizationTypeDisplay.INSURANCE_COMPANY);
+      return cdw;
     }
   }
 }
