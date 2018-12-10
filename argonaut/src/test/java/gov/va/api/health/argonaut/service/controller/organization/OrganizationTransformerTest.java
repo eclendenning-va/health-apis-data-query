@@ -53,8 +53,8 @@ public class OrganizationTransformerTest {
   @Test
   public void telecoms() {
     assertThat(tx.telecoms(null)).isNull();
-    assertThat(tx.telecoms(Collections.singletonList(new CdwOrganizationTelecom()))).isNull();
-    assertThat(tx.telecoms(cdw.telecoms().getTelecom())).isEqualTo(expected.telecoms());
+    assertThat(tx.telecoms(new CdwTelecoms())).isNull();
+    assertThat(tx.telecoms(cdw.telecoms())).isEqualTo(expected.telecoms());
   }
 
   @Test

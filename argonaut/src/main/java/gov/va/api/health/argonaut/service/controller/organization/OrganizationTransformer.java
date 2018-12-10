@@ -12,8 +12,10 @@ import gov.va.api.health.argonaut.api.datatypes.ContactPoint;
 import gov.va.api.health.argonaut.api.datatypes.ContactPoint.ContactPointSystem;
 import gov.va.api.health.argonaut.api.datatypes.ContactPoint.ContactPointUse;
 import gov.va.api.health.argonaut.api.resources.Organization;
+import gov.va.api.health.argonaut.service.controller.EnumSearcher;
 import gov.va.dvp.cdw.xsd.model.CdwOrganization100Root.CdwOrganizations.CdwOrganization;
 import gov.va.dvp.cdw.xsd.model.CdwOrganization100Root.CdwOrganizations.CdwOrganization.CdwAddresses;
+import gov.va.dvp.cdw.xsd.model.CdwOrganization100Root.CdwOrganizations.CdwOrganization.CdwTelecoms;
 import gov.va.dvp.cdw.xsd.model.CdwOrganizationAddress;
 import gov.va.dvp.cdw.xsd.model.CdwOrganizationTelecom;
 import gov.va.dvp.cdw.xsd.model.CdwOrganizationType;
@@ -37,7 +39,7 @@ public class OrganizationTransformer implements OrganizationController.Transform
         .active(source.isActive())
         .type(type(source.getType()))
         .name(source.getName())
-        .telecom(telecoms(source.getTelecoms().getTelecom()))
+        .telecom(telecoms(source.getTelecoms()))
         .address(addresses(source.getAddresses()))
         .build();
   }
@@ -61,36 +63,21 @@ public class OrganizationTransformer implements OrganizationController.Transform
     return allNull(source.getLines().getLine()) ? null : source.getLines().getLine();
   }
 
-  List<ContactPoint> telecoms(List<CdwOrganizationTelecom> optionalSource) {
-    if (optionalSource == null || optionalSource.isEmpty()) {
+  List<ContactPoint> telecoms(CdwTelecoms optionalSource) {
+    if(optionalSource == null) {
       return null;
     }
-    List<ContactPoint> contactPoints =
-        optionalSource
-            .stream()
-            .map(this::telecom)
-            .filter(Objects::nonNull)
-            .collect(Collectors.toList());
-    return contactPoints.isEmpty() ? null : contactPoints;
-  }
-
-  private ContactPoint telecom(CdwOrganizationTelecom cdw) {
-    if (allNull(cdw.getSystem(), cdw.getUse(), cdw.getValue())) {
-      return null;
-    }
-    return ContactPoint.builder()
-        .system(telecomSystem(cdw.getSystem()))
-        .value(cdw.getValue())
-        .use(ifPresent(cdw.getUse(), use -> ContactPointUse.valueOf(use.value())))
-        .build();
-  }
-
-  private ContactPointSystem telecomSystem(String system) {
-    return (system == null) ? null : ContactPointSystem.phone;
+    return convertAll(optionalSource.getTelecom(),
+        source ->
+        ContactPoint.builder()
+            .system(EnumSearcher.of(ContactPointSystem.class).find(source.getSystem()))
+            .value(source.getValue())
+            .use(ifPresent(source.getUse(), use -> ContactPointUse.valueOf(use.value())))
+            .build());
   }
 
   CodeableConcept type(CdwOrganizationType optionalSource) {
-    if (optionalSource == null || optionalSource.getCoding() == null) {
+    if (optionalSource == null){
       return null;
     }
     return convert(
