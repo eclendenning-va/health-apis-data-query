@@ -15,6 +15,7 @@ public class TestIds {
   @NonNull String diagnosticReport;
   @NonNull String encounter;
   @NonNull String immunization;
+  @NonNull String location;
   @NonNull String medication;
   @NonNull String medicationOrder;
   @NonNull String medicationStatement;

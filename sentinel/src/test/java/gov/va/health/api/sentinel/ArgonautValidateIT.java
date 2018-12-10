@@ -6,6 +6,7 @@ import gov.va.api.health.argonaut.api.resources.Condition;
 import gov.va.api.health.argonaut.api.resources.DiagnosticReport;
 import gov.va.api.health.argonaut.api.resources.Encounter;
 import gov.va.api.health.argonaut.api.resources.Immunization;
+import gov.va.api.health.argonaut.api.resources.Location;
 import gov.va.api.health.argonaut.api.resources.Medication;
 import gov.va.api.health.argonaut.api.resources.MedicationOrder;
 import gov.va.api.health.argonaut.api.resources.MedicationStatement;
@@ -47,6 +48,7 @@ public class ArgonautValidateIT {
         validate("DiagnosticReport", ids.diagnosticReport(), DiagnosticReport.Bundle.class),
         validate("Encounter", ids.encounter(), Encounter.Bundle.class),
         validate("Immunization", ids.immunization(), Immunization.Bundle.class),
+        validate("Location", ids.location(), Location.Bundle.class),
         validate("Medication", ids.medication(), Medication.Bundle.class),
         validate("MedicationOrder", ids.medicationOrder(), MedicationOrder.Bundle.class),
         validate(
