@@ -1,6 +1,7 @@
 package gov.va.health.api.sentinel;
 
 import gov.va.api.health.argonaut.api.resources.AllergyIntolerance;
+import gov.va.api.health.argonaut.api.resources.Appointment;
 import gov.va.api.health.argonaut.api.resources.Condition;
 import gov.va.api.health.argonaut.api.resources.DiagnosticReport;
 import gov.va.api.health.argonaut.api.resources.Encounter;
@@ -71,6 +72,13 @@ public class ArgonautReadAndSearchIT {
             AllergyIntolerance.Bundle.class,
             "/api/AllergyIntolerance?patient={patient}",
             ids.patient()),
+        // Appointment
+        expect(200, Appointment.class, "/api/Appointment/{id}", ids.appointment()),
+        expect(404, OperationOutcome.class, "/api/Appointment/{id}", ids.unknown()),
+        expect(200, Appointment.Bundle.class, "/api/Appointment?_id={id}", ids.appointment()),
+        expect(
+            200, Appointment.Bundle.class, "/api/Appointment?identifier={id}", ids.appointment()),
+        expect(200, Appointment.Bundle.class, "/api/Appointment?patient={patient}", ids.patient()),
         // Condition
         expect(200, Condition.class, "/api/Condition/{id}", ids.condition()),
         expect(404, OperationOutcome.class, "/api/Condition/{id}", ids.unknown()),

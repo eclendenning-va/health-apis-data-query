@@ -2,6 +2,7 @@ package gov.va.api.health.argonaut.service.controller;
 
 import static gov.va.api.health.argonaut.service.controller.Transformers.asDateString;
 import static gov.va.api.health.argonaut.service.controller.Transformers.asDateTimeString;
+import static gov.va.api.health.argonaut.service.controller.Transformers.asInteger;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convert;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convertAll;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convertString;
@@ -11,6 +12,7 @@ import static gov.va.api.health.argonaut.service.controller.Transformers.ifPrese
 import static org.assertj.core.api.Assertions.assertThat;
 
 import gov.va.api.health.argonaut.service.controller.Transformers.MissingPayload;
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.function.Function;
@@ -56,9 +58,24 @@ public class TransformersTest {
   }
 
   @Test
+  public void asIntegerReturnsNullWhenBigIntIsNull() {
+    assertThat(asInteger(null)).isNull();
+  }
+
+  @Test
+  public void asIntegerReturnsValueWhenBigIntIsNull() {
+    assertThat(asInteger(BigInteger.TEN)).isEqualTo(10);
+  }
+
+  @Test
   public void convertAllReturnsConvertedWhenListIsPopulated() {
     assertThat(convertAll(Arrays.asList(1, 2, 3), o -> "x" + o))
         .isEqualTo(Arrays.asList("x1", "x2", "x3"));
+  }
+
+  @Test
+  public void convertAllReturnsNullWhenListConvertsToToNull() {
+    assertThat(convertAll(Arrays.asList(1, 2, 3), o -> null)).isNull();
   }
 
   @Test
