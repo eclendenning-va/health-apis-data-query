@@ -257,14 +257,6 @@ public class ArgonautReadAndSearchIT {
             ids.observations().loinc1(),
             ids.observations().loinc2()),
         // Organization
-
-        /*// Medication
-        expect(200, Medication.class, "/api/Medication/{id}", ids.medication()),
-        expect(404, OperationOutcome.class, "/api/Medication/{id}", ids.unknown()),
-        expect(200, Medication.Bundle.class, "/api/Medication?_id={id}", ids.medication()),
-        expect(200, Medication.Bundle.class, "/api/Medication?identifier={id}", ids.medication()),
-        expect(404, OperationOutcome.class, "/api/Medication?_id={id}", ids.unknown()),
-        */
         expect(200, Organization.class, "/api/Organization/{id}", ids.organization()),
         expect(404, OperationOutcome.class, "/api/Organization/{id}", ids.unknown()),
         expect(200, Organization.Bundle.class, "/api/Organization?_id={id}", ids.organization()),
