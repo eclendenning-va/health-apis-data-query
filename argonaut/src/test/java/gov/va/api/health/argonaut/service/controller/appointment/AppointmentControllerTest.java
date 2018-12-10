@@ -57,12 +57,12 @@ public class AppointmentControllerTest {
     CdwAppointment cdwItem2 = new CdwAppointment();
     CdwAppointment cdwItem3 = new CdwAppointment();
     root.getAppointments().getAppointment().addAll(Arrays.asList(cdwItem1, cdwItem2, cdwItem3));
-    Appointment patient1 = Appointment.builder().build();
-    Appointment patient2 = Appointment.builder().build();
-    Appointment patient3 = Appointment.builder().build();
-    when(tx.apply(cdwItem1)).thenReturn(patient1);
-    when(tx.apply(cdwItem2)).thenReturn(patient2);
-    when(tx.apply(cdwItem3)).thenReturn(patient3);
+    Appointment item1 = Appointment.builder().build();
+    Appointment item2 = Appointment.builder().build();
+    Appointment item3 = Appointment.builder().build();
+    when(tx.apply(cdwItem1)).thenReturn(item1);
+    when(tx.apply(cdwItem2)).thenReturn(item2);
+    when(tx.apply(cdwItem3)).thenReturn(item3);
     when(client.search(Mockito.any())).thenReturn(root);
 
     Bundle mockBundle = new Bundle();
@@ -126,7 +126,7 @@ public class AppointmentControllerTest {
   public void searchById() {
     assertSearch(
         () -> controller.searchById("me", 1, 10),
-        Parameters.builder().add("_id", "me").add("page", 1).add("_count", 10).build());
+        Parameters.builder().add("identifier", "me").add("page", 1).add("_count", 10).build());
   }
 
   @Test

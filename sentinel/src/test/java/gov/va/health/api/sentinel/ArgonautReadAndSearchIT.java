@@ -72,7 +72,6 @@ public class ArgonautReadAndSearchIT {
             "/api/AllergyIntolerance?patient={patient}",
             ids.patient()),
         // Appointment
-        // Allergy Intolerance
         expect(200, Appointment.class, "/api/Appointment/{id}", ids.appointment()),
         expect(404, OperationOutcome.class, "/api/Appointment/{id}", ids.unknown()),
         expect(200, Appointment.Bundle.class, "/api/Appointment?_id={id}", ids.appointment()),
