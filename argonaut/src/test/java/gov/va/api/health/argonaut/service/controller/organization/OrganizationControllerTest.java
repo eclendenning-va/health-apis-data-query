@@ -22,7 +22,6 @@ import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.function.Supplier;
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolationException;
 import lombok.SneakyThrows;
 import org.junit.Before;
@@ -40,7 +39,6 @@ public class OrganizationControllerTest {
   @Mock OrganizationController.Transformer tx;
 
   OrganizationController controller;
-  @Mock HttpServletRequest servletRequest;
   @Mock Bundler bundler;
 
   @Before
@@ -67,7 +65,6 @@ public class OrganizationControllerTest {
     when(tx.apply(cdwOrg2)).thenReturn(org2);
     when(tx.apply(cdwOrg3)).thenReturn(org3);
     when(client.search(Mockito.any())).thenReturn(root);
-    when(servletRequest.getRequestURI()).thenReturn("/api/Organization");
 
     Organization.Bundle mockBundle = new Organization.Bundle();
     when(bundler.bundle(Mockito.any())).thenReturn(mockBundle);

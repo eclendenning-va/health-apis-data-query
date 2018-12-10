@@ -57,12 +57,12 @@ public class ObservationControllerTest {
     CdwObservation cdwItem2 = new CdwObservation();
     CdwObservation cdwItem3 = new CdwObservation();
     root.getObservations().getObservation().addAll(Arrays.asList(cdwItem1, cdwItem2, cdwItem3));
-    Observation patient1 = Observation.builder().build();
-    Observation patient2 = Observation.builder().build();
-    Observation patient3 = Observation.builder().build();
-    when(tx.apply(cdwItem1)).thenReturn(patient1);
-    when(tx.apply(cdwItem2)).thenReturn(patient2);
-    when(tx.apply(cdwItem3)).thenReturn(patient3);
+    Observation observation1 = Observation.builder().build();
+    Observation observation2 = Observation.builder().build();
+    Observation observation3 = Observation.builder().build();
+    when(tx.apply(cdwItem1)).thenReturn(observation1);
+    when(tx.apply(cdwItem2)).thenReturn(observation2);
+    when(tx.apply(cdwItem3)).thenReturn(observation3);
     when(client.search(Mockito.any())).thenReturn(root);
 
     Bundle mockBundle = new Bundle();
@@ -126,7 +126,7 @@ public class ObservationControllerTest {
   public void searchById() {
     assertSearch(
         () -> controller.searchById("me", 1, 10),
-        Parameters.builder().add("_id", "me").add("page", 1).add("_count", 10).build());
+        Parameters.builder().add("identifier", "me").add("page", 1).add("_count", 10).build());
   }
 
   @Test

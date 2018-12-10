@@ -58,12 +58,12 @@ public class EncounterControllerTest {
     CdwEncounter cdwItem2 = new CdwEncounter();
     CdwEncounter cdwItem3 = new CdwEncounter();
     root.getEncounters().getEncounter().addAll(Arrays.asList(cdwItem1, cdwItem2, cdwItem3));
-    Encounter patient1 = Encounter.builder().build();
-    Encounter patient2 = Encounter.builder().build();
-    Encounter patient3 = Encounter.builder().build();
-    when(tx.apply(cdwItem1)).thenReturn(patient1);
-    when(tx.apply(cdwItem2)).thenReturn(patient2);
-    when(tx.apply(cdwItem3)).thenReturn(patient3);
+    Encounter encounter1 = Encounter.builder().build();
+    Encounter encounter2 = Encounter.builder().build();
+    Encounter encounter3 = Encounter.builder().build();
+    when(tx.apply(cdwItem1)).thenReturn(encounter1);
+    when(tx.apply(cdwItem2)).thenReturn(encounter2);
+    when(tx.apply(cdwItem3)).thenReturn(encounter3);
     when(client.search(Mockito.any())).thenReturn(root);
 
     Encounter.Bundle mockBundle = new Encounter.Bundle();

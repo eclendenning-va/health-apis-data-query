@@ -57,12 +57,12 @@ public class ImmunizationControllerTest {
     CdwImmunization cdwItem2 = new CdwImmunization();
     CdwImmunization cdwItem3 = new CdwImmunization();
     root.getImmunizations().getImmunization().addAll(Arrays.asList(cdwItem1, cdwItem2, cdwItem3));
-    Immunization patient1 = Immunization.builder().build();
-    Immunization patient2 = Immunization.builder().build();
-    Immunization patient3 = Immunization.builder().build();
-    when(tx.apply(cdwItem1)).thenReturn(patient1);
-    when(tx.apply(cdwItem2)).thenReturn(patient2);
-    when(tx.apply(cdwItem3)).thenReturn(patient3);
+    Immunization immunization1 = Immunization.builder().build();
+    Immunization immunization2 = Immunization.builder().build();
+    Immunization immunization3 = Immunization.builder().build();
+    when(tx.apply(cdwItem1)).thenReturn(immunization1);
+    when(tx.apply(cdwItem2)).thenReturn(immunization2);
+    when(tx.apply(cdwItem3)).thenReturn(immunization3);
     when(client.search(Mockito.any())).thenReturn(root);
 
     Bundle mockBundle = new Bundle();
