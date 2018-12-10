@@ -1,12 +1,13 @@
-package gov.va.api.health.argonaut.service.controller.medicationstatement;
+package gov.va.api.health.argonaut.service.controller.practitioner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import gov.va.api.health.argonaut.api.bundle.AbstractBundle.BundleType;
-import gov.va.api.health.argonaut.api.resources.MedicationStatement;
-import gov.va.api.health.argonaut.api.resources.MedicationStatement.Bundle;
+import gov.va.api.health.argonaut.api.resources.Practitioner;
+import gov.va.api.health.argonaut.api.resources.Practitioner.Bundle;
+import gov.va.api.health.argonaut.api.resources.Practitioner.Entry;
 import gov.va.api.health.argonaut.service.controller.Bundler;
 import gov.va.api.health.argonaut.service.controller.Bundler.BundleContext;
 import gov.va.api.health.argonaut.service.controller.PageLinks.LinkConfig;
@@ -15,9 +16,9 @@ import gov.va.api.health.argonaut.service.controller.Validator;
 import gov.va.api.health.argonaut.service.mranderson.client.MrAndersonClient;
 import gov.va.api.health.argonaut.service.mranderson.client.Query;
 import gov.va.api.health.autoconfig.configuration.JacksonConfig;
-import gov.va.dvp.cdw.xsd.model.CdwMedicationStatement102Root;
-import gov.va.dvp.cdw.xsd.model.CdwMedicationStatement102Root.CdwMedicationStatements;
-import gov.va.dvp.cdw.xsd.model.CdwMedicationStatement102Root.CdwMedicationStatements.CdwMedicationStatement;
+import gov.va.dvp.cdw.xsd.model.CdwPractitioner100Root;
+import gov.va.dvp.cdw.xsd.model.CdwPractitioner100Root.CdwPractitioners;
+import gov.va.dvp.cdw.xsd.model.CdwPractitioner100Root.CdwPractitioners.CdwPractitioner;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collections;
@@ -33,38 +34,37 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.util.MultiValueMap;
 
 @SuppressWarnings("WeakerAccess")
-public class MedicationStatementControllerTest {
+public class PractitionerControllerTest {
+
   @Mock MrAndersonClient client;
 
-  @Mock MedicationStatementController.Transformer tx;
+  @Mock PractitionerController.Transformer tx;
 
-  MedicationStatementController controller;
+  PractitionerController controller;
   @Mock Bundler bundler;
 
   @Before
   public void _init() {
     MockitoAnnotations.initMocks(this);
-    controller = new MedicationStatementController(tx, client, bundler);
+    controller = new PractitionerController(tx, client, bundler);
   }
 
   private void assertSearch(Supplier<Bundle> invocation, MultiValueMap<String, String> params) {
-    CdwMedicationStatement102Root root = new CdwMedicationStatement102Root();
+    CdwPractitioner100Root root = new CdwPractitioner100Root();
     root.setPageNumber(BigInteger.valueOf(1));
     root.setRecordsPerPage(BigInteger.valueOf(10));
     root.setRecordCount(BigInteger.valueOf(3));
-    root.setMedicationStatements(new CdwMedicationStatements());
-    CdwMedicationStatement cdwItem1 = new CdwMedicationStatement();
-    CdwMedicationStatement cdwItem2 = new CdwMedicationStatement();
-    CdwMedicationStatement cdwItem3 = new CdwMedicationStatement();
-    root.getMedicationStatements()
-        .getMedicationStatement()
-        .addAll(Arrays.asList(cdwItem1, cdwItem2, cdwItem3));
-    MedicationStatement ms1 = MedicationStatement.builder().build();
-    MedicationStatement ms2 = MedicationStatement.builder().build();
-    MedicationStatement ms3 = MedicationStatement.builder().build();
-    when(tx.apply(cdwItem1)).thenReturn(ms1);
-    when(tx.apply(cdwItem2)).thenReturn(ms2);
-    when(tx.apply(cdwItem3)).thenReturn(ms3);
+    root.setPractitioners(new CdwPractitioners());
+    CdwPractitioner cdwItem1 = new CdwPractitioner();
+    CdwPractitioner cdwItem2 = new CdwPractitioner();
+    CdwPractitioner cdwItem3 = new CdwPractitioner();
+    root.getPractitioners().getPractitioner().addAll(Arrays.asList(cdwItem1, cdwItem2, cdwItem3));
+    Practitioner practitioner1 = Practitioner.builder().build();
+    Practitioner practitioner2 = Practitioner.builder().build();
+    Practitioner practitioner3 = Practitioner.builder().build();
+    when(tx.apply(cdwItem1)).thenReturn(practitioner1);
+    when(tx.apply(cdwItem2)).thenReturn(practitioner2);
+    when(tx.apply(cdwItem3)).thenReturn(practitioner3);
     when(client.search(Mockito.any())).thenReturn(root);
 
     Bundle mockBundle = new Bundle();
@@ -74,10 +74,8 @@ public class MedicationStatementControllerTest {
 
     assertThat(actual).isSameAs(mockBundle);
     @SuppressWarnings("unchecked")
-    ArgumentCaptor<
-            BundleContext<
-                CdwMedicationStatement, MedicationStatement, MedicationStatement.Entry, Bundle>>
-        captor = ArgumentCaptor.forClass(BundleContext.class);
+    ArgumentCaptor<BundleContext<CdwPractitioner, Practitioner, Entry, Bundle>> captor =
+        ArgumentCaptor.forClass(BundleContext.class);
 
     verify(bundler).bundle(captor.capture());
 
@@ -86,24 +84,23 @@ public class MedicationStatementControllerTest {
             .page(1)
             .recordsPerPage(10)
             .totalRecords(3)
-            .path("MedicationStatement")
+            .path("Practitioner")
             .queryParams(params)
             .build();
     assertThat(captor.getValue().linkConfig()).isEqualTo(expectedLinkConfig);
-    assertThat(captor.getValue().xmlItems())
-        .isEqualTo(root.getMedicationStatements().getMedicationStatement());
+    assertThat(captor.getValue().xmlItems()).isEqualTo(root.getPractitioners().getPractitioner());
     assertThat(captor.getValue().newBundle().get()).isInstanceOf(Bundle.class);
-    assertThat(captor.getValue().newEntry().get()).isInstanceOf(MedicationStatement.Entry.class);
+    assertThat(captor.getValue().newEntry().get()).isInstanceOf(Practitioner.Entry.class);
     assertThat(captor.getValue().transformer()).isSameAs(tx);
   }
 
-  private Bundle bundleOf(MedicationStatement resource) {
+  private Bundle bundleOf(Practitioner resource) {
     return Bundle.builder()
         .type(BundleType.searchset)
         .resourceType("Bundle")
         .entry(
             Collections.singletonList(
-                MedicationStatement.Entry.builder()
+                Practitioner.Entry.builder()
                     .fullUrl("http://example.com")
                     .resource(resource)
                     .build()))
@@ -113,17 +110,16 @@ public class MedicationStatementControllerTest {
   @SuppressWarnings("unchecked")
   @Test
   public void read() {
-    CdwMedicationStatement102Root root = new CdwMedicationStatement102Root();
-    root.setMedicationStatements(new CdwMedicationStatements());
-    CdwMedicationStatement xmlMedicationStatement = new CdwMedicationStatement();
-    root.getMedicationStatements().getMedicationStatement().add(xmlMedicationStatement);
-    MedicationStatement item = MedicationStatement.builder().build();
+    CdwPractitioner100Root root = new CdwPractitioner100Root();
+    root.setPractitioners(new CdwPractitioners());
+    CdwPractitioner xmlPractitioner = new CdwPractitioner();
+    root.getPractitioners().getPractitioner().add(xmlPractitioner);
+    Practitioner item = Practitioner.builder().build();
     when(client.search(Mockito.any())).thenReturn(root);
-    when(tx.apply(xmlMedicationStatement)).thenReturn(item);
-    MedicationStatement actual = controller.read("hello");
+    when(tx.apply(xmlPractitioner)).thenReturn(item);
+    Practitioner actual = controller.read("hello");
     assertThat(actual).isSameAs(item);
-    ArgumentCaptor<Query<CdwMedicationStatement102Root>> captor =
-        ArgumentCaptor.forClass(Query.class);
+    ArgumentCaptor<Query<CdwPractitioner100Root>> captor = ArgumentCaptor.forClass(Query.class);
     verify(client).search(captor.capture());
     assertThat(captor.getValue().parameters()).isEqualTo(Parameters.forIdentity("hello"));
   }
@@ -132,7 +128,7 @@ public class MedicationStatementControllerTest {
   public void searchById() {
     assertSearch(
         () -> controller.searchById("me", 1, 10),
-        Parameters.builder().add("_id", "me").add("page", 1).add("_count", 10).build());
+        Parameters.builder().add("identifier", "me").add("page", 1).add("_count", 10).build());
   }
 
   @Test
@@ -143,20 +139,13 @@ public class MedicationStatementControllerTest {
   }
 
   @Test
-  public void searchByPatient() {
-    assertSearch(
-        () -> controller.searchByPatient("me", 1, 10),
-        Parameters.builder().add("patient", "me").add("page", 1).add("_count", 10).build());
-  }
-
-  @Test
   @SneakyThrows
   public void validateAcceptsValidBundle() {
-    MedicationStatement resource =
+    Practitioner resource =
         JacksonConfig.createMapper()
             .readValue(
-                getClass().getResourceAsStream("/cdw/old-medicationstatement-1.02.json"),
-                MedicationStatement.class);
+                getClass().getResourceAsStream("/cdw/old-practitioner-1.00.json"),
+                Practitioner.class);
 
     Bundle bundle = bundleOf(resource);
     assertThat(controller.validate(bundle)).isEqualTo(Validator.ok());
@@ -165,11 +154,11 @@ public class MedicationStatementControllerTest {
   @Test(expected = ConstraintViolationException.class)
   @SneakyThrows
   public void validateThrowsExceptionForInvalidBundle() {
-    MedicationStatement resource =
+    Practitioner resource =
         JacksonConfig.createMapper()
             .readValue(
-                getClass().getResourceAsStream("/cdw/old-medicationstatement-1.02.json"),
-                MedicationStatement.class);
+                getClass().getResourceAsStream("/cdw/old-practitioner-1.00.json"),
+                Practitioner.class);
     resource.resourceType(null);
 
     Bundle bundle = bundleOf(resource);

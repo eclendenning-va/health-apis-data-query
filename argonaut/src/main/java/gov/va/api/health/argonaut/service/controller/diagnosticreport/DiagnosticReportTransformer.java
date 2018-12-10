@@ -73,7 +73,7 @@ public class DiagnosticReportTransformer implements DiagnosticReportController.T
      */
     return DiagnosticReport.builder()
         .id(source.getCdwId())
-        .resourceType("Diagnostic Report")
+        .resourceType("DiagnosticReport")
         .status(status(source))
         .category(category(source.getCategory()))
         .code(code(source.getCode()))
