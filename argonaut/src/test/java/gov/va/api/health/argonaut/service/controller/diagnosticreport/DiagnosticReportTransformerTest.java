@@ -1,6 +1,7 @@
 package gov.va.api.health.argonaut.service.controller.diagnosticreport;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
 
 import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
 import gov.va.api.health.argonaut.api.datatypes.Coding;
@@ -21,6 +22,7 @@ import gov.va.dvp.cdw.xsd.model.CdwReference;
 import gov.va.dvp.cdw.xsd.model.CdwReturnFormatCodes;
 import gov.va.dvp.cdw.xsd.model.CdwReturnTypeCodes;
 import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import javax.xml.datatype.DatatypeFactory;
@@ -31,67 +33,67 @@ import org.junit.Test;
 
 public class DiagnosticReportTransformerTest {
 
-  DiagnosticReportTransformer tx = new DiagnosticReportTransformer();
-  private CdwDiagnosticReport102Root.CdwDiagnosticReports.CdwDiagnosticReport cdw =
-      new CdwSampleData().diagnosticReport();
-
-  private DiagnosticReport expected = Expected.get().diagnosticReport();
+  private final DiagnosticReportTransformer tx = new DiagnosticReportTransformer();
+  private final CdwSampleData cdw = new CdwSampleData();
+  private final Expected expected = new Expected();
 
   @Test
-  public void categoryCodingTransformsToCodingList() {
-    assertThat(tx.categoryCodings(cdw.getCategory().getCoding()))
-        .isEqualTo(expected.category().coding());
+  public void categoryCoding() {
+    assertThat(tx.categoryCodings(null)).isNull();
+    assertThat(tx.categoryCodings(new CdwDiagnosticReportCategoryCoding())).isNull();
+    assertThat(tx.categoryCodings(cdw.categoryCoding()))
+        .isEqualTo(expected.categoryCoding());
   }
 
   @Test
-  public void categoryTransformsToCodeableConcept() {
-    assertThat(tx.category(cdw.getCategory())).isEqualTo(expected.category());
+  public void category() {
+    assertThat(tx.category(cdw.category())).isEqualTo(expected.category());
   }
 
   @Test
-  public void cdwReferenceTransformsToReference() {
-    CdwReference cdwRef = new CdwReference();
-    cdwRef.setReference("ref-test");
-    cdwRef.setDisplay("dis-test");
-    assertThat(tx.reference(cdwRef))
-        .isEqualTo(Reference.builder().reference("ref-test").display("dis-test").build());
+  public void cdwReference() {
+    assertThat(tx.reference(null)).isNull();
+    assertThat(tx.reference(new CdwReference())).isNull();
+    assertThat(tx.reference(cdw.cdwReference())).isEqualTo(expected.reference());
   }
 
   @Test
-  public void codeCodingsTransformsToCodingList() {
-    CodeableConcept codeableConcept = expected.code();
-    codeableConcept.coding().get(0).display("Hello Display");
-    assertThat(tx.codeCodings(cdw.getCode().getCoding())).isEqualTo(codeableConcept.coding());
+  public void codeCodings() {
+    assertThat(tx.codeCodings(null)).isNull();
+    assertThat(tx.codeCodings(Collections.singletonList(new CdwDiagnosticReportCodeCoding()))).isNull();
+    assertThat(tx.codeCodings(null)).isNull();
   }
 
   @Test
-  public void codeTransformsToCodeableConcept() {
-    CodeableConcept codeableConcept = expected.code();
-    codeableConcept.coding().get(0).display("Hello Display");
-    assertThat(tx.code(cdw.getCode())).isEqualTo(codeableConcept);
+  public void code() {
+    assertThat(tx.code(cdw.code())).isEqualTo(expected.code());
   }
 
   @Test
   public void diagnosticReport() {
-    assertThat(tx.apply(cdw)).isEqualTo(expected);
+    assertThat(tx.apply(cdw.diagnosticReport())).isEqualTo(expected.diagnosticReport());
   }
 
   @Test
-  public void statusTransformsToCode() {
-    assertThat(tx.status(cdw)).isEqualTo(expected.status());
+  public void status() {
+    assertThat(tx.status(null)).isNull();
+    fail();
   }
 
   private static class CdwSampleData {
 
     private CdwDiagnosticReportCategory category() {
       CdwDiagnosticReportCategory category = new CdwDiagnosticReportCategory();
+      category.setCoding(categoryCoding());
+      return category;
+    }
+
+    private CdwDiagnosticReportCategoryCoding categoryCoding() {
       CdwDiagnosticReportCategoryCoding coding = new CdwDiagnosticReportCategoryCoding();
       coding.setSystem("http://hl7.org/fhir/ValueSet/diagnostic-service-sections");
       coding.setCode(CdwDiagnosticReportCategoryCode.LAB);
       coding.setDisplay(CdwDiagnosticReportCategoryDisplay.LABORATORY);
-      category.setCoding(coding);
-      category.setText("dat category");
-      return category;
+      return coding;
     }
 
     private CdwReference cdwReference() {
@@ -103,11 +105,6 @@ public class DiagnosticReportTransformerTest {
 
     private CdwDiagnosticReportCode code() {
       CdwDiagnosticReportCode code = new CdwDiagnosticReportCode();
-      CdwDiagnosticReportCodeCoding coding = new CdwDiagnosticReportCodeCoding();
-      coding.setSystem("http://HelloSystem.com");
-      coding.setDisplay("Hello Display");
-      coding.setCode("Hello Code");
-      code.getCoding().add(coding);
       code.setText("panel");
       return code;
     }
@@ -115,8 +112,7 @@ public class DiagnosticReportTransformerTest {
     CdwDiagnosticReport102Root.CdwDiagnosticReports.CdwDiagnosticReport diagnosticReport() {
       CdwDiagnosticReport102Root.CdwDiagnosticReports.CdwDiagnosticReport sampleDR =
           new CdwDiagnosticReport102Root.CdwDiagnosticReports.CdwDiagnosticReport();
-      sampleDR.setRowNumber(BigInteger.valueOf(1));
-      sampleDR.setCdwId("1234");
+      sampleDR.setCdwId("5d582505-650e-58b3-8673-49138f7b2b04");
       sampleDR.setStatus(CdwDiagnosticReportStatus.FINAL);
       sampleDR.setCategory(category());
       sampleDR.setCode(code());
@@ -126,24 +122,6 @@ public class DiagnosticReportTransformerTest {
       sampleDR.setIssued(issued());
       sampleDR.setPerformer(cdwReference());
       return sampleDR;
-    }
-
-    CdwDiagnosticReport102Root diagnosticReportRoot() {
-      CdwDiagnosticReport102Root sampleRoot = new CdwDiagnosticReport102Root();
-      sampleRoot.setFhirVersion(CdwDiagnosticReportFhirVersionValue.DSTU_2_ARGONAUT);
-      sampleRoot.setResourceName(CdwDiagnosticReportResourceNameValue.DIAGNOSTICREPORT);
-      sampleRoot.setResourceVersion("1.02");
-      sampleRoot.setReturnType(CdwReturnTypeCodes.FULL);
-      sampleRoot.setReturnFormat(CdwReturnFormatCodes.XML);
-      sampleRoot.setRecordsPerPage(BigInteger.valueOf(15));
-      sampleRoot.setStartRecord(BigInteger.valueOf(1));
-      sampleRoot.setEndRecord(BigInteger.valueOf(1));
-      sampleRoot.setRecordCount(BigInteger.valueOf(1));
-      sampleRoot.setPageCount(BigInteger.valueOf(1));
-      sampleRoot.setErrorNumber(0);
-      sampleRoot.setErrorLine(0);
-      sampleRoot.getDiagnosticReports().getDiagnosticReport().add(diagnosticReport());
-      return sampleRoot;
     }
 
     @SneakyThrows
@@ -157,13 +135,12 @@ public class DiagnosticReportTransformerTest {
     }
   }
 
-  @NoArgsConstructor(staticName = "get")
   private static class Expected {
 
     DiagnosticReport diagnosticReport() {
       return DiagnosticReport.builder()
           .resourceType("DiagnosticReport")
-          .id("1234")
+          .id("5d582505-650e-58b3-8673-49138f7b2b04")
           .status(Code._final)
           .category(category())
           .code(code())
@@ -180,20 +157,11 @@ public class DiagnosticReportTransformerTest {
     }
 
     private CodeableConcept code() {
-      return CodeableConcept.builder().coding(codeCoding()).text("panel").build();
-    }
-
-    private List<Coding> codeCoding() {
-      return Collections.singletonList(
-          Coding.builder()
-              .system("http://HelloSystem.com")
-              .code("Hello Code")
-              .display("Hello Display")
-              .build());
+      return CodeableConcept.builder().text("panel").build();
     }
 
     private CodeableConcept category() {
-      return CodeableConcept.builder().coding(categoryCoding()).text("dat category").build();
+      return CodeableConcept.builder().coding(categoryCoding()).build();
     }
 
     private List<Coding> categoryCoding() {
