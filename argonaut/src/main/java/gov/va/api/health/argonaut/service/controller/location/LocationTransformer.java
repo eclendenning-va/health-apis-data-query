@@ -23,6 +23,7 @@ import gov.va.dvp.cdw.xsd.model.CdwLocationStatus;
 import gov.va.dvp.cdw.xsd.model.CdwReference;
 import java.util.Collections;
 import java.util.List;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -89,7 +90,7 @@ public class LocationTransformer implements LocationController.Transformer {
   }
 
   ContactPointSystem contactPointCode(String maybeCdw) {
-    if (maybeCdw == null) {
+    if (StringUtils.isBlank(maybeCdw)) {
       return null;
     }
     return EnumSearcher.of(ContactPointSystem.class).find(maybeCdw);
