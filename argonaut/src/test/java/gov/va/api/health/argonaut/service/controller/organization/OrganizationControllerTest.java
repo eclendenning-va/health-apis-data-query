@@ -87,7 +87,7 @@ public class OrganizationControllerTest {
             .page(1)
             .recordsPerPage(10)
             .totalRecords(3)
-            .path("/api/Organization")
+            .path("Organization")
             .queryParams(params)
             .build();
     assertThat(captor.getValue().linkConfig()).isEqualTo(expectedLinkConfig);
@@ -131,14 +131,14 @@ public class OrganizationControllerTest {
   @Test
   public void searchById() {
     assertSearch(
-        () -> controller.searchById("me", 1, 10, servletRequest),
+        () -> controller.searchById("me", 1, 10),
         Parameters.builder().add("identifier", "me").add("page", 1).add("_count", 10).build());
   }
 
   @Test
   public void searchByIdentifier() {
     assertSearch(
-        () -> controller.searchByIdentifier("me", 1, 10, servletRequest),
+        () -> controller.searchByIdentifier("me", 1, 10),
         Parameters.builder().add("identifier", "me").add("page", 1).add("_count", 10).build());
   }
 

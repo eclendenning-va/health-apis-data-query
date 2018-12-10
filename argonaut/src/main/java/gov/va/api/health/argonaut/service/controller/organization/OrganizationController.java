@@ -16,7 +16,6 @@ import gov.va.api.health.argonaut.service.mranderson.client.Query.Profile;
 import gov.va.dvp.cdw.xsd.model.CdwOrganization100Root;
 import java.util.Collections;
 import java.util.function.Function;
-import javax.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,14 +46,11 @@ public class OrganizationController {
   private Bundler bundler;
 
   private Organization.Bundle bundle(
-      MultiValueMap<String, String> parameters,
-      int page,
-      int count,
-      HttpServletRequest servletRequest) {
+      MultiValueMap<String, String> parameters, int page, int count) {
     CdwOrganization100Root root = search(parameters);
     LinkConfig linkConfig =
         LinkConfig.builder()
-            .path(servletRequest.getRequestURI())
+            .path("Organization")
             .queryParams(parameters)
             .page(page)
             .recordsPerPage(count)
@@ -97,13 +93,11 @@ public class OrganizationController {
   public Organization.Bundle searchById(
       @RequestParam("_id") String id,
       @RequestParam(value = "page", defaultValue = "1") int page,
-      @RequestParam(value = "_count", defaultValue = "1") int count,
-      HttpServletRequest servletRequest) {
+      @RequestParam(value = "_count", defaultValue = "1") int count) {
     return bundle(
         Parameters.builder().add("identifier", id).add("page", page).add("_count", count).build(),
         page,
-        count,
-        servletRequest);
+        count);
   }
 
   /** Search by Identifier. */
@@ -111,13 +105,11 @@ public class OrganizationController {
   public Organization.Bundle searchByIdentifier(
       @RequestParam("identifier") String id,
       @RequestParam(value = "page", defaultValue = "1") int page,
-      @RequestParam(value = "_count", defaultValue = "1") int count,
-      HttpServletRequest servletRequest) {
+      @RequestParam(value = "_count", defaultValue = "1") int count) {
     return bundle(
         Parameters.builder().add("identifier", id).add("page", page).add("_count", count).build(),
         page,
-        count,
-        servletRequest);
+        count);
   }
 
   /** Hey, this is a validate endpoint. It validates. */
