@@ -78,7 +78,7 @@ public class OrganizationTransformer implements OrganizationController.Transform
     List<ContactPoint> contactPoints =
         optionalSource
             .stream()
-            .map(this::telecomContactPoint)
+            .map(this::telecom)
             .filter(Objects::nonNull)
             .collect(Collectors.toList());
     if (contactPoints.isEmpty()) {
@@ -87,7 +87,7 @@ public class OrganizationTransformer implements OrganizationController.Transform
     return contactPoints;
   }
 
-  private ContactPoint telecomContactPoint(CdwOrganizationTelecom cdw) {
+  ContactPoint telecom(CdwOrganizationTelecom cdw) {
     if (allNull(cdw.getSystem(), cdw.getUse(), cdw.getValue())) {
       return null;
     }
@@ -98,11 +98,8 @@ public class OrganizationTransformer implements OrganizationController.Transform
         .build();
   }
 
-  private ContactPointSystem telecomSystem(String system) {
-    if (system == null) {
-      return null;
-    }
-    return ContactPointSystem.phone;
+  ContactPointSystem telecomSystem(String system) {
+    return (system == null) ? null : ContactPointSystem.phone;
   }
 
   CodeableConcept type(CdwOrganizationType optionalSource) {
@@ -121,7 +118,7 @@ public class OrganizationTransformer implements OrganizationController.Transform
     return Collections.singletonList(coding);
   }
 
-  private Coding coding(CdwCoding cdw) {
+  Coding coding(CdwCoding cdw) {
     if (allNull(cdw.getCode(), cdw.getDisplay(), cdw.getSystem())) {
       return null;
     }
