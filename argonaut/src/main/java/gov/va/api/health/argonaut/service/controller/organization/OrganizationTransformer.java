@@ -17,15 +17,12 @@ import gov.va.dvp.cdw.xsd.model.CdwOrganization100Root.CdwOrganizations.CdwOrgan
 import gov.va.dvp.cdw.xsd.model.CdwOrganization100Root.CdwOrganizations.CdwOrganization.CdwAddresses;
 import gov.va.dvp.cdw.xsd.model.CdwOrganization100Root.CdwOrganizations.CdwOrganization.CdwTelecoms;
 import gov.va.dvp.cdw.xsd.model.CdwOrganizationAddress;
-import gov.va.dvp.cdw.xsd.model.CdwOrganizationTelecom;
 import gov.va.dvp.cdw.xsd.model.CdwOrganizationType;
 import gov.va.dvp.cdw.xsd.model.CdwOrganizationType.CdwCoding;
 import gov.va.dvp.cdw.xsd.model.CdwOrganizationTypeCode;
 import gov.va.dvp.cdw.xsd.model.CdwOrganizationTypeDisplay;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -64,20 +61,21 @@ public class OrganizationTransformer implements OrganizationController.Transform
   }
 
   List<ContactPoint> telecoms(CdwTelecoms optionalSource) {
-    if(optionalSource == null) {
+    if (optionalSource == null) {
       return null;
     }
-    return convertAll(optionalSource.getTelecom(),
+    return convertAll(
+        optionalSource.getTelecom(),
         source ->
-        ContactPoint.builder()
-            .system(EnumSearcher.of(ContactPointSystem.class).find(source.getSystem()))
-            .value(source.getValue())
-            .use(ifPresent(source.getUse(), use -> ContactPointUse.valueOf(use.value())))
-            .build());
+            ContactPoint.builder()
+                .system(EnumSearcher.of(ContactPointSystem.class).find(source.getSystem()))
+                .value(source.getValue())
+                .use(ifPresent(source.getUse(), use -> ContactPointUse.valueOf(use.value())))
+                .build());
   }
 
   CodeableConcept type(CdwOrganizationType optionalSource) {
-    if (optionalSource == null){
+    if (optionalSource == null) {
       return null;
     }
     return convert(

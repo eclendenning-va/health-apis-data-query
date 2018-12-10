@@ -65,7 +65,7 @@ public class OrganizationTransformerTest {
   }
 
   @Test
-  public void coding() {
+  public void codings() {
     assertThat(tx.codings(null)).isNull();
     assertThat(tx.codings(new CdwCoding())).isNull();
     assertThat(tx.codings(cdw.typeCoding())).isEqualTo(expected.typeCoding());

@@ -56,20 +56,18 @@ public class OrganizationControllerTest {
     root.setRecordsPerPage(BigInteger.valueOf(10));
     root.setRecordCount(BigInteger.valueOf(3));
     root.setOrganizations(new CdwOrganizations());
-    CdwOrganization xmlPatient1 = new CdwOrganization();
-    CdwOrganization xmlPatient2 = new CdwOrganization();
-    CdwOrganization xmlPatient3 = new CdwOrganization();
-    root.getOrganizations()
-        .getOrganization()
-        .addAll(Arrays.asList(xmlPatient1, xmlPatient2, xmlPatient3));
-    Organization patient1 = Organization.builder().build();
-    Organization patient2 = Organization.builder().build();
-    Organization patient3 = Organization.builder().build();
-    when(tx.apply(xmlPatient1)).thenReturn(patient1);
-    when(tx.apply(xmlPatient2)).thenReturn(patient2);
-    when(tx.apply(xmlPatient3)).thenReturn(patient3);
+    CdwOrganization cdwOrg1 = new CdwOrganization();
+    CdwOrganization cdwOrg2 = new CdwOrganization();
+    CdwOrganization cdwOrg3 = new CdwOrganization();
+    root.getOrganizations().getOrganization().addAll(Arrays.asList(cdwOrg1, cdwOrg2, cdwOrg3));
+    Organization org1 = Organization.builder().build();
+    Organization org2 = Organization.builder().build();
+    Organization org3 = Organization.builder().build();
+    when(tx.apply(cdwOrg1)).thenReturn(org1);
+    when(tx.apply(cdwOrg2)).thenReturn(org2);
+    when(tx.apply(cdwOrg3)).thenReturn(org3);
     when(client.search(Mockito.any())).thenReturn(root);
-    when(servletRequest.getRequestURI()).thenReturn("/api/Patient");
+    when(servletRequest.getRequestURI()).thenReturn("/api/Organization");
 
     Organization.Bundle mockBundle = new Organization.Bundle();
     when(bundler.bundle(Mockito.any())).thenReturn(mockBundle);
@@ -89,7 +87,7 @@ public class OrganizationControllerTest {
             .page(1)
             .recordsPerPage(10)
             .totalRecords(3)
-            .path("/api/Patient")
+            .path("/api/Organization")
             .queryParams(params)
             .build();
     assertThat(captor.getValue().linkConfig()).isEqualTo(expectedLinkConfig);
