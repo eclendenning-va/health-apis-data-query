@@ -38,8 +38,9 @@ import org.springframework.web.bind.annotation.RestController;
 @Validated
 @RestController
 @RequestMapping(
-    value = {"/api/Encounter"},
-    produces = {"application/json", "application/json+fhir", "application/fhir+json"})
+  value = {"/api/Encounter"},
+  produces = {"application/json", "application/json+fhir", "application/fhir+json"}
+)
 @AllArgsConstructor(onConstructor = @__({@Autowired}))
 @Slf4j
 public class EncounterController {
@@ -115,8 +116,9 @@ public class EncounterController {
 
   /** Hey, this is a validate endpoint. It validates. */
   @PostMapping(
-      value = "/$validate",
-      consumes = {"application/json", "application/json+fhir", "application/fhir+json"})
+    value = "/$validate",
+    consumes = {"application/json", "application/json+fhir", "application/fhir+json"}
+  )
   public OperationOutcome validate(@RequestBody Encounter.Bundle bundle) {
     return Validator.create().validate(bundle);
   }
