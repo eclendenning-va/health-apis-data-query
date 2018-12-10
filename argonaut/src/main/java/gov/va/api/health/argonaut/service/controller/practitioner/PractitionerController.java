@@ -16,10 +16,13 @@ import gov.va.api.health.argonaut.service.mranderson.client.Query.Profile;
 import gov.va.dvp.cdw.xsd.model.CdwPractitioner100Root;
 import java.util.Collections;
 import java.util.function.Function;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.MultiValueMap;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,11 +36,11 @@ import org.springframework.web.bind.annotation.RestController;
  * http://hl7.org/fhir/DSTU2/practitioner.html for implementation details.
  */
 @SuppressWarnings("WeakerAccess")
+@Validated
 @RestController
 @RequestMapping(
-  value = {"/api/Practitioner"},
-  produces = {"application/json", "application/json+fhir", "application/fhir+json"}
-)
+    value = {"/api/Practitioner"},
+    produces = {"application/json", "application/json+fhir", "application/fhir+json"})
 @AllArgsConstructor(onConstructor = @__({@Autowired}))
 @Slf4j
 public class PractitionerController {
@@ -94,8 +97,8 @@ public class PractitionerController {
   @GetMapping(params = {"_id"})
   public Practitioner.Bundle searchById(
       @RequestParam("_id") String id,
-      @RequestParam(value = "page", defaultValue = "1") int page,
-      @RequestParam(value = "_count", defaultValue = "1") int count) {
+      @RequestParam(value = "page", defaultValue = "1") @Min(1) int page,
+      @RequestParam(value = "_count", defaultValue = "1") @Min(1) @Max(20) int count) {
     return bundle(
         Parameters.builder().add("identifier", id).add("page", page).add("_count", count).build(),
         page,
@@ -106,8 +109,8 @@ public class PractitionerController {
   @GetMapping(params = {"identifier"})
   public Practitioner.Bundle searchByIdentifier(
       @RequestParam("identifier") String id,
-      @RequestParam(value = "page", defaultValue = "1") int page,
-      @RequestParam(value = "_count", defaultValue = "1") int count) {
+      @RequestParam(value = "page", defaultValue = "1") @Min(1) int page,
+      @RequestParam(value = "_count", defaultValue = "1") @Min(1) @Max(20) int count) {
     return bundle(
         Parameters.builder().add("identifier", id).add("page", page).add("_count", count).build(),
         page,
@@ -116,9 +119,8 @@ public class PractitionerController {
 
   /** Hey, this is a validate endpoint. It validates. */
   @PostMapping(
-    value = "/$validate",
-    consumes = {"application/json", "application/json+fhir", "application/fhir+json"}
-  )
+      value = "/$validate",
+      consumes = {"application/json", "application/json+fhir", "application/fhir+json"})
   public OperationOutcome validate(@RequestBody Practitioner.Bundle bundle) {
     return Validator.create().validate(bundle);
   }

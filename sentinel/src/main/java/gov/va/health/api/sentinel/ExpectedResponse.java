@@ -91,7 +91,7 @@ class ExpectedResponse {
   }
 
   @SuppressWarnings("UnusedReturnValue")
-  private ExpectedResponse log() {
+  ExpectedResponse log() {
     response().then().log().all();
     return this;
   }
