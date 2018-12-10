@@ -55,13 +55,7 @@ public class OrganizationTransformer implements OrganizationController.Transform
   }
 
   List<String> addressLine(CdwOrganizationAddress source) {
-    if (source == null) {
-      return null;
-    }
-    if (source.getLines() == null) {
-      return null;
-    }
-    if (source.getLines().getLine() == null) {
+    if (source == null || source.getLines() == null || source.getLines().getLine() == null) {
       return null;
     }
     return allNull(source.getLines().getLine()) ? null : source.getLines().getLine();
@@ -111,7 +105,7 @@ public class OrganizationTransformer implements OrganizationController.Transform
     return Collections.singletonList(coding);
   }
 
-  Coding coding(CdwCoding cdw) {
+  private Coding coding(CdwCoding cdw) {
     if (allNull(cdw.getCode(), cdw.getDisplay(), cdw.getSystem())) {
       return null;
     }
