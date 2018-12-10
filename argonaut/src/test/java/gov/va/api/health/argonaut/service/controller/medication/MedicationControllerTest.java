@@ -54,18 +54,18 @@ public class MedicationControllerTest {
     root.setRecordsPerPage(BigInteger.valueOf(10));
     root.setRecordCount(BigInteger.valueOf(3));
     root.setMedications(new CdwMedications());
-    CdwMedication xmlPatient1 = new CdwMedication();
-    CdwMedication xmlPatient2 = new CdwMedication();
-    CdwMedication xmlPatient3 = new CdwMedication();
+    CdwMedication xmlMedication1 = new CdwMedication();
+    CdwMedication xmlMedication2 = new CdwMedication();
+    CdwMedication xmlMedication3 = new CdwMedication();
     root.getMedications()
         .getMedication()
-        .addAll(Arrays.asList(xmlPatient1, xmlPatient2, xmlPatient3));
-    Medication patient1 = Medication.builder().build();
-    Medication patient2 = Medication.builder().build();
-    Medication patient3 = Medication.builder().build();
-    when(tx.apply(xmlPatient1)).thenReturn(patient1);
-    when(tx.apply(xmlPatient2)).thenReturn(patient2);
-    when(tx.apply(xmlPatient3)).thenReturn(patient3);
+        .addAll(Arrays.asList(xmlMedication1, xmlMedication2, xmlMedication3));
+    Medication medication1 = Medication.builder().build();
+    Medication medication2 = Medication.builder().build();
+    Medication medication3 = Medication.builder().build();
+    when(tx.apply(xmlMedication1)).thenReturn(medication1);
+    when(tx.apply(xmlMedication2)).thenReturn(medication2);
+    when(tx.apply(xmlMedication3)).thenReturn(medication3);
     when(client.search(Mockito.any())).thenReturn(root);
 
     Medication.Bundle mockBundle = new Medication.Bundle();
@@ -130,7 +130,7 @@ public class MedicationControllerTest {
   public void searchById() {
     assertSearch(
         () -> controller.searchById("me", 1, 10),
-        Parameters.builder().add("_id", "me").add("page", 1).add("_count", 10).build());
+        Parameters.builder().add("identifier", "me").add("page", 1).add("_count", 10).build());
   }
 
   @Test

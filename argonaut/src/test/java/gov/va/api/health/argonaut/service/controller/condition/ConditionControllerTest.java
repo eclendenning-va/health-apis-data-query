@@ -58,12 +58,12 @@ public class ConditionControllerTest {
     CdwCondition cdwItem2 = new CdwCondition();
     CdwCondition cdwItem3 = new CdwCondition();
     root.getConditions().getCondition().addAll(Arrays.asList(cdwItem1, cdwItem2, cdwItem3));
-    Condition patient1 = Condition.builder().build();
-    Condition patient2 = Condition.builder().build();
-    Condition patient3 = Condition.builder().build();
-    when(transformer.apply(cdwItem1)).thenReturn(patient1);
-    when(transformer.apply(cdwItem2)).thenReturn(patient2);
-    when(transformer.apply(cdwItem3)).thenReturn(patient3);
+    Condition condition1 = Condition.builder().build();
+    Condition condition2 = Condition.builder().build();
+    Condition condition3 = Condition.builder().build();
+    when(transformer.apply(cdwItem1)).thenReturn(condition1);
+    when(transformer.apply(cdwItem2)).thenReturn(condition2);
+    when(transformer.apply(cdwItem3)).thenReturn(condition3);
     when(client.search(Mockito.any())).thenReturn(root);
 
     Bundle mockBundle = new Bundle();
