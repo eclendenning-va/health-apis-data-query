@@ -1,5 +1,6 @@
 package gov.va.api.health.argonaut.service.controller.encounter;
 
+import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -55,12 +56,14 @@ public class EncounterTransformerTest {
   @Test
   public void reference() {
     assertThat(tx.reference(null)).isNull();
+    assertThat(tx.reference(new CdwReference())).isNull();
     assertThat(tx.reference(cdw.reference("x", "y"))).isEqualTo(expected.reference("x", "y"));
   }
 
   @Test
   public void period() {
     assertThat(tx.period(null)).isNull();
+    assertThat(tx.period(new CdwEncounterPeriod())).isNull();
     assertThat(tx.period(cdw.period())).isEqualTo(expected.period());
   }
 
@@ -87,6 +90,7 @@ public class EncounterTransformerTest {
   @Test
   public void type() {
     assertThat(tx.encounterParticipantType(null)).isNull();
+    assertThat(tx.encounterParticipantType(emptyList())).isNull();
     assertThat(tx.encounterParticipantType(singletonList(cdw.participantType())))
         .isEqualTo(expected.type());
   }

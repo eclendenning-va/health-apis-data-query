@@ -53,6 +53,9 @@ public class EncounterTransformer implements EncounterController.Transformer {
   }
 
   Reference reference(CdwReference maybeCdw) {
+    if (maybeCdw == null || allNull(maybeCdw.getReference(), maybeCdw.getDisplay())) {
+      return null;
+    }
     return convert(
         maybeCdw,
         source ->
@@ -63,6 +66,9 @@ public class EncounterTransformer implements EncounterController.Transformer {
   }
 
   Period period(CdwEncounterPeriod maybeCdw) {
+    if (maybeCdw == null || allNull(maybeCdw.getEnd(), maybeCdw.getStart())) {
+      return null;
+    }
     return convert(
         maybeCdw,
         source ->
@@ -73,6 +79,9 @@ public class EncounterTransformer implements EncounterController.Transformer {
   }
 
   List<Reference> episodeOfCare(CdwReference maybeCdw) {
+    if (maybeCdw == null || allNull(maybeCdw.getDisplay(), maybeCdw.getReference())) {
+      return null;
+    }
     return convert(
         maybeCdw,
         source ->
@@ -101,6 +110,9 @@ public class EncounterTransformer implements EncounterController.Transformer {
   }
 
   List<CodeableConcept> encounterParticipantType(List<CdwEncounterParticipantType> maybeCdw) {
+    if (maybeCdw == null || maybeCdw.isEmpty()) {
+      return null;
+    }
     return convertAll(
         maybeCdw,
         source ->
