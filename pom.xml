@@ -13,7 +13,7 @@
   <version>1.0.48-SNAPSHOT</version>
   <packaging>pom</packaging>
   <properties>
-    <cdw-schemas.version>1.0.36</cdw-schemas.version>
+    <cdw-schemas.version>1.0.39</cdw-schemas.version>
     <checkstyle.version>8.12</checkstyle.version>
     <findsecbugs-plugin.version>1.8.0</findsecbugs-plugin.version>
     <fmt-maven-plugin.version>2.3.0</fmt-maven-plugin.version>

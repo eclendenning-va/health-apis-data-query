@@ -102,7 +102,7 @@ public final class Transformers {
     return mapper.apply(source);
   }
 
-  /** Return true if at least one value in the given list is non-null. */
+  /** Return false if at least one value in the given list is non-null. */
   public static boolean allNull(Object... values) {
     for (Object v : values) {
       if (v != null) {
