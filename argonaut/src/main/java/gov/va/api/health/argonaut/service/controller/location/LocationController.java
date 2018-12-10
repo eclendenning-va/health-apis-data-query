@@ -12,6 +12,7 @@ import gov.va.api.health.argonaut.service.controller.Parameters;
 import gov.va.api.health.argonaut.service.controller.Validator;
 import gov.va.api.health.argonaut.service.mranderson.client.MrAndersonClient;
 import gov.va.api.health.argonaut.service.mranderson.client.Query;
+import gov.va.api.health.argonaut.service.mranderson.client.Query.Profile;
 import gov.va.dvp.cdw.xsd.model.CdwLocation100Root;
 import java.util.Collections;
 import java.util.function.Function;
@@ -78,7 +79,7 @@ public class LocationController {
   private CdwLocation100Root search(MultiValueMap<String, String> params) {
     Query<CdwLocation100Root> query =
         Query.forType(CdwLocation100Root.class)
-            .profile(Query.Profile.ARGONAUT)
+            .profile(Profile.DSTU2)
             .resource("Location")
             .version("1.00")
             .parameters(params)
