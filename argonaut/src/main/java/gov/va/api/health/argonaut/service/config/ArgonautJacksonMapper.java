@@ -106,7 +106,10 @@ public class ArgonautJacksonMapper {
             "Qualified reference writer cannot serialize: " + shouldBeReference);
       }
       Reference reference = (Reference) shouldBeReference;
-      gen.writeStringField(getName(), qualify(reference.reference()));
+      String qualifiedReference = qualify(reference.reference());
+      if (qualifiedReference != null) {
+        gen.writeStringField(getName(), qualifiedReference);
+      }
     }
   }
 }

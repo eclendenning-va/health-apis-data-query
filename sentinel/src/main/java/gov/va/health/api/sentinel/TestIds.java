@@ -21,6 +21,7 @@ public class TestIds {
   @NonNull String medicationStatement;
   @NonNull String observation;
   @NonNull String patient;
+  @NonNull String practitioner;
   @NonNull String procedure;
   @NonNull String unknown;
 
