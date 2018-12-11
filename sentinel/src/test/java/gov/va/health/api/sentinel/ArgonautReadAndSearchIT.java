@@ -1,13 +1,21 @@
 package gov.va.health.api.sentinel;
 
 import gov.va.api.health.argonaut.api.resources.AllergyIntolerance;
+import gov.va.api.health.argonaut.api.resources.Appointment;
 import gov.va.api.health.argonaut.api.resources.Condition;
 import gov.va.api.health.argonaut.api.resources.DiagnosticReport;
+import gov.va.api.health.argonaut.api.resources.Encounter;
 import gov.va.api.health.argonaut.api.resources.Immunization;
+import gov.va.api.health.argonaut.api.resources.Location;
 import gov.va.api.health.argonaut.api.resources.Medication;
+import gov.va.api.health.argonaut.api.resources.MedicationOrder;
+import gov.va.api.health.argonaut.api.resources.MedicationStatement;
 import gov.va.api.health.argonaut.api.resources.Observation;
 import gov.va.api.health.argonaut.api.resources.OperationOutcome;
+import gov.va.api.health.argonaut.api.resources.Organization;
 import gov.va.api.health.argonaut.api.resources.Patient;
+import gov.va.api.health.argonaut.api.resources.Practitioner;
+import gov.va.api.health.argonaut.api.resources.Procedure;
 import java.util.Arrays;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -64,6 +72,13 @@ public class ArgonautReadAndSearchIT {
             AllergyIntolerance.Bundle.class,
             "/api/AllergyIntolerance?patient={patient}",
             ids.patient()),
+        // Appointment
+        expect(200, Appointment.class, "/api/Appointment/{id}", ids.appointment()),
+        expect(404, OperationOutcome.class, "/api/Appointment/{id}", ids.unknown()),
+        expect(200, Appointment.Bundle.class, "/api/Appointment?_id={id}", ids.appointment()),
+        expect(
+            200, Appointment.Bundle.class, "/api/Appointment?identifier={id}", ids.appointment()),
+        expect(200, Appointment.Bundle.class, "/api/Appointment?patient={patient}", ids.patient()),
         // Condition
         expect(200, Condition.class, "/api/Condition/{id}", ids.condition()),
         expect(404, OperationOutcome.class, "/api/Condition/{id}", ids.unknown()),
@@ -136,6 +151,12 @@ public class ArgonautReadAndSearchIT {
             ids.patient(),
             ids.diagnosticReports().fromDate(),
             ids.diagnosticReports().toDate()),
+        // Encounter
+        expect(200, Encounter.class, "/api/Encounter/{id}", ids.encounter()),
+        expect(404, OperationOutcome.class, "/api/Encounter/{id}", ids.unknown()),
+        expect(200, Encounter.Bundle.class, "/api/Encounter?_id={id}", ids.encounter()),
+        expect(200, Encounter.Bundle.class, "/api/Encounter?identifier={id}", ids.encounter()),
+        expect(404, OperationOutcome.class, "/api/Encounter?_id={id}", ids.unknown()),
         // Immunization
         expect(200, Immunization.class, "/api/Immunization/{id}", ids.immunization()),
         expect(404, OperationOutcome.class, "/api/Immunization/{id}", ids.unknown()),
@@ -148,12 +169,59 @@ public class ArgonautReadAndSearchIT {
         expect(404, OperationOutcome.class, "/api/Immunization?_id={id}", ids.unknown()),
         expect(
             200, Immunization.Bundle.class, "/api/Immunization?patient={patient}", ids.patient()),
+        // Location
+        expect(200, Location.class, "/api/Location/{id}", ids.location()),
+        expect(404, OperationOutcome.class, "/api/Location/{id}", ids.unknown()),
+        expect(200, Location.Bundle.class, "/api/Location?_id={id}", ids.location()),
+        expect(200, Location.Bundle.class, "/api/Location?identifier={id}", ids.location()),
+        expect(404, OperationOutcome.class, "/api/Location?_id={id}", ids.unknown()),
         // Medication
         expect(200, Medication.class, "/api/Medication/{id}", ids.medication()),
         expect(404, OperationOutcome.class, "/api/Medication/{id}", ids.unknown()),
         expect(200, Medication.Bundle.class, "/api/Medication?_id={id}", ids.medication()),
         expect(200, Medication.Bundle.class, "/api/Medication?identifier={id}", ids.medication()),
         expect(404, OperationOutcome.class, "/api/Medication?_id={id}", ids.unknown()),
+        // Medication Order
+        expect(200, MedicationOrder.class, "/api/MedicationOrder/{id}", ids.medicationOrder()),
+        expect(404, OperationOutcome.class, "/api/MedicationOrder/{id}", ids.unknown()),
+        expect(
+            200,
+            MedicationOrder.Bundle.class,
+            "/api/MedicationOrder?_id={id}",
+            ids.medicationOrder()),
+        expect(
+            200,
+            MedicationOrder.Bundle.class,
+            "/api/MedicationOrder?identifier={id}",
+            ids.medicationOrder()),
+        expect(
+            200,
+            MedicationOrder.Bundle.class,
+            "/api/MedicationOrder?patient={patient}",
+            ids.patient()),
+        // MedicationStatement
+        expect(
+            200,
+            MedicationStatement.class,
+            "/api/MedicationStatement/{id}",
+            ids.medicationStatement()),
+        expect(404, OperationOutcome.class, "/api/MedicationStatement/{id}", ids.unknown()),
+        expect(
+            200,
+            MedicationStatement.Bundle.class,
+            "/api/MedicationStatement?_id={id}",
+            ids.medicationStatement()),
+        expect(
+            200,
+            MedicationStatement.Bundle.class,
+            "/api/MedicationStatement?identifier={id}",
+            ids.medicationStatement()),
+        expect(404, OperationOutcome.class, "/api/MedicationStatement?_id={id}", ids.unknown()),
+        expect(
+            200,
+            MedicationStatement.Bundle.class,
+            "/api/MedicationStatement?patient={patient}",
+            ids.patient()),
         // Observation
         expect(200, Observation.class, "/api/Observation/{id}", ids.observation()),
         expect(404, OperationOutcome.class, "/api/Observation/{id}", ids.unknown()),
@@ -203,6 +271,16 @@ public class ArgonautReadAndSearchIT {
             ids.patient(),
             ids.observations().loinc1(),
             ids.observations().loinc2()),
+        // Organization
+        expect(200, Organization.class, "/api/Organization/{id}", ids.organization()),
+        expect(404, OperationOutcome.class, "/api/Organization/{id}", ids.unknown()),
+        expect(200, Organization.Bundle.class, "/api/Organization?_id={id}", ids.organization()),
+        expect(
+            200,
+            Organization.Bundle.class,
+            "/api/Organization?identifier={id}",
+            ids.organization()),
+        expect(404, OperationOutcome.class, "/api/Organization?_id={id}", ids.unknown()),
         // Patient
         expect(200, Patient.class, "/api/Patient/{id}", ids.patient()),
         expect(404, OperationOutcome.class, "/api/Patient/{id}", ids.unknown()),
@@ -232,7 +310,37 @@ public class ArgonautReadAndSearchIT {
             Patient.Bundle.class,
             "/api/Patient?name={name}&gender={gender}",
             ids.pii().name(),
-            ids.pii().gender()));
+            ids.pii().gender()),
+        // Practitioner
+        expect(200, Practitioner.class, "/api/Practitioner/{id}", ids.practitioner()),
+        expect(404, OperationOutcome.class, "/api/Practitioner/{id}", ids.unknown()),
+        expect(200, Practitioner.Bundle.class, "/api/Practitioner?_id={id}", ids.practitioner()),
+        expect(
+            200,
+            Practitioner.Bundle.class,
+            "/api/Practitioner?identifier={id}",
+            ids.practitioner()),
+        expect(404, OperationOutcome.class, "/api/Practitioner?_id={id}", ids.unknown()),
+        // Procedure
+        expect(200, Procedure.class, "/api/Procedure/{id}", ids.procedure()),
+        expect(404, OperationOutcome.class, "/api/Procedure/{id}", ids.unknown()),
+        expect(200, Procedure.Bundle.class, "/api/Procedure?_id={id}", ids.procedure()),
+        expect(404, OperationOutcome.class, "/api/Procedure?_id={id}", ids.unknown()),
+        expect(200, Procedure.Bundle.class, "/api/Procedure?identifier={id}", ids.procedure()),
+        expect(200, Procedure.Bundle.class, "/api/Procedure?patient={patient}", ids.patient()),
+        expect(
+            200,
+            Procedure.Bundle.class,
+            "api/Procedure?patient={patient}&date={onDate}",
+            ids.patient(),
+            ids.procedures().onDate()),
+        expect(
+            200,
+            Procedure.Bundle.class,
+            "api/Procedure?patient={patient}&date={fromDate}&date={toDate}",
+            ids.patient(),
+            ids.procedures().fromDate(),
+            ids.procedures().toDate()));
   }
 
   private TestClient argonaut() {

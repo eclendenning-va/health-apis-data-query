@@ -55,22 +55,38 @@ class IdRegistrar {
   private TestIds registerCdwIds() {
     TestIds cdwIds = system().cdwIds();
     ResourceIdentity allergyIntolerance = id("ALLERGY_INTOLERANCE", cdwIds.allergyIntolerance());
+    ResourceIdentity appointment = id("APPOINTMENT", cdwIds.appointment());
     ResourceIdentity condition = id("CONDITION", cdwIds.condition());
     ResourceIdentity diagnosticReport = id("DIAGNOSTIC_REPORT", cdwIds.diagnosticReport());
+    ResourceIdentity encounter = id("ENCOUNTER", cdwIds.encounter());
     ResourceIdentity immunization = id("IMMUNIZATION", cdwIds.immunization());
+    ResourceIdentity location = id("LOCATION", cdwIds.location());
     ResourceIdentity medication = id("MEDICATION", cdwIds.medication());
+    ResourceIdentity medicationOrder = id("MEDICATION_ORDER", cdwIds.medicationOrder());
+    ResourceIdentity medicationStatement = id("MEDICATION_STATEMENT", cdwIds.medicationStatement());
     ResourceIdentity observation = id("OBSERVATION", cdwIds.observation());
+    ResourceIdentity organizataion = id("ORGANIZATION", cdwIds.organization());
     ResourceIdentity patient = id("PATIENT", cdwIds.patient());
+    ResourceIdentity practitioner = id("PRACTITIONER", cdwIds.practitioner());
+    ResourceIdentity procedure = id("PROCEDURE", cdwIds.procedure());
 
     List<ResourceIdentity> identities =
         Arrays.asList(
             allergyIntolerance,
+            appointment,
             condition,
             diagnosticReport,
+            encounter,
             immunization,
+            location,
             patient,
             medication,
-            observation);
+            medicationOrder,
+            medicationStatement,
+            observation,
+            organizataion,
+            practitioner,
+            procedure);
     log.info("Registering {}", identities);
     List<Registration> registrations =
         system()
@@ -83,12 +99,20 @@ class IdRegistrar {
         cdwIds
             .toBuilder()
             .allergyIntolerance(findUuid(registrations, allergyIntolerance))
+            .appointment(findUuid(registrations, appointment))
             .condition(findUuid(registrations, condition))
             .diagnosticReport(findUuid(registrations, diagnosticReport))
+            .encounter(findUuid(registrations, encounter))
             .immunization(findUuid(registrations, immunization))
+            .location(findUuid(registrations, location))
             .medication(findUuid(registrations, medication))
+            .medicationOrder(findUuid(registrations, medicationOrder))
+            .medicationStatement(findUuid(registrations, medicationStatement))
             .observation(findUuid(registrations, observation))
+            .organization(findUuid(registrations, organizataion))
             .patient(findUuid(registrations, patient))
+            .practitioner(findUuid(registrations, practitioner))
+            .procedure(findUuid(registrations, procedure))
             .build();
     log.info("Using {}", publicIds);
     return publicIds;

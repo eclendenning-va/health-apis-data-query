@@ -2,13 +2,21 @@ package gov.va.health.api.sentinel;
 
 import gov.va.api.health.argonaut.api.bundle.AbstractBundle;
 import gov.va.api.health.argonaut.api.resources.AllergyIntolerance;
+import gov.va.api.health.argonaut.api.resources.Appointment;
 import gov.va.api.health.argonaut.api.resources.Condition;
 import gov.va.api.health.argonaut.api.resources.DiagnosticReport;
+import gov.va.api.health.argonaut.api.resources.Encounter;
 import gov.va.api.health.argonaut.api.resources.Immunization;
+import gov.va.api.health.argonaut.api.resources.Location;
 import gov.va.api.health.argonaut.api.resources.Medication;
+import gov.va.api.health.argonaut.api.resources.MedicationOrder;
+import gov.va.api.health.argonaut.api.resources.MedicationStatement;
 import gov.va.api.health.argonaut.api.resources.Observation;
 import gov.va.api.health.argonaut.api.resources.OperationOutcome;
+import gov.va.api.health.argonaut.api.resources.Organization;
 import gov.va.api.health.argonaut.api.resources.Patient;
+import gov.va.api.health.argonaut.api.resources.Practitioner;
+import gov.va.api.health.argonaut.api.resources.Procedure;
 import java.util.Arrays;
 import java.util.List;
 import lombok.SneakyThrows;
@@ -36,15 +44,22 @@ public class ArgonautValidateIT {
     TestIds ids = IdRegistrar.of(Sentinel.get().system()).registeredIds();
 
     return Arrays.asList(
+        validate("AllergyIntolerance", ids.allergyIntolerance(), AllergyIntolerance.Bundle.class),
+        validate("Appointment", ids.appointment(), Appointment.Bundle.class),
         validate("Condition", ids.condition(), Condition.Bundle.class),
         validate("DiagnosticReport", ids.diagnosticReport(), DiagnosticReport.Bundle.class),
+        validate("Encounter", ids.encounter(), Encounter.Bundle.class),
         validate("Immunization", ids.immunization(), Immunization.Bundle.class),
+        validate("Location", ids.location(), Location.Bundle.class),
         validate("Medication", ids.medication(), Medication.Bundle.class),
+        validate("MedicationOrder", ids.medicationOrder(), MedicationOrder.Bundle.class),
+        validate(
+            "MedicationStatement", ids.medicationStatement(), MedicationStatement.Bundle.class),
         validate("Observation", ids.observation(), Observation.Bundle.class),
+        validate("Organization", ids.organization(), Organization.Bundle.class),
         validate("Patient", ids.patient(), Patient.Bundle.class),
-        validate("AllergyIntolerance", ids.allergyIntolerance(), AllergyIntolerance.Bundle.class)
-        //
-        );
+        validate("Practitioner", ids.practitioner(), Practitioner.Bundle.class),
+        validate("Procedure", ids.procedure(), Procedure.Bundle.class));
   }
 
   @SneakyThrows
