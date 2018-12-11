@@ -1,5 +1,6 @@
 package gov.va.api.health.argonaut.service.controller.observation;
 
+import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -62,6 +63,13 @@ public class ObservationTransformerTest {
   }
 
   @Test
+  public void codeCoding() {
+    assertThat(tx.codeCoding(cdw.code().getCoding())).isEqualTo(expected.code().coding());
+    assertThat(tx.codeCoding(null)).isNull();
+    assertThat(tx.codeCoding(emptyList())).isNull();
+  }
+
+  @Test
   public void component() {
     assertThat(tx.component(null)).isNull();
     assertThat(tx.component(new CdwComponent())).isNull();
@@ -79,11 +87,27 @@ public class ObservationTransformerTest {
   }
 
   @Test
+  public void componentCoding() {
+    assertThat(tx.componentCoding(cdw.componentCode().getCoding()))
+        .isEqualTo(expected.componentCode().coding());
+    assertThat(tx.componentCoding(null)).isNull();
+    assertThat(tx.componentCoding(emptyList())).isNull();
+  }
+
+  @Test
   public void componentValueCodeableConcept() {
     assertThat(tx.componentValueCodeableConcept(null)).isNull();
     assertThat(tx.componentValueCodeableConcept(new CdwValueCodeableConcept())).isNull();
     assertThat(tx.componentValueCodeableConcept(cdw.componentCodeableConcept()))
         .isEqualTo(expected.componentCodeableConcept());
+  }
+
+  @Test
+  public void componentValueCoding() {
+    assertThat(tx.componentValueCoding(cdw.componentCodeableConcept().getCoding()))
+        .isEqualTo(expected.componentCodeableConcept().coding());
+    assertThat(tx.componentValueCoding(null)).isNull();
+    assertThat(tx.componentValueCoding(emptyList())).isNull();
   }
 
   @Test
@@ -104,7 +128,16 @@ public class ObservationTransformerTest {
   @Test
   public void interpretation() {
     assertThat(tx.interpretation(null)).isNull();
+    assertThat(tx.interpretation(new CdwInterpretation())).isNull();
     assertThat(tx.interpretation(cdw.interpretation())).isEqualTo(expected.interpretation());
+  }
+
+  @Test
+  public void interpretationCoding() {
+    assertThat(tx.interpretationCoding(cdw.interpretation().getCoding()))
+        .isEqualTo(expected.interpretation().coding());
+    assertThat(tx.interpretationCoding(null)).isNull();
+    assertThat(tx.interpretationCoding(emptyList())).isNull();
   }
 
   @Test
@@ -163,13 +196,23 @@ public class ObservationTransformerTest {
   @Test
   public void valueCodeableConcept() {
     assertThat(tx.valueCodeableConcept(null)).isNull();
+    assertThat(tx.valueCodeableConcept(new CdwObservation.CdwValueCodeableConcept())).isNull();
     assertThat(tx.valueCodeableConcept(cdw.valueCodeableConcept()))
         .isEqualTo(expected.valueCodeableConcept());
   }
 
   @Test
+  public void valueCoding() {
+    assertThat(tx.valueCoding(cdw.valueCodeableConcept().getCoding()))
+        .isEqualTo(expected.valueCodeableConcept().coding());
+    assertThat(tx.valueCoding(null)).isNull();
+    assertThat(tx.valueCoding(emptyList())).isNull();
+  }
+
+  @Test
   public void valueQuantity() {
     assertThat(tx.valueQuantity(null)).isNull();
+    assertThat(tx.valueQuantity(new CdwValueQuantity())).isNull();
     assertThat(tx.valueQuantity(cdw.valueQuantity())).isEqualTo(expected.valueQuantity());
   }
 

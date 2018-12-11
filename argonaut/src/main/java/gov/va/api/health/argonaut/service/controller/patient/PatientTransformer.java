@@ -53,7 +53,7 @@ import org.springframework.stereotype.Service;
 public class PatientTransformer implements PatientController.Transformer {
 
   Address contactAddress(CdwContact source) {
-    if(isUnusableContactAddress(source)){
+    if (isUnusableContactAddress(source)) {
       return null;
     }
     return convert(
@@ -110,7 +110,7 @@ public class PatientTransformer implements PatientController.Transformer {
   }
 
   Optional<Extension> argoBirthSex(CdwBirthsexExtension optionalSource) {
-    if (optionalSource == null || allNull(optionalSource.getUrl(),optionalSource.getValueCode())) {
+    if (optionalSource == null || allNull(optionalSource.getUrl(), optionalSource.getValueCode())) {
       return Optional.empty();
     }
     return Optional.of(
@@ -143,7 +143,7 @@ public class PatientTransformer implements PatientController.Transformer {
   }
 
   List<Extension> argonautExtensions(List<CdwExtension> source) {
-    if(source==null || source.isEmpty()){
+    if (source == null || source.isEmpty()) {
       return null;
     }
     List<Extension> extensions = new LinkedList<>();
@@ -177,7 +177,7 @@ public class PatientTransformer implements PatientController.Transformer {
   }
 
   List<CodeableConcept> contactRelationship(CdwRelationship source) {
-    if (source==null || allNull(source.getCoding(),source.getText())){
+    if (source == null || allNull(source.getCoding(), source.getText())) {
       return null;
     }
     return singletonList(
@@ -188,7 +188,7 @@ public class PatientTransformer implements PatientController.Transformer {
   }
 
   List<Coding> contactRelationshipCoding(CdwRelationship.CdwCoding source) {
-    if (source==null || allNull(source.getCode(),source.getDisplay(),source.getSystem())){
+    if (source == null || allNull(source.getCode(), source.getDisplay(), source.getSystem())) {
       return null;
     }
     return singletonList(
@@ -256,7 +256,8 @@ public class PatientTransformer implements PatientController.Transformer {
   }
 
   CodeableConcept maritalStatus(CdwMaritalStatus optionalSource) {
-    if(optionalSource == null ||  (optionalSource.getText()==null&&optionalSource.getCoding().isEmpty())){
+    if (optionalSource == null
+        || (optionalSource.getText() == null && optionalSource.getCoding().isEmpty())) {
       return null;
     }
     return convert(
@@ -280,7 +281,12 @@ public class PatientTransformer implements PatientController.Transformer {
   }
 
   List<HumanName> names(CdwName optionalSource) {
-    if(optionalSource == null || allNull(optionalSource.getUse(),optionalSource.getText(),optionalSource.getGiven(),optionalSource.getFamily())){
+    if (optionalSource == null
+        || allNull(
+            optionalSource.getUse(),
+            optionalSource.getText(),
+            optionalSource.getGiven(),
+            optionalSource.getFamily())) {
       return null;
     }
     return convert(
@@ -341,14 +347,25 @@ public class PatientTransformer implements PatientController.Transformer {
         .build();
   }
 
-  Gender gender( CdwAdministrativeGenderCodes source) {
+  Gender gender(CdwAdministrativeGenderCodes source) {
     return ifPresent(source, gender -> EnumSearcher.of(Patient.Gender.class).find(gender.value()));
   }
 
-  private Boolean isUnusableContactAddress(CdwContact source){
-    if(source == null || allNull(source.getName(),source.getPostalCode(),source.getCity(),source.getState(),source.getStreetAddress1(),source.getStreetAddress2(),source.getStreetAddress3(),source.getCountry(),source.getPhone(),source.getRelationship())){
+  private Boolean isUnusableContactAddress(CdwContact source) {
+    if (source == null
+        || allNull(
+            source.getName(),
+            source.getPostalCode(),
+            source.getCity(),
+            source.getState(),
+            source.getStreetAddress1(),
+            source.getStreetAddress2(),
+            source.getStreetAddress3(),
+            source.getCountry(),
+            source.getPhone(),
+            source.getRelationship())) {
       return true;
-      }
-      return false;
+    }
+    return false;
   }
 }

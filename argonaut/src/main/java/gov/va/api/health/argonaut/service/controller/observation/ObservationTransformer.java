@@ -69,19 +69,18 @@ public class ObservationTransformer implements ObservationController.Transformer
     if (maybeCdw == null || maybeCdw.getCoding().isEmpty()) {
       return null;
     }
-    return CodeableConcept.builder()
-        .coding(categoryCoding(maybeCdw.getCoding()))
-        .build();
+    return CodeableConcept.builder().coding(categoryCoding(maybeCdw.getCoding())).build();
   }
 
   List<Coding> categoryCoding(List<CdwCategory.CdwCoding> maybeCdw) {
     return convertAll(
         maybeCdw,
-        source -> Coding.builder()
-            .system(source.getSystem().value())
-            .display(source.getDisplay().value())
-            .code(source.getCode().value())
-            .build());
+        source ->
+            Coding.builder()
+                .system(source.getSystem().value())
+                .display(source.getDisplay().value())
+                .code(source.getCode().value())
+                .build());
   }
 
   CodeableConcept code(CdwCode maybeCdw) {
@@ -94,14 +93,15 @@ public class ObservationTransformer implements ObservationController.Transformer
         .build();
   }
 
-  private List<Coding> codeCoding(List<CdwCode.CdwCoding> cdw) {
+  List<Coding> codeCoding(List<CdwCode.CdwCoding> cdw) {
     return convertAll(
         cdw,
-        source -> Coding.builder()
-            .system(source.getSystem())
-            .display(source.getDisplay())
-            .code(source.getCode())
-            .build());
+        source ->
+            Coding.builder()
+                .system(source.getSystem())
+                .display(source.getDisplay())
+                .code(source.getCode())
+                .build());
   }
 
   ObservationComponent component(CdwComponent maybeCdw) {
@@ -138,11 +138,12 @@ public class ObservationTransformer implements ObservationController.Transformer
   List<Coding> componentCoding(List<CdwComponent.CdwCode.CdwCoding> maybeCdw) {
     return convertAll(
         maybeCdw,
-        source -> Coding.builder()
-            .code(source.getCode())
-            .display(source.getDisplay())
-            .system(source.getSystem())
-            .build());
+        source ->
+            Coding.builder()
+                .code(source.getCode())
+                .display(source.getDisplay())
+                .system(source.getSystem())
+                .build());
   }
 
   CodeableConcept componentValueCodeableConcept(CdwComponent.CdwValueCodeableConcept maybeCdw) {
@@ -151,14 +152,20 @@ public class ObservationTransformer implements ObservationController.Transformer
     }
     return CodeableConcept.builder()
         .text(maybeCdw.getText())
-        .coding(
-            convertAll(
-                maybeCdw.getCoding(),
-                source -> coding(source.getSystem(), source.getCode(), source.getDisplay())))
+        .coding(componentValueCoding(maybeCdw.getCoding()))
         .build();
   }
 
-  
+  List<Coding> componentValueCoding(List<CdwComponent.CdwValueCodeableConcept.CdwCoding> maybeCdw) {
+    return convertAll(
+        maybeCdw,
+        source ->
+            Coding.builder()
+                .code(source.getCode())
+                .display(source.getDisplay())
+                .system(source.getSystem())
+                .build());
+  }
 
   Quantity componentValueQuantity(CdwComponent.CdwValueQuantity maybeCdw) {
     if (maybeCdw == null
@@ -184,17 +191,26 @@ public class ObservationTransformer implements ObservationController.Transformer
   }
 
   CodeableConcept interpretation(CdwInterpretation maybeCdw) {
+    if (maybeCdw == null || maybeCdw.getCoding().isEmpty() && maybeCdw.getText() == null) {
+      return null;
+    }
     return ifPresent(
         maybeCdw,
         source ->
             CodeableConcept.builder()
                 .text(source.getText())
-                .coding(
-                    convertAll(
-                        source.getCoding(),
-                        coding ->
-                            coding(
-                                coding.getSystem().value(), coding.getCode(), coding.getDisplay())))
+                .coding(interpretationCoding(source.getCoding()))
+                .build());
+  }
+
+  List<Coding> interpretationCoding(List<CdwInterpretation.CdwCoding> maybeCdw) {
+    return convertAll(
+        maybeCdw,
+        source ->
+            Coding.builder()
+                .code(source.getCode())
+                .display(source.getDisplay())
+                .system(source.getSystem().value())
                 .build());
   }
 
@@ -203,6 +219,9 @@ public class ObservationTransformer implements ObservationController.Transformer
   }
 
   Reference reference(CdwReference maybeCdw) {
+    if (maybeCdw == null || allNull(maybeCdw.getReference(), maybeCdw.getDisplay())) {
+      return null;
+    }
     return convert(
         maybeCdw,
         source ->
@@ -246,19 +265,39 @@ public class ObservationTransformer implements ObservationController.Transformer
   }
 
   CodeableConcept valueCodeableConcept(CdwValueCodeableConcept maybeCdw) {
+    if (maybeCdw == null || maybeCdw.getCoding().isEmpty() && maybeCdw.getText() == null) {
+      return null;
+    }
     return ifPresent(
         maybeCdw,
         source ->
             CodeableConcept.builder()
                 .text(source.getText())
-                .coding(
-                    convertAll(
-                        source.getCoding(),
-                        x -> coding(x.getSystem(), x.getCode(), x.getDisplay())))
+                .coding(valueCoding(source.getCoding()))
+                .build());
+  }
+
+  List<Coding> valueCoding(List<CdwValueCodeableConcept.CdwCoding> maybeCdw) {
+    return convertAll(
+        maybeCdw,
+        source ->
+            Coding.builder()
+                .code(source.getCode())
+                .display(source.getDisplay())
+                .system(source.getSystem())
                 .build());
   }
 
   Quantity valueQuantity(CdwValueQuantity maybeCdw) {
+    if (maybeCdw == null
+        || allNull(
+            maybeCdw.getCode(),
+            maybeCdw.getComparator(),
+            maybeCdw.getSystem(),
+            maybeCdw.getUnit(),
+            maybeCdw.getValue())) {
+      return null;
+    }
     return ifPresent(
         maybeCdw,
         cdw ->
