@@ -1,5 +1,6 @@
 package gov.va.api.health.argonaut.service.controller.patient;
 
+import static gov.va.api.health.argonaut.service.controller.Transformers.allNull;
 import static gov.va.api.health.argonaut.service.controller.Transformers.asDateString;
 import static gov.va.api.health.argonaut.service.controller.Transformers.asDateTimeString;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convert;
@@ -17,6 +18,9 @@ import gov.va.api.health.argonaut.api.elements.Extension;
 import gov.va.api.health.argonaut.api.elements.Reference;
 import gov.va.api.health.argonaut.api.resources.Patient;
 import gov.va.api.health.argonaut.api.resources.Patient.Contact;
+import gov.va.api.health.argonaut.api.resources.Patient.Gender;
+import gov.va.api.health.argonaut.service.controller.EnumSearcher;
+import gov.va.dvp.cdw.xsd.model.CdwAdministrativeGenderCodes;
 import gov.va.dvp.cdw.xsd.model.CdwBirthSexCodes;
 import gov.va.dvp.cdw.xsd.model.CdwBirthsexExtension;
 import gov.va.dvp.cdw.xsd.model.CdwExtensions;
@@ -48,12 +52,15 @@ import org.springframework.stereotype.Service;
 @Service
 public class PatientTransformer implements PatientController.Transformer {
 
-  Address address(CdwContact source) {
+  Address contactAddress(CdwContact source) {
+    if(isUnusableContactAddress(source)){
+      return null;
+    }
     return convert(
         source,
         cdw ->
             Address.builder()
-                .line(addressLine(cdw))
+                .line(contactAddressLine(cdw))
                 .city(cdw.getCity())
                 .state(cdw.getState())
                 .country(cdw.getCountry())
@@ -61,7 +68,7 @@ public class PatientTransformer implements PatientController.Transformer {
                 .build());
   }
 
-  List<String> addressLine(CdwContact source) {
+  List<String> contactAddressLine(CdwContact source) {
     return addressLines(
         source.getStreetAddress1(), source.getStreetAddress2(), source.getStreetAddress3());
   }
@@ -103,7 +110,7 @@ public class PatientTransformer implements PatientController.Transformer {
   }
 
   Optional<Extension> argoBirthSex(CdwBirthsexExtension optionalSource) {
-    if (optionalSource == null) {
+    if (optionalSource == null || allNull(optionalSource.getUrl(),optionalSource.getValueCode())) {
       return Optional.empty();
     }
     return Optional.of(
@@ -114,7 +121,7 @@ public class PatientTransformer implements PatientController.Transformer {
   }
 
   Optional<Extension> argoEthnicity(List<CdwExtensions> optionalSource) {
-    if (optionalSource.isEmpty()) {
+    if (optionalSource == null || optionalSource.isEmpty()) {
       return Optional.empty();
     }
     return Optional.of(
@@ -125,7 +132,7 @@ public class PatientTransformer implements PatientController.Transformer {
   }
 
   Optional<Extension> argoRace(List<CdwExtensions> optionalSource) {
-    if (optionalSource.isEmpty()) {
+    if (optionalSource == null || optionalSource.isEmpty()) {
       return Optional.empty();
     }
     return Optional.of(
@@ -136,6 +143,9 @@ public class PatientTransformer implements PatientController.Transformer {
   }
 
   List<Extension> argonautExtensions(List<CdwExtension> source) {
+    if(source==null || source.isEmpty()){
+      return null;
+    }
     List<Extension> extensions = new LinkedList<>();
     for (CdwExtension extension : source) {
       if ("text".equals(extension.getUrl())) {
@@ -167,6 +177,9 @@ public class PatientTransformer implements PatientController.Transformer {
   }
 
   List<CodeableConcept> contactRelationship(CdwRelationship source) {
+    if (source==null || allNull(source.getCoding(),source.getText())){
+      return null;
+    }
     return singletonList(
         CodeableConcept.builder()
             .coding(contactRelationshipCoding(source.getCoding()))
@@ -175,6 +188,9 @@ public class PatientTransformer implements PatientController.Transformer {
   }
 
   List<Coding> contactRelationshipCoding(CdwRelationship.CdwCoding source) {
+    if (source==null || allNull(source.getCode(),source.getDisplay(),source.getSystem())){
+      return null;
+    }
     return singletonList(
         Coding.builder()
             .system(ifPresent(source.getSystem(), CdwPatientContactRelationshipSystem::value))
@@ -191,7 +207,7 @@ public class PatientTransformer implements PatientController.Transformer {
                 .relationship(contactRelationship(cdw.getRelationship()))
                 .name(humanName(cdw.getName()))
                 .telecom(contact(cdw))
-                .address(address(cdw))
+                .address(contactAddress(cdw))
                 .build());
   }
 
@@ -240,6 +256,9 @@ public class PatientTransformer implements PatientController.Transformer {
   }
 
   CodeableConcept maritalStatus(CdwMaritalStatus optionalSource) {
+    if(optionalSource == null ||  (optionalSource.getText()==null&&optionalSource.getCoding().isEmpty())){
+      return null;
+    }
     return convert(
         optionalSource,
         cdw ->
@@ -261,6 +280,9 @@ public class PatientTransformer implements PatientController.Transformer {
   }
 
   List<HumanName> names(CdwName optionalSource) {
+    if(optionalSource == null || allNull(optionalSource.getUse(),optionalSource.getText(),optionalSource.getGiven(),optionalSource.getFamily())){
+      return null;
+    }
     return convert(
         optionalSource,
         cdw ->
@@ -286,7 +308,7 @@ public class PatientTransformer implements PatientController.Transformer {
         .name(names(source.getName()))
         .telecom(telecoms(source.getTelecoms()))
         .address(addresses(source.getAddresses()))
-        .gender(ifPresent(source.getGender(), gender -> Patient.Gender.valueOf(gender.value())))
+        .gender(gender(source.getGender()))
         .birthDate(asDateString(source.getBirthDate()))
         .deceasedBoolean(source.isDeceasedBoolean())
         .deceasedDateTime(asDateTimeString(source.getDeceasedDateTime()))
@@ -317,5 +339,16 @@ public class PatientTransformer implements PatientController.Transformer {
         .code(source.getCode())
         .system(source.getSystem())
         .build();
+  }
+
+  Gender gender( CdwAdministrativeGenderCodes source) {
+    return ifPresent(source, gender -> EnumSearcher.of(Patient.Gender.class).find(gender.value()));
+  }
+
+  private Boolean isUnusableContactAddress(CdwContact source){
+    if(source == null || allNull(source.getName(),source.getPostalCode(),source.getCity(),source.getState(),source.getStreetAddress1(),source.getStreetAddress2(),source.getStreetAddress3(),source.getCountry(),source.getPhone(),source.getRelationship())){
+      return true;
+      }
+      return false;
   }
 }
