@@ -1,7 +1,6 @@
 package gov.va.api.health.argonaut.service.controller.diagnosticreport;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
 
 import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
 import gov.va.api.health.argonaut.api.datatypes.Coding;
@@ -15,19 +14,12 @@ import gov.va.dvp.cdw.xsd.model.CdwDiagnosticReportCategoryCoding;
 import gov.va.dvp.cdw.xsd.model.CdwDiagnosticReportCategoryDisplay;
 import gov.va.dvp.cdw.xsd.model.CdwDiagnosticReportCode;
 import gov.va.dvp.cdw.xsd.model.CdwDiagnosticReportCodeCoding;
-import gov.va.dvp.cdw.xsd.model.CdwDiagnosticReportFhirVersionValue;
-import gov.va.dvp.cdw.xsd.model.CdwDiagnosticReportResourceNameValue;
 import gov.va.dvp.cdw.xsd.model.CdwDiagnosticReportStatus;
 import gov.va.dvp.cdw.xsd.model.CdwReference;
-import gov.va.dvp.cdw.xsd.model.CdwReturnFormatCodes;
-import gov.va.dvp.cdw.xsd.model.CdwReturnTypeCodes;
-import java.math.BigInteger;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
-import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.junit.Test;
 
@@ -41,8 +33,7 @@ public class DiagnosticReportTransformerTest {
   public void categoryCoding() {
     assertThat(tx.categoryCodings(null)).isNull();
     assertThat(tx.categoryCodings(new CdwDiagnosticReportCategoryCoding())).isNull();
-    assertThat(tx.categoryCodings(cdw.categoryCoding()))
-        .isEqualTo(expected.categoryCoding());
+    assertThat(tx.categoryCodings(cdw.categoryCoding())).isEqualTo(expected.categoryCoding());
   }
 
   @Test
@@ -60,7 +51,8 @@ public class DiagnosticReportTransformerTest {
   @Test
   public void codeCodings() {
     assertThat(tx.codeCodings(null)).isNull();
-    assertThat(tx.codeCodings(Collections.singletonList(new CdwDiagnosticReportCodeCoding()))).isNull();
+    assertThat(tx.codeCodings(Collections.singletonList(new CdwDiagnosticReportCodeCoding())))
+        .isNull();
     assertThat(tx.codeCodings(null)).isNull();
   }
 
@@ -76,8 +68,7 @@ public class DiagnosticReportTransformerTest {
 
   @Test
   public void status() {
-    assertThat(tx.status(null)).isNull();
-    fail();
+    assertThat(tx.status(cdw.status())).isEqualTo(expected.status());
   }
 
   private static class CdwSampleData {
@@ -113,7 +104,7 @@ public class DiagnosticReportTransformerTest {
       CdwDiagnosticReport102Root.CdwDiagnosticReports.CdwDiagnosticReport sampleDR =
           new CdwDiagnosticReport102Root.CdwDiagnosticReports.CdwDiagnosticReport();
       sampleDR.setCdwId("5d582505-650e-58b3-8673-49138f7b2b04");
-      sampleDR.setStatus(CdwDiagnosticReportStatus.FINAL);
+      sampleDR.setStatus(status());
       sampleDR.setCategory(category());
       sampleDR.setCode(code());
       sampleDR.setSubject(cdwReference());
@@ -122,6 +113,10 @@ public class DiagnosticReportTransformerTest {
       sampleDR.setIssued(issued());
       sampleDR.setPerformer(cdwReference());
       return sampleDR;
+    }
+
+    private CdwDiagnosticReportStatus status() {
+      return CdwDiagnosticReportStatus.FINAL;
     }
 
     @SneakyThrows
@@ -141,7 +136,7 @@ public class DiagnosticReportTransformerTest {
       return DiagnosticReport.builder()
           .resourceType("DiagnosticReport")
           .id("5d582505-650e-58b3-8673-49138f7b2b04")
-          .status(Code._final)
+          .status(status())
           .category(category())
           .code(code())
           .subject(reference())
@@ -150,6 +145,10 @@ public class DiagnosticReportTransformerTest {
           .issued("2013-06-21T20:05:12Z")
           .performer(reference())
           .build();
+    }
+
+    private Code status() {
+      return Code._final;
     }
 
     private Reference reference() {
