@@ -1,5 +1,6 @@
 package gov.va.health.api.sentinel;
 
+import gov.va.api.health.argonaut.api.bundle.AbstractBundle;
 import gov.va.api.health.argonaut.api.resources.AllergyIntolerance;
 import gov.va.api.health.argonaut.api.resources.Appointment;
 import gov.va.api.health.argonaut.api.resources.Condition;
@@ -350,5 +351,19 @@ public class ArgonautReadAndSearchIT {
   @Test
   public void getResource() {
     argonaut().get(path, params).expect(status).expectValid(response);
+  }
+
+  /**
+   * If the response is a bundle, then the query is a search. We want to verify paging parameters
+   * restrict page >= 1, _count >=1, and _count <= 20
+   */
+  @Test
+  public void pagingParameterBounds() {
+    if (!AbstractBundle.class.isAssignableFrom(response)) {
+      return;
+    }
+    argonaut().get(path + "&page=0", params).expect(400).expectValid(OperationOutcome.class);
+    argonaut().get(path + "&_count=0", params).expect(400).expectValid(OperationOutcome.class);
+    argonaut().get(path + "&_count=21", params).expect(400).expectValid(OperationOutcome.class);
   }
 }
