@@ -68,6 +68,14 @@ public class ImmunizationTransformerTest {
   }
 
   @Test
+  public void reference() {
+    assertThat(tx.reference(cdw.reference("Patient/185601V825290", "VETERAN,JOHN Q")))
+        .isEqualTo(expected.reference("Patient/185601V825290", "VETERAN,JOHN Q"));
+    assertThat(tx.reference(null)).isNull();
+    assertThat(tx.reference(new CdwReference())).isNull();
+  }
+
+  @Test
   public void reported() {
     // reported field
     assertThat(tx.reported(null)).isNull();
@@ -96,6 +104,21 @@ public class ImmunizationTransformerTest {
     assertThat(tx.statusExtension(CdwImmunizationStatus.ENTERED_IN_ERROR)).isNull();
     assertThat(tx.statusExtension(CdwImmunizationStatus.DATA_ABSENT_REASON_UNSUPPORTED))
         .isEqualTo(DataAbsentReason.of(Reason.unsupported));
+  }
+
+  @Test
+  public void vaccinationProtocol() {
+    assertThat(tx.vaccinationProtocol(null)).isNull();
+    assertThat(tx.vaccinationProtocol(new CdwVaccinationProtocols())).isNull();
+    assertThat(tx.vaccinationProtocol(cdw.vaccinationProtocols()))
+        .isEqualTo(expected.vaccinationProtocols());
+  }
+
+  @Test
+  public void vaccineCode() {
+    assertThat(tx.vaccineCode(cdw.vaccineCode())).isEqualTo(expected.vaccineCode());
+    assertThat(tx.vaccineCode(null)).isNull();
+    assertThat(tx.vaccineCode(new CdwCodeableConcept())).isNull();
   }
 
   private static class CdwSampleData {

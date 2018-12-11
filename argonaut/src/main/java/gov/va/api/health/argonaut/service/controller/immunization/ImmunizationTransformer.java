@@ -1,5 +1,6 @@
 package gov.va.api.health.argonaut.service.controller.immunization;
 
+import static gov.va.api.health.argonaut.service.controller.Transformers.allNull;
 import static gov.va.api.health.argonaut.service.controller.Transformers.asDateTimeString;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convert;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convertAll;
@@ -94,6 +95,9 @@ public class ImmunizationTransformer implements ImmunizationController.Transform
   }
 
   Reference reference(CdwReference maybeSource) {
+    if (maybeSource == null || allNull(maybeSource.getReference(), maybeSource.getDisplay())) {
+      return null;
+    }
     return convert(
         maybeSource,
         source ->
@@ -137,7 +141,7 @@ public class ImmunizationTransformer implements ImmunizationController.Transform
     return null;
   }
 
-  private List<VaccinationProtocol> vaccinationProtocol(CdwVaccinationProtocols maybeSource) {
+  List<VaccinationProtocol> vaccinationProtocol(CdwVaccinationProtocols maybeSource) {
     return convertAll(
         ifPresent(maybeSource, CdwVaccinationProtocols::getVaccinationProtocol),
         item ->
@@ -147,7 +151,12 @@ public class ImmunizationTransformer implements ImmunizationController.Transform
                 .build());
   }
 
-  private CodeableConcept vaccineCode(CdwCodeableConcept maybeSource) {
+  CodeableConcept vaccineCode(CdwCodeableConcept maybeSource) {
+    if (maybeSource == null
+        || allNull(maybeSource.getCoding(), maybeSource.getText())
+        || maybeSource.getCoding().isEmpty() && maybeSource.getText() == null) {
+      return null;
+    }
     return convert(
         maybeSource,
         source ->
