@@ -19,7 +19,7 @@ public class SeTest {
                     .clientId("0oa2dmpuz9fMYIujw2p7")
                     .clientSecret("XTDgBe7S3iXOCDL7Wc8H49H43NJnX5FT6RoTcjwR")
                     // .authorizeUrl("https://deptva-eval.okta.com/oauth2/default/v1/authorize")
-                     .authorizeUrl("https://dev-api.va.gov/oauth2/authorization")
+                    .authorizeUrl("https://dev-api.va.gov/oauth2/authorization")
                     .redirectUrl("https://app/after-auth")
                     .state("2VV5RqFzBG4GcgS-k6OKL6dMEUyt4FH5E-OcwaYaVzU")
                     .aud("alec")
@@ -39,7 +39,7 @@ public class SeTest {
                     .scope("patient/Procedure.read")
                     .build())
             // .tokenUrl("https://deptva-eval.okta.com/oauth2/default/v1/token")
-             .tokenUrl("https://dev-api.va.gov/oauth2/token")
+            .tokenUrl("https://dev-api.va.gov/oauth2/token")
             .user(
                 UserCredentials.builder()
                     .id("vasdvp+IDME_05@gmail.com")
