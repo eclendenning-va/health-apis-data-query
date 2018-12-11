@@ -17,10 +17,13 @@ import gov.va.dvp.cdw.xsd.model.CdwPatient103Root;
 import gov.va.dvp.cdw.xsd.model.CdwPatient103Root.CdwPatients.CdwPatient;
 import java.util.Collections;
 import java.util.function.Function;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.MultiValueMap;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,6 +38,7 @@ import org.springframework.web.bind.annotation.RestController;
  * details.
  */
 @SuppressWarnings("WeakerAccess")
+@Validated
 @RestController
 @RequestMapping(
   value = {"/api/Patient"},
@@ -91,8 +95,8 @@ public class PatientController {
   public Patient.Bundle searchByFamilyAndGender(
       @RequestParam("family") String family,
       @RequestParam("gender") String gender,
-      @RequestParam(value = "page", defaultValue = "1") int page,
-      @RequestParam(value = "_count", defaultValue = "15") int count) {
+      @RequestParam(value = "page", defaultValue = "1") @Min(1) int page,
+      @RequestParam(value = "_count", defaultValue = "15") @Min(1) @Max(20) int count) {
 
     return bundle(
         Parameters.builder()
@@ -110,8 +114,8 @@ public class PatientController {
   public Patient.Bundle searchByGivenAndGender(
       @RequestParam("given") String given,
       @RequestParam("gender") String gender,
-      @RequestParam(value = "page", defaultValue = "1") int page,
-      @RequestParam(value = "_count", defaultValue = "15") int count) {
+      @RequestParam(value = "page", defaultValue = "1") @Min(1) int page,
+      @RequestParam(value = "_count", defaultValue = "15") @Min(1) @Max(20) int count) {
     return bundle(
         Parameters.builder()
             .add("given", given)
@@ -127,8 +131,8 @@ public class PatientController {
   @GetMapping(params = {"_id"})
   public Patient.Bundle searchById(
       @RequestParam("_id") String id,
-      @RequestParam(value = "page", defaultValue = "1") int page,
-      @RequestParam(value = "_count", defaultValue = "1") int count) {
+      @RequestParam(value = "page", defaultValue = "1") @Min(1) int page,
+      @RequestParam(value = "_count", defaultValue = "1") @Min(1) @Max(20) int count) {
     return bundle(
         Parameters.builder().add("_id", id).add("page", page).add("_count", count).build(),
         page,
@@ -139,8 +143,8 @@ public class PatientController {
   @GetMapping(params = {"identifier"})
   public Patient.Bundle searchByIdentifier(
       @RequestParam("identifier") String id,
-      @RequestParam(value = "page", defaultValue = "1") int page,
-      @RequestParam(value = "_count", defaultValue = "1") int count) {
+      @RequestParam(value = "page", defaultValue = "1") @Min(1) int page,
+      @RequestParam(value = "_count", defaultValue = "1") @Min(1) @Max(20) int count) {
     return bundle(
         Parameters.builder().add("identifier", id).add("page", page).add("_count", count).build(),
         page,
@@ -152,8 +156,8 @@ public class PatientController {
   public Patient.Bundle searchByNameAndBirthdate(
       @RequestParam("name") String name,
       @RequestParam("birthdate") String[] birthdate,
-      @RequestParam(value = "page", defaultValue = "1") int page,
-      @RequestParam(value = "_count", defaultValue = "15") int count) {
+      @RequestParam(value = "page", defaultValue = "1") @Min(1) int page,
+      @RequestParam(value = "_count", defaultValue = "15") @Min(1) @Max(20) int count) {
     return bundle(
         Parameters.builder()
             .add("name", name)
@@ -170,8 +174,8 @@ public class PatientController {
   public Patient.Bundle searchByNameAndGender(
       @RequestParam("name") String name,
       @RequestParam("gender") String gender,
-      @RequestParam(value = "page", defaultValue = "1") int page,
-      @RequestParam(value = "_count", defaultValue = "15") int count) {
+      @RequestParam(value = "page", defaultValue = "1") @Min(1) int page,
+      @RequestParam(value = "_count", defaultValue = "15") @Min(1) @Max(20) int count) {
     return bundle(
         Parameters.builder()
             .add("name", name)
