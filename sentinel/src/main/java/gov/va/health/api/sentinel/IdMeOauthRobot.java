@@ -78,7 +78,15 @@ public class IdMeOauthRobot {
         .formParam("grant_type", "authorization_code")
         .formParam("redirect_uri", config.authorization().redirectUrl())
         .formParam("code", code())
+        .log()
+        .all()
+        .log()
+        .body()
         .post(config.tokenUrl())
+        .then()
+        .log()
+        .all()
+        .extract()
         .as(TokenExchange.class);
   }
 
