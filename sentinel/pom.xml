@@ -22,10 +22,6 @@
       <version>${selenium.version}</version>
     </dependency>
     <dependency>
-      <groupId>ch.qos.logback</groupId>
-      <artifactId>logback-classic</artifactId>
-    </dependency>
-    <dependency>
       <groupId>gov.va.dvp</groupId>
       <artifactId>lighthouse-keystore</artifactId>
       <scope>provided</scope>
