@@ -3,6 +3,8 @@ package gov.va.api.health.argonaut.service.controller.medicationorder;
 import static gov.va.api.health.argonaut.service.controller.Transformers.allNull;
 import static gov.va.api.health.argonaut.service.controller.Transformers.asDateTimeString;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convert;
+import static gov.va.api.health.argonaut.service.controller.Transformers.convertAll;
+import static gov.va.api.health.argonaut.service.controller.Transformers.ifPresent;
 
 import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
 import gov.va.api.health.argonaut.api.datatypes.Duration;
@@ -25,8 +27,6 @@ import gov.va.dvp.cdw.xsd.model.CdwMedicationOrder103Root.CdwMedicationOrders.Cd
 import gov.va.dvp.cdw.xsd.model.CdwReference;
 import gov.va.dvp.cdw.xsd.model.CdwSimpleQuantity;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -43,57 +43,49 @@ public class MedicationOrderTransformer implements MedicationOrderController.Tra
     return medicationOrder(source);
   }
 
-  DispenseRequest dispenseRequest(CdwDispenseRequest source) {
-    if (source == null
+  DispenseRequest dispenseRequest(CdwDispenseRequest cdw) {
+    if (cdw == null
         || allNull(
-            source.getNumberOfRepeatsAllowed(),
-            source.getQuantity(),
-            source.getExpectedSupplyDuration())) {
+            cdw.getNumberOfRepeatsAllowed(), cdw.getQuantity(), cdw.getExpectedSupplyDuration())) {
       return null;
     }
-    return DispenseRequest.builder()
-        .numberOfRepeatsAllowed(numberOfRepeatsAllowed(source.getNumberOfRepeatsAllowed()))
-        .quantity(quantity(source.getQuantity()))
-        .expectedSupplyDuration(expectedSupplyDuration(source.getExpectedSupplyDuration()))
-        .build();
+    return convert(
+        cdw,
+        source ->
+            DispenseRequest.builder()
+                .numberOfRepeatsAllowed(numberOfRepeatsAllowed(source.getNumberOfRepeatsAllowed()))
+                .quantity(quantity(source.getQuantity()))
+                .expectedSupplyDuration(expectedSupplyDuration(source.getExpectedSupplyDuration()))
+                .build());
   }
 
-  DosageInstruction dosageInstruction(CdwDosageInstruction source) {
-    if (source == null
+  DosageInstruction dosageInstruction(CdwDosageInstruction cdw) {
+    if (cdw == null
         || allNull(
-            source.getAdditionalInstructions(),
-            source.getAsNeededBoolean(),
-            source.getDoseQuantity(),
-            source.getRoute(),
-            source.getText(),
-            source.getTiming())) {
+            cdw.getAdditionalInstructions(),
+            cdw.getAsNeededBoolean(),
+            cdw.getDoseQuantity(),
+            cdw.getRoute(),
+            cdw.getText(),
+            cdw.getTiming())) {
       return null;
     }
-    return DosageInstruction.builder()
-        .text(source.getText())
-        .additionalInstructions(additionalInstructions(source.getAdditionalInstructions()))
-        .timing(timing(source.getTiming()))
-        .asNeededBoolean(Boolean.valueOf(source.getAsNeededBoolean()))
-        .route(route(source.getRoute()))
-        .doseQuantity(doseQuantity(source.getDoseQuantity()))
-        .build();
+    return convert(
+        cdw,
+        source ->
+            DosageInstruction.builder()
+                .text(source.getText())
+                .additionalInstructions(additionalInstructions(source.getAdditionalInstructions()))
+                .doseQuantity(doseQuantity(source.getDoseQuantity()))
+                .timing(timing(source.getTiming()))
+                .asNeededBoolean(Boolean.valueOf(source.getAsNeededBoolean()))
+                .route(route(source.getRoute()))
+                .build());
   }
 
-  List<DosageInstruction> dosageInstructions(CdwDosageInstructions source) {
-    if (source == null || source.getDosageInstruction() == null) {
-      return null;
-    }
-    List<DosageInstruction> dosageInstructions =
-        source
-            .getDosageInstruction()
-            .stream()
-            .map(this::dosageInstruction)
-            .filter(Objects::nonNull)
-            .collect(Collectors.toList());
-    if (dosageInstructions.isEmpty()) {
-      return null;
-    }
-    return dosageInstructions;
+  List<DosageInstruction> dosageInstructions(CdwDosageInstructions cdw) {
+    return convertAll(
+        ifPresent(cdw, CdwDosageInstructions::getDosageInstruction), this::dosageInstruction);
   }
 
   SimpleQuantity doseQuantity(CdwSimpleQuantity source) {
@@ -110,17 +102,19 @@ public class MedicationOrderTransformer implements MedicationOrderController.Tra
     return Double.valueOf(source);
   }
 
-  Duration expectedSupplyDuration(CdwDuration source) {
-    if (source == null
-        || allNull(source.getValue(), source.getCode(), source.getSystem(), source.getUnit())) {
+  Duration expectedSupplyDuration(CdwDuration cdw) {
+    if (cdw == null || allNull(cdw.getUnit(), cdw.getSystem(), cdw.getCode(), cdw.getValue())) {
       return null;
     }
-    return Duration.builder()
-        .value(Double.valueOf(source.getValue()))
-        .unit(source.getUnit())
-        .system(source.getSystem())
-        .code(source.getCode())
-        .build();
+    return convert(
+        cdw,
+        source ->
+            Duration.builder()
+                .value(source.getValue().doubleValue())
+                .unit(source.getUnit())
+                .system(source.getSystem())
+                .code(source.getCode())
+                .build());
   }
 
   MedicationOrder medicationOrder(CdwMedicationOrder source) {
@@ -149,7 +143,13 @@ public class MedicationOrderTransformer implements MedicationOrderController.Tra
     if (source == null || source.isEmpty()) {
       return null;
     }
-    return SimpleQuantity.builder().value(Double.valueOf(source)).build();
+    Double value;
+    try {
+      value = Double.valueOf(source);
+    } catch (NumberFormatException e) {
+      throw new IllegalArgumentException("Cannot create double value from " + source, e);
+    }
+    return SimpleQuantity.builder().value(value).build();
   }
 
   Reference reference(CdwReference maybeSource) {

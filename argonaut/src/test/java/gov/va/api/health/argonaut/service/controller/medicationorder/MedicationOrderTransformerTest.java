@@ -94,12 +94,17 @@ public class MedicationOrderTransformerTest {
     assertThat(tx.expectedSupplyDuration(cdw.expectedSupplyDuration()))
         .isEqualTo(expected.expectedSupplyDuration());
     assertThat(tx.expectedSupplyDuration(null)).isNull();
-    assertThat(tx.expectedSupplyDuration(new CdwDuration())).isNull();
   }
 
   @Test
   public void medicationOrder() {
     assertThat(tx.apply(cdw.medicationOrder())).isEqualTo(expected.medicationOrder());
+  }
+
+  @Test
+  public void numberOfRepeatsAllowed() {
+    assertThat(tx.numberOfRepeatsAllowed(null)).isNull();
+    assertThat(tx.numberOfRepeatsAllowed(0)).isNull();
   }
 
   @Test
@@ -109,11 +114,24 @@ public class MedicationOrderTransformerTest {
     assertThat(tx.quantity("")).isNull();
   }
 
+  @Test(expected = IllegalArgumentException.class)
+  public void quantityCannotTransformStringToDouble() {
+    tx.quantity("ten");
+  }
+
   @Test
   public void reference() {
     assertThat(tx.reference(null)).isNull();
     assertThat(tx.reference(new CdwReference())).isNull();
-    assertThat(tx.reference(cdw.cdwReference("patient"))).isEqualTo(expected.reference("patient"));
+    assertThat(
+            tx.reference(
+                cdw.cdwReference(
+                    "https://www.freedomstream.io/CDCArgonaut/api/Patient/185601V825290",
+                    "VETERAN,JOHN Q")))
+        .isEqualTo(
+            expected.reference(
+                "https://www.freedomstream.io/CDCArgonaut/api/Patient/185601V825290",
+                "VETERAN,JOHN Q"));
   }
 
   @Test
@@ -152,10 +170,10 @@ public class MedicationOrderTransformerTest {
       return additionalInstructions;
     }
 
-    private CdwReference cdwReference(String prefix) {
+    private CdwReference cdwReference(String reference, String display) {
       CdwReference ref = new CdwReference();
-      ref.setReference(prefix + " reference");
-      ref.setDisplay(prefix + " display");
+      ref.setReference(reference);
+      ref.setDisplay(display);
       return ref;
     }
 
@@ -187,7 +205,7 @@ public class MedicationOrderTransformerTest {
 
     CdwDosageInstruction dosageInstruction() {
       CdwDosageInstruction dosageInstruction = new CdwDosageInstruction();
-      dosageInstruction.setText("dosage instruction text");
+      dosageInstruction.setText(" TAKE ONE TABLET BY MOUTH ONE TIME EACH DAY FOR CHOLESTEROL");
       dosageInstruction.setAdditionalInstructions(additionalInstructions());
       dosageInstruction.setTiming(timing());
       dosageInstruction.setAsNeededBoolean("true");
@@ -210,10 +228,10 @@ public class MedicationOrderTransformerTest {
 
     CdwDuration expectedSupplyDuration() {
       CdwDuration expectedSupplyDuration = new CdwDuration();
-      expectedSupplyDuration.setCode("expected supply duration code");
-      expectedSupplyDuration.setSystem("http://example.com");
-      expectedSupplyDuration.setUnit("expected supply duration unit");
-      expectedSupplyDuration.setValue(10);
+      expectedSupplyDuration.setCode("d");
+      expectedSupplyDuration.setSystem("http://unitsofmeasure");
+      expectedSupplyDuration.setUnit("days");
+      expectedSupplyDuration.setValue(30);
       return expectedSupplyDuration;
     }
 
@@ -222,12 +240,21 @@ public class MedicationOrderTransformerTest {
           new CdwMedicationOrder103Root.CdwMedicationOrders.CdwMedicationOrder();
       sampleMedicationOrder.setRowNumber(1);
       sampleMedicationOrder.setCdwId("1234");
-      sampleMedicationOrder.setPatient(cdwReference("patient"));
+      sampleMedicationOrder.setPatient(
+          cdwReference(
+              "https://www.freedomstream.io/CDCArgonaut/api/Patient/185601V825290",
+              "VETERAN,JOHN Q"));
       sampleMedicationOrder.setDateWritten(dateWritten());
       sampleMedicationOrder.setStatus("active");
       sampleMedicationOrder.setDateEnded(dateEnded());
-      sampleMedicationOrder.setPrescriber(cdwReference("prescriber"));
-      sampleMedicationOrder.setMedicationReference(cdwReference("medication"));
+      sampleMedicationOrder.setPrescriber(
+          cdwReference(
+              "https://www.freedomstream.io/CDCArgonaut/api/Practitioner/93e4e3c3-8d8c-5b53-996f-6047d0232231",
+              "SMITH,ATTENDING D"));
+      sampleMedicationOrder.setMedicationReference(
+          cdwReference(
+              "https://www.freedomstream.io/CDCArgonaut/api/Medication/2f773f73-ad7f-56ca-891e-8e364c913fe0",
+              "ATORVASTATIN CALCIUM 80MG TAB"));
       sampleMedicationOrder.setDosageInstructions(dosageInstructions());
       sampleMedicationOrder.setDispenseRequest(dispenseRequest());
       return sampleMedicationOrder;
@@ -269,7 +296,7 @@ public class MedicationOrderTransformerTest {
 
     private DosageInstruction dosageInstruction() {
       return DosageInstruction.builder()
-          .text("dosage instruction text")
+          .text(" TAKE ONE TABLET BY MOUTH ONE TIME EACH DAY FOR CHOLESTEROL")
           .additionalInstructions(additionalInstructions())
           .timing(timing())
           .asNeededBoolean(true)
@@ -288,10 +315,10 @@ public class MedicationOrderTransformerTest {
 
     Duration expectedSupplyDuration() {
       return Duration.builder()
-          .code("expected supply duration code")
-          .system("http://example.com")
-          .unit("expected supply duration unit")
-          .value(Double.valueOf(10))
+          .code("d")
+          .system("http://unitsofmeasure")
+          .unit("days")
+          .value(Double.valueOf(30))
           .build();
     }
 
@@ -299,12 +326,21 @@ public class MedicationOrderTransformerTest {
       return MedicationOrder.builder()
           .resourceType("MedicationOrder")
           .id("1234")
-          .patient(reference("patient"))
+          .patient(
+              reference(
+                  "https://www.freedomstream.io/CDCArgonaut/api/Patient/185601V825290",
+                  "VETERAN,JOHN Q"))
           .dateWritten("2018-11-06")
           .status(Status.active)
           .dateEnded("2018-11-06")
-          .prescriber(reference("prescriber"))
-          .medicationReference(reference("medication"))
+          .prescriber(
+              reference(
+                  "https://www.freedomstream.io/CDCArgonaut/api/Practitioner/93e4e3c3-8d8c-5b53-996f-6047d0232231",
+                  "SMITH,ATTENDING D"))
+          .medicationReference(
+              reference(
+                  "https://www.freedomstream.io/CDCArgonaut/api/Medication/2f773f73-ad7f-56ca-891e-8e364c913fe0",
+                  "ATORVASTATIN CALCIUM 80MG TAB"))
           .dosageInstruction(dosageInstructions())
           .dispenseRequest(dispenseRequest())
           .build();
@@ -314,11 +350,8 @@ public class MedicationOrderTransformerTest {
       return SimpleQuantity.builder().value(Double.valueOf("10")).build();
     }
 
-    private Reference reference(String prefix) {
-      return Reference.builder()
-          .reference(prefix + " reference")
-          .display(prefix + " display")
-          .build();
+    private Reference reference(String reference, String display) {
+      return Reference.builder().reference(reference).display(display).build();
     }
 
     private CodeableConcept route() {

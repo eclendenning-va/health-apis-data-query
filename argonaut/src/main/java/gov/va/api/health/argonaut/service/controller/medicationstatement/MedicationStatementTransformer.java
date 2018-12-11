@@ -1,5 +1,6 @@
 package gov.va.api.health.argonaut.service.controller.medicationstatement;
 
+import static gov.va.api.health.argonaut.service.controller.Transformers.allNull;
 import static gov.va.api.health.argonaut.service.controller.Transformers.asDateTimeString;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convert;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convertAll;
@@ -59,6 +60,11 @@ public class MedicationStatementTransformer implements MedicationStatementContro
   }
 
   CodeableConcept codeableConcept(CdwCodeableConcept maybeSource) {
+    if (maybeSource == null
+        || allNull(maybeSource.getCoding(), maybeSource.getText())
+        || maybeSource.getCoding().isEmpty() && maybeSource.getText() == null) {
+      return null;
+    }
     return convert(
         maybeSource,
         source ->
@@ -85,6 +91,9 @@ public class MedicationStatementTransformer implements MedicationStatementContro
   }
 
   Reference reference(CdwReference maybeCdw) {
+    if (maybeCdw == null || allNull(maybeCdw.getDisplay(), maybeCdw.getReference())) {
+      return null;
+    }
     return convert(
         maybeCdw,
         source ->

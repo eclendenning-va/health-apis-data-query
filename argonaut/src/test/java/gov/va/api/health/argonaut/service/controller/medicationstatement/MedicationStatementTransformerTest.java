@@ -1,15 +1,18 @@
 package gov.va.api.health.argonaut.service.controller.medicationstatement;
 
+import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
+import gov.va.api.health.argonaut.api.datatypes.Coding;
 import gov.va.api.health.argonaut.api.datatypes.Timing;
 import gov.va.api.health.argonaut.api.elements.Reference;
 import gov.va.api.health.argonaut.api.resources.MedicationStatement;
 import gov.va.api.health.argonaut.api.resources.MedicationStatement.Dosage;
 import gov.va.api.health.argonaut.api.resources.MedicationStatement.Status;
 import gov.va.dvp.cdw.xsd.model.CdwCodeableConcept;
+import gov.va.dvp.cdw.xsd.model.CdwCoding;
 import gov.va.dvp.cdw.xsd.model.CdwMedicationStatement102Root.CdwMedicationStatements.CdwMedicationStatement;
 import gov.va.dvp.cdw.xsd.model.CdwMedicationStatement102Root.CdwMedicationStatements.CdwMedicationStatement.CdwDosages;
 import gov.va.dvp.cdw.xsd.model.CdwMedicationStatement102Root.CdwMedicationStatements.CdwMedicationStatement.CdwDosages.CdwDosage;
@@ -36,6 +39,14 @@ public class MedicationStatementTransformerTest {
   }
 
   @Test
+  public void codings() {
+    assertThat(tx.codings(singletonList(cdw.coding()))).isEqualTo(singletonList(expected.coding()));
+    assertThat(tx.timing(cdw.timing()).code().coding()).isEqualTo(expected.timingCode().coding());
+    assertThat(tx.codings(null)).isNull();
+    assertThat(tx.codings(emptyList())).isNull();
+  }
+
+  @Test
   public void dosage() {
     assertThat(tx.dosage(cdw.dosages())).isEqualTo(expected.dosage());
     assertThat(tx.dosage(null)).isNull();
@@ -45,6 +56,7 @@ public class MedicationStatementTransformerTest {
   @Test
   public void codeableConcept() {
     assertThat(tx.codeableConcept(null)).isNull();
+    assertThat(tx.codeableConcept(new CdwCodeableConcept())).isNull();
     assertThat(tx.codeableConcept(cdw.route())).isEqualTo(expected.route());
     assertThat(tx.codeableConcept(cdw.timingCode())).isEqualTo(expected.timingCode());
   }
@@ -52,6 +64,7 @@ public class MedicationStatementTransformerTest {
   @Test
   public void reference() {
     assertThat(tx.reference(null)).isNull();
+    assertThat(tx.reference(new CdwReference())).isNull();
     assertThat(tx.reference(cdw.reference("x", "y"))).isEqualTo(expected.reference("x", "y"));
   }
 
@@ -121,7 +134,16 @@ public class MedicationStatementTransformerTest {
     private CdwCodeableConcept timingCode() {
       CdwCodeableConcept cdw = new CdwCodeableConcept();
       cdw.setText("EVERY DAY");
+      cdw.getCoding().add(coding());
       return cdw;
+    }
+
+    CdwCoding coding() {
+      CdwCoding coding = new CdwCoding();
+      coding.setSystem("http://example.com");
+      coding.setCode("BID");
+      coding.setDisplay("BID");
+      return coding;
     }
   }
 
@@ -159,7 +181,11 @@ public class MedicationStatementTransformerTest {
     }
 
     private CodeableConcept timingCode() {
-      return CodeableConcept.builder().text("EVERY DAY").build();
+      return CodeableConcept.builder().text("EVERY DAY").coding(singletonList(coding())).build();
+    }
+
+    private Coding coding() {
+      return Coding.builder().display("BID").code("BID").system("http://example.com").build();
     }
   }
 }
