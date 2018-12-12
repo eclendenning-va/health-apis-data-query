@@ -33,7 +33,7 @@ public class FhirTestClient implements TestClient {
                 if (i.diagnostics() != null) {
                   i.diagnostics(
                       i.diagnostics()
-                          .replaceAll("Timestamp:.*$", "Timestamp:REMOVED-FOR-COMPARISON"));
+                          .replaceAll("Timestamp:.*(\n|$)", "Timestamp:REMOVED-FOR-COMPARISON"));
                 }
               });
       return oo;

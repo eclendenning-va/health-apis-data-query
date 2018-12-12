@@ -15,11 +15,15 @@ import gov.va.api.health.argonaut.service.mranderson.client.Query;
 import gov.va.dvp.cdw.xsd.model.CdwProcedure101Root;
 import java.util.Collections;
 import java.util.function.Function;
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.MultiValueMap;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,6 +37,7 @@ import org.springframework.web.bind.annotation.RestController;
  * https://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-procedure.html for
  * implementation details.
  */
+@Validated
 @RestController
 @RequestMapping(
   value = {"/api/Procedure"},
@@ -90,8 +95,9 @@ public class ProcedureController {
   @GetMapping(params = {"_id"})
   public Procedure.Bundle searchById(
       @RequestParam("_id") String id,
-      @RequestParam(value = "page", defaultValue = "1") int page,
-      @RequestParam(value = "_count", defaultValue = "1") int count) {
+      @RequestParam(value = "page", defaultValue = "1") @Min(1) int page,
+      @RequestParam(value = "_count", defaultValue = "1") @Min(1) @Max(20) int count,
+      HttpServletRequest servletRequest) {
     return bundle(
         Parameters.builder().add("identifier", id).add("page", page).add("_count", count).build(),
         page,
@@ -102,8 +108,9 @@ public class ProcedureController {
   @GetMapping(params = {"identifier"})
   public Procedure.Bundle searchByIdentifier(
       @RequestParam("identifier") String id,
-      @RequestParam(value = "page", defaultValue = "1") int page,
-      @RequestParam(value = "_count", defaultValue = "1") int count) {
+      @RequestParam(value = "page", defaultValue = "1") @Min(1) int page,
+      @RequestParam(value = "_count", defaultValue = "1") @Min(1) @Max(20) int count,
+      HttpServletRequest servletRequest) {
     return bundle(
         Parameters.builder().add("identifier", id).add("page", page).add("_count", count).build(),
         page,
@@ -114,8 +121,9 @@ public class ProcedureController {
   @GetMapping(params = {"patient"})
   public Procedure.Bundle searchByPatient(
       @RequestParam("patient") String patient,
-      @RequestParam(value = "page", defaultValue = "1") int page,
-      @RequestParam(value = "_count", defaultValue = "15") int count) {
+      @RequestParam(value = "page", defaultValue = "1") @Min(1) int page,
+      @RequestParam(value = "_count", defaultValue = "15") @Min(1) @Max(20) int count,
+      HttpServletRequest servletRequest) {
     return bundle(
         Parameters.builder().add("patient", patient).add("page", page).add("_count", count).build(),
         page,
@@ -127,8 +135,9 @@ public class ProcedureController {
   public Procedure.Bundle searchByPatientAndDate(
       @RequestParam("patient") String patient,
       @RequestParam(value = "date", required = false) @Size(max = 2) String[] date,
-      @RequestParam(value = "page", defaultValue = "1") int page,
-      @RequestParam(value = "_count", defaultValue = "15") int count) {
+      @RequestParam(value = "page", defaultValue = "1") @Min(1) int page,
+      @RequestParam(value = "_count", defaultValue = "15") @Min(1) @Max(20) int count,
+      HttpServletRequest servletRequest) {
     return bundle(
         Parameters.builder()
             .add("patient", patient)
