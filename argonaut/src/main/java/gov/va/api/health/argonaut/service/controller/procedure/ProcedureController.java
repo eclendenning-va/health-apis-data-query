@@ -15,7 +15,6 @@ import gov.va.api.health.argonaut.service.mranderson.client.Query;
 import gov.va.dvp.cdw.xsd.model.CdwProcedure101Root;
 import java.util.Collections;
 import java.util.function.Function;
-import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -95,7 +94,8 @@ public class ProcedureController {
   public Procedure.Bundle searchById(
       @RequestParam("_id") String id,
       @RequestParam(value = "page", defaultValue = "1") @Min(1) int page,
-      @RequestParam(value = "_count", defaultValue = "1") @Min(1) @Max(20) int count) {
+      @RequestParam(value = "_count", defaultValue = "1") @Min(0) int count) {
+
     return bundle(
         Parameters.builder().add("identifier", id).add("page", page).add("_count", count).build(),
         page,
@@ -107,7 +107,7 @@ public class ProcedureController {
   public Procedure.Bundle searchByIdentifier(
       @RequestParam("identifier") String id,
       @RequestParam(value = "page", defaultValue = "1") @Min(1) int page,
-      @RequestParam(value = "_count", defaultValue = "1") @Min(1) @Max(20) int count) {
+      @RequestParam(value = "_count", defaultValue = "1") @Min(0) int count) {
     return bundle(
         Parameters.builder().add("identifier", id).add("page", page).add("_count", count).build(),
         page,
@@ -119,7 +119,7 @@ public class ProcedureController {
   public Procedure.Bundle searchByPatient(
       @RequestParam("patient") String patient,
       @RequestParam(value = "page", defaultValue = "1") @Min(1) int page,
-      @RequestParam(value = "_count", defaultValue = "15") @Min(1) @Max(20) int count) {
+      @RequestParam(value = "_count", defaultValue = "15") @Min(0) int count) {
     return bundle(
         Parameters.builder().add("patient", patient).add("page", page).add("_count", count).build(),
         page,
@@ -132,7 +132,7 @@ public class ProcedureController {
       @RequestParam("patient") String patient,
       @RequestParam(value = "date", required = false) @Size(max = 2) String[] date,
       @RequestParam(value = "page", defaultValue = "1") @Min(1) int page,
-      @RequestParam(value = "_count", defaultValue = "15") @Min(1) @Max(20) int count) {
+      @RequestParam(value = "_count", defaultValue = "15") @Min(0) int count) {
     return bundle(
         Parameters.builder()
             .add("patient", patient)

@@ -16,6 +16,38 @@ entries:
   query: /Patient:1.03?name=VETERAN,JOHN&birthdate=1970-01-01
   page: 1
   count: 15
+- file: ../../../../target/cdw/samples/Pat103nameVETERANbirthd19700101.xml
+  query: /Patient:1.03?name=VETERAN,JOHN&birthdate=1970-01-01
+  page: 1
+  count: 0
+- file: ../../../../target/cdw/samples/Pat103nameVETERANbirthd19700101.xml
+  query: /Patient:1.03?name=VETERAN,JOHN&birthdate=1970-01-01
+  page: 1
+  count: 21
+- file: ../../../../target/cdw/samples/Pat103nameVETERANbirthd19700101.xml
+  query: /Patient:1.03?family=VETERAN&gender=male
+  page: 1
+  count: 0
+- file: ../../../../target/cdw/samples/Pat103nameVETERANbirthd19700101.xml
+  query: /Patient:1.03?family=VETERAN&gender=male
+  page: 1
+  count: 21
+- file: ../../../../target/cdw/samples/Pat103nameVETERANbirthd19700101.xml
+  query: /Patient:1.03?given=JOHN Q&gender=male
+  page: 1
+  count: 0
+- file: ../../../../target/cdw/samples/Pat103nameVETERANbirthd19700101.xml
+  query: /Patient:1.03?given=JOHN Q&gender=male
+  page: 1
+  count: 21
+- file: ../../../../target/cdw/samples/Pat103nameVETERANbirthd19700101.xml
+  query: /Patient:1.03?name=VETERAN,JOHN&gender=male
+  page: 1
+  count: 0
+- file: ../../../../target/cdw/samples/Pat103nameVETERANbirthd19700101.xml
+  query: /Patient:1.03?name=VETERAN,JOHN&gender=male
+  page: 1
+  count: 21
 # Observation aliases
 - file: ../../../../target/cdw/samples/Obs104p185601V825290catlaboratory.xml
   query: /Observation:1.04?code=72166-2&patient=185601V825290

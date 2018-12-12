@@ -363,7 +363,8 @@ public class ArgonautReadAndSearchIT {
       return;
     }
     argonaut().get(path + "&page=0", params).expect(400).expectValid(OperationOutcome.class);
-    argonaut().get(path + "&_count=0", params).expect(400).expectValid(OperationOutcome.class);
-    argonaut().get(path + "&_count=21", params).expect(400).expectValid(OperationOutcome.class);
+    argonaut().get(path + "&_count=-1", params).expect(400).expectValid(OperationOutcome.class);
+    argonaut().get(path + "&_count=0", params).expect(200).expectValid(response);
+    argonaut().get(path + "&_count=21", params).expect(200).expectValid(response);
   }
 }

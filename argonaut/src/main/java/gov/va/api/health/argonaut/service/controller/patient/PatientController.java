@@ -17,7 +17,6 @@ import gov.va.dvp.cdw.xsd.model.CdwPatient103Root;
 import gov.va.dvp.cdw.xsd.model.CdwPatient103Root.CdwPatients.CdwPatient;
 import java.util.Collections;
 import java.util.function.Function;
-import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -96,7 +95,7 @@ public class PatientController {
       @RequestParam("family") String family,
       @RequestParam("gender") String gender,
       @RequestParam(value = "page", defaultValue = "1") @Min(1) int page,
-      @RequestParam(value = "_count", defaultValue = "15") @Min(1) @Max(20) int count) {
+      @RequestParam(value = "_count", defaultValue = "15") @Min(0) int count) {
 
     return bundle(
         Parameters.builder()
@@ -115,7 +114,7 @@ public class PatientController {
       @RequestParam("given") String given,
       @RequestParam("gender") String gender,
       @RequestParam(value = "page", defaultValue = "1") @Min(1) int page,
-      @RequestParam(value = "_count", defaultValue = "15") @Min(1) @Max(20) int count) {
+      @RequestParam(value = "_count", defaultValue = "15") @Min(0) int count) {
     return bundle(
         Parameters.builder()
             .add("given", given)
@@ -132,7 +131,7 @@ public class PatientController {
   public Patient.Bundle searchById(
       @RequestParam("_id") String id,
       @RequestParam(value = "page", defaultValue = "1") @Min(1) int page,
-      @RequestParam(value = "_count", defaultValue = "1") @Min(1) @Max(20) int count) {
+      @RequestParam(value = "_count", defaultValue = "1") @Min(0) int count) {
     return bundle(
         Parameters.builder().add("_id", id).add("page", page).add("_count", count).build(),
         page,
@@ -144,7 +143,7 @@ public class PatientController {
   public Patient.Bundle searchByIdentifier(
       @RequestParam("identifier") String id,
       @RequestParam(value = "page", defaultValue = "1") @Min(1) int page,
-      @RequestParam(value = "_count", defaultValue = "1") @Min(1) @Max(20) int count) {
+      @RequestParam(value = "_count", defaultValue = "1") @Min(0) int count) {
     return bundle(
         Parameters.builder().add("identifier", id).add("page", page).add("_count", count).build(),
         page,
@@ -157,7 +156,7 @@ public class PatientController {
       @RequestParam("name") String name,
       @RequestParam("birthdate") String[] birthdate,
       @RequestParam(value = "page", defaultValue = "1") @Min(1) int page,
-      @RequestParam(value = "_count", defaultValue = "15") @Min(1) @Max(20) int count) {
+      @RequestParam(value = "_count", defaultValue = "15") @Min(0) int count) {
     return bundle(
         Parameters.builder()
             .add("name", name)
@@ -175,7 +174,7 @@ public class PatientController {
       @RequestParam("name") String name,
       @RequestParam("gender") String gender,
       @RequestParam(value = "page", defaultValue = "1") @Min(1) int page,
-      @RequestParam(value = "_count", defaultValue = "15") @Min(1) @Max(20) int count) {
+      @RequestParam(value = "_count", defaultValue = "15") @Min(0) int count) {
     return bundle(
         Parameters.builder()
             .add("name", name)
