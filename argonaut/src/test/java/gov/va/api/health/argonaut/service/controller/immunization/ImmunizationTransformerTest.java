@@ -14,7 +14,6 @@ import gov.va.api.health.argonaut.api.elements.Reference;
 import gov.va.api.health.argonaut.api.resources.Immunization;
 import gov.va.api.health.argonaut.api.resources.Immunization.Reaction;
 import gov.va.api.health.argonaut.api.resources.Immunization.Status;
-import gov.va.api.health.argonaut.api.resources.Immunization.VaccinationProtocol;
 import gov.va.dvp.cdw.xsd.model.CdwCodeableConcept;
 import gov.va.dvp.cdw.xsd.model.CdwCoding;
 import gov.va.dvp.cdw.xsd.model.CdwIdentifier;
@@ -22,11 +21,9 @@ import gov.va.dvp.cdw.xsd.model.CdwImmunization103Root.CdwImmunizations.CdwImmun
 import gov.va.dvp.cdw.xsd.model.CdwImmunization103Root.CdwImmunizations.CdwImmunization.CdwIdentifiers;
 import gov.va.dvp.cdw.xsd.model.CdwImmunization103Root.CdwImmunizations.CdwImmunization.CdwNotes;
 import gov.va.dvp.cdw.xsd.model.CdwImmunization103Root.CdwImmunizations.CdwImmunization.CdwReactions;
-import gov.va.dvp.cdw.xsd.model.CdwImmunization103Root.CdwImmunizations.CdwImmunization.CdwVaccinationProtocols;
 import gov.va.dvp.cdw.xsd.model.CdwImmunizationNote;
 import gov.va.dvp.cdw.xsd.model.CdwImmunizationReported;
 import gov.va.dvp.cdw.xsd.model.CdwImmunizationStatus;
-import gov.va.dvp.cdw.xsd.model.CdwImmunizationVaccinationProtocol;
 import gov.va.dvp.cdw.xsd.model.CdwReactionBackboneElement;
 import gov.va.dvp.cdw.xsd.model.CdwReference;
 import java.util.List;
@@ -135,7 +132,6 @@ public class ImmunizationTransformerTest {
       cdw.setLocation(reference("Location/0", "*Unknown at this time*"));
       cdw.setNotes(notes());
       cdw.setReactions(reactions());
-      cdw.setVaccinationProtocols(vaccinationProtocols());
       return cdw;
     }
 
@@ -167,19 +163,6 @@ public class ImmunizationTransformerTest {
       CdwReference cdw = new CdwReference();
       cdw.setReference(reference);
       cdw.setDisplay(display);
-      return cdw;
-    }
-
-    private CdwImmunizationVaccinationProtocol vaccinationProtocol() {
-      CdwImmunizationVaccinationProtocol cdw = new CdwImmunizationVaccinationProtocol();
-      cdw.setSeries("example");
-      cdw.setSeriesDoses((short) 1);
-      return cdw;
-    }
-
-    private CdwVaccinationProtocols vaccinationProtocols() {
-      CdwVaccinationProtocols cdw = new CdwVaccinationProtocols();
-      cdw.getVaccinationProtocol().add(vaccinationProtocol());
       return cdw;
     }
 
@@ -231,7 +214,6 @@ public class ImmunizationTransformerTest {
           .location(reference("Location/0", "*Unknown at this time*"))
           .note(notes())
           .reaction(reactions())
-          .vaccinationProtocol(vaccinationProtocols())
           .build();
     }
 
@@ -253,14 +235,6 @@ public class ImmunizationTransformerTest {
 
     private Reference reference(String reference, String display) {
       return Reference.builder().reference(reference).display(display).build();
-    }
-
-    private VaccinationProtocol vaccinationProtocol() {
-      return VaccinationProtocol.builder().series("example").seriesDoses(1).build();
-    }
-
-    private List<VaccinationProtocol> vaccinationProtocols() {
-      return singletonList(vaccinationProtocol());
     }
 
     private CodeableConcept vaccineCode() {
