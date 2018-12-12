@@ -1,9 +1,12 @@
 package gov.va.api.health.argonaut.service.controller.medicationorder;
 
 import static gov.va.api.health.argonaut.service.controller.Transformers.asDateTimeString;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
+import gov.va.api.health.argonaut.api.datatypes.Coding;
 import gov.va.api.health.argonaut.api.datatypes.Duration;
 import gov.va.api.health.argonaut.api.datatypes.SimpleQuantity;
 import gov.va.api.health.argonaut.api.datatypes.Timing;
@@ -13,6 +16,7 @@ import gov.va.api.health.argonaut.api.resources.MedicationOrder.DispenseRequest;
 import gov.va.api.health.argonaut.api.resources.MedicationOrder.DosageInstruction;
 import gov.va.api.health.argonaut.api.resources.MedicationOrder.Status;
 import gov.va.dvp.cdw.xsd.model.CdwCodeableConcept;
+import gov.va.dvp.cdw.xsd.model.CdwCoding;
 import gov.va.dvp.cdw.xsd.model.CdwDuration;
 import gov.va.dvp.cdw.xsd.model.CdwMedicationOrder103Root;
 import gov.va.dvp.cdw.xsd.model.CdwMedicationOrder103Root.CdwMedicationOrders.CdwMedicationOrder.CdwDispenseRequest;
@@ -22,7 +26,6 @@ import gov.va.dvp.cdw.xsd.model.CdwMedicationOrder103Root.CdwMedicationOrders.Cd
 import gov.va.dvp.cdw.xsd.model.CdwMedicationOrder103Root.CdwMedicationOrders.CdwMedicationOrder.CdwDosageInstructions.CdwDosageInstruction.CdwTiming;
 import gov.va.dvp.cdw.xsd.model.CdwReference;
 import gov.va.dvp.cdw.xsd.model.CdwSimpleQuantity;
-import java.util.Collections;
 import java.util.List;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -89,6 +92,11 @@ public class MedicationOrderTransformerTest {
         .isEqualTo(expected.doseQuantity().value());
   }
 
+  @Test(expected = IllegalArgumentException.class)
+  public void doseQuantityValueCannotTransformStringToDouble() {
+    tx.doseQuantityValue("ten");
+  }
+
   @Test
   public void expectedSupplyDuration() {
     assertThat(tx.expectedSupplyDuration(cdw.expectedSupplyDuration()))
@@ -142,6 +150,14 @@ public class MedicationOrderTransformerTest {
   }
 
   @Test
+  public void status() {
+    assertThat(tx.status(cdw.medicationOrder().getStatus()))
+        .isEqualTo(expected.medicationOrder().status());
+    assertThat(tx.status(null)).isNull();
+    assertThat(tx.status("")).isNull();
+  }
+
+  @Test
   public void timing() {
     assertThat(tx.timing(cdw.timing())).isEqualTo(expected.timing());
     assertThat(tx.timing(null)).isNull();
@@ -153,6 +169,15 @@ public class MedicationOrderTransformerTest {
     assertThat(tx.timingCode(cdw.timingCode())).isEqualTo(expected.timingCode());
     assertThat(tx.timingCode(new CdwDosageInstruction.CdwTiming().getCode())).isNull();
     assertThat(tx.timingCode(null)).isNull();
+  }
+
+  @Test
+  public void timeCodeCoding() {
+    assertThat(tx.timeCodeCodings(cdw.timingCode().getCoding()))
+        .isEqualTo(expected.timingCode().coding());
+    assertThat(tx.timeCodeCodings(null)).isNull();
+    assertThat(tx.timeCodeCodings(emptyList())).isNull();
+    assertThat(tx.timeCodeCodings(singletonList(new CdwCoding()))).isNull();
   }
 
   private static class CdwSampleData {
@@ -223,6 +248,9 @@ public class MedicationOrderTransformerTest {
     CdwSimpleQuantity doseQuantity() {
       CdwSimpleQuantity doseQuantity = new CdwSimpleQuantity();
       doseQuantity.setValue("10");
+      doseQuantity.setUnit("Dose quantity unit");
+      doseQuantity.setSystem("http://example.com");
+      doseQuantity.setCode("Dose quantity code");
       return doseQuantity;
     }
 
@@ -262,7 +290,7 @@ public class MedicationOrderTransformerTest {
 
     CdwRoute route() {
       CdwRoute route = new CdwRoute();
-      route.setText("route text");
+      route.setText("ORAL");
       return route;
     }
 
@@ -274,8 +302,17 @@ public class MedicationOrderTransformerTest {
 
     CdwCodeableConcept timingCode() {
       CdwCodeableConcept timingCode = new CdwCodeableConcept();
-      timingCode.setText("timing code text");
+      timingCode.setText("QDAILY");
+      timingCode.getCoding().add(timingCodeCoding());
       return timingCode;
+    }
+
+    CdwCoding timingCodeCoding() {
+      CdwCoding coding = new CdwCoding();
+      coding.setSystem("http://example.com");
+      coding.setDisplay("Time display");
+      coding.setCode("Time code");
+      return coding;
     }
   }
 
@@ -306,11 +343,16 @@ public class MedicationOrderTransformerTest {
     }
 
     private List<DosageInstruction> dosageInstructions() {
-      return Collections.singletonList(dosageInstruction());
+      return singletonList(dosageInstruction());
     }
 
     private SimpleQuantity doseQuantity() {
-      return SimpleQuantity.builder().value(Double.valueOf(10)).build();
+      return SimpleQuantity.builder()
+          .value(Double.valueOf(10))
+          .system("http://example.com")
+          .unit("Dose quantity unit")
+          .code("Dose quantity code")
+          .build();
     }
 
     Duration expectedSupplyDuration() {
@@ -355,7 +397,7 @@ public class MedicationOrderTransformerTest {
     }
 
     private CodeableConcept route() {
-      return CodeableConcept.builder().text("route text").build();
+      return CodeableConcept.builder().text("ORAL").build();
     }
 
     private Timing timing() {
@@ -363,7 +405,16 @@ public class MedicationOrderTransformerTest {
     }
 
     private CodeableConcept timingCode() {
-      return CodeableConcept.builder().text("timing code text").build();
+      return CodeableConcept.builder().text("QDAILY").coding(timingCodeCoding()).build();
+    }
+
+    private List<Coding> timingCodeCoding() {
+      return singletonList(
+          Coding.builder()
+              .code("Time code")
+              .display("Time display")
+              .system("http://example.com")
+              .build());
     }
   }
 }

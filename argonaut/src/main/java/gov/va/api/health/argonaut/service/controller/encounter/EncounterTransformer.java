@@ -21,6 +21,8 @@ import gov.va.dvp.cdw.xsd.model.CdwEncounter101Root.CdwEncounters.CdwEncounter.C
 import gov.va.dvp.cdw.xsd.model.CdwEncounter101Root.CdwEncounters.CdwEncounter.CdwParticipants;
 import gov.va.dvp.cdw.xsd.model.CdwEncounterClass;
 import gov.va.dvp.cdw.xsd.model.CdwEncounterParticipantType;
+import gov.va.dvp.cdw.xsd.model.CdwEncounterParticipantTypeCode;
+import gov.va.dvp.cdw.xsd.model.CdwEncounterParticipantTypeDisplay;
 import gov.va.dvp.cdw.xsd.model.CdwEncounterPeriod;
 import gov.va.dvp.cdw.xsd.model.CdwEncounterStatus;
 import gov.va.dvp.cdw.xsd.model.CdwReference;
@@ -34,111 +36,6 @@ public class EncounterTransformer implements EncounterController.Transformer {
   @Override
   public Encounter apply(CdwEncounter encounter) {
     return encounter(encounter);
-  }
-
-  List<Coding> encounterParticipantTypeCoding(CdwEncounterParticipantType.CdwCoding maybeCdw) {
-    if (maybeCdw == null
-        || allNull(maybeCdw.getCode(), maybeCdw.getDisplay(), maybeCdw.getSystem())) {
-      return null;
-    }
-    return convert(
-        maybeCdw,
-        cdw ->
-            Collections.singletonList(
-                Coding.builder()
-                    .code(cdw.getCode().value())
-                    .system(cdw.getSystem())
-                    .display(cdw.getDisplay().value())
-                    .build()));
-  }
-
-  Reference reference(CdwReference maybeCdw) {
-    if (maybeCdw == null || allNull(maybeCdw.getReference(), maybeCdw.getDisplay())) {
-      return null;
-    }
-    return convert(
-        maybeCdw,
-        source ->
-            Reference.builder()
-                .reference(source.getReference())
-                .display(source.getDisplay())
-                .build());
-  }
-
-  Period period(CdwEncounterPeriod maybeCdw) {
-    if (maybeCdw == null || allNull(maybeCdw.getEnd(), maybeCdw.getStart())) {
-      return null;
-    }
-    return convert(
-        maybeCdw,
-        source ->
-            Period.builder()
-                .start(asDateTimeString(source.getStart()))
-                .end(asDateTimeString(source.getEnd()))
-                .build());
-  }
-
-  List<Reference> episodeOfCare(CdwReference maybeCdw) {
-    if (maybeCdw == null || allNull(maybeCdw.getDisplay(), maybeCdw.getReference())) {
-      return null;
-    }
-    return convert(
-        maybeCdw,
-        source ->
-            Collections.singletonList(
-                Reference.builder()
-                    .reference(source.getReference())
-                    .display(source.getDisplay())
-                    .build()));
-  }
-
-  List<EncounterLocation> location(CdwLocations maybeCdw) {
-    return convertAll(
-        ifPresent(maybeCdw, CdwLocations::getLocation),
-        source ->
-            EncounterLocation.builder().location(reference(source.getLocationReference())).build());
-  }
-
-  List<Reference> indications(CdwIndications maybeCdw) {
-    return convertAll(
-        ifPresent(maybeCdw, CdwIndications::getIndication),
-        source ->
-            Reference.builder()
-                .reference(source.getReference())
-                .display(source.getDisplay())
-                .build());
-  }
-
-  List<CodeableConcept> encounterParticipantType(List<CdwEncounterParticipantType> maybeCdw) {
-    if (maybeCdw == null || maybeCdw.isEmpty()) {
-      return null;
-    }
-    return convertAll(
-        maybeCdw,
-        source ->
-            CodeableConcept.builder()
-                .coding(encounterParticipantTypeCoding(source.getCoding()))
-                .text(source.getText())
-                .build());
-  }
-
-  List<Participant> participant(CdwParticipants maybeCdw) {
-    return convertAll(
-        ifPresent(maybeCdw, CdwParticipants::getParticipant),
-        source ->
-            Participant.builder()
-                .individual(reference(source.getIndividual()))
-                .type(encounterParticipantType(source.getType()))
-                .build());
-  }
-
-  EncounterClass encounterClass(CdwEncounterClass source) {
-    return ifPresent(source, status -> EnumSearcher.of(EncounterClass.class).find(status.value()));
-  }
-
-  Encounter.Status encounterStatus(CdwEncounterStatus source) {
-    return ifPresent(
-        source, status -> EnumSearcher.of(Encounter.Status.class).find(status.value()));
   }
 
   private Encounter encounter(CdwEncounter source) {
@@ -156,5 +53,110 @@ public class EncounterTransformer implements EncounterController.Transformer {
         .status(encounterStatus(source.getStatus()))
         .period(period(source.getPeriod()))
         .build();
+  }
+
+  EncounterClass encounterClass(CdwEncounterClass source) {
+    return ifPresent(source, status -> EnumSearcher.of(EncounterClass.class).find(status.value()));
+  }
+
+  List<CodeableConcept> encounterParticipantType(List<CdwEncounterParticipantType> maybeCdw) {
+    if (maybeCdw == null || maybeCdw.isEmpty()) {
+      return null;
+    }
+    return convertAll(
+        maybeCdw,
+        source ->
+            CodeableConcept.builder()
+                .coding(encounterParticipantTypeCoding(source.getCoding()))
+                .text(source.getText())
+                .build());
+  }
+
+  List<Coding> encounterParticipantTypeCoding(CdwEncounterParticipantType.CdwCoding maybeCdw) {
+    if (maybeCdw == null
+        || allNull(maybeCdw.getCode(), maybeCdw.getDisplay(), maybeCdw.getSystem())) {
+      return null;
+    }
+    return convert(
+        maybeCdw,
+        cdw ->
+            Collections.singletonList(
+                Coding.builder()
+                    .code(ifPresent(cdw.getCode(), CdwEncounterParticipantTypeCode::value))
+                    .system(cdw.getSystem())
+                    .display(ifPresent(cdw.getDisplay(), CdwEncounterParticipantTypeDisplay::value))
+                    .build()));
+  }
+
+  Encounter.Status encounterStatus(CdwEncounterStatus source) {
+    return ifPresent(
+        source, status -> EnumSearcher.of(Encounter.Status.class).find(status.value()));
+  }
+
+  List<Reference> episodeOfCare(CdwReference maybeCdw) {
+    if (maybeCdw == null || allNull(maybeCdw.getDisplay(), maybeCdw.getReference())) {
+      return null;
+    }
+    return convert(
+        maybeCdw,
+        source ->
+            Collections.singletonList(
+                Reference.builder()
+                    .reference(source.getReference())
+                    .display(source.getDisplay())
+                    .build()));
+  }
+
+  List<Reference> indications(CdwIndications maybeCdw) {
+    return convertAll(
+        ifPresent(maybeCdw, CdwIndications::getIndication),
+        source ->
+            Reference.builder()
+                .reference(source.getReference())
+                .display(source.getDisplay())
+                .build());
+  }
+
+  List<EncounterLocation> location(CdwLocations maybeCdw) {
+    return convertAll(
+        ifPresent(maybeCdw, CdwLocations::getLocation),
+        source ->
+            EncounterLocation.builder().location(reference(source.getLocationReference())).build());
+  }
+
+  List<Participant> participant(CdwParticipants maybeCdw) {
+    return convertAll(
+        ifPresent(maybeCdw, CdwParticipants::getParticipant),
+        source ->
+            Participant.builder()
+                .individual(reference(source.getIndividual()))
+                .type(encounterParticipantType(source.getType()))
+                .build());
+  }
+
+  Period period(CdwEncounterPeriod maybeCdw) {
+    if (maybeCdw == null || allNull(maybeCdw.getEnd(), maybeCdw.getStart())) {
+      return null;
+    }
+    return convert(
+        maybeCdw,
+        source ->
+            Period.builder()
+                .start(asDateTimeString(source.getStart()))
+                .end(asDateTimeString(source.getEnd()))
+                .build());
+  }
+
+  Reference reference(CdwReference maybeCdw) {
+    if (maybeCdw == null || allNull(maybeCdw.getReference(), maybeCdw.getDisplay())) {
+      return null;
+    }
+    return convert(
+        maybeCdw,
+        source ->
+            Reference.builder()
+                .reference(source.getReference())
+                .display(source.getDisplay())
+                .build());
   }
 }

@@ -35,9 +35,10 @@ public class MedicationTransformerTest {
 
   @Test
   public void codeCoding() {
-    assertThat(tx.codeCoding(singletonList(cdw.codeCoding()))).isEqualTo(expected.codeCoding());
-    assertThat(tx.codeCoding(null)).isNull();
-    assertThat(tx.codeCoding(emptyList())).isNull();
+    assertThat(tx.codeCodings(singletonList(cdw.codeCoding()))).isEqualTo(expected.codeCoding());
+    assertThat(tx.codeCodings(null)).isNull();
+    assertThat(tx.codeCodings(emptyList())).isNull();
+    assertThat(tx.codeCodings(singletonList(new CdwCoding()))).isNull();
   }
 
   @Test
@@ -49,9 +50,10 @@ public class MedicationTransformerTest {
 
   @Test
   public void formCoding() {
-    assertThat(tx.formCoding(singletonList(cdw.formCoding()))).isEqualTo(expected.formCoding());
-    assertThat(tx.formCoding(null)).isNull();
-    assertThat(tx.formCoding(emptyList())).isNull();
+    assertThat(tx.formCodings(singletonList(cdw.formCoding()))).isEqualTo(expected.formCoding());
+    assertThat(tx.formCodings(null)).isNull();
+    assertThat(tx.formCodings(emptyList())).isNull();
+    assertThat(tx.formCodings(singletonList(new CdwCoding()))).isNull();
   }
 
   @Test

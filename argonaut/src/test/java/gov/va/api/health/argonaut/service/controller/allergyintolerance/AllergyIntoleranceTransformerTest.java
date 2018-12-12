@@ -49,6 +49,22 @@ public class AllergyIntoleranceTransformerTest {
   }
 
   @Test
+  public void category() {
+    assertThat(tx.category(CdwAllergyIntoleranceCategory.FOOD)).isEqualTo(Category.food);
+    assertThat(tx.category(CdwAllergyIntoleranceCategory.MEDICATION))
+        .isEqualTo(Category.medication);
+    assertThat(tx.category(null)).isNull();
+  }
+
+  @Test
+  public void criticality() {
+    assertThat(tx.criticality(CdwAllergyIntoleranceCriticality.CRITH)).isEqualTo(Criticality.CRITH);
+    assertThat(tx.criticality(CdwAllergyIntoleranceCriticality.CRITL)).isEqualTo(Criticality.CRITL);
+    assertThat(tx.criticality(CdwAllergyIntoleranceCriticality.CRITU)).isEqualTo(Criticality.CRITU);
+    assertThat(tx.criticality(null)).isNull();
+  }
+
+  @Test
   public void gregorianCalendar() {
     assertThat(tx.note(cdw.notes()).time()).isEqualTo(expected.note().time());
     assertThat(tx.note(null)).isNull();
@@ -91,6 +107,19 @@ public class AllergyIntoleranceTransformerTest {
     assertThat(tx.reaction(cdw.reactions())).isEqualTo(expected.reaction());
     assertThat(tx.reaction(null)).isNull();
     assertThat(tx.reaction(new CdwReactions())).isNull();
+  }
+
+  @Test
+  public void status() {
+    assertThat(tx.status(CdwAllergyIntoleranceStatus.ACTIVE)).isEqualTo(Status.active);
+    assertThat(tx.status(CdwAllergyIntoleranceStatus.CONFIRMED)).isEqualTo(Status.confirmed);
+    assertThat(tx.status(CdwAllergyIntoleranceStatus.ENTERED_IN_ERROR))
+        .isEqualTo(Status.entered_in_error);
+    assertThat(tx.status(CdwAllergyIntoleranceStatus.INACTIVE)).isEqualTo(Status.inactive);
+    assertThat(tx.status(CdwAllergyIntoleranceStatus.REFUTED)).isEqualTo(Status.refuted);
+    assertThat(tx.status(CdwAllergyIntoleranceStatus.RESOLVED)).isEqualTo(Status.resolved);
+    assertThat(tx.status(CdwAllergyIntoleranceStatus.UNCONFIRMED)).isEqualTo(Status.unconfirmed);
+    assertThat(tx.status(null)).isNull();
   }
 
   @Test

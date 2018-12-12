@@ -7,6 +7,7 @@ import static gov.va.api.health.argonaut.service.controller.Transformers.convert
 import static gov.va.api.health.argonaut.service.controller.Transformers.ifPresent;
 
 import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
+import gov.va.api.health.argonaut.api.datatypes.Coding;
 import gov.va.api.health.argonaut.api.datatypes.Duration;
 import gov.va.api.health.argonaut.api.datatypes.SimpleQuantity;
 import gov.va.api.health.argonaut.api.datatypes.Timing;
@@ -17,6 +18,7 @@ import gov.va.api.health.argonaut.api.resources.MedicationOrder.DosageInstructio
 import gov.va.api.health.argonaut.api.resources.MedicationOrder.Status;
 import gov.va.api.health.argonaut.service.controller.EnumSearcher;
 import gov.va.dvp.cdw.xsd.model.CdwCodeableConcept;
+import gov.va.dvp.cdw.xsd.model.CdwCoding;
 import gov.va.dvp.cdw.xsd.model.CdwDuration;
 import gov.va.dvp.cdw.xsd.model.CdwMedicationOrder103Root.CdwMedicationOrders.CdwMedicationOrder;
 import gov.va.dvp.cdw.xsd.model.CdwMedicationOrder103Root.CdwMedicationOrders.CdwMedicationOrder.CdwDispenseRequest;
@@ -27,12 +29,13 @@ import gov.va.dvp.cdw.xsd.model.CdwMedicationOrder103Root.CdwMedicationOrders.Cd
 import gov.va.dvp.cdw.xsd.model.CdwReference;
 import gov.va.dvp.cdw.xsd.model.CdwSimpleQuantity;
 import java.util.List;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 @Service
 public class MedicationOrderTransformer implements MedicationOrderController.Transformer {
   CodeableConcept additionalInstructions(CdwCodeableConcept source) {
-    if (source == null) {
+    if (source == null || (source.getCoding().isEmpty() && source.getText() == null)) {
       return null;
     }
     return CodeableConcept.builder().text(source.getText()).build();
@@ -89,17 +92,29 @@ public class MedicationOrderTransformer implements MedicationOrderController.Tra
   }
 
   SimpleQuantity doseQuantity(CdwSimpleQuantity source) {
-    if (source == null || source.getValue() == null) {
+    if (source == null
+        || allNull(source.getCode(), source.getSystem(), source.getUnit(), source.getValue())) {
       return null;
     }
-    return SimpleQuantity.builder().value(doseQuantityValue(source.getValue())).build();
+    return SimpleQuantity.builder()
+        .value(doseQuantityValue(source.getValue()))
+        .unit(source.getUnit())
+        .code(source.getCode())
+        .system(source.getSystem())
+        .build();
   }
 
   Double doseQuantityValue(String source) {
-    if (source == null || source.isEmpty()) {
+    Double value;
+    if (source == null || StringUtils.isBlank(source)) {
       return null;
     }
-    return Double.valueOf(source);
+    try {
+      value = Double.valueOf(source);
+    } catch (NumberFormatException e) {
+      throw new IllegalArgumentException("Cannot create double value from " + source, e);
+    }
+    return value;
   }
 
   Duration expectedSupplyDuration(CdwDuration cdw) {
@@ -140,7 +155,7 @@ public class MedicationOrderTransformer implements MedicationOrderController.Tra
   }
 
   SimpleQuantity quantity(String source) {
-    if (source == null || source.isEmpty()) {
+    if (source == null || StringUtils.isBlank(source)) {
       return null;
     }
     Double value;
@@ -173,6 +188,9 @@ public class MedicationOrderTransformer implements MedicationOrderController.Tra
   }
 
   Status status(String source) {
+    if (source == null || StringUtils.isBlank(source)) {
+      return null;
+    }
     return convert(source, status -> EnumSearcher.of(MedicationOrder.Status.class)).find(source);
   }
 
@@ -184,9 +202,31 @@ public class MedicationOrderTransformer implements MedicationOrderController.Tra
   }
 
   CodeableConcept timingCode(CdwCodeableConcept source) {
+    if (source == null || (source.getCoding().isEmpty() && source.getText() == null)) {
+      return null;
+    }
+    return CodeableConcept.builder()
+        .text(source.getText())
+        .coding(timeCodeCodings(source.getCoding()))
+        .build();
+  }
+
+  List<Coding> timeCodeCodings(List<CdwCoding> source) {
+    List<Coding> codings = convertAll(source, this::timingCodeCoding);
     if (source == null) {
       return null;
     }
-    return CodeableConcept.builder().text(source.getText()).build();
+    return source.isEmpty() ? null : codings;
+  }
+
+  private Coding timingCodeCoding(CdwCoding cdw) {
+    if (cdw == null || allNull(cdw.getCode(), cdw.getDisplay(), cdw.getSystem())) {
+      return null;
+    }
+    return Coding.builder()
+        .system(cdw.getSystem())
+        .code(cdw.getCode())
+        .display(cdw.getDisplay())
+        .build();
   }
 }

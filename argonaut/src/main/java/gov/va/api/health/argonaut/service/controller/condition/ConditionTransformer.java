@@ -44,15 +44,23 @@ public class ConditionTransformer implements ConditionController.Transformer {
         .build();
   }
 
-  List<Coding> categoryCodings(List<CdwConditionCategoryCoding> maybeSource) {
-    return convertAll(
-        maybeSource,
-        cdw ->
-            Coding.builder()
-                .system(cdw.getSystem())
-                .code(cdw.getCode())
-                .display(cdw.getDisplay())
-                .build());
+  List<Coding> categoryCodings(List<CdwConditionCategoryCoding> source) {
+    List<Coding> codings = convertAll(source, this::categoryCoding);
+    if (codings == null) {
+      return null;
+    }
+    return codings.isEmpty() ? null : codings;
+  }
+
+  private Coding categoryCoding(CdwConditionCategoryCoding cdw) {
+    if (cdw == null || allNull(cdw.getCode(), cdw.getDisplay(), cdw.getSystem())) {
+      return null;
+    }
+    return Coding.builder()
+        .system(cdw.getSystem())
+        .code(cdw.getCode())
+        .display(cdw.getDisplay())
+        .build();
   }
 
   ClinicalStatusCode clinicalStatusCode(@NotNull CdwConditionClinicalStatus source) {
@@ -61,26 +69,36 @@ public class ConditionTransformer implements ConditionController.Transformer {
   }
 
   CodeableConcept code(List<CdwCodeableConcept> maybeCdw) {
-    if (maybeCdw == null
-        || maybeCdw.isEmpty()
-        || allNull(maybeCdw.get(0).getCoding(), maybeCdw.get(0).getText())) {
+    if (maybeCdw == null || maybeCdw.isEmpty()) {
+      return null;
+    }
+    CdwCodeableConcept firstCode = maybeCdw.get(0);
+    if (firstCode.getText() == null && firstCode.getCoding().isEmpty()) {
       return null;
     }
     return CodeableConcept.builder()
-        .text(maybeCdw.get(0).getText())
-        .coding(coding(maybeCdw.get(0).getCoding()))
+        .text(firstCode.getText())
+        .coding(codeCodings(firstCode.getCoding()))
         .build();
   }
 
-  List<Coding> coding(List<CdwCoding> source) {
-    return convertAll(
-        source,
-        cdwCoding ->
-            Coding.builder()
-                .system(cdwCoding.getSystem())
-                .display(cdwCoding.getDisplay())
-                .code(cdwCoding.getCode())
-                .build());
+  List<Coding> codeCodings(List<CdwCoding> source) {
+    List<Coding> codings = convertAll(source, this::codeCoding);
+    if (codings == null) {
+      return null;
+    }
+    return codings.isEmpty() ? null : codings;
+  }
+
+  private Coding codeCoding(CdwCoding cdw) {
+    if (cdw == null || allNull(cdw.getCode(), cdw.getDisplay(), cdw.getSystem())) {
+      return null;
+    }
+    return Coding.builder()
+        .system(cdw.getSystem())
+        .code(cdw.getCode())
+        .display(cdw.getDisplay())
+        .build();
   }
 
   private Condition condition(CdwCondition source) {

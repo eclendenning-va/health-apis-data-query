@@ -13,6 +13,7 @@ import gov.va.api.health.argonaut.api.datatypes.Coding;
 import gov.va.api.health.argonaut.api.elements.Reference;
 import gov.va.api.health.argonaut.api.resources.AllergyIntolerance;
 import gov.va.api.health.argonaut.api.resources.AllergyIntolerance.Category;
+import gov.va.api.health.argonaut.api.resources.AllergyIntolerance.Certainty;
 import gov.va.api.health.argonaut.api.resources.AllergyIntolerance.Criticality;
 import gov.va.api.health.argonaut.api.resources.AllergyIntolerance.Reaction;
 import gov.va.api.health.argonaut.api.resources.AllergyIntolerance.Status;
@@ -26,6 +27,7 @@ import gov.va.dvp.cdw.xsd.model.CdwAllergyIntolerance103Root.CdwAllergyIntoleran
 import gov.va.dvp.cdw.xsd.model.CdwAllergyIntolerance103Root.CdwAllergyIntolerances.CdwAllergyIntolerance.CdwReactions.CdwReaction.CdwManifestations.CdwManifestation;
 import gov.va.dvp.cdw.xsd.model.CdwAllergyIntolerance103Root.CdwAllergyIntolerances.CdwAllergyIntolerance.CdwSubstance;
 import gov.va.dvp.cdw.xsd.model.CdwAllergyIntoleranceCategory;
+import gov.va.dvp.cdw.xsd.model.CdwAllergyIntoleranceCertainty;
 import gov.va.dvp.cdw.xsd.model.CdwAllergyIntoleranceCriticality;
 import gov.va.dvp.cdw.xsd.model.CdwAllergyIntoleranceStatus;
 import gov.va.dvp.cdw.xsd.model.CdwAllergyIntoleranceType;
@@ -74,6 +76,10 @@ public class AllergyIntoleranceTransformer implements AllergyIntoleranceControll
             EnumSearcher.of(AllergyIntolerance.Criticality.class).find(criticality.value()));
   }
 
+  Certainty certainty(CdwAllergyIntoleranceCertainty source) {
+    return ifPresent(source, certainty -> AllergyIntolerance.Certainty.valueOf(certainty.value()));
+  }
+
   Annotation note(CdwNotes source) {
     if (source == null || source.getNote().isEmpty()) {
       return null;
@@ -87,23 +93,20 @@ public class AllergyIntoleranceTransformer implements AllergyIntoleranceControll
   }
 
   List<Reaction> reaction(CdwReactions optionalSource) {
-    if (optionalSource == null) {
+    if (optionalSource == null || optionalSource.getReaction().isEmpty()) {
       return null;
     }
     return convertAll(
         ifPresent(optionalSource, CdwReactions::getReaction),
         cdw ->
             Reaction.builder()
-                .certainty(
-                    ifPresent(
-                        cdw.getCertainty(),
-                        certainty -> AllergyIntolerance.Certainty.valueOf(certainty.value())))
+                .certainty(certainty(cdw.getCertainty()))
                 .manifestation(reactionManifestation(cdw.getManifestations()))
                 .build());
   }
 
   List<CodeableConcept> reactionManifestation(CdwManifestations source) {
-    if (source == null) {
+    if (source == null || source.getManifestation().isEmpty()) {
       return null;
     }
     return convertAll(

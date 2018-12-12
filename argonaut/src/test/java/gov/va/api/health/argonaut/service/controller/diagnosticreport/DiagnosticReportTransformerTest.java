@@ -1,5 +1,6 @@
 package gov.va.api.health.argonaut.service.controller.diagnosticreport;
 
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
@@ -16,7 +17,6 @@ import gov.va.dvp.cdw.xsd.model.CdwDiagnosticReportCode;
 import gov.va.dvp.cdw.xsd.model.CdwDiagnosticReportCodeCoding;
 import gov.va.dvp.cdw.xsd.model.CdwDiagnosticReportStatus;
 import gov.va.dvp.cdw.xsd.model.CdwReference;
-import java.util.Collections;
 import java.util.List;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -39,6 +39,8 @@ public class DiagnosticReportTransformerTest {
   @Test
   public void category() {
     assertThat(tx.category(cdw.category())).isEqualTo(expected.category());
+    assertThat(tx.category(null)).isNull();
+    assertThat(tx.category(new CdwDiagnosticReportCategory())).isNull();
   }
 
   @Test
@@ -51,13 +53,14 @@ public class DiagnosticReportTransformerTest {
   @Test
   public void codeCodings() {
     assertThat(tx.codeCodings(null)).isNull();
-    assertThat(tx.codeCodings(Collections.singletonList(new CdwDiagnosticReportCodeCoding())))
-        .isNull();
-    assertThat(tx.codeCodings(null)).isNull();
+    assertThat(tx.codeCodings(singletonList(new CdwDiagnosticReportCodeCoding()))).isNull();
+    assertThat(tx.codeCodings(cdw.code().getCoding())).isEqualTo(expected.code().coding());
   }
 
   @Test
   public void code() {
+    assertThat(tx.code(null)).isNull();
+    assertThat(tx.code(new CdwDiagnosticReportCode())).isNull();
     assertThat(tx.code(cdw.code())).isEqualTo(expected.code());
   }
 
@@ -69,6 +72,15 @@ public class DiagnosticReportTransformerTest {
   @Test
   public void status() {
     assertThat(tx.status(cdw.status())).isEqualTo(expected.status());
+    assertThat(tx.status(CdwDiagnosticReportStatus.APPENDED)).isEqualTo(Code.appended);
+    assertThat(tx.status(CdwDiagnosticReportStatus.CANCELLED)).isEqualTo(Code.cancelled);
+    assertThat(tx.status(CdwDiagnosticReportStatus.CORRECTED)).isEqualTo(Code.corrected);
+    assertThat(tx.status(CdwDiagnosticReportStatus.FINAL)).isEqualTo(Code._final);
+    assertThat(tx.status(CdwDiagnosticReportStatus.ENTERED_IN_ERROR))
+        .isEqualTo(Code.entered_in_error);
+    assertThat(tx.status(CdwDiagnosticReportStatus.PARTIAL)).isEqualTo(Code.partial);
+    assertThat(tx.status(CdwDiagnosticReportStatus.REGISTERED)).isEqualTo(Code.registered);
+    assertThat(tx.status(null)).isNull();
   }
 
   private static class CdwSampleData {
@@ -97,7 +109,16 @@ public class DiagnosticReportTransformerTest {
     private CdwDiagnosticReportCode code() {
       CdwDiagnosticReportCode code = new CdwDiagnosticReportCode();
       code.setText("panel");
+      code.getCoding().add(codeCoding());
       return code;
+    }
+
+    private CdwDiagnosticReportCodeCoding codeCoding() {
+      CdwDiagnosticReportCodeCoding codeCoding = new CdwDiagnosticReportCodeCoding();
+      codeCoding.setCode("LAB");
+      codeCoding.setSystem("http://hl7.org/fhir/ValueSet/diagnostic-service-sections");
+      codeCoding.setDisplay("Laboratory");
+      return codeCoding;
     }
 
     CdwDiagnosticReport102Root.CdwDiagnosticReports.CdwDiagnosticReport diagnosticReport() {
@@ -156,7 +177,16 @@ public class DiagnosticReportTransformerTest {
     }
 
     private CodeableConcept code() {
-      return CodeableConcept.builder().text("panel").build();
+      return CodeableConcept.builder().text("panel").coding(codeCodings()).build();
+    }
+
+    private List<Coding> codeCodings() {
+      return singletonList(
+          Coding.builder()
+              .system("http://hl7.org/fhir/ValueSet/diagnostic-service-sections")
+              .code("LAB")
+              .display("Laboratory")
+              .build());
     }
 
     private CodeableConcept category() {
@@ -164,7 +194,7 @@ public class DiagnosticReportTransformerTest {
     }
 
     private List<Coding> categoryCoding() {
-      return Collections.singletonList(
+      return singletonList(
           Coding.builder()
               .system("http://hl7.org/fhir/ValueSet/diagnostic-service-sections")
               .code("LAB")

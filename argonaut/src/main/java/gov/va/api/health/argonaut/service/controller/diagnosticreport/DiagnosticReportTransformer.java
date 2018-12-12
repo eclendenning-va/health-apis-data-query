@@ -33,6 +33,9 @@ public class DiagnosticReportTransformer implements DiagnosticReportController.T
   }
 
   CodeableConcept category(CdwDiagnosticReportCategory source) {
+    if (source == null || allNull(source.getCoding(), source.getText())) {
+      return null;
+    }
     return CodeableConcept.builder()
         .coding(categoryCodings(source.getCoding()))
         .text(source.getText())
@@ -55,6 +58,9 @@ public class DiagnosticReportTransformer implements DiagnosticReportController.T
   }
 
   CodeableConcept code(CdwDiagnosticReportCode source) {
+    if (source == null || (source.getCoding().isEmpty() && source.getText() == null)) {
+      return null;
+    }
     return CodeableConcept.builder()
         .coding(codeCodings(source.getCoding()))
         .text(source.getText())

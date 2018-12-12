@@ -3,6 +3,7 @@ package gov.va.api.health.argonaut.service.controller.location;
 import static gov.va.api.health.argonaut.service.controller.Transformers.allNull;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convert;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convertAll;
+import static gov.va.api.health.argonaut.service.controller.Transformers.ifPresent;
 
 import gov.va.api.health.argonaut.api.datatypes.Address;
 import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
@@ -20,6 +21,8 @@ import gov.va.dvp.cdw.xsd.model.CdwLocationAddress;
 import gov.va.dvp.cdw.xsd.model.CdwLocationMode;
 import gov.va.dvp.cdw.xsd.model.CdwLocationPhysicalType;
 import gov.va.dvp.cdw.xsd.model.CdwLocationStatus;
+import gov.va.dvp.cdw.xsd.model.CdwLocationTypeCode;
+import gov.va.dvp.cdw.xsd.model.CdwLocationTypeDisplay;
 import gov.va.dvp.cdw.xsd.model.CdwReference;
 import java.util.Collections;
 import java.util.List;
@@ -54,18 +57,18 @@ public class LocationTransformer implements LocationController.Transformer {
     if (isUnusableAddress(maybeCdw)) {
       return null;
     }
-    return convert(
-        maybeCdw,
-        source ->
-            Address.builder()
-                .city(source.getCity())
-                .line(source.getLine())
-                .postalCode(source.getPostalCode())
-                .state(source.getState())
-                .build());
+    return Address.builder()
+        .city(maybeCdw.getCity())
+        .line(maybeCdw.getLine())
+        .postalCode(maybeCdw.getPostalCode())
+        .state(maybeCdw.getState())
+        .build();
   }
 
   Reference reference(CdwReference maybeCdw) {
+    if (maybeCdw == null || allNull(maybeCdw.getReference(), maybeCdw.getDisplay())) {
+      return null;
+    }
     return convert(
         maybeCdw,
         source ->
@@ -90,7 +93,7 @@ public class LocationTransformer implements LocationController.Transformer {
   }
 
   ContactPointSystem contactPointCode(String maybeCdw) {
-    if (StringUtils.isBlank(maybeCdw)) {
+    if (StringUtils.isBlank(maybeCdw) || maybeCdw == null) {
       return null;
     }
     return EnumSearcher.of(ContactPointSystem.class).find(maybeCdw);
@@ -100,24 +103,29 @@ public class LocationTransformer implements LocationController.Transformer {
     if (maybeCdw == null || allNull(maybeCdw.getCoding(), maybeCdw.getText())) {
       return null;
     }
-    return convert(
-        maybeCdw,
-        source ->
-            CodeableConcept.builder()
-                .coding(locationPhysicalTypeCoding(source.getCoding()))
-                .text(source.getText())
-                .build());
+    return CodeableConcept.builder()
+        .coding(locationPhysicalTypeCoding(maybeCdw.getCoding()))
+        .text(maybeCdw.getText())
+        .build();
   }
 
-  List<Coding> locationTypeCoding(List<CdwLocation.CdwType.CdwCoding> maybeCdw) {
-    return convertAll(
-        maybeCdw,
-        source ->
-            Coding.builder()
-                .system(source.getSystem())
-                .code(source.getCode().value())
-                .display(source.getDisplay().value())
-                .build());
+  List<Coding> locationTypeCodings(List<CdwLocation.CdwType.CdwCoding> maybeCdw) {
+    List<Coding> codings = convertAll(maybeCdw, this::locationTypeCoding);
+    if (codings == null) {
+      return null;
+    }
+    return codings.isEmpty() ? null : codings;
+  }
+
+  private Coding locationTypeCoding(CdwLocation.CdwType.CdwCoding cdw) {
+    if (cdw == null || allNull(cdw.getCode(), cdw.getDisplay(), cdw.getSystem())) {
+      return null;
+    }
+    return Coding.builder()
+        .system(cdw.getSystem())
+        .code(ifPresent(cdw.getCode(), CdwLocationTypeCode::value))
+        .display(ifPresent(cdw.getDisplay(), CdwLocationTypeDisplay::value))
+        .build();
   }
 
   List<Coding> locationPhysicalTypeCoding(CdwLocationPhysicalType.CdwCoding maybeCdw) {
@@ -125,19 +133,16 @@ public class LocationTransformer implements LocationController.Transformer {
         || allNull(maybeCdw.getCode(), maybeCdw.getDisplay(), maybeCdw.getSystem())) {
       return null;
     }
-    return convert(
-        maybeCdw,
-        cdw ->
-            Collections.singletonList(
-                Coding.builder()
-                    .code(cdw.getCode().value())
-                    .system(cdw.getSystem())
-                    .display(cdw.getDisplay().value())
-                    .build()));
+    return Collections.singletonList(
+        Coding.builder()
+            .code(maybeCdw.getCode().value())
+            .system(maybeCdw.getSystem())
+            .display(maybeCdw.getDisplay().value())
+            .build());
   }
 
   List<ContactPoint> telecoms(CdwTelecoms maybeCdw) {
-    if (maybeCdw == null) {
+    if (maybeCdw == null || maybeCdw.getTelecom().isEmpty()) {
       return null;
     }
     return convertAll(
@@ -155,7 +160,8 @@ public class LocationTransformer implements LocationController.Transformer {
     }
     return convert(
         maybeCdw,
-        source -> CodeableConcept.builder().coding(locationTypeCoding(source.getCoding())).build());
+        source ->
+            CodeableConcept.builder().coding(locationTypeCodings(source.getCoding())).build());
   }
 
   Boolean isUnusableAddress(CdwLocationAddress maybeCdw) {

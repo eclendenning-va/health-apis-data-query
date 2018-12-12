@@ -1,5 +1,6 @@
 package gov.va.api.health.argonaut.service.controller.appointment;
 
+import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -69,6 +70,13 @@ public class AppointmentTransformerTest {
   }
 
   @Test
+  public void reference() {
+    assertThat(tx.reference(null)).isNull();
+    assertThat(tx.reference(new CdwReference())).isNull();
+    assertThat(tx.reference(cdw.reference("x", "y"))).isEqualTo(expected.reference("x", "y"));
+  }
+
+  @Test
   public void required() {
     assertThat(tx.required(CdwAppointmentParticipantRequired.INFORMATION_ONLY))
         .isEqualTo(RequiredCode.information_only);
@@ -93,6 +101,14 @@ public class AppointmentTransformerTest {
     assertThat(tx.type(null)).isNull();
     assertThat(tx.type(new CdwAppointmentParticipantType())).isNull();
     assertThat(tx.type(cdw.type())).isEqualTo(expected.type());
+  }
+
+  @Test
+  public void typeCoding() {
+    assertThat(tx.typeCodings(singletonList(cdw.typeCoding()))).isEqualTo(expected.type().coding());
+    assertThat(tx.typeCodings(emptyList())).isNull();
+    assertThat(tx.typeCodings(null)).isNull();
+    assertThat(tx.typeCodings(singletonList(new CdwAppointmentParticipantTypeCoding()))).isNull();
   }
 
   @Test
