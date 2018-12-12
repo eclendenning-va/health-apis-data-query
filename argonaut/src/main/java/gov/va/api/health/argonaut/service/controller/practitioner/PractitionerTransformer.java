@@ -6,6 +6,7 @@ import static gov.va.api.health.argonaut.service.controller.Transformers.convert
 import static gov.va.api.health.argonaut.service.controller.Transformers.convertAll;
 import static gov.va.api.health.argonaut.service.controller.Transformers.ifPresent;
 import static java.util.Collections.singletonList;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import gov.va.api.health.argonaut.api.datatypes.Address;
 import gov.va.api.health.argonaut.api.datatypes.Address.AddressUse;
@@ -133,7 +134,7 @@ public class PractitionerTransformer implements PractitionerController.Transform
   }
 
   List<String> nameList(String source) {
-    if (source == null) {
+    if (isBlank(source)) {
       return null;
     }
     return singletonList(source);
@@ -175,7 +176,7 @@ public class PractitionerTransformer implements PractitionerController.Transform
   }
 
   List<PractitionerRole> practitionerRoles(CdwPractitionerRoles source) {
-    if (source == null || source.getPractitionerRole() == null) {
+    if (source == null || source.getPractitionerRole().isEmpty()) {
       return null;
     }
     List<PractitionerRole> practitionerRoles =

@@ -60,9 +60,10 @@ public class MedicationStatementTransformer implements MedicationStatementContro
   }
 
   CodeableConcept codeableConcept(CdwCodeableConcept maybeSource) {
-    if (maybeSource == null
-        || allNull(maybeSource.getCoding(), maybeSource.getText())
-        || maybeSource.getCoding().isEmpty() && maybeSource.getText() == null) {
+    if (maybeSource == null || allNull(maybeSource.getCoding(), maybeSource.getText())) {
+      return null;
+    }
+    if (maybeSource.getCoding().isEmpty() && maybeSource.getText() == null) {
       return null;
     }
     return convert(
@@ -80,14 +81,22 @@ public class MedicationStatementTransformer implements MedicationStatementContro
   }
 
   List<Coding> codings(List<CdwCoding> source) {
-    return convertAll(
-        source,
-        item ->
-            Coding.builder()
-                .system(item.getSystem())
-                .code(item.getCode())
-                .display(item.getDisplay())
-                .build());
+    List<Coding> codings = convertAll(source, this::coding);
+    if (codings == null) {
+      return null;
+    }
+    return codings.isEmpty() ? null : codings;
+  }
+
+  private Coding coding(CdwCoding cdw) {
+    if (cdw == null || allNull(cdw.getCode(), cdw.getSystem(), cdw.getDisplay())) {
+      return null;
+    }
+    return Coding.builder()
+        .system(cdw.getSystem())
+        .code(cdw.getCode())
+        .display(cdw.getDisplay())
+        .build();
   }
 
   Reference reference(CdwReference maybeCdw) {

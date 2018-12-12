@@ -5,6 +5,7 @@ import static gov.va.api.health.argonaut.service.controller.Transformers.asDateT
 import static gov.va.api.health.argonaut.service.controller.Transformers.convert;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convertAll;
 import static gov.va.api.health.argonaut.service.controller.Transformers.ifPresent;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
 import gov.va.api.health.argonaut.api.datatypes.Coding;
@@ -58,7 +59,7 @@ public class DiagnosticReportTransformer implements DiagnosticReportController.T
   }
 
   CodeableConcept code(CdwDiagnosticReportCode source) {
-    if (source == null || (source.getCoding().isEmpty() && source.getText() == null)) {
+    if (source == null || (source.getCoding().isEmpty() && isBlank(source.getText()))) {
       return null;
     }
     return CodeableConcept.builder()

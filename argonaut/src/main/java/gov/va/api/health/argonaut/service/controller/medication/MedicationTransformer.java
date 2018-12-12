@@ -3,6 +3,7 @@ package gov.va.api.health.argonaut.service.controller.medication;
 import static gov.va.api.health.argonaut.service.controller.Transformers.allNull;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convert;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convertAll;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
 import gov.va.api.health.argonaut.api.datatypes.Coding;
@@ -28,7 +29,7 @@ public class MedicationTransformer implements MedicationController.Transformer {
 
   CodeableConcept code(CdwCodeableConcept optionalSource) {
     if (optionalSource == null
-        || (optionalSource.getCoding().isEmpty() && optionalSource.getText() == null)) {
+        ||  (optionalSource.getCoding().isEmpty() && isBlank(optionalSource.getText()))) {
       return null;
     }
     return convert(
@@ -60,7 +61,7 @@ public class MedicationTransformer implements MedicationController.Transformer {
   }
 
   CodeableConcept form(CdwCodeableConcept source) {
-    if (source == null || (source.getCoding().isEmpty() && source.getText() == null)) {
+    if (source == null || (source.getCoding().isEmpty() && isBlank(source.getText()))) {
       return null;
     }
     return CodeableConcept.builder()
@@ -107,7 +108,7 @@ public class MedicationTransformer implements MedicationController.Transformer {
   }
 
   Narrative text(String optionalSource) {
-    if (optionalSource == null || StringUtils.isBlank(optionalSource)) {
+    if (optionalSource == null || isBlank(optionalSource)) {
       return null;
     }
     return convert(

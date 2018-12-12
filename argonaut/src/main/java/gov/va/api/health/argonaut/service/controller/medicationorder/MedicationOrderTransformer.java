@@ -5,6 +5,7 @@ import static gov.va.api.health.argonaut.service.controller.Transformers.asDateT
 import static gov.va.api.health.argonaut.service.controller.Transformers.convert;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convertAll;
 import static gov.va.api.health.argonaut.service.controller.Transformers.ifPresent;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
 import gov.va.api.health.argonaut.api.datatypes.Coding;
@@ -106,7 +107,7 @@ public class MedicationOrderTransformer implements MedicationOrderController.Tra
 
   Double doseQuantityValue(String source) {
     Double value;
-    if (source == null || StringUtils.isBlank(source)) {
+    if (source == null || isBlank(source)) {
       return null;
     }
     try {
@@ -155,7 +156,7 @@ public class MedicationOrderTransformer implements MedicationOrderController.Tra
   }
 
   SimpleQuantity quantity(String source) {
-    if (source == null || StringUtils.isBlank(source)) {
+    if (source == null || isBlank(source)) {
       return null;
     }
     Double value;
@@ -188,7 +189,7 @@ public class MedicationOrderTransformer implements MedicationOrderController.Tra
   }
 
   Status status(String source) {
-    if (source == null || StringUtils.isBlank(source)) {
+    if (source == null || isBlank(source)) {
       return null;
     }
     return convert(source, status -> EnumSearcher.of(MedicationOrder.Status.class)).find(source);
@@ -202,7 +203,7 @@ public class MedicationOrderTransformer implements MedicationOrderController.Tra
   }
 
   CodeableConcept timingCode(CdwCodeableConcept source) {
-    if (source == null || (source.getCoding().isEmpty() && source.getText() == null)) {
+    if (source == null || (source.getCoding().isEmpty() && isBlank(source.getText()))) {
       return null;
     }
     return CodeableConcept.builder()

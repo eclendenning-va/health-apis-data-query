@@ -6,6 +6,7 @@ import static gov.va.api.health.argonaut.service.controller.Transformers.asInteg
 import static gov.va.api.health.argonaut.service.controller.Transformers.convert;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convertAll;
 import static gov.va.api.health.argonaut.service.controller.Transformers.ifPresent;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
 import gov.va.api.health.argonaut.api.datatypes.Coding;
@@ -96,7 +97,7 @@ public class AppointmentTransformer implements AppointmentController.Transformer
   }
 
   CodeableConcept type(CdwAppointmentParticipantType cdw) {
-    if (cdw == null || (cdw.getText() == null && cdw.getCoding().isEmpty())) {
+    if (cdw == null ||  (cdw.getCoding().isEmpty() && isBlank(cdw.getText()))) {
       return null;
     }
     return convert(

@@ -6,6 +6,7 @@ import static gov.va.api.health.argonaut.service.controller.Transformers.asDateT
 import static gov.va.api.health.argonaut.service.controller.Transformers.convert;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convertAll;
 import static gov.va.api.health.argonaut.service.controller.Transformers.ifPresent;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
 import gov.va.api.health.argonaut.api.datatypes.Coding;
@@ -35,7 +36,7 @@ public class ConditionTransformer implements ConditionController.Transformer {
   }
 
   CodeableConcept category(CdwCategory maybeSource) {
-    if (maybeSource == null || maybeSource.getCoding().isEmpty()) {
+    if (maybeSource == null || (maybeSource.getCoding().isEmpty() && isBlank(maybeSource.getText()))) {
       return null;
     }
     return CodeableConcept.builder()
@@ -73,7 +74,7 @@ public class ConditionTransformer implements ConditionController.Transformer {
       return null;
     }
     CdwCodeableConcept firstCode = maybeCdw.get(0);
-    if (firstCode.getText() == null && firstCode.getCoding().isEmpty()) {
+    if (firstCode.getCoding().isEmpty() && isBlank(firstCode.getText())) {
       return null;
     }
     return CodeableConcept.builder()

@@ -5,6 +5,7 @@ import static gov.va.api.health.argonaut.service.controller.Transformers.asDateT
 import static gov.va.api.health.argonaut.service.controller.Transformers.convert;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convertAll;
 import static gov.va.api.health.argonaut.service.controller.Transformers.ifPresent;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import gov.va.api.health.argonaut.api.DataAbsentReason;
 import gov.va.api.health.argonaut.api.DataAbsentReason.Reason;
@@ -148,7 +149,7 @@ public class ImmunizationTransformer implements ImmunizationController.Transform
 
   CodeableConcept vaccineCode(CdwCodeableConcept maybeSource) {
     if (maybeSource == null
-        || (maybeSource.getCoding().isEmpty() && maybeSource.getText() == null)) {
+        ||  (maybeSource.getCoding().isEmpty() && isBlank(maybeSource.getText()))) {
       return null;
     }
     return convert(

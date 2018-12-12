@@ -64,9 +64,9 @@ public class ObservationTransformerTest {
 
   @Test
   public void codeCoding() {
-    assertThat(tx.codeCoding(cdw.code().getCoding())).isEqualTo(expected.code().coding());
-    assertThat(tx.codeCoding(null)).isNull();
-    assertThat(tx.codeCoding(emptyList())).isNull();
+    assertThat(tx.codeCodings(cdw.code().getCoding())).isEqualTo(expected.code().coding());
+    assertThat(tx.codeCodings(null)).isNull();
+    assertThat(tx.codeCodings(emptyList())).isNull();
   }
 
   @Test
@@ -88,10 +88,10 @@ public class ObservationTransformerTest {
 
   @Test
   public void componentCoding() {
-    assertThat(tx.componentCoding(cdw.componentCode().getCoding()))
+    assertThat(tx.componentCodings(cdw.componentCode().getCoding()))
         .isEqualTo(expected.componentCode().coding());
-    assertThat(tx.componentCoding(null)).isNull();
-    assertThat(tx.componentCoding(emptyList())).isNull();
+    assertThat(tx.componentCodings(null)).isNull();
+    assertThat(tx.componentCodings(emptyList())).isNull();
   }
 
   @Test
@@ -104,10 +104,10 @@ public class ObservationTransformerTest {
 
   @Test
   public void componentValueCoding() {
-    assertThat(tx.componentValueCoding(cdw.componentCodeableConcept().getCoding()))
+    assertThat(tx.componentValueCodings(cdw.componentCodeableConcept().getCoding()))
         .isEqualTo(expected.componentCodeableConcept().coding());
-    assertThat(tx.componentValueCoding(null)).isNull();
-    assertThat(tx.componentValueCoding(emptyList())).isNull();
+    assertThat(tx.componentValueCodings(null)).isNull();
+    assertThat(tx.componentValueCodings(emptyList())).isNull();
   }
 
   @Test
@@ -134,10 +134,10 @@ public class ObservationTransformerTest {
 
   @Test
   public void interpretationCoding() {
-    assertThat(tx.interpretationCoding(cdw.interpretation().getCoding()))
+    assertThat(tx.interpretationCodings(cdw.interpretation().getCoding()))
         .isEqualTo(expected.interpretation().coding());
-    assertThat(tx.interpretationCoding(null)).isNull();
-    assertThat(tx.interpretationCoding(emptyList())).isNull();
+    assertThat(tx.interpretationCodings(null)).isNull();
+    assertThat(tx.interpretationCodings(emptyList())).isNull();
   }
 
   @Test
@@ -203,10 +203,10 @@ public class ObservationTransformerTest {
 
   @Test
   public void valueCoding() {
-    assertThat(tx.valueCoding(cdw.valueCodeableConcept().getCoding()))
+    assertThat(tx.valueCodings(cdw.valueCodeableConcept().getCoding()))
         .isEqualTo(expected.valueCodeableConcept().coding());
-    assertThat(tx.valueCoding(null)).isNull();
-    assertThat(tx.valueCoding(emptyList())).isNull();
+    assertThat(tx.valueCodings(null)).isNull();
+    assertThat(tx.valueCodings(emptyList())).isNull();
   }
 
   @Test
