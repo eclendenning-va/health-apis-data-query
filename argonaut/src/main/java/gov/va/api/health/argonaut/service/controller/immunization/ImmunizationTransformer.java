@@ -5,6 +5,7 @@ import static gov.va.api.health.argonaut.service.controller.Transformers.asDateT
 import static gov.va.api.health.argonaut.service.controller.Transformers.convert;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convertAll;
 import static gov.va.api.health.argonaut.service.controller.Transformers.ifPresent;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import gov.va.api.health.argonaut.api.DataAbsentReason;
 import gov.va.api.health.argonaut.api.DataAbsentReason.Reason;
@@ -18,7 +19,6 @@ import gov.va.api.health.argonaut.api.elements.Reference;
 import gov.va.api.health.argonaut.api.resources.Immunization;
 import gov.va.api.health.argonaut.api.resources.Immunization.Reaction;
 import gov.va.api.health.argonaut.api.resources.Immunization.Status;
-import gov.va.api.health.argonaut.api.resources.Immunization.VaccinationProtocol;
 import gov.va.api.health.argonaut.service.controller.EnumSearcher;
 import gov.va.dvp.cdw.xsd.model.CdwCodeableConcept;
 import gov.va.dvp.cdw.xsd.model.CdwCoding;
@@ -26,7 +26,6 @@ import gov.va.dvp.cdw.xsd.model.CdwImmunization103Root.CdwImmunizations.CdwImmun
 import gov.va.dvp.cdw.xsd.model.CdwImmunization103Root.CdwImmunizations.CdwImmunization.CdwIdentifiers;
 import gov.va.dvp.cdw.xsd.model.CdwImmunization103Root.CdwImmunizations.CdwImmunization.CdwNotes;
 import gov.va.dvp.cdw.xsd.model.CdwImmunization103Root.CdwImmunizations.CdwImmunization.CdwReactions;
-import gov.va.dvp.cdw.xsd.model.CdwImmunization103Root.CdwImmunizations.CdwImmunization.CdwVaccinationProtocols;
 import gov.va.dvp.cdw.xsd.model.CdwImmunizationReported;
 import gov.va.dvp.cdw.xsd.model.CdwImmunizationStatus;
 import gov.va.dvp.cdw.xsd.model.CdwReference;
@@ -56,7 +55,6 @@ public class ImmunizationTransformer implements ImmunizationController.Transform
         .location(reference(source.getLocation()))
         .note(note(source.getNotes()))
         .reaction(reaction(source.getReactions()))
-        .vaccinationProtocol(vaccinationProtocol(source.getVaccinationProtocols()))
         .build();
   }
 
@@ -141,20 +139,11 @@ public class ImmunizationTransformer implements ImmunizationController.Transform
     return null;
   }
 
-  List<VaccinationProtocol> vaccinationProtocol(CdwVaccinationProtocols maybeSource) {
-    return convertAll(
-        ifPresent(maybeSource, CdwVaccinationProtocols::getVaccinationProtocol),
-        item ->
-            VaccinationProtocol.builder()
-                .series(item.getSeries())
-                .seriesDoses(ifPresent(item.getSeriesDoses(), Short::intValue))
-                .build());
-  }
-
   CodeableConcept vaccineCode(CdwCodeableConcept maybeSource) {
-    if (maybeSource == null
-        || allNull(maybeSource.getCoding(), maybeSource.getText())
-        || maybeSource.getCoding().isEmpty() && maybeSource.getText() == null) {
+    if (maybeSource == null) {
+      return null;
+    }
+    if (maybeSource.getCoding().isEmpty() && isBlank(maybeSource.getText())) {
       return null;
     }
     return convert(
