@@ -7,6 +7,7 @@ import static gov.va.api.health.argonaut.service.controller.Transformers.convert
 import static gov.va.api.health.argonaut.service.controller.Transformers.convertAll;
 import static gov.va.api.health.argonaut.service.controller.Transformers.ifPresent;
 import static java.util.Collections.singletonList;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import gov.va.api.health.argonaut.api.datatypes.Address;
 import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
@@ -148,17 +149,17 @@ public class PatientTransformer implements PatientController.Transformer {
     }
     List<Extension> extensions = new LinkedList<>();
     for (CdwExtension extension : source) {
-      if ("text".equals(extension.getUrl())) {
+      if ("text".equals(ifPresent(extension, CdwExtension::getUrl))) {
         extensions.add(
             Extension.builder()
-                .url(extension.getUrl())
-                .valueString(extension.getValueString())
+                .url(ifPresent(extension, CdwExtension::getUrl))
+                .valueString(ifPresent(extension, CdwExtension::getValueString))
                 .build());
       } else {
         extensions.add(
             Extension.builder()
-                .url(extension.getUrl())
-                .valueCoding(valueCoding(extension.getValueCoding()))
+                .url(ifPresent(extension, CdwExtension::getUrl))
+                .valueCoding(valueCoding(ifPresent(extension, CdwExtension::getValueCoding)))
                 .build());
       }
     }
@@ -166,7 +167,7 @@ public class PatientTransformer implements PatientController.Transformer {
   }
 
   List<ContactPoint> contact(CdwContact optionalSource) {
-    if (optionalSource == null || StringUtils.isBlank(optionalSource.getPhone())) {
+    if (optionalSource == null || isBlank(optionalSource.getPhone())) {
       return Collections.emptyList();
     }
     return singletonList(
@@ -232,10 +233,19 @@ public class PatientTransformer implements PatientController.Transformer {
     return CodeableConcept.builder().coding(identifierTypeCodings(source.getCoding())).build();
   }
 
-  List<Coding> identifierTypeCodings(List<CdwIdentifier.CdwType.CdwCoding> optionalSource) {
-    return convertAll(
-        optionalSource,
-        cdw -> Coding.builder().system(cdw.getSystem()).code(cdw.getCode()).build());
+  List<Coding> identifierTypeCodings(List<CdwIdentifier.CdwType.CdwCoding> source) {
+    List<Coding> codings = convertAll(source, this::identifierTypeCoding);
+    if (codings == null) {
+      return null;
+    }
+    return codings.isEmpty() ? null : codings;
+  }
+
+  private Coding identifierTypeCoding(CdwIdentifier.CdwType.CdwCoding cdw) {
+    if (cdw == null || allNull(cdw.getCode(), cdw.getSystem())) {
+      return null;
+    }
+    return Coding.builder().system(cdw.getSystem()).code(cdw.getCode()).build();
   }
 
   Identifier.IdentifierUse identifierUse(CdwIdentifier source) {
@@ -256,8 +266,10 @@ public class PatientTransformer implements PatientController.Transformer {
   }
 
   CodeableConcept maritalStatus(CdwMaritalStatus optionalSource) {
-    if (optionalSource == null
-        || (optionalSource.getText() == null && optionalSource.getCoding().isEmpty())) {
+    if (optionalSource == null) {
+      return null;
+    }
+    if (isBlank(optionalSource.getText()) && optionalSource.getCoding().isEmpty()) {
       return null;
     }
     return convert(
@@ -265,19 +277,27 @@ public class PatientTransformer implements PatientController.Transformer {
         cdw ->
             CodeableConcept.builder()
                 .text(cdw.getText())
-                .coding(maritalStatusCoding(cdw.getCoding()))
+                .coding(maritalStatusCodings(cdw.getCoding()))
                 .build());
   }
 
-  List<Coding> maritalStatusCoding(List<CdwMaritalStatus.CdwCoding> optionalSource) {
-    return convertAll(
-        optionalSource,
-        cdw ->
-            Coding.builder()
-                .system(ifPresent(cdw.getSystem(), CdwMaritalStatusSystems::value))
-                .code(ifPresent(cdw.getCode(), CdwMaritalStatusCodes::value))
-                .display(cdw.getDisplay())
-                .build());
+  List<Coding> maritalStatusCodings(List<CdwMaritalStatus.CdwCoding> source) {
+    List<Coding> codings = convertAll(source, this::maritalStatusCoding);
+    if (codings == null) {
+      return null;
+    }
+    return codings.isEmpty() ? null : codings;
+  }
+
+  private Coding maritalStatusCoding(CdwMaritalStatus.CdwCoding cdw) {
+    if (cdw == null || allNull(cdw.getCode(), cdw.getDisplay(), cdw.getSystem())) {
+      return null;
+    }
+    return Coding.builder()
+        .system(ifPresent(cdw.getSystem(), CdwMaritalStatusSystems::value))
+        .code(ifPresent(cdw.getCode(), CdwMaritalStatusCodes::value))
+        .display(cdw.getDisplay())
+        .build();
   }
 
   List<HumanName> names(CdwName optionalSource) {
@@ -340,6 +360,9 @@ public class PatientTransformer implements PatientController.Transformer {
   }
 
   Coding valueCoding(CdwValueCoding source) {
+    if (source == null || allNull(source.getSystem(), source.getDisplay(), source.getCode())) {
+      return null;
+    }
     return Coding.builder()
         .display(source.getDisplay())
         .code(source.getCode())
