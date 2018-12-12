@@ -16,7 +16,6 @@ import gov.va.dvp.cdw.xsd.model.CdwCoding;
 import gov.va.dvp.cdw.xsd.model.CdwMedication101Root.CdwMedications.CdwMedication;
 import gov.va.dvp.cdw.xsd.model.CdwMedication101Root.CdwMedications.CdwMedication.CdwProduct;
 import java.util.List;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -29,7 +28,7 @@ public class MedicationTransformer implements MedicationController.Transformer {
 
   CodeableConcept code(CdwCodeableConcept optionalSource) {
     if (optionalSource == null
-        ||  (optionalSource.getCoding().isEmpty() && isBlank(optionalSource.getText()))) {
+        || (optionalSource.getCoding().isEmpty() && isBlank(optionalSource.getText()))) {
       return null;
     }
     return convert(

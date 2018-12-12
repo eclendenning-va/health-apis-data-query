@@ -30,7 +30,6 @@ import gov.va.dvp.cdw.xsd.model.CdwMedicationOrder103Root.CdwMedicationOrders.Cd
 import gov.va.dvp.cdw.xsd.model.CdwReference;
 import gov.va.dvp.cdw.xsd.model.CdwSimpleQuantity;
 import java.util.List;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 @Service

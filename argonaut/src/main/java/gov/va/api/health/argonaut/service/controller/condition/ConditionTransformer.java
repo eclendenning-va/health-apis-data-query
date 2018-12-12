@@ -36,7 +36,8 @@ public class ConditionTransformer implements ConditionController.Transformer {
   }
 
   CodeableConcept category(CdwCategory maybeSource) {
-    if (maybeSource == null || (maybeSource.getCoding().isEmpty() && isBlank(maybeSource.getText()))) {
+    if (maybeSource == null
+        || (maybeSource.getCoding().isEmpty() && isBlank(maybeSource.getText()))) {
       return null;
     }
     return CodeableConcept.builder()

@@ -149,7 +149,7 @@ public class ImmunizationTransformer implements ImmunizationController.Transform
 
   CodeableConcept vaccineCode(CdwCodeableConcept maybeSource) {
     if (maybeSource == null
-        ||  (maybeSource.getCoding().isEmpty() && isBlank(maybeSource.getText()))) {
+        || (maybeSource.getCoding().isEmpty() && isBlank(maybeSource.getText()))) {
       return null;
     }
     return convert(
