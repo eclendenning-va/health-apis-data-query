@@ -145,13 +145,19 @@ public class IdMeOauthRobot {
     @JsonProperty("token_type")
     String tokenType;
 
-    @JsonProperty("expires_in")
-    long expiresIn;
+    @JsonProperty("expires_at")
+    long expiresAt;
 
     @JsonProperty("scope")
     String scope;
 
     @JsonProperty("id_token")
     String idToken;
+
+    @JsonProperty("patient")
+    String patient;
+
+    @JsonProperty("state")
+    String state;
   }
 }
