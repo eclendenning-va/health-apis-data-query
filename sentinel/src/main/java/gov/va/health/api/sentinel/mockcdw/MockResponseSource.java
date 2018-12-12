@@ -20,7 +20,11 @@ class MockResponseSource {
 
   /** Return the XML sample contents for the call. */
   Optional<String> responseFor(MockCall call) {
-    return entries.entries().stream().filter(call::matches).findFirst().map(toFileContents());
+    Optional<String> exactMatch =
+        entries.entries().stream().filter(call::matches).findFirst().map(toFileContents());
+    return exactMatch.isPresent()
+        ? exactMatch
+        : entries.entries().stream().filter(call::matchesMostly).findFirst().map(toFileContents());
   }
 
   private Function<Entry, String> toFileContents() {
