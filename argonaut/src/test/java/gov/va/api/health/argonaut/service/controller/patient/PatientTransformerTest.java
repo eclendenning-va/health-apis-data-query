@@ -172,6 +172,20 @@ public class PatientTransformerTest {
   }
 
   @Test
+  public void identifierTypeCodings() {
+    assertThat(tx.identifierTypeCodings(cdw.identifierType().getCoding())).isEqualTo(expected.identifierTypeCoding());
+    assertThat(tx.identifierTypeCodings(singletonList(null))).isNull();
+    assertThat(tx.identifierTypeCodings(null)).isNull();
+  }
+
+  @Test
+  public void valueCodings() {
+    assertThat(tx.valueCoding(cdw.argoEthnicity().getValueCoding())).isEqualTo(expected.argoEthnicityCoding());
+    assertThat(tx.valueCoding(cdw.argoRace().getValueCoding())).isEqualTo(expected.argoRaceCoding());
+    assertThat(tx.valueCoding(null)).isNull();
+  }
+
+  @Test
   public void telecoms() {
     assertThat(tx.telecoms(cdw.telecoms())).isEqualTo(expected.telecom());
     assertThat(tx.telecoms(new CdwTelecoms())).isNull();
@@ -183,6 +197,13 @@ public class PatientTransformerTest {
     assertThat(tx.maritalStatus(cdw.maritalStatus())).isEqualTo(expected.maritalStatus());
     assertThat(tx.maritalStatus(new CdwMaritalStatus())).isNull();
     assertThat(tx.maritalStatus(null)).isNull();
+  }
+
+  @Test
+  public void maritalStatusCodings() {
+    assertThat(tx.maritalStatusCodings(cdw.maritalStatus().getCoding())).isEqualTo(expected.maritalStatusCoding());
+    assertThat(tx.maritalStatusCodings(singletonList(null))).isNull();
+    assertThat(tx.maritalStatusCodings(null)).isNull();
   }
 
   @NoArgsConstructor(staticName = "get", access = AccessLevel.PUBLIC)
