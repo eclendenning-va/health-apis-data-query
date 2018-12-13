@@ -59,7 +59,10 @@ public class DiagnosticReportTransformer implements DiagnosticReportController.T
   }
 
   CodeableConcept code(CdwDiagnosticReportCode source) {
-    if (source == null || (source.getCoding().isEmpty() && isBlank(source.getText()))) {
+    if (source == null) {
+      return null;
+    }
+    if (source.getCoding().isEmpty() && isBlank(source.getText())) {
       return null;
     }
     return CodeableConcept.builder()

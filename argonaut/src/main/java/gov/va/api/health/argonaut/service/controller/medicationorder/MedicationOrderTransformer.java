@@ -35,7 +35,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class MedicationOrderTransformer implements MedicationOrderController.Transformer {
   CodeableConcept additionalInstructions(CdwCodeableConcept source) {
-    if (source == null || (source.getCoding().isEmpty() && source.getText() == null)) {
+    if (source == null) {
+      return null;
+    }
+    if (source.getCoding().isEmpty() && isBlank(source.getText())) {
       return null;
     }
     return CodeableConcept.builder().text(source.getText()).build();
@@ -202,7 +205,10 @@ public class MedicationOrderTransformer implements MedicationOrderController.Tra
   }
 
   CodeableConcept timingCode(CdwCodeableConcept source) {
-    if (source == null || (source.getCoding().isEmpty() && isBlank(source.getText()))) {
+    if (source == null) {
+      return null;
+    }
+    if (source.getCoding().isEmpty() && isBlank(source.getText())) {
       return null;
     }
     return CodeableConcept.builder()
