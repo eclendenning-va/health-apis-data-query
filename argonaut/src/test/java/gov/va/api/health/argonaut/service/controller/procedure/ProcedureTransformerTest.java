@@ -1,5 +1,6 @@
 package gov.va.api.health.argonaut.service.controller.procedure;
 
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
@@ -29,6 +30,13 @@ public class ProcedureTransformerTest {
   @Test
   public void code() {
     assertThat(tx.code(cdw.procedure().getCode())).isEqualTo(expected.procedure().code());
+  }
+
+  @Test
+  public void codeCodings(){
+    assertThat(tx.codeCodings(singletonList(null))).isNull();
+    assertThat(tx.codeCodings(null)).isNull();
+    assertThat(tx.codeCodings(cdw.code().getCoding())).isEqualTo(expected.codeCoding());
   }
 
   @Test
@@ -121,7 +129,7 @@ public class ProcedureTransformerTest {
     }
 
     private List<Coding> codeCoding() {
-      return Collections.singletonList(
+      return singletonList(
           Coding.builder()
               .system("http://www.ama-assn.org/go/cpt")
               .code("43239")
@@ -157,7 +165,7 @@ public class ProcedureTransformerTest {
     }
 
     private List<CodeableConcept> reason() {
-      return Collections.singletonList(CodeableConcept.builder().text("NOT NEEDED").build());
+      return singletonList(CodeableConcept.builder().text("NOT NEEDED").build());
     }
   }
 }
