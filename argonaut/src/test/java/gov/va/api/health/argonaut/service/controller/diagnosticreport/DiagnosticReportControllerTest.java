@@ -168,7 +168,7 @@ public class DiagnosticReportControllerTest {
                 "me", "foo", new String[] {"1000", "2000"}, 1, 10),
         Parameters.builder()
             .add("patient", "me")
-            .add("code", "foo")
+            .add("category", "foo")
             .addAll("date", "1000", "2000")
             .add("page", 1)
             .add("_count", 10)

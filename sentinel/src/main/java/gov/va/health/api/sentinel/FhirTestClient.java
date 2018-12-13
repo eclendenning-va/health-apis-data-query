@@ -55,10 +55,20 @@ public class FhirTestClient implements TestClient {
     Response jsonFhirResponse = get("application/json+fhir", path, params);
 
     assertThat(fhirJsonResponse.getStatusCode())
-        .withFailMessage("status: application/json and application/fhir+json")
+        .withFailMessage(
+            "status: application/json ("
+                + baselineResponse.getStatusCode()
+                + ") does not equal application/fhir+json ("
+                + fhirJsonResponse.getStatusCode()
+                + ")")
         .isEqualTo(baselineResponse.getStatusCode());
     assertThat(jsonFhirResponse.getStatusCode())
-        .withFailMessage("status: application/json and application/json+fhir")
+        .withFailMessage(
+            "status: application/json ("
+                + baselineResponse.getStatusCode()
+                + ") does not equal application/json+fhir ("
+                + jsonFhirResponse.getStatusCode()
+                + ")")
         .isEqualTo(baselineResponse.getStatusCode());
 
     if (baselineResponse.getStatusCode() >= 400) {

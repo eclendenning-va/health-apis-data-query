@@ -1,5 +1,6 @@
 package gov.va.api.health.mranderson.cdw;
 
+import java.net.URLDecoder;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -7,6 +8,7 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.Builder;
+import lombok.SneakyThrows;
 import lombok.Value;
 import org.springframework.util.MultiValueMap;
 
@@ -24,7 +26,12 @@ public class Query {
   @Builder.Default boolean raw = false;
 
   private static Stream<String> toKeyValueString(Map.Entry<String, List<String>> entry) {
-    return entry.getValue().stream().map((value) -> entry.getKey() + '=' + value);
+    return entry.getValue().stream().map((value) -> entry.getKey() + '=' + decode(value));
+  }
+
+  @SneakyThrows
+  private static String decode(String value) {
+    return URLDecoder.decode(value, "UTF-8");
   }
 
   /**

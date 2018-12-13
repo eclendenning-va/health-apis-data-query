@@ -1,5 +1,6 @@
 package gov.va.api.health.argonaut.service.mranderson.client;
 
+import java.net.URLEncoder;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
@@ -8,6 +9,7 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.Builder;
+import lombok.SneakyThrows;
 import lombok.Value;
 import org.springframework.util.MultiValueMap;
 
@@ -39,7 +41,12 @@ public class Query<T> {
   }
 
   private static Stream<String> toKeyValueString(Map.Entry<String, List<String>> entry) {
-    return entry.getValue().stream().map((value) -> entry.getKey() + '=' + value);
+    return entry.getValue().stream().map((value) -> entry.getKey() + '=' + encode(value));
+  }
+
+  @SneakyThrows
+  private static String encode(String value) {
+    return URLEncoder.encode(value, "UTF-8");
   }
 
   /**

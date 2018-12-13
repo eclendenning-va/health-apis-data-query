@@ -152,6 +152,96 @@ public class ArgonautReadAndSearchIT {
             ids.patient(),
             ids.diagnosticReports().fromDate(),
             ids.diagnosticReports().toDate()),
+        expect(
+            200,
+            DiagnosticReport.Bundle.class,
+            "/api/DiagnosticReport?patient={patient}&category=LAB&date={dateYear}",
+            ids.patient(),
+            ids.diagnosticReports().dateYear()),
+        expect(
+            200,
+            DiagnosticReport.Bundle.class,
+            "/api/DiagnosticReport?patient={patient}&category=LAB&date={dateYearMonth}",
+            ids.patient(),
+            ids.diagnosticReports().dateYearMonth()),
+        expect(
+            200,
+            DiagnosticReport.Bundle.class,
+            "/api/DiagnosticReport?patient={patient}&category=LAB&date={dateYearMonthDay}",
+            ids.patient(),
+            ids.diagnosticReports().dateYearMonthDay()),
+        expect(
+            400,
+            OperationOutcome.class,
+            "/api/DiagnosticReport?patient={patient}&category=LAB&date={dateYearMonthDayHour}",
+            ids.patient(),
+            ids.diagnosticReports().dateYearMonthDayHour()),
+        expect(
+            400,
+            OperationOutcome.class,
+            "/api/DiagnosticReport?patient={patient}&category=LAB&date={dateYearMonthDayHourMinute}",
+            ids.patient(),
+            ids.diagnosticReports().dateYearMonthDayHourMinute()),
+        expect(
+            400,
+            OperationOutcome.class,
+            "/api/DiagnosticReport?patient={patient}&category=LAB&date={dateYearMonthDayHourMinuteSecond}",
+            ids.patient(),
+            ids.diagnosticReports().dateYearMonthDayHourMinuteSecond()),
+        expect(
+            200,
+            DiagnosticReport.Bundle.class,
+            "/api/DiagnosticReport?patient={patient}&category=LAB&date={dateYearMonthDayHourMinuteSecondTimezone}",
+            ids.patient(),
+            ids.diagnosticReports().dateYearMonthDayHourMinuteSecondTimezone()),
+        expect(
+            200,
+            DiagnosticReport.Bundle.class,
+            "/api/DiagnosticReport?patient={patient}&category=LAB&date={dateYearMonthDayHourMinuteSecondZulu}",
+            ids.patient(),
+            ids.diagnosticReports().dateYearMonthDayHourMinuteSecondZulu()),
+        expect(
+            200,
+            DiagnosticReport.Bundle.class,
+            "/api/DiagnosticReport?patient={patient}&category=LAB&date={dateGreaterThan}",
+            ids.patient(),
+            ids.diagnosticReports().dateGreaterThan()),
+        expect(
+            200,
+            DiagnosticReport.Bundle.class,
+            "/api/DiagnosticReport?patient={patient}&category=LAB&date={dateNotEqual}",
+            ids.patient(),
+            ids.diagnosticReports().dateNotEqual()),
+        expect(
+            200,
+            DiagnosticReport.Bundle.class,
+            "/api/DiagnosticReport?patient={patient}&category=LAB&date={dateStartsWith}",
+            ids.patient(),
+            ids.diagnosticReports().dateStartsWith()),
+        expect(
+            200,
+            DiagnosticReport.Bundle.class,
+            "/api/DiagnosticReport?patient={patient}&category=LAB&date={dateNoPrefix}",
+            ids.patient(),
+            ids.diagnosticReports().dateNoPrefix()),
+        expect(
+            200,
+            DiagnosticReport.Bundle.class,
+            "/api/DiagnosticReport?patient={patient}&category=LAB&date={dateEqual}",
+            ids.patient(),
+            ids.diagnosticReports().dateEqual()),
+        expect(
+            200,
+            DiagnosticReport.Bundle.class,
+            "/api/DiagnosticReport?patient={patient}&category=LAB&date={dateLessOrEqual}",
+            ids.patient(),
+            ids.diagnosticReports().dateLessOrEqual()),
+        expect(
+            200,
+            DiagnosticReport.Bundle.class,
+            "/api/DiagnosticReport?patient={patient}&category=LAB&date={dateLessThan}",
+            ids.patient(),
+            ids.diagnosticReports().dateLessThan()),
         // Encounter
         expect(200, Encounter.class, "/api/Encounter/{id}", ids.encounter()),
         expect(404, OperationOutcome.class, "/api/Encounter/{id}", ids.unknown()),
@@ -363,7 +453,8 @@ public class ArgonautReadAndSearchIT {
       return;
     }
     argonaut().get(path + "&page=0", params).expect(400).expectValid(OperationOutcome.class);
-    argonaut().get(path + "&_count=0", params).expect(400).expectValid(OperationOutcome.class);
-    argonaut().get(path + "&_count=21", params).expect(400).expectValid(OperationOutcome.class);
+    argonaut().get(path + "&_count=-1", params).expect(400).expectValid(OperationOutcome.class);
+    argonaut().get(path + "&_count=0", params).expect(200).expectValid(response);
+    argonaut().get(path + "&_count=21", params).expect(200).expectValid(response);
   }
 }
