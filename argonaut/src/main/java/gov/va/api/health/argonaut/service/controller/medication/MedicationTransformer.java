@@ -27,8 +27,10 @@ public class MedicationTransformer implements MedicationController.Transformer {
   }
 
   CodeableConcept code(CdwCodeableConcept optionalSource) {
-    if (optionalSource == null
-        || (optionalSource.getCoding().isEmpty() && isBlank(optionalSource.getText()))) {
+    if (optionalSource == null) {
+      return null;
+    }
+    if (optionalSource.getCoding().isEmpty() && isBlank(optionalSource.getText())) {
       return null;
     }
     return convert(
@@ -60,7 +62,10 @@ public class MedicationTransformer implements MedicationController.Transformer {
   }
 
   CodeableConcept form(CdwCodeableConcept source) {
-    if (source == null || (source.getCoding().isEmpty() && isBlank(source.getText()))) {
+    if (source == null) {
+      return null;
+    }
+    if (source.getCoding().isEmpty() && isBlank(source.getText())) {
       return null;
     }
     return CodeableConcept.builder()

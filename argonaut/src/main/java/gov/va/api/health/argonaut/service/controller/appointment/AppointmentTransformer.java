@@ -97,7 +97,10 @@ public class AppointmentTransformer implements AppointmentController.Transformer
   }
 
   CodeableConcept type(CdwAppointmentParticipantType cdw) {
-    if (cdw == null || (cdw.getCoding().isEmpty() && isBlank(cdw.getText()))) {
+    if (cdw == null) {
+      return null;
+    }
+    if (cdw.getCoding().isEmpty() && isBlank(cdw.getText())) {
       return null;
     }
     return convert(
