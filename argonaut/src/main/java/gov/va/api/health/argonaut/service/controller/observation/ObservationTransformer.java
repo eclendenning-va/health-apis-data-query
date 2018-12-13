@@ -240,7 +240,7 @@ public class ObservationTransformer implements ObservationController.Transformer
     if (maybeCdw == null) {
       return null;
     }
-    if (maybeCdw.getCoding().isEmpty() && maybeCdw.getText() == null) {
+    if (maybeCdw.getCoding().isEmpty() && isBlank(maybeCdw.getText())) {
       return null;
     }
     return ifPresent(
@@ -325,7 +325,7 @@ public class ObservationTransformer implements ObservationController.Transformer
     if (maybeCdw == null) {
       return null;
     }
-    if (maybeCdw.getCoding().isEmpty() && maybeCdw.getText() == null) {
+    if (maybeCdw.getCoding().isEmpty() && isBlank(maybeCdw.getText())) {
       return null;
     }
     return ifPresent(

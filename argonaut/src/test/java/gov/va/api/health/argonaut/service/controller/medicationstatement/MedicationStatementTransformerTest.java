@@ -44,6 +44,7 @@ public class MedicationStatementTransformerTest {
     assertThat(tx.timing(cdw.timing()).code().coding()).isEqualTo(expected.timingCode().coding());
     assertThat(tx.codings(null)).isNull();
     assertThat(tx.codings(emptyList())).isNull();
+    assertThat(tx.codings(singletonList(null))).isNull();
   }
 
   @Test

@@ -56,6 +56,15 @@ public class ObservationTransformerTest {
   }
 
   @Test
+  public void categoryCodings() {
+    assertThat(tx.categoryCodings(cdw.category().getCoding()))
+        .isEqualTo(expected.category().coding());
+    assertThat(tx.categoryCodings(null)).isNull();
+    assertThat(tx.categoryCodings(emptyList())).isNull();
+    assertThat(tx.categoryCodings(singletonList(null))).isNull();
+  }
+
+  @Test
   public void code() {
     assertThat(tx.code(null)).isNull();
     assertThat(tx.code(new CdwCode())).isNull();
@@ -67,6 +76,7 @@ public class ObservationTransformerTest {
     assertThat(tx.codeCodings(cdw.code().getCoding())).isEqualTo(expected.code().coding());
     assertThat(tx.codeCodings(null)).isNull();
     assertThat(tx.codeCodings(emptyList())).isNull();
+    assertThat(tx.codeCodings(singletonList(null))).isNull();
   }
 
   @Test
@@ -92,6 +102,7 @@ public class ObservationTransformerTest {
         .isEqualTo(expected.componentCode().coding());
     assertThat(tx.componentCodings(null)).isNull();
     assertThat(tx.componentCodings(emptyList())).isNull();
+    assertThat(tx.componentCodings(singletonList(null))).isNull();
   }
 
   @Test
@@ -108,6 +119,7 @@ public class ObservationTransformerTest {
         .isEqualTo(expected.componentCodeableConcept().coding());
     assertThat(tx.componentValueCodings(null)).isNull();
     assertThat(tx.componentValueCodings(emptyList())).isNull();
+    assertThat(tx.componentValueCodings(singletonList(null))).isNull();
   }
 
   @Test
@@ -138,6 +150,7 @@ public class ObservationTransformerTest {
         .isEqualTo(expected.interpretation().coding());
     assertThat(tx.interpretationCodings(null)).isNull();
     assertThat(tx.interpretationCodings(emptyList())).isNull();
+    assertThat(tx.interpretationCodings(singletonList(null))).isNull();
   }
 
   @Test
@@ -207,6 +220,7 @@ public class ObservationTransformerTest {
         .isEqualTo(expected.valueCodeableConcept().coding());
     assertThat(tx.valueCodings(null)).isNull();
     assertThat(tx.valueCodings(emptyList())).isNull();
+    assertThat(tx.valueCodings(singletonList(null))).isNull();
   }
 
   @Test

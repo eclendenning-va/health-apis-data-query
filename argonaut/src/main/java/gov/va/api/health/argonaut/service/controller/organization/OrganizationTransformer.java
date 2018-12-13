@@ -63,7 +63,7 @@ public class OrganizationTransformer implements OrganizationController.Transform
         .build();
   }
 
-  private Coding coding(CdwCoding cdw) {
+  Coding coding(CdwCoding cdw) {
     if (allNull(cdw.getCode(), cdw.getDisplay(), cdw.getSystem())) {
       return null;
     }

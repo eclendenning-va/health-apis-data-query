@@ -5,6 +5,7 @@ import static gov.va.api.health.argonaut.service.controller.Transformers.asDateT
 import static gov.va.api.health.argonaut.service.controller.Transformers.convert;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convertAll;
 import static gov.va.api.health.argonaut.service.controller.Transformers.ifPresent;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
 import gov.va.api.health.argonaut.api.datatypes.Coding;
@@ -60,10 +61,10 @@ public class MedicationStatementTransformer implements MedicationStatementContro
   }
 
   CodeableConcept codeableConcept(CdwCodeableConcept maybeSource) {
-    if (maybeSource == null || allNull(maybeSource.getCoding(), maybeSource.getText())) {
+    if (maybeSource == null) {
       return null;
     }
-    if (maybeSource.getCoding().isEmpty() && maybeSource.getText() == null) {
+    if (maybeSource.getCoding().isEmpty() && isBlank(maybeSource.getText())) {
       return null;
     }
     return convert(
