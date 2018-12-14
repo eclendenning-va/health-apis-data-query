@@ -15,8 +15,11 @@ import gov.va.api.health.argonaut.api.resources.AllergyIntolerance.Status;
 import gov.va.api.health.argonaut.api.resources.AllergyIntolerance.Type;
 import gov.va.dvp.cdw.xsd.model.CdwAllergyIntolerance103Root.CdwAllergyIntolerances.CdwAllergyIntolerance;
 import gov.va.dvp.cdw.xsd.model.CdwAllergyIntolerance103Root.CdwAllergyIntolerances.CdwAllergyIntolerance.CdwNotes;
+import gov.va.dvp.cdw.xsd.model.CdwAllergyIntolerance103Root.CdwAllergyIntolerances.CdwAllergyIntolerance.CdwReactions;
 import gov.va.dvp.cdw.xsd.model.CdwAllergyIntolerance103Root.CdwAllergyIntolerances.CdwAllergyIntolerance.CdwReactions.CdwReaction.CdwManifestations;
+import gov.va.dvp.cdw.xsd.model.CdwAllergyIntolerance103Root.CdwAllergyIntolerances.CdwAllergyIntolerance.CdwReactions.CdwReaction.CdwManifestations.CdwManifestation;
 import gov.va.dvp.cdw.xsd.model.CdwAllergyIntolerance103Root.CdwAllergyIntolerances.CdwAllergyIntolerance.CdwSubstance;
+import gov.va.dvp.cdw.xsd.model.CdwAllergyIntolerance103Root.CdwAllergyIntolerances.CdwAllergyIntolerance.CdwSubstance.CdwCoding;
 import gov.va.dvp.cdw.xsd.model.CdwAllergyIntoleranceCategory;
 import gov.va.dvp.cdw.xsd.model.CdwAllergyIntoleranceCertainty;
 import gov.va.dvp.cdw.xsd.model.CdwAllergyIntoleranceCriticality;
@@ -41,26 +44,48 @@ public class AllergyIntoleranceTransformerTest {
   AllergyIntoleranceTransformer tx = new AllergyIntoleranceTransformer();
 
   @Test
-  public void allergyIntolerance103TransformsToModelAllergyIntolerance() {
+  public void allergyIntolerance() {
     assertThat(tx.apply(cdw.allergyIntolerance())).isEqualTo(expected.allergyIntolerance());
   }
 
   @Test
-  public void gregorianCalendarTransformsToDateTime() {
-    assertThat(tx.note(cdw.notes()).time()).isEqualTo(expected.note().time());
+  public void category() {
+    assertThat(tx.category(CdwAllergyIntoleranceCategory.FOOD)).isEqualTo(Category.food);
+    assertThat(tx.category(CdwAllergyIntoleranceCategory.MEDICATION))
+        .isEqualTo(Category.medication);
+    assertThat(tx.category(null)).isNull();
   }
 
   @Test
-  public void manifestationCodingTransformsToCodingList() {
+  public void criticality() {
+    assertThat(tx.criticality(CdwAllergyIntoleranceCriticality.CRITH)).isEqualTo(Criticality.CRITH);
+    assertThat(tx.criticality(CdwAllergyIntoleranceCriticality.CRITL)).isEqualTo(Criticality.CRITL);
+    assertThat(tx.criticality(CdwAllergyIntoleranceCriticality.CRITU)).isEqualTo(Criticality.CRITU);
+    assertThat(tx.criticality(null)).isNull();
+  }
+
+  @Test
+  public void gregorianCalendar() {
+    assertThat(tx.note(cdw.notes()).time()).isEqualTo(expected.note().time());
+    assertThat(tx.note(null)).isNull();
+    assertThat(tx.note(new CdwNotes())).isNull();
+  }
+
+  @Test
+  public void reactionManifestation() {
+    assertThat(tx.reactionManifestation(null)).isNull();
+    assertThat(tx.reactionManifestation(new CdwManifestations())).isNull();
+    assertThat(tx.reactionManifestation(cdw.manifestation())).isEqualTo(expected.manifestation());
+  }
+
+  @Test
+  public void reactionManifestationCoding() {
     assertThat(
             tx.reactionManifestationCoding(
                 cdw.manifestation().getManifestation().get(0).getCoding()))
         .isEqualTo(expected.manifestation().get(0).coding());
-  }
-
-  @Test
-  public void manifestationReturnsEmptyForNull() {
-    assertThat(tx.reactionManifestation(null).isEmpty());
+    assertThat(tx.reactionManifestationCoding(null)).isNull();
+    assertThat(tx.reactionManifestationCoding(new CdwManifestation.CdwCoding())).isNull();
   }
 
   @Test
@@ -71,29 +96,45 @@ public class AllergyIntoleranceTransformerTest {
   }
 
   @Test
-  public void patientTransformsToReference() {
+  public void patient() {
     assertThat(tx.reference(cdw.patient())).isEqualTo(expected.allergyIntolerance().patient());
+    assertThat(tx.reference(null)).isNull();
+    assertThat(tx.reference(new CdwReference())).isNull();
   }
 
   @Test
-  public void reactionReturnsEmptyForNull() {
-    assertThat(tx.reaction(null).isEmpty());
-  }
-
-  @Test
-  public void reactionTransformsToReactionList() {
+  public void reaction() {
     assertThat(tx.reaction(cdw.reactions())).isEqualTo(expected.reaction());
+    assertThat(tx.reaction(null)).isNull();
+    assertThat(tx.reaction(new CdwReactions())).isNull();
   }
 
   @Test
-  public void substanceCodingTransformsToCodingList() {
+  public void status() {
+    assertThat(tx.status(CdwAllergyIntoleranceStatus.ACTIVE)).isEqualTo(Status.active);
+    assertThat(tx.status(CdwAllergyIntoleranceStatus.CONFIRMED)).isEqualTo(Status.confirmed);
+    assertThat(tx.status(CdwAllergyIntoleranceStatus.ENTERED_IN_ERROR))
+        .isEqualTo(Status.entered_in_error);
+    assertThat(tx.status(CdwAllergyIntoleranceStatus.INACTIVE)).isEqualTo(Status.inactive);
+    assertThat(tx.status(CdwAllergyIntoleranceStatus.REFUTED)).isEqualTo(Status.refuted);
+    assertThat(tx.status(CdwAllergyIntoleranceStatus.RESOLVED)).isEqualTo(Status.resolved);
+    assertThat(tx.status(CdwAllergyIntoleranceStatus.UNCONFIRMED)).isEqualTo(Status.unconfirmed);
+    assertThat(tx.status(null)).isNull();
+  }
+
+  @Test
+  public void substance() {
+    assertThat(tx.substance(cdw.substance())).isEqualTo(expected.substance());
+    assertThat(tx.substance(null)).isNull();
+    assertThat(tx.substance(new CdwSubstance())).isNull();
+  }
+
+  @Test
+  public void substanceCoding() {
     assertThat(tx.substanceCoding(cdw.substance().getCoding()))
         .isEqualTo(expected.substanceCoding());
-  }
-
-  @Test
-  public void substanceTransformsToCodeableConcept() {
-    assertThat(tx.substance(cdw.substance())).isEqualTo(expected.substance());
+    assertThat(tx.substanceCoding(null)).isNull();
+    assertThat(tx.substanceCoding(new CdwCoding())).isNull();
   }
 
   private static class CdwSampleData {
