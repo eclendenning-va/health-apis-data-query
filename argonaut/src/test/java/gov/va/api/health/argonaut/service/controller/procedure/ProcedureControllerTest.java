@@ -21,7 +21,6 @@ import gov.va.dvp.cdw.xsd.model.CdwProcedure101Root.CdwProcedures.CdwProcedure;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.function.Supplier;
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolationException;
 import lombok.SneakyThrows;
 import org.junit.Before;
@@ -39,7 +38,6 @@ public class ProcedureControllerTest {
   @Mock ProcedureController.Transformer tx;
 
   ProcedureController controller;
-  @Mock HttpServletRequest servletRequest;
   @Mock Bundler bundler;
 
   @Before
@@ -59,14 +57,13 @@ public class ProcedureControllerTest {
     CdwProcedure cdwItem2 = new CdwProcedure();
     CdwProcedure cdwItem3 = new CdwProcedure();
     root.getProcedures().getProcedure().addAll(Arrays.asList(cdwItem1, cdwItem2, cdwItem3));
-    Procedure patient1 = Procedure.builder().build();
-    Procedure patient2 = Procedure.builder().build();
-    Procedure patient3 = Procedure.builder().build();
-    when(tx.apply(cdwItem1)).thenReturn(patient1);
-    when(tx.apply(cdwItem2)).thenReturn(patient2);
-    when(tx.apply(cdwItem3)).thenReturn(patient3);
+    Procedure procedure1 = Procedure.builder().build();
+    Procedure procedure2 = Procedure.builder().build();
+    Procedure procedure3 = Procedure.builder().build();
+    when(tx.apply(cdwItem1)).thenReturn(procedure1);
+    when(tx.apply(cdwItem2)).thenReturn(procedure2);
+    when(tx.apply(cdwItem3)).thenReturn(procedure3);
     when(client.search(Mockito.any())).thenReturn(root);
-    when(servletRequest.getRequestURI()).thenReturn("/api/Procedure");
 
     Procedure.Bundle mockBundle = new Procedure.Bundle();
     when(bundler.bundle(Mockito.any())).thenReturn(mockBundle);
@@ -85,7 +82,7 @@ public class ProcedureControllerTest {
             .page(1)
             .recordsPerPage(10)
             .totalRecords(3)
-            .path("/api/Procedure")
+            .path("Procedure")
             .queryParams(params)
             .build();
     assertThat(captor.getValue().linkConfig()).isEqualTo(expectedLinkConfig);
@@ -125,30 +122,28 @@ public class ProcedureControllerTest {
   @Test
   public void searchById() {
     assertSearch(
-        () -> controller.searchById("me", 1, 10, servletRequest),
+        () -> controller.searchById("me", 1, 10),
         Parameters.builder().add("identifier", "me").add("page", 1).add("_count", 10).build());
   }
 
   @Test
   public void searchByIdentifier() {
     assertSearch(
-        () -> controller.searchByIdentifier("me", 1, 10, servletRequest),
+        () -> controller.searchByIdentifier("me", 1, 10),
         Parameters.builder().add("identifier", "me").add("page", 1).add("_count", 10).build());
   }
 
   @Test
   public void searchByPatient() {
     assertSearch(
-        () -> controller.searchByPatient("me", 1, 10, servletRequest),
+        () -> controller.searchByPatient("me", 1, 10),
         Parameters.builder().add("patient", "me").add("page", 1).add("_count", 10).build());
   }
 
   @Test
   public void searchByPatientAndDate() {
     assertSearch(
-        () ->
-            controller.searchByPatientAndDate(
-                "me", new String[] {"2005", "2006"}, 1, 10, servletRequest),
+        () -> controller.searchByPatientAndDate("me", new String[] {"2005", "2006"}, 1, 10),
         Parameters.builder()
             .add("patient", "me")
             .addAll("date", "2005", "2006")
