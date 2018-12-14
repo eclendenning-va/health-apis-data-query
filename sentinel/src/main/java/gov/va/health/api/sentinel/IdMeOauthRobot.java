@@ -27,7 +27,7 @@ import org.openqa.selenium.chrome.ChromeOptions;
 @RequiredArgsConstructor(staticName = "of")
 public class IdMeOauthRobot {
 
-  @NonNull private final Configuration config;
+  @Getter @NonNull private final Configuration config;
 
   @Getter(lazy = true)
   private final String code = authorize();

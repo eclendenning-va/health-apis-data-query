@@ -6,24 +6,46 @@ import gov.va.health.api.sentinel.IdMeOauthRobot.Configuration.Authorization;
 import gov.va.health.api.sentinel.IdMeOauthRobot.Configuration.UserCredentials;
 import io.restassured.RestAssured;
 import io.restassured.specification.RequestSpecification;
+import java.util.Arrays;
+import java.util.List;
+import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameter;
+import org.junit.runners.Parameterized.Parameters;
 
+@RunWith(Parameterized.class)
 @Slf4j
-public class SeTest {
+public class LabDemoTest {
 
-  private static final IdMeOauthRobot ROBOT = makeRobot();
+  @Parameter(0)
+  public String name;
 
-  private static IdMeOauthRobot robot() {
-    return ROBOT;
+  @Getter
+  @Parameter(1)
+  public IdMeOauthRobot robot;
+
+  @Parameters(name = "{index}: {0}")
+  public static List<Object[]> parameters() {
+    return Arrays.asList(
+        //
+        test("User 1", makeRobot(user1())),
+        test("User 2", makeRobot(user2())),
+        test("User 3", makeRobot(user3())),
+        test("User 4", makeRobot(user4())),
+        test("User 5", makeRobot(user5()))
+        //
+        );
   }
 
-  private static IdMeOauthRobot.Configuration config() {
-    return ROBOT.config();
+  private static Object[] test(String name, IdMeOauthRobot robot) {
+    return new Object[] {name, robot};
   }
 
-  private static IdMeOauthRobot makeRobot() {
+  private static IdMeOauthRobot makeRobot(UserCredentials user) {
     IdMeOauthRobot.Configuration config =
         IdMeOauthRobot.Configuration.builder()
             .authorization(
@@ -50,13 +72,45 @@ public class SeTest {
                     .scope("patient/Procedure.read")
                     .build())
             .tokenUrl("https://dev-api.va.gov/oauth2/token")
-            .user(user5())
+            .user(user)
             .build();
 
     System.setProperty("webdriver.chrome.driver", "/Users/bryanschofield/Downloads/chromedriver");
     IdMeOauthRobot robot = IdMeOauthRobot.of(config);
-    log.info("Access token: {}", robot.token().accessToken());
+    //    log.info("Access token: {}", robot.token().accessToken());
     return robot;
+  }
+
+  private static UserCredentials user1() {
+    return UserCredentials.builder()
+        .id("vasdvp+IDME_01@gmail.com")
+        .icn("1017283132V631076")
+        .password("Password1234!")
+        .build();
+  }
+
+  private static UserCredentials user2() {
+    return UserCredentials.builder()
+        .id("vasdvp+IDME_02@gmail.com")
+        .icn("1017283179V257219")
+        .password("Password1234!")
+        .build();
+  }
+
+  private static UserCredentials user3() {
+    return UserCredentials.builder()
+        .id("vasdvp+IDME_03@gmail.com")
+        .icn("1012704686V159887")
+        .password("Password1234!")
+        .build();
+  }
+
+  private static UserCredentials user4() {
+    return UserCredentials.builder()
+        .id("vasdvp+IDME_04@gmail.com")
+        .icn("1017283180V801730")
+        .password("Password1234!")
+        .build();
   }
 
   private static UserCredentials user5() {
@@ -85,6 +139,10 @@ public class SeTest {
         .log()
         .all()
         .statusCode(200);
+  }
+
+  private IdMeOauthRobot.Configuration config() {
+    return robot.config();
   }
 
   @Test
