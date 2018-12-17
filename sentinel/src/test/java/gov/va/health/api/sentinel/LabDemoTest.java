@@ -1,10 +1,19 @@
 package gov.va.health.api.sentinel;
 
+import gov.va.api.health.argonaut.api.resources.AllergyIntolerance;
+import gov.va.api.health.argonaut.api.resources.Condition;
+import gov.va.api.health.argonaut.api.resources.DiagnosticReport;
+import gov.va.api.health.argonaut.api.resources.Immunization;
+import gov.va.api.health.argonaut.api.resources.MedicationOrder;
 import gov.va.api.health.argonaut.api.resources.MedicationStatement;
+import gov.va.api.health.argonaut.api.resources.Observation;
+import gov.va.api.health.argonaut.api.resources.Patient;
+import gov.va.api.health.argonaut.api.resources.Procedure;
 import gov.va.api.health.autoconfig.configuration.JacksonConfig;
 import gov.va.health.api.sentinel.IdMeOauthRobot.Configuration.Authorization;
 import gov.va.health.api.sentinel.IdMeOauthRobot.Configuration.UserCredentials;
 import io.restassured.RestAssured;
+import io.restassured.response.ValidatableResponseOptions;
 import io.restassured.specification.RequestSpecification;
 import java.util.Arrays;
 import java.util.List;
@@ -20,6 +29,8 @@ import org.junit.runners.Parameterized.Parameters;
 @RunWith(Parameterized.class)
 @Slf4j
 public class LabDemoTest {
+
+  private static boolean USE_JARGONAUT = true;
 
   @Parameter(0)
   public String name;
@@ -77,7 +88,6 @@ public class LabDemoTest {
 
     System.setProperty("webdriver.chrome.driver", "/Users/bryanschofield/Downloads/chromedriver");
     IdMeOauthRobot robot = IdMeOauthRobot.of(config);
-    //    log.info("Access token: {}", robot.token().accessToken());
     return robot;
   }
 
@@ -123,22 +133,34 @@ public class LabDemoTest {
 
   @Test
   public void allergyIntolerance() {
-    request()
-        .get("AllergyIntolerance?patient={patient}", config().user().icn())
-        .then()
-        .log()
-        .all()
-        .statusCode(200);
+    AllergyIntolerance.Bundle bundle =
+        get(
+            request()
+                .get("AllergyIntolerance?patient={patient}", config().user().icn())
+                .then()
+                .log()
+                .all()
+                .statusCode(200),
+            AllergyIntolerance.Bundle.class);
+    if (!bundle.entry().isEmpty()) {
+      request().get(bundle.entry().get(0).fullUrl()).then().statusCode(200);
+    }
   }
 
   @Test
   public void condition() {
-    request()
-        .get("Condition?patient={patient}", config().user().icn())
-        .then()
-        .log()
-        .all()
-        .statusCode(200);
+    Condition.Bundle bundle =
+        get(
+            request()
+                .get("Condition?patient={patient}", config().user().icn())
+                .then()
+                .log()
+                .all()
+                .statusCode(200),
+            Condition.Bundle.class);
+    if (!bundle.entry().isEmpty()) {
+      request().get(bundle.entry().get(0).fullUrl()).then().statusCode(200);
+    }
   }
 
   private IdMeOauthRobot.Configuration config() {
@@ -147,12 +169,18 @@ public class LabDemoTest {
 
   @Test
   public void diagnosticReport() {
-    request()
-        .get("DiagnosticReport?patient={patient}", config().user().icn())
-        .then()
-        .log()
-        .all()
-        .statusCode(200);
+    DiagnosticReport.Bundle bundle =
+        get(
+            request()
+                .get("DiagnosticReport?patient={patient}", config().user().icn())
+                .then()
+                .log()
+                .all()
+                .statusCode(200),
+            DiagnosticReport.Bundle.class);
+    if (!bundle.entry().isEmpty()) {
+      request().get(bundle.entry().get(0).fullUrl()).then().statusCode(200);
+    }
   }
 
   @SneakyThrows
@@ -161,14 +189,25 @@ public class LabDemoTest {
         .readValue(request().get(path, params).then().extract().body().asString(), type);
   }
 
+  @SneakyThrows
+  <T> T get(ValidatableResponseOptions r, Class<T> type) {
+    return JacksonConfig.createMapper().readValue(r.extract().body().asString(), type);
+  }
+
   @Test
   public void immunization() {
-    request()
-        .get("Immunization?patient={patient}", config().user().icn())
-        .then()
-        .log()
-        .all()
-        .statusCode(200);
+    Immunization.Bundle bundle =
+        get(
+            request()
+                .get("Immunization?patient={patient}", config().user().icn())
+                .then()
+                .log()
+                .all()
+                .statusCode(200),
+            Immunization.Bundle.class);
+    if (!bundle.entry().isEmpty()) {
+      request().get(bundle.entry().get(0).fullUrl()).then().statusCode(200);
+    }
   }
 
   @Test
@@ -179,32 +218,46 @@ public class LabDemoTest {
             MedicationStatement.Bundle.class,
             "MedicationStatement?patient={patient}",
             config().user().icn());
-    request()
-        .get(ms.entry().get(0).resource().medicationReference().reference())
-        .then()
-        .log()
-        .all()
-        .statusCode(200);
+    if (!ms.entry().isEmpty()) {
+      request()
+          .get(ms.entry().get(0).resource().medicationReference().reference())
+          .then()
+          .log()
+          .all()
+          .statusCode(200);
+    }
   }
 
   @Test
   public void medicationOrder() {
-    request()
-        .get("MedicationOrder?patient={patient}", config().user().icn())
-        .then()
-        .log()
-        .all()
-        .statusCode(200);
+    MedicationOrder.Bundle bundle =
+        get(
+            request()
+                .get("MedicationOrder?patient={patient}", config().user().icn())
+                .then()
+                .log()
+                .all()
+                .statusCode(200),
+            MedicationOrder.Bundle.class);
+    if (!bundle.entry().isEmpty()) {
+      request().get(bundle.entry().get(0).fullUrl()).then().statusCode(200);
+    }
   }
 
   @Test
   public void medicationStatement() {
-    request()
-        .get("MedicationStatement?patient={patient}", config().user().icn())
-        .then()
-        .log()
-        .all()
-        .statusCode(200);
+    MedicationStatement.Bundle bundle =
+        get(
+            request()
+                .get("MedicationStatement?patient={patient}", config().user().icn())
+                .then()
+                .log()
+                .all()
+                .statusCode(200),
+            MedicationStatement.Bundle.class);
+    if (!bundle.entry().isEmpty()) {
+      request().get(bundle.entry().get(0).fullUrl()).then().statusCode(200);
+    }
   }
 
   @Test
@@ -214,32 +267,50 @@ public class LabDemoTest {
 
   @Test
   public void observation() {
-    request()
-        .get("Observation?patient={patient}", config().user().icn())
-        .then()
-        .log()
-        .all()
-        .statusCode(200);
+    Observation.Bundle bundle =
+        get(
+            request()
+                .get("Observation?patient={patient}", config().user().icn())
+                .then()
+                .log()
+                .all()
+                .statusCode(200),
+            Observation.Bundle.class);
+    if (!bundle.entry().isEmpty()) {
+      request().get(bundle.entry().get(0).fullUrl()).then().statusCode(200);
+    }
   }
 
   @Test
   public void patient() {
-    request()
-        .get("Patient?_id={patient}", config().user().icn())
-        .then()
-        .log()
-        .all()
-        .statusCode(200);
+    Patient.Bundle bundle =
+        get(
+            request()
+                .get("Patient?_id={patient}", config().user().icn())
+                .then()
+                .log()
+                .all()
+                .statusCode(200),
+            Patient.Bundle.class);
+    if (!bundle.entry().isEmpty()) {
+      request().get(bundle.entry().get(0).fullUrl()).then().statusCode(200);
+    }
   }
 
   @Test
   public void procedure() {
-    request()
-        .get("Procedure?patient={patient}", config().user().icn())
-        .then()
-        .log()
-        .all()
-        .statusCode(200);
+    Procedure.Bundle bundle =
+        get(
+            request()
+                .get("Procedure?patient={patient}", config().user().icn())
+                .then()
+                .log()
+                .all()
+                .statusCode(200),
+            Procedure.Bundle.class);
+    if (!bundle.entry().isEmpty()) {
+      request().get(bundle.entry().get(0).fullUrl()).then().statusCode(200);
+    }
   }
 
   // No data available for Appointment,Encounter,Location,Organization,Practitioner
@@ -248,6 +319,7 @@ public class LabDemoTest {
     return RestAssured.given()
         .contentType("application/fhir+json")
         .header("Authorization", "Bearer " + robot().token().accessToken())
+        .header("jargonaut", USE_JARGONAUT)
         .baseUri("https://dev-api.va.gov/services/argonaut/v0");
   }
 }
