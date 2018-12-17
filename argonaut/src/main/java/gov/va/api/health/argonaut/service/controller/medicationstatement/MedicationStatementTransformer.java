@@ -83,10 +83,7 @@ public class MedicationStatementTransformer implements MedicationStatementContro
 
   List<Coding> codings(List<CdwCoding> source) {
     List<Coding> codings = convertAll(source, this::coding);
-    if (codings == null) {
-      return null;
-    }
-    return codings.isEmpty() ? null : codings;
+    return codings == null || codings.isEmpty() ? null : codings;
   }
 
   private Coding coding(CdwCoding cdw) {

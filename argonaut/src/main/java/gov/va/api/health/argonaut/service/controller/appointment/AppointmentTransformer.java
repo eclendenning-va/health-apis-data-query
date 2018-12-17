@@ -114,10 +114,7 @@ public class AppointmentTransformer implements AppointmentController.Transformer
 
   List<Coding> typeCodings(List<CdwAppointmentParticipantTypeCoding> source) {
     List<Coding> codings = convertAll(source, this::typeCoding);
-    if (codings == null) {
-      return null;
-    }
-    return codings.isEmpty() ? null : codings;
+    return codings == null || codings.isEmpty() ? null : codings;
   }
 
   private Coding typeCoding(CdwAppointmentParticipantTypeCoding cdw) {

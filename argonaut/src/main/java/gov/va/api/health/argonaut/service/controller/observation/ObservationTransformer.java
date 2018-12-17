@@ -79,10 +79,7 @@ public class ObservationTransformer implements ObservationController.Transformer
 
   List<Coding> categoryCodings(List<CdwCategory.CdwCoding> source) {
     List<Coding> codings = convertAll(source, this::categoryCoding);
-    if (codings == null) {
-      return null;
-    }
-    return codings.isEmpty() ? null : codings;
+    return codings == null || codings.isEmpty() ? null : codings;
   }
 
   private Coding categoryCoding(CdwCategory.CdwCoding cdw) {
@@ -111,10 +108,7 @@ public class ObservationTransformer implements ObservationController.Transformer
 
   List<Coding> codeCodings(List<CdwCode.CdwCoding> source) {
     List<Coding> codings = convertAll(source, this::codeCoding);
-    if (codings == null) {
-      return null;
-    }
-    return codings.isEmpty() ? null : codings;
+    return codings == null || codings.isEmpty() ? null : codings;
   }
 
   private Coding codeCoding(CdwCode.CdwCoding cdw) {
@@ -164,10 +158,7 @@ public class ObservationTransformer implements ObservationController.Transformer
 
   List<Coding> componentCodings(List<CdwComponent.CdwCode.CdwCoding> source) {
     List<Coding> codings = convertAll(source, this::componentCoding);
-    if (codings == null) {
-      return null;
-    }
-    return codings.isEmpty() ? null : codings;
+    return codings == null || codings.isEmpty() ? null : codings;
   }
 
   private Coding componentCoding(CdwComponent.CdwCode.CdwCoding cdw) {
@@ -196,10 +187,7 @@ public class ObservationTransformer implements ObservationController.Transformer
 
   List<Coding> componentValueCodings(List<CdwComponent.CdwValueCodeableConcept.CdwCoding> source) {
     List<Coding> codings = convertAll(source, this::componentValueCoding);
-    if (codings == null) {
-      return null;
-    }
-    return codings.isEmpty() ? null : codings;
+    return codings == null || codings.isEmpty() ? null : codings;
   }
 
   private Coding componentValueCoding(CdwComponent.CdwValueCodeableConcept.CdwCoding cdw) {
@@ -254,10 +242,7 @@ public class ObservationTransformer implements ObservationController.Transformer
 
   List<Coding> interpretationCodings(List<CdwInterpretation.CdwCoding> source) {
     List<Coding> codings = convertAll(source, this::interpretationCoding);
-    if (codings == null) {
-      return null;
-    }
-    return codings.isEmpty() ? null : codings;
+    return codings == null || codings.isEmpty() ? null : codings;
   }
 
   private Coding interpretationCoding(CdwInterpretation.CdwCoding cdw) {
@@ -339,10 +324,7 @@ public class ObservationTransformer implements ObservationController.Transformer
 
   List<Coding> valueCodings(List<CdwValueCodeableConcept.CdwCoding> source) {
     List<Coding> codings = convertAll(source, this::valueCoding);
-    if (codings == null) {
-      return null;
-    }
-    return codings.isEmpty() ? null : codings;
+    return codings == null || codings.isEmpty() ? null : codings;
   }
 
   private Coding valueCoding(CdwValueCodeableConcept.CdwCoding cdw) {
