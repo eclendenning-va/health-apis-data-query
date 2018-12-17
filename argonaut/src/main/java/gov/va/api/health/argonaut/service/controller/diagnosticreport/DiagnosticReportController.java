@@ -8,6 +8,7 @@ import gov.va.api.health.argonaut.api.resources.DiagnosticReport.Bundle;
 import gov.va.api.health.argonaut.api.resources.OperationOutcome;
 import gov.va.api.health.argonaut.service.controller.Bundler;
 import gov.va.api.health.argonaut.service.controller.Bundler.BundleContext;
+import gov.va.api.health.argonaut.service.controller.DateTimeParameter;
 import gov.va.api.health.argonaut.service.controller.PageLinks.LinkConfig;
 import gov.va.api.health.argonaut.service.controller.Parameters;
 import gov.va.api.health.argonaut.service.controller.Validator;
@@ -17,6 +18,7 @@ import gov.va.dvp.cdw.xsd.model.CdwDiagnosticReport102Root;
 import gov.va.dvp.cdw.xsd.model.CdwDiagnosticReport102Root.CdwDiagnosticReports.CdwDiagnosticReport;
 import java.util.Collections;
 import java.util.function.Function;
+import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -154,17 +156,18 @@ public class DiagnosticReportController {
   }
 
   /** Search by Patient+Category+Date. */
-  @GetMapping(params = {"patient", "code", "date"})
+  @GetMapping(params = {"patient", "category", "date"})
   public DiagnosticReport.Bundle searchByPatientAndCategoryAndDate(
       @RequestParam("patient") String patient,
-      @RequestParam("code") String code,
-      @RequestParam(value = "date", required = false) @Size(max = 2) String[] date,
+      @RequestParam("category") String category,
+      @RequestParam(value = "date", required = false) @Valid @DateTimeParameter @Size(max = 2)
+          String[] date,
       @RequestParam(value = "page", defaultValue = "1") @Min(1) int page,
       @RequestParam(value = "_count", defaultValue = "15") @Min(0) int count) {
     return bundle(
         Parameters.builder()
             .add("patient", patient)
-            .add("code", code)
+            .add("category", category)
             .addAll("date", date)
             .add("page", page)
             .add("_count", count)
