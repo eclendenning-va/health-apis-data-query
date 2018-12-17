@@ -80,8 +80,8 @@ public class ObservationController {
 
     return transformer.apply(
         firstPayloadItem(
-            hasPayload(
-                search(Parameters.forIdentity(publicId)).getObservations().getObservation())));
+            hasPayload(search(Parameters.forIdentity(publicId)).getObservations())
+                .getObservation()));
   }
 
   private CdwObservation104Root search(MultiValueMap<String, String> params) {
@@ -92,7 +92,7 @@ public class ObservationController {
             .version("1.04")
             .parameters(params)
             .build();
-    return mrAndersonClient.search(query);
+    return hasPayload(mrAndersonClient.search(query));
   }
 
   /** Search by _id. */

@@ -80,10 +80,8 @@ public class DiagnosticReportController {
   public DiagnosticReport read(@PathVariable("publicId") String publicId) {
     return transformer.apply(
         firstPayloadItem(
-            hasPayload(
-                search(Parameters.forIdentity(publicId))
-                    .getDiagnosticReports()
-                    .getDiagnosticReport())));
+            hasPayload(search(Parameters.forIdentity(publicId)).getDiagnosticReports())
+                .getDiagnosticReport()));
   }
 
   private CdwDiagnosticReport102Root search(MultiValueMap<String, String> params) {
@@ -94,7 +92,7 @@ public class DiagnosticReportController {
             .version("1.02")
             .parameters(params)
             .build();
-    return mrAndersonClient.search(query);
+    return hasPayload(mrAndersonClient.search(query));
   }
 
   /** Search by _id. */

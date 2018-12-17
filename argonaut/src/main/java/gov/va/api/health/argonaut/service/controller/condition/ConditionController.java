@@ -75,7 +75,7 @@ public class ConditionController {
 
     return transformer.apply(
         firstPayloadItem(
-            hasPayload(search(Parameters.forIdentity(publicId)).getConditions().getCondition())));
+            hasPayload(search(Parameters.forIdentity(publicId)).getConditions()).getCondition()));
   }
 
   private CdwCondition103Root search(MultiValueMap<String, String> params) {
@@ -86,7 +86,7 @@ public class ConditionController {
             .version("1.03")
             .parameters(params)
             .build();
-    return mrAndersonClient.search(query);
+    return hasPayload(mrAndersonClient.search(query));
   }
 
   /** Search by _id. */

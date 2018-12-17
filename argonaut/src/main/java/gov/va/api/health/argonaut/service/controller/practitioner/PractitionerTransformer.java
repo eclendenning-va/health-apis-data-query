@@ -44,8 +44,6 @@ import gov.va.dvp.cdw.xsd.model.CdwPractitionerTelecomSystem;
 import gov.va.dvp.cdw.xsd.model.CdwPractitionerTelecomUse;
 import gov.va.dvp.cdw.xsd.model.CdwReference;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -176,20 +174,10 @@ public class PractitionerTransformer implements PractitionerController.Transform
   }
 
   List<PractitionerRole> practitionerRoles(CdwPractitionerRoles source) {
-    if (source == null || source.getPractitionerRole().isEmpty()) {
-      return null;
-    }
     List<PractitionerRole> practitionerRoles =
-        source
-            .getPractitionerRole()
-            .stream()
-            .map(this::practitionerRole)
-            .filter(Objects::nonNull)
-            .collect(Collectors.toList());
-    if (practitionerRoles.isEmpty()) {
-      return null;
-    }
-    return practitionerRoles;
+        convertAll(
+            ifPresent(source, CdwPractitionerRoles::getPractitionerRole), this::practitionerRole);
+    return practitionerRoles == null || practitionerRoles.isEmpty() ? null : practitionerRoles;
   }
 
   CodeableConcept role(CdwPractitionerRoleCoding source) {
