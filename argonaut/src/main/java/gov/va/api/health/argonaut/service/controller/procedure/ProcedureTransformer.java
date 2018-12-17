@@ -48,10 +48,7 @@ public class ProcedureTransformer implements ProcedureController.Transformer {
 
   List<Coding> codeCodings(List<CdwCode.CdwCoding> source) {
     List<Coding> codings = convertAll(source, this::codeCoding);
-    if (codings == null) {
-      return null;
-    }
-    return codings.isEmpty() ? null : codings;
+    return codings == null || codings.isEmpty() ? null : codings;
   }
 
   private Coding codeCoding(CdwCode.CdwCoding cdw) {

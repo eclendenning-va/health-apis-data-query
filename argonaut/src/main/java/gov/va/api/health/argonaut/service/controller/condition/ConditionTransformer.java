@@ -50,10 +50,7 @@ public class ConditionTransformer implements ConditionController.Transformer {
 
   List<Coding> categoryCodings(List<CdwConditionCategoryCoding> source) {
     List<Coding> codings = convertAll(source, this::categoryCoding);
-    if (codings == null) {
-      return null;
-    }
-    return codings.isEmpty() ? null : codings;
+    return codings == null || codings.isEmpty() ? null : codings;
   }
 
   private Coding categoryCoding(CdwConditionCategoryCoding cdw) {
@@ -88,10 +85,7 @@ public class ConditionTransformer implements ConditionController.Transformer {
 
   List<Coding> codeCodings(List<CdwCoding> source) {
     List<Coding> codings = convertAll(source, this::codeCoding);
-    if (codings == null) {
-      return null;
-    }
-    return codings.isEmpty() ? null : codings;
+    return codings == null || codings.isEmpty() ? null : codings;
   }
 
   private Coding codeCoding(CdwCoding cdw) {
