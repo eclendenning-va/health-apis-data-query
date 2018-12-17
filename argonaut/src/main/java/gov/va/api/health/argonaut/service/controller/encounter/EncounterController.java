@@ -81,7 +81,7 @@ public class EncounterController {
   private CdwEncounter101Root search(MultiValueMap<String, String> params) {
     Query<CdwEncounter101Root> query =
         Query.forType(CdwEncounter101Root.class)
-            .profile(Query.Profile.ARGONAUT)
+            .profile(Query.Profile.DSTU2)
             .resource("Encounter")
             .version("1.01")
             .parameters(params)

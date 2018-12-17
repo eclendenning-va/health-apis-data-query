@@ -14,7 +14,6 @@ import gov.va.dvp.cdw.xsd.model.CdwProcedure101Root.CdwProcedures.CdwProcedure.C
 import gov.va.dvp.cdw.xsd.model.CdwProcedure101Root.CdwProcedures.CdwProcedure.CdwReasonNotPerformed;
 import gov.va.dvp.cdw.xsd.model.CdwProcedureStatus;
 import gov.va.dvp.cdw.xsd.model.CdwReference;
-import java.util.Collections;
 import java.util.List;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -33,7 +32,7 @@ public class ProcedureTransformerTest {
   }
 
   @Test
-  public void codeCodings(){
+  public void codeCodings() {
     assertThat(tx.codeCodings(singletonList(null))).isNull();
     assertThat(tx.codeCodings(null)).isNull();
     assertThat(tx.codeCodings(cdw.code().getCoding())).isEqualTo(expected.codeCoding());

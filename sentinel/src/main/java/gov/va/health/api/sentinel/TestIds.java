@@ -40,6 +40,23 @@ public class TestIds {
     @NotNull String onDate;
     @NotNull String fromDate;
     @NotNull String toDate;
+    @NotNull String dateYear;
+    @NotNull String dateYearMonth;
+    @NotNull String dateYearMonthDay;
+    // Invalid Dates
+    @NotNull String dateYearMonthDayHour;
+    @NotNull String dateYearMonthDayHourMinute;
+    @NotNull String dateYearMonthDayHourMinuteSecond;
+    //
+    @NotNull String dateYearMonthDayHourMinuteSecondTimezone;
+    @NotNull String dateYearMonthDayHourMinuteSecondZulu;
+    @NotNull String dateGreaterThan;
+    @NotNull String dateNotEqual;
+    @NotNull String dateStartsWith;
+    @NotNull String dateNoPrefix;
+    @NotNull String dateEqual;
+    @NotNull String dateLessOrEqual;
+    @NotNull String dateLessThan;
   }
 
   @Value
