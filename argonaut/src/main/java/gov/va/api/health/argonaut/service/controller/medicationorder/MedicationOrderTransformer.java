@@ -41,7 +41,26 @@ public class MedicationOrderTransformer implements MedicationOrderController.Tra
     if (source.getCoding().isEmpty() && isBlank(source.getText())) {
       return null;
     }
-    return CodeableConcept.builder().text(source.getText()).build();
+    return CodeableConcept.builder()
+        .coding(additionalInstructionsCodings(source.getCoding()))
+        .text(source.getText())
+        .build();
+  }
+
+  List<Coding> additionalInstructionsCodings(List<CdwCoding> source) {
+    List<Coding> codings = convertAll(source, this::additionalInstructionsCoding);
+    return codings == null || codings.isEmpty() ? null : codings;
+  }
+
+  private Coding additionalInstructionsCoding(CdwCoding cdw) {
+    if (cdw == null || allNull(cdw.getCode(), cdw.getDisplay(), cdw.getSystem())) {
+      return null;
+    }
+    return Coding.builder()
+        .system(cdw.getSystem())
+        .code(cdw.getCode())
+        .display(cdw.getDisplay())
+        .build();
   }
 
   @Override
@@ -90,6 +109,9 @@ public class MedicationOrderTransformer implements MedicationOrderController.Tra
   }
 
   List<DosageInstruction> dosageInstructions(CdwDosageInstructions cdw) {
+    if (cdw == null || cdw.getDosageInstruction().isEmpty()) {
+      return null;
+    }
     return convertAll(
         ifPresent(cdw, CdwDosageInstructions::getDosageInstruction), this::dosageInstruction);
   }

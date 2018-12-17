@@ -48,6 +48,15 @@ public class MedicationOrderTransformerTest {
   }
 
   @Test
+  public void additionalInstructionsCodings() {
+    assertThat(tx.additionalInstructionsCodings(cdw.additionalInstructionsCodings()))
+        .isEqualTo(expected.additionalInstructionsCodings());
+    assertThat(tx.additionalInstructionsCodings(null)).isNull();
+    assertThat(tx.additionalInstructionsCodings(emptyList())).isNull();
+    assertThat(tx.additionalInstructionsCodings(singletonList(new CdwCoding()))).isNull();
+  }
+
+  @Test
   public void dateTimeString() {
     assertThat(asDateTimeString(cdw.dateWritten()))
         .isEqualTo(expected.medicationOrder().dateWritten());
@@ -195,6 +204,14 @@ public class MedicationOrderTransformerTest {
       return additionalInstructions;
     }
 
+    List<CdwCoding> additionalInstructionsCodings() {
+      CdwCoding coding = new CdwCoding();
+      coding.setSystem("http://example.com");
+      coding.setDisplay("Additional Instructions display");
+      coding.setCode("Additional Instructions code");
+      return singletonList(coding);
+    }
+
     private CdwReference cdwReference(String reference, String display) {
       CdwReference ref = new CdwReference();
       ref.setReference(reference);
@@ -321,6 +338,15 @@ public class MedicationOrderTransformerTest {
 
     CodeableConcept additionalInstructions() {
       return CodeableConcept.builder().text("additional instructions text").build();
+    }
+
+    private List<Coding> additionalInstructionsCodings() {
+      return singletonList(
+          Coding.builder()
+              .code("Additional Instructions code")
+              .display("Additional Instructions display")
+              .system("http://example.com")
+              .build());
     }
 
     DispenseRequest dispenseRequest() {
