@@ -76,7 +76,7 @@ public class LocationController {
 
     return transformer.apply(
         firstPayloadItem(
-            hasPayload(search(Parameters.forIdentity(publicId)).getLocations().getLocation())));
+            hasPayload(search(Parameters.forIdentity(publicId)).getLocations()).getLocation()));
   }
 
   private CdwLocation100Root search(MultiValueMap<String, String> params) {
@@ -87,7 +87,7 @@ public class LocationController {
             .version("1.00")
             .parameters(params)
             .build();
-    return mrAndersonClient.search(query);
+    return hasPayload(mrAndersonClient.search(query));
   }
 
   /** Search by _id. */

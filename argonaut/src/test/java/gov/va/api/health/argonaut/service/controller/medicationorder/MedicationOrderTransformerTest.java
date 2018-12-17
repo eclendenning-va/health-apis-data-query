@@ -176,7 +176,7 @@ public class MedicationOrderTransformerTest {
   @Test
   public void timingCode() {
     assertThat(tx.timingCode(cdw.timingCode())).isEqualTo(expected.timingCode());
-    assertThat(tx.timingCode(new CdwDosageInstruction.CdwTiming().getCode())).isNull();
+    assertThat(tx.timingCode(new CdwCodeableConcept())).isNull();
     assertThat(tx.timingCode(null)).isNull();
   }
 
