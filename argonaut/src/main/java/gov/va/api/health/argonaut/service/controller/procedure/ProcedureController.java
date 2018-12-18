@@ -77,7 +77,7 @@ public class ProcedureController {
   public Procedure read(@PathVariable("publicId") String publicId) {
     return transformer.apply(
         firstPayloadItem(
-            hasPayload(search(Parameters.forIdentity(publicId)).getProcedures().getProcedure())));
+            hasPayload(search(Parameters.forIdentity(publicId)).getProcedures()).getProcedure()));
   }
 
   private CdwProcedure101Root search(MultiValueMap<String, String> params) {
@@ -88,7 +88,7 @@ public class ProcedureController {
             .version("1.01")
             .parameters(params)
             .build();
-    return mrAndersonClient.search(query);
+    return hasPayload(mrAndersonClient.search(query));
   }
 
   /** Search by _id. */

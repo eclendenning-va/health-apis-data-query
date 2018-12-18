@@ -51,17 +51,16 @@ public class LocationTransformerTest {
   }
 
   @Test
-  public void type() {
-    assertThat(tx.locationType(null)).isNull();
-    assertThat(tx.locationType(new CdwType())).isNull();
-    assertThat(tx.locationType(cdw.type())).isEqualTo(expected.type());
+  public void contactPoint() {
+    assertThat(tx.contactPointCode(null)).isNull();
+    assertThat(tx.contactPointCode("")).isNull();
   }
 
   @Test
-  public void typeCoding() {
-    assertThat(tx.locationTypeCoding(null)).isNull();
-    assertThat(tx.locationTypeCoding(new CdwLocation.CdwType().getCoding())).isNull();
-    assertThat(tx.locationTypeCoding(cdw.type().getCoding())).isEqualTo(expected.typeCoding());
+  public void mode() {
+    assertThat(tx.mode(CdwLocationMode.INSTANCE)).isEqualTo(Mode.instance);
+    assertThat(tx.mode(CdwLocationMode.KIND)).isEqualTo(Mode.kind);
+    assertThat(tx.mode(null)).isNull();
   }
 
   @Test
@@ -80,10 +79,10 @@ public class LocationTransformerTest {
   }
 
   @Test
-  public void telecom() {
-    assertThat(tx.telecoms(null)).isNull();
-    assertThat(tx.telecoms(new CdwTelecoms())).isNull();
-    assertThat(tx.telecoms(cdw.telecoms())).isEqualTo(expected.telecom());
+  public void reference() {
+    assertThat(tx.reference(cdw.reference("x", "y"))).isEqualTo(expected.reference("x", "y"));
+    assertThat(tx.reference(null)).isNull();
+    assertThat(tx.reference(new CdwReference())).isNull();
   }
 
   @Test
@@ -91,12 +90,29 @@ public class LocationTransformerTest {
     assertThat(tx.status(CdwLocationStatus.ACTIVE)).isEqualTo(Status.active);
     assertThat(tx.status(CdwLocationStatus.INACTIVE)).isEqualTo(Status.inactive);
     assertThat(tx.status(CdwLocationStatus.SUSPENDED)).isEqualTo(Status.suspended);
+    assertThat(tx.status(null)).isNull();
   }
 
   @Test
-  public void mode() {
-    assertThat(tx.mode(CdwLocationMode.INSTANCE)).isEqualTo(Mode.instance);
-    assertThat(tx.mode(CdwLocationMode.KIND)).isEqualTo(Mode.kind);
+  public void telecom() {
+    assertThat(tx.telecoms(null)).isNull();
+    assertThat(tx.telecoms(new CdwTelecoms())).isNull();
+    assertThat(tx.telecoms(cdw.telecoms())).isEqualTo(expected.telecom());
+  }
+
+  @Test
+  public void type() {
+    assertThat(tx.locationType(null)).isNull();
+    assertThat(tx.locationType(new CdwType())).isNull();
+    assertThat(tx.locationType(cdw.type())).isEqualTo(expected.type());
+  }
+
+  @Test
+  public void typeCoding() {
+    assertThat(tx.locationTypeCodings(null)).isNull();
+    assertThat(tx.locationTypeCodings(new CdwLocation.CdwType().getCoding())).isNull();
+    assertThat(tx.locationTypeCodings(cdw.type().getCoding())).isEqualTo(expected.typeCoding());
+    assertThat(tx.locationTypeCodings(Collections.singletonList(new CdwType.CdwCoding()))).isNull();
   }
 
   @NoArgsConstructor(staticName = "get", access = AccessLevel.PUBLIC)

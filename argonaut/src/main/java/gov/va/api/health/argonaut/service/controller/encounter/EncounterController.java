@@ -75,7 +75,7 @@ public class EncounterController {
 
     return transformer.apply(
         firstPayloadItem(
-            hasPayload(search(Parameters.forIdentity(publicId)).getEncounters().getEncounter())));
+            hasPayload(search(Parameters.forIdentity(publicId)).getEncounters()).getEncounter()));
   }
 
   private CdwEncounter101Root search(MultiValueMap<String, String> params) {
@@ -86,7 +86,7 @@ public class EncounterController {
             .version("1.01")
             .parameters(params)
             .build();
-    return mrAndersonClient.search(query);
+    return hasPayload(mrAndersonClient.search(query));
   }
 
   /** Search by _id. */

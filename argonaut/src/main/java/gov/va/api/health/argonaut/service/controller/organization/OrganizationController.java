@@ -76,8 +76,8 @@ public class OrganizationController {
 
     return transformer.apply(
         firstPayloadItem(
-            hasPayload(
-                search(Parameters.forIdentity(publicId)).getOrganizations().getOrganization())));
+            hasPayload(search(Parameters.forIdentity(publicId)).getOrganizations())
+                .getOrganization()));
   }
 
   private CdwOrganization100Root search(MultiValueMap<String, String> params) {
@@ -88,7 +88,7 @@ public class OrganizationController {
             .version("1.00")
             .parameters(params)
             .build();
-    return mrAndersonClient.search(query);
+    return hasPayload(mrAndersonClient.search(query));
   }
 
   /** Search by _id. */

@@ -1,9 +1,11 @@
 package gov.va.api.health.argonaut.service.controller.diagnosticreport;
 
+import static gov.va.api.health.argonaut.service.controller.Transformers.allNull;
 import static gov.va.api.health.argonaut.service.controller.Transformers.asDateTimeString;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convert;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convertAll;
 import static gov.va.api.health.argonaut.service.controller.Transformers.ifPresent;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
 import gov.va.api.health.argonaut.api.datatypes.Coding;
@@ -17,6 +19,7 @@ import gov.va.dvp.cdw.xsd.model.CdwDiagnosticReportCategoryCoding;
 import gov.va.dvp.cdw.xsd.model.CdwDiagnosticReportCategoryDisplay;
 import gov.va.dvp.cdw.xsd.model.CdwDiagnosticReportCode;
 import gov.va.dvp.cdw.xsd.model.CdwDiagnosticReportCodeCoding;
+import gov.va.dvp.cdw.xsd.model.CdwDiagnosticReportStatus;
 import gov.va.dvp.cdw.xsd.model.CdwReference;
 import java.util.Collections;
 import java.util.List;
@@ -31,6 +34,9 @@ public class DiagnosticReportTransformer implements DiagnosticReportController.T
   }
 
   CodeableConcept category(CdwDiagnosticReportCategory source) {
+    if (source == null || allNull(source.getCoding(), source.getText())) {
+      return null;
+    }
     return CodeableConcept.builder()
         .coding(categoryCodings(source.getCoding()))
         .text(source.getText())
@@ -38,6 +44,11 @@ public class DiagnosticReportTransformer implements DiagnosticReportController.T
   }
 
   List<Coding> categoryCodings(CdwDiagnosticReportCategoryCoding optionalSource) {
+    if (optionalSource == null
+        || allNull(
+            optionalSource.getSystem(), optionalSource.getCode(), optionalSource.getDisplay())) {
+      return null;
+    }
     return Collections.singletonList(
         Coding.builder()
             .system(optionalSource.getSystem())
@@ -48,6 +59,12 @@ public class DiagnosticReportTransformer implements DiagnosticReportController.T
   }
 
   CodeableConcept code(CdwDiagnosticReportCode source) {
+    if (source == null) {
+      return null;
+    }
+    if (source.getCoding().isEmpty() && isBlank(source.getText())) {
+      return null;
+    }
     return CodeableConcept.builder()
         .coding(codeCodings(source.getCoding()))
         .text(source.getText())
@@ -55,14 +72,19 @@ public class DiagnosticReportTransformer implements DiagnosticReportController.T
   }
 
   List<Coding> codeCodings(List<CdwDiagnosticReportCodeCoding> source) {
-    return convertAll(
-        source,
-        cdw ->
-            Coding.builder()
-                .system(cdw.getSystem())
-                .code(cdw.getCode())
-                .display(cdw.getDisplay())
-                .build());
+    List<Coding> codings = convertAll(source, this::codeCoding);
+    return codings == null || codings.isEmpty() ? null : codings;
+  }
+
+  private Coding codeCoding(CdwDiagnosticReportCodeCoding cdw) {
+    if (cdw == null || allNull(cdw.getCode(), cdw.getDisplay(), cdw.getSystem())) {
+      return null;
+    }
+    return Coding.builder()
+        .system(cdw.getSystem())
+        .code(cdw.getCode())
+        .display(cdw.getDisplay())
+        .build();
   }
 
   private DiagnosticReport diagnosticReport(CdwDiagnosticReport source) {
@@ -74,7 +96,7 @@ public class DiagnosticReportTransformer implements DiagnosticReportController.T
     return DiagnosticReport.builder()
         .id(source.getCdwId())
         .resourceType("DiagnosticReport")
-        .status(status(source))
+        .status(status(source.getStatus()))
         .category(category(source.getCategory()))
         .code(code(source.getCode()))
         .subject(reference(source.getSubject()))
@@ -86,6 +108,9 @@ public class DiagnosticReportTransformer implements DiagnosticReportController.T
   }
 
   Reference reference(CdwReference maybeSource) {
+    if (maybeSource == null || allNull(maybeSource.getReference(), maybeSource.getDisplay())) {
+      return null;
+    }
     return convert(
         maybeSource,
         source ->
@@ -95,9 +120,8 @@ public class DiagnosticReportTransformer implements DiagnosticReportController.T
                 .build());
   }
 
-  DiagnosticReport.Code status(CdwDiagnosticReport source) {
+  DiagnosticReport.Code status(CdwDiagnosticReportStatus source) {
     return ifPresent(
-        source.getStatus(),
-        status -> EnumSearcher.of(DiagnosticReport.Code.class).find(status.value()));
+        source, status -> EnumSearcher.of(DiagnosticReport.Code.class).find(status.value()));
   }
 }

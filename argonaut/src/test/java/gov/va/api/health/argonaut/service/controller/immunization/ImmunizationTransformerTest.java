@@ -1,5 +1,6 @@
 package gov.va.api.health.argonaut.service.controller.immunization;
 
+import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -39,6 +40,15 @@ public class ImmunizationTransformerTest {
   private Expected expected = new Expected();
 
   @Test
+  public void coding() {
+    assertThat(tx.codings(cdw.vaccineCode().getCoding()))
+        .isEqualTo(expected.vaccineCode().coding());
+    assertThat(tx.codings(null)).isNull();
+    assertThat(tx.codings(emptyList())).isNull();
+    assertThat(tx.codings(singletonList(new CdwCoding()))).isNull();
+  }
+
+  @Test
   public void identifier() {
     assertThat(tx.identifier(null)).isNull();
     assertThat(tx.identifier(new CdwIdentifiers())).isNull();
@@ -62,6 +72,14 @@ public class ImmunizationTransformerTest {
     assertThat(tx.reaction(null)).isNull();
     assertThat(tx.reaction(new CdwReactions())).isNull();
     assertThat(tx.reaction(cdw.reactions())).isEqualTo(expected.reactions());
+  }
+
+  @Test
+  public void reference() {
+    assertThat(tx.reference(cdw.reference("Patient/185601V825290", "VETERAN,JOHN Q")))
+        .isEqualTo(expected.reference("Patient/185601V825290", "VETERAN,JOHN Q"));
+    assertThat(tx.reference(null)).isNull();
+    assertThat(tx.reference(new CdwReference())).isNull();
   }
 
   @Test
@@ -93,6 +111,13 @@ public class ImmunizationTransformerTest {
     assertThat(tx.statusExtension(CdwImmunizationStatus.ENTERED_IN_ERROR)).isNull();
     assertThat(tx.statusExtension(CdwImmunizationStatus.DATA_ABSENT_REASON_UNSUPPORTED))
         .isEqualTo(DataAbsentReason.of(Reason.unsupported));
+  }
+
+  @Test
+  public void vaccineCode() {
+    assertThat(tx.vaccineCode(cdw.vaccineCode())).isEqualTo(expected.vaccineCode());
+    assertThat(tx.vaccineCode(null)).isNull();
+    assertThat(tx.vaccineCode(new CdwCodeableConcept())).isNull();
   }
 
   private static class CdwSampleData {

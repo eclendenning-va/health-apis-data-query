@@ -1,5 +1,6 @@
 package gov.va.api.health.argonaut.service.controller.procedure;
 
+import static gov.va.api.health.argonaut.service.controller.Transformers.allNull;
 import static gov.va.api.health.argonaut.service.controller.Transformers.asDateTimeString;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convert;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convertAll;
@@ -41,21 +42,24 @@ public class ProcedureTransformer implements ProcedureController.Transformer {
         .build();
   }
 
-  CodeableConcept code(CdwCode maybeCode) {
-    return convert(
-        maybeCode,
-        source ->
-            CodeableConcept.builder()
-                .coding(
-                    convertAll(
-                        source.getCoding(),
-                        codeSource ->
-                            Coding.builder()
-                                .system(convert(codeSource.getSystem(), CdwCodeSystem::value))
-                                .code(codeSource.getCode())
-                                .display(codeSource.getDisplay())
-                                .build()))
-                .build());
+  CodeableConcept code(CdwCode source) {
+    return CodeableConcept.builder().coding(codeCodings(source.getCoding())).build();
+  }
+
+  List<Coding> codeCodings(List<CdwCode.CdwCoding> source) {
+    List<Coding> codings = convertAll(source, this::codeCoding);
+    return codings == null || codings.isEmpty() ? null : codings;
+  }
+
+  private Coding codeCoding(CdwCode.CdwCoding cdw) {
+    if (cdw == null || allNull(cdw.getCode(), cdw.getDisplay(), cdw.getSystem())) {
+      return null;
+    }
+    return Coding.builder()
+        .system(ifPresent(cdw.getSystem(), CdwCodeSystem::value))
+        .code(cdw.getCode())
+        .display(cdw.getDisplay())
+        .build();
   }
 
   List<CodeableConcept> reasonNotPerformed(CdwReasonNotPerformed maybeReason) {

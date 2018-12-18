@@ -1,10 +1,12 @@
 package gov.va.api.health.argonaut.service.controller.appointment;
 
+import static gov.va.api.health.argonaut.service.controller.Transformers.allNull;
 import static gov.va.api.health.argonaut.service.controller.Transformers.asDateTimeString;
 import static gov.va.api.health.argonaut.service.controller.Transformers.asInteger;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convert;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convertAll;
 import static gov.va.api.health.argonaut.service.controller.Transformers.ifPresent;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
 import gov.va.api.health.argonaut.api.datatypes.Coding;
@@ -50,14 +52,18 @@ public class AppointmentTransformer implements AppointmentController.Transformer
   }
 
   Participant participant(CdwParticipant cdw) {
+    if (cdw == null
+        || allNull(cdw.getActor(), cdw.getRequired(), cdw.getStatus(), cdw.getTypes())) {
+      return null;
+    }
     return convert(
         cdw,
         source ->
             Participant.builder()
-                .actor(reference(cdw.getActor()))
-                .required(required(cdw.getRequired()))
-                .status(participantStatus(cdw.getStatus()))
-                .type(types(cdw.getTypes()))
+                .actor(reference(source.getActor()))
+                .required(required(source.getRequired()))
+                .status(participantStatus(source.getStatus()))
+                .type(types(source.getTypes()))
                 .build());
   }
 
@@ -70,6 +76,9 @@ public class AppointmentTransformer implements AppointmentController.Transformer
   }
 
   Reference reference(CdwReference maybeCdw) {
+    if (maybeCdw == null || allNull(maybeCdw.getDisplay(), maybeCdw.getReference())) {
+      return null;
+    }
     return convert(
         maybeCdw,
         source ->
@@ -88,7 +97,10 @@ public class AppointmentTransformer implements AppointmentController.Transformer
   }
 
   CodeableConcept type(CdwAppointmentParticipantType cdw) {
-    if (cdw == null || (cdw.getText() == null && cdw.getCoding().isEmpty())) {
+    if (cdw == null) {
+      return null;
+    }
+    if (cdw.getCoding().isEmpty() && isBlank(cdw.getText())) {
       return null;
     }
     return convert(
@@ -96,19 +108,24 @@ public class AppointmentTransformer implements AppointmentController.Transformer
         source ->
             CodeableConcept.builder()
                 .text(source.getText())
-                .coding(convertAll(source.getCoding(), this::typeCoding))
+                .coding(typeCodings(source.getCoding()))
                 .build());
   }
 
+  List<Coding> typeCodings(List<CdwAppointmentParticipantTypeCoding> source) {
+    List<Coding> codings = convertAll(source, this::typeCoding);
+    return codings == null || codings.isEmpty() ? null : codings;
+  }
+
   private Coding typeCoding(CdwAppointmentParticipantTypeCoding cdw) {
-    return convert(
-        cdw,
-        source ->
-            Coding.builder()
-                .system(source.getSystem())
-                .code(convert(source.getCode(), CdwAppointmentParticipantTypeCode::value))
-                .display(convert(source.getDisplay(), CdwAppointmentParticipantTypeDisplay::value))
-                .build());
+    if (cdw == null || allNull(cdw.getCode(), cdw.getDisplay(), cdw.getSystem())) {
+      return null;
+    }
+    return Coding.builder()
+        .system(cdw.getSystem())
+        .code(ifPresent(cdw.getCode(), CdwAppointmentParticipantTypeCode::value))
+        .display(ifPresent(cdw.getDisplay(), CdwAppointmentParticipantTypeDisplay::value))
+        .build();
   }
 
   List<CodeableConcept> types(CdwTypes cdw) {
