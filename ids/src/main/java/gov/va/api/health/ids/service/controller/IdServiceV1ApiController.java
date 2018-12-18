@@ -33,8 +33,11 @@ public class IdServiceV1ApiController {
   private final ResourceIdentityDetailRepository repository;
   private final UuidGenerator uuidGenerator;
 
-  private boolean isNotRegistered(Registration registration) {
-    return repository.findByUuid(registration.uuid()).isEmpty();
+  private boolean isNotRegistered(ResourceIdentity identity) {
+    return repository
+        .findBySystemAndResourceAndIdentifier(
+            identity.system(), identity.resource(), identity.identifier())
+        .isEmpty();
   }
 
   /** Implementation of GET /v1/ids/{publicId}. See api-v1.yaml. */
@@ -72,11 +75,8 @@ public class IdServiceV1ApiController {
   public ResponseEntity<List<Registration>> register(
       @Valid @RequestBody List<ResourceIdentity> identities) {
 
-    List<Registration> registrations =
-        identities.stream().map(this::toRegistration).collect(Collectors.toList());
-
     List<ResourceIdentityDetail> newRegistrations =
-        registrations
+        identities
             .stream()
             .filter(this::isNotRegistered)
             .map(this::toDatabaseEntry)
@@ -84,6 +84,9 @@ public class IdServiceV1ApiController {
     newRegistrations.forEach(x -> log.info("{}", x));
     log.info("Register {} entries ({} are new)", identities.size(), newRegistrations.size());
     repository.saveAll(newRegistrations);
+
+    List<Registration> registrations =
+        identities.stream().map(this::toRegistration).collect(Collectors.toList());
 
     return ResponseEntity.status(HttpStatus.CREATED).body(registrations);
   }
@@ -96,10 +99,10 @@ public class IdServiceV1ApiController {
     return value.replaceAll("[\\s\r\n]", "");
   }
 
-  private ResourceIdentityDetail toDatabaseEntry(Registration registration) {
-    ResourceIdentity resourceIdentity = registration.resourceIdentities().get(0);
+  private ResourceIdentityDetail toDatabaseEntry(ResourceIdentity resourceIdentity) {
+
     return ResourceIdentityDetail.builder()
-        .uuid(registration.uuid())
+        .uuid(uuidGenerator.apply(resourceIdentity))
         .system(resourceIdentity.system())
         .resource(resourceIdentity.resource())
         .identifier(resourceIdentity.identifier())
