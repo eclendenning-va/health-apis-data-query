@@ -76,7 +76,7 @@ public class MedicationController {
 
     return transformer.apply(
         firstPayloadItem(
-            hasPayload(search(Parameters.forIdentity(publicId)).getMedications().getMedication())));
+            hasPayload(search(Parameters.forIdentity(publicId)).getMedications()).getMedication()));
   }
 
   private CdwMedication101Root search(MultiValueMap<String, String> params) {
@@ -87,7 +87,7 @@ public class MedicationController {
             .version("1.01")
             .parameters(params)
             .build();
-    return mrAndersonClient.search(query);
+    return hasPayload(mrAndersonClient.search(query));
   }
 
   /** Search by _id. */
@@ -97,7 +97,7 @@ public class MedicationController {
       @RequestParam(value = "page", defaultValue = "1") @Min(1) int page,
       @RequestParam(value = "_count", defaultValue = "1") @Min(0) int count) {
     return bundle(
-        Parameters.builder().add("_id", id).add("page", page).add("_count", count).build(),
+        Parameters.builder().add("identifier", id).add("page", page).add("_count", count).build(),
         page,
         count);
   }

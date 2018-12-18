@@ -78,8 +78,8 @@ public class ImmunizationController {
 
     return transformer.apply(
         firstPayloadItem(
-            hasPayload(
-                search(Parameters.forIdentity(publicId)).getImmunizations().getImmunization())));
+            hasPayload(search(Parameters.forIdentity(publicId)).getImmunizations())
+                .getImmunization()));
   }
 
   private CdwImmunization103Root search(MultiValueMap<String, String> params) {
@@ -90,7 +90,7 @@ public class ImmunizationController {
             .version("1.03")
             .parameters(params)
             .build();
-    return mrAndersonClient.search(query);
+    return hasPayload(mrAndersonClient.search(query));
   }
 
   /** Search by _id. */

@@ -1,5 +1,6 @@
 package gov.va.api.health.argonaut.service.controller.observation;
 
+import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -55,10 +56,27 @@ public class ObservationTransformerTest {
   }
 
   @Test
+  public void categoryCodings() {
+    assertThat(tx.categoryCodings(cdw.category().getCoding()))
+        .isEqualTo(expected.category().coding());
+    assertThat(tx.categoryCodings(null)).isNull();
+    assertThat(tx.categoryCodings(emptyList())).isNull();
+    assertThat(tx.categoryCodings(singletonList(null))).isNull();
+  }
+
+  @Test
   public void code() {
     assertThat(tx.code(null)).isNull();
     assertThat(tx.code(new CdwCode())).isNull();
     assertThat(tx.code(cdw.code())).isEqualTo(expected.code());
+  }
+
+  @Test
+  public void codeCoding() {
+    assertThat(tx.codeCodings(cdw.code().getCoding())).isEqualTo(expected.code().coding());
+    assertThat(tx.codeCodings(null)).isNull();
+    assertThat(tx.codeCodings(emptyList())).isNull();
+    assertThat(tx.codeCodings(singletonList(null))).isNull();
   }
 
   @Test
@@ -79,11 +97,29 @@ public class ObservationTransformerTest {
   }
 
   @Test
+  public void componentCoding() {
+    assertThat(tx.componentCodings(cdw.componentCode().getCoding()))
+        .isEqualTo(expected.componentCode().coding());
+    assertThat(tx.componentCodings(null)).isNull();
+    assertThat(tx.componentCodings(emptyList())).isNull();
+    assertThat(tx.componentCodings(singletonList(null))).isNull();
+  }
+
+  @Test
   public void componentValueCodeableConcept() {
     assertThat(tx.componentValueCodeableConcept(null)).isNull();
     assertThat(tx.componentValueCodeableConcept(new CdwValueCodeableConcept())).isNull();
     assertThat(tx.componentValueCodeableConcept(cdw.componentCodeableConcept()))
         .isEqualTo(expected.componentCodeableConcept());
+  }
+
+  @Test
+  public void componentValueCoding() {
+    assertThat(tx.componentValueCodings(cdw.componentCodeableConcept().getCoding()))
+        .isEqualTo(expected.componentCodeableConcept().coding());
+    assertThat(tx.componentValueCodings(null)).isNull();
+    assertThat(tx.componentValueCodings(emptyList())).isNull();
+    assertThat(tx.componentValueCodings(singletonList(null))).isNull();
   }
 
   @Test
@@ -104,7 +140,17 @@ public class ObservationTransformerTest {
   @Test
   public void interpretation() {
     assertThat(tx.interpretation(null)).isNull();
+    assertThat(tx.interpretation(new CdwInterpretation())).isNull();
     assertThat(tx.interpretation(cdw.interpretation())).isEqualTo(expected.interpretation());
+  }
+
+  @Test
+  public void interpretationCoding() {
+    assertThat(tx.interpretationCodings(cdw.interpretation().getCoding()))
+        .isEqualTo(expected.interpretation().coding());
+    assertThat(tx.interpretationCodings(null)).isNull();
+    assertThat(tx.interpretationCodings(emptyList())).isNull();
+    assertThat(tx.interpretationCodings(singletonList(null))).isNull();
   }
 
   @Test
@@ -163,13 +209,24 @@ public class ObservationTransformerTest {
   @Test
   public void valueCodeableConcept() {
     assertThat(tx.valueCodeableConcept(null)).isNull();
+    assertThat(tx.valueCodeableConcept(new CdwObservation.CdwValueCodeableConcept())).isNull();
     assertThat(tx.valueCodeableConcept(cdw.valueCodeableConcept()))
         .isEqualTo(expected.valueCodeableConcept());
   }
 
   @Test
+  public void valueCoding() {
+    assertThat(tx.valueCodings(cdw.valueCodeableConcept().getCoding()))
+        .isEqualTo(expected.valueCodeableConcept().coding());
+    assertThat(tx.valueCodings(null)).isNull();
+    assertThat(tx.valueCodings(emptyList())).isNull();
+    assertThat(tx.valueCodings(singletonList(null))).isNull();
+  }
+
+  @Test
   public void valueQuantity() {
     assertThat(tx.valueQuantity(null)).isNull();
+    assertThat(tx.valueQuantity(new CdwValueQuantity())).isNull();
     assertThat(tx.valueQuantity(cdw.valueQuantity())).isEqualTo(expected.valueQuantity());
   }
 

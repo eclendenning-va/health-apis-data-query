@@ -76,10 +76,8 @@ public class AllergyIntoleranceController {
   public AllergyIntolerance read(@PathVariable("publicId") String publicId) {
     return transformer.apply(
         firstPayloadItem(
-            hasPayload(
-                search(Parameters.forIdentity(publicId))
-                    .getAllergyIntolerances()
-                    .getAllergyIntolerance())));
+            hasPayload(search(Parameters.forIdentity(publicId)).getAllergyIntolerances())
+                .getAllergyIntolerance()));
   }
 
   private CdwAllergyIntolerance103Root search(MultiValueMap<String, String> params) {
@@ -90,7 +88,7 @@ public class AllergyIntoleranceController {
             .version("1.03")
             .parameters(params)
             .build();
-    return mrAndersonClient.search(query);
+    return hasPayload(mrAndersonClient.search(query));
   }
 
   /** Search by _id. */

@@ -1,8 +1,9 @@
 package gov.va.api.health.argonaut.service.controller.medication;
 
+import static gov.va.api.health.argonaut.service.controller.Transformers.allNull;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convert;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convertAll;
-import static gov.va.api.health.argonaut.service.controller.Transformers.convertString;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
 import gov.va.api.health.argonaut.api.datatypes.Coding;
@@ -10,8 +11,10 @@ import gov.va.api.health.argonaut.api.elements.Narrative;
 import gov.va.api.health.argonaut.api.elements.Narrative.NarrativeStatus;
 import gov.va.api.health.argonaut.api.resources.Medication;
 import gov.va.api.health.argonaut.api.resources.Medication.Product;
-import gov.va.dvp.cdw.xsd.model.CdwMedication101Root;
+import gov.va.dvp.cdw.xsd.model.CdwCodeableConcept;
+import gov.va.dvp.cdw.xsd.model.CdwCoding;
 import gov.va.dvp.cdw.xsd.model.CdwMedication101Root.CdwMedications.CdwMedication;
+import gov.va.dvp.cdw.xsd.model.CdwMedication101Root.CdwMedications.CdwMedication.CdwProduct;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
@@ -23,25 +26,71 @@ public class MedicationTransformer implements MedicationController.Transformer {
     return medication(medication);
   }
 
-  CodeableConcept code(gov.va.dvp.cdw.xsd.model.CdwCodeableConcept optionalSource) {
+  CodeableConcept code(CdwCodeableConcept optionalSource) {
+    if (optionalSource == null) {
+      return null;
+    }
+    if (optionalSource.getCoding().isEmpty() && isBlank(optionalSource.getText())) {
+      return null;
+    }
     return convert(
         optionalSource,
         cdw ->
-            CodeableConcept.builder().text(cdw.getText()).coding(coding(cdw.getCoding())).build());
-  }
-
-  List<Coding> coding(List<gov.va.dvp.cdw.xsd.model.CdwCoding> optionalSource) {
-    return convertAll(
-        optionalSource,
-        cdw ->
-            Coding.builder()
-                .code(cdw.getCode())
-                .system(cdw.getSystem())
-                .display(cdw.getDisplay())
+            CodeableConcept.builder()
+                .text(cdw.getText())
+                .coding(codeCodings(cdw.getCoding()))
                 .build());
   }
 
-  private Medication medication(CdwMedication source) {
+  List<Coding> codeCodings(List<CdwCoding> source) {
+    List<Coding> codings = convertAll(source, this::codeCoding);
+    return codings == null || codings.isEmpty() ? null : codings;
+  }
+
+  private Coding codeCoding(CdwCoding cdw) {
+    if (cdw == null || allNull(cdw.getCode(), cdw.getDisplay(), cdw.getSystem())) {
+      return null;
+    }
+    return Coding.builder()
+        .system(cdw.getSystem())
+        .code(cdw.getCode())
+        .display(cdw.getDisplay())
+        .build();
+  }
+
+  CodeableConcept form(CdwCodeableConcept source) {
+    if (source == null) {
+      return null;
+    }
+    if (source.getCoding().isEmpty() && isBlank(source.getText())) {
+      return null;
+    }
+    return CodeableConcept.builder()
+        .text(source.getText())
+        .coding(formCodings(source.getCoding()))
+        .build();
+  }
+
+  List<Coding> formCodings(List<CdwCoding> source) {
+    List<Coding> formCodings = convertAll(source, this::formCoding);
+    if (formCodings == null) {
+      return null;
+    }
+    return formCodings.isEmpty() ? null : formCodings;
+  }
+
+  private Coding formCoding(CdwCoding cdw) {
+    if (cdw == null || allNull(cdw.getCode(), cdw.getDisplay(), cdw.getSystem())) {
+      return null;
+    }
+    return Coding.builder()
+        .system(cdw.getSystem())
+        .code(cdw.getCode())
+        .display(cdw.getDisplay())
+        .build();
+  }
+
+  Medication medication(CdwMedication source) {
     return Medication.builder()
         .id(source.getCdwId())
         .resourceType("Medication")
@@ -51,21 +100,19 @@ public class MedicationTransformer implements MedicationController.Transformer {
         .build();
   }
 
-  Product product(CdwMedication101Root.CdwMedications.CdwMedication.CdwProduct optionalSource) {
+  Product product(CdwProduct optionalSource) {
+    if (optionalSource == null || allNull(optionalSource.getForm(), optionalSource.getId())) {
+      return null;
+    }
     return convert(
-        optionalSource,
-        cdw -> Product.builder().id(cdw.getId()).form(productForm(cdw.getForm())).build());
-  }
-
-  CodeableConcept productForm(gov.va.dvp.cdw.xsd.model.CdwCodeableConcept source) {
-    return CodeableConcept.builder()
-        .text(source.getText())
-        .coding(coding(source.getCoding()))
-        .build();
+        optionalSource, cdw -> Product.builder().id(cdw.getId()).form(form(cdw.getForm())).build());
   }
 
   Narrative text(String optionalSource) {
-    return convertString(
+    if (optionalSource == null || isBlank(optionalSource)) {
+      return null;
+    }
+    return convert(
         optionalSource,
         cdw ->
             Narrative.builder()

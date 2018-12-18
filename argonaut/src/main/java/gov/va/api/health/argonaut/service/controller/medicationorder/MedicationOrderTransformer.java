@@ -3,8 +3,12 @@ package gov.va.api.health.argonaut.service.controller.medicationorder;
 import static gov.va.api.health.argonaut.service.controller.Transformers.allNull;
 import static gov.va.api.health.argonaut.service.controller.Transformers.asDateTimeString;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convert;
+import static gov.va.api.health.argonaut.service.controller.Transformers.convertAll;
+import static gov.va.api.health.argonaut.service.controller.Transformers.ifPresent;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
+import gov.va.api.health.argonaut.api.datatypes.Coding;
 import gov.va.api.health.argonaut.api.datatypes.Duration;
 import gov.va.api.health.argonaut.api.datatypes.SimpleQuantity;
 import gov.va.api.health.argonaut.api.datatypes.Timing;
@@ -15,6 +19,7 @@ import gov.va.api.health.argonaut.api.resources.MedicationOrder.DosageInstructio
 import gov.va.api.health.argonaut.api.resources.MedicationOrder.Status;
 import gov.va.api.health.argonaut.service.controller.EnumSearcher;
 import gov.va.dvp.cdw.xsd.model.CdwCodeableConcept;
+import gov.va.dvp.cdw.xsd.model.CdwCoding;
 import gov.va.dvp.cdw.xsd.model.CdwDuration;
 import gov.va.dvp.cdw.xsd.model.CdwMedicationOrder103Root.CdwMedicationOrders.CdwMedicationOrder;
 import gov.va.dvp.cdw.xsd.model.CdwMedicationOrder103Root.CdwMedicationOrders.CdwMedicationOrder.CdwDispenseRequest;
@@ -25,8 +30,6 @@ import gov.va.dvp.cdw.xsd.model.CdwMedicationOrder103Root.CdwMedicationOrders.Cd
 import gov.va.dvp.cdw.xsd.model.CdwReference;
 import gov.va.dvp.cdw.xsd.model.CdwSimpleQuantity;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -35,7 +38,29 @@ public class MedicationOrderTransformer implements MedicationOrderController.Tra
     if (source == null) {
       return null;
     }
-    return CodeableConcept.builder().text(source.getText()).build();
+    if (source.getCoding().isEmpty() && isBlank(source.getText())) {
+      return null;
+    }
+    return CodeableConcept.builder()
+        .coding(additionalInstructionsCodings(source.getCoding()))
+        .text(source.getText())
+        .build();
+  }
+
+  List<Coding> additionalInstructionsCodings(List<CdwCoding> source) {
+    List<Coding> codings = convertAll(source, this::additionalInstructionsCoding);
+    return codings == null || codings.isEmpty() ? null : codings;
+  }
+
+  private Coding additionalInstructionsCoding(CdwCoding cdw) {
+    if (cdw == null || allNull(cdw.getCode(), cdw.getDisplay(), cdw.getSystem())) {
+      return null;
+    }
+    return Coding.builder()
+        .system(cdw.getSystem())
+        .code(cdw.getCode())
+        .display(cdw.getDisplay())
+        .build();
   }
 
   @Override
@@ -43,84 +68,93 @@ public class MedicationOrderTransformer implements MedicationOrderController.Tra
     return medicationOrder(source);
   }
 
-  DispenseRequest dispenseRequest(CdwDispenseRequest source) {
-    if (source == null
+  DispenseRequest dispenseRequest(CdwDispenseRequest cdw) {
+    if (cdw == null
         || allNull(
-            source.getNumberOfRepeatsAllowed(),
-            source.getQuantity(),
-            source.getExpectedSupplyDuration())) {
+            cdw.getNumberOfRepeatsAllowed(), cdw.getQuantity(), cdw.getExpectedSupplyDuration())) {
       return null;
     }
-    return DispenseRequest.builder()
-        .numberOfRepeatsAllowed(numberOfRepeatsAllowed(source.getNumberOfRepeatsAllowed()))
-        .quantity(quantity(source.getQuantity()))
-        .expectedSupplyDuration(expectedSupplyDuration(source.getExpectedSupplyDuration()))
-        .build();
+    return convert(
+        cdw,
+        source ->
+            DispenseRequest.builder()
+                .numberOfRepeatsAllowed(numberOfRepeatsAllowed(source.getNumberOfRepeatsAllowed()))
+                .quantity(quantity(source.getQuantity()))
+                .expectedSupplyDuration(expectedSupplyDuration(source.getExpectedSupplyDuration()))
+                .build());
   }
 
-  DosageInstruction dosageInstruction(CdwDosageInstruction source) {
-    if (source == null
+  DosageInstruction dosageInstruction(CdwDosageInstruction cdw) {
+    if (cdw == null
         || allNull(
-            source.getAdditionalInstructions(),
-            source.getAsNeededBoolean(),
-            source.getDoseQuantity(),
-            source.getRoute(),
-            source.getText(),
-            source.getTiming())) {
+            cdw.getAdditionalInstructions(),
+            cdw.getAsNeededBoolean(),
+            cdw.getDoseQuantity(),
+            cdw.getRoute(),
+            cdw.getText(),
+            cdw.getTiming())) {
       return null;
     }
-    return DosageInstruction.builder()
-        .text(source.getText())
-        .additionalInstructions(additionalInstructions(source.getAdditionalInstructions()))
-        .timing(timing(source.getTiming()))
-        .asNeededBoolean(Boolean.valueOf(source.getAsNeededBoolean()))
-        .route(route(source.getRoute()))
-        .doseQuantity(doseQuantity(source.getDoseQuantity()))
-        .build();
+    return convert(
+        cdw,
+        source ->
+            DosageInstruction.builder()
+                .text(source.getText())
+                .additionalInstructions(additionalInstructions(source.getAdditionalInstructions()))
+                .doseQuantity(doseQuantity(source.getDoseQuantity()))
+                .timing(timing(source.getTiming()))
+                .asNeededBoolean(Boolean.valueOf(source.getAsNeededBoolean()))
+                .route(route(source.getRoute()))
+                .build());
   }
 
-  List<DosageInstruction> dosageInstructions(CdwDosageInstructions source) {
-    if (source == null || source.getDosageInstruction() == null) {
+  List<DosageInstruction> dosageInstructions(CdwDosageInstructions cdw) {
+    if (cdw == null || cdw.getDosageInstruction().isEmpty()) {
       return null;
     }
-    List<DosageInstruction> dosageInstructions =
-        source
-            .getDosageInstruction()
-            .stream()
-            .map(this::dosageInstruction)
-            .filter(Objects::nonNull)
-            .collect(Collectors.toList());
-    if (dosageInstructions.isEmpty()) {
-      return null;
-    }
-    return dosageInstructions;
+    return convertAll(
+        ifPresent(cdw, CdwDosageInstructions::getDosageInstruction), this::dosageInstruction);
   }
 
   SimpleQuantity doseQuantity(CdwSimpleQuantity source) {
-    if (source == null || source.getValue() == null) {
+    if (source == null
+        || allNull(source.getCode(), source.getSystem(), source.getUnit(), source.getValue())) {
       return null;
     }
-    return SimpleQuantity.builder().value(doseQuantityValue(source.getValue())).build();
+    return SimpleQuantity.builder()
+        .value(doseQuantityValue(source.getValue()))
+        .unit(source.getUnit())
+        .code(source.getCode())
+        .system(source.getSystem())
+        .build();
   }
 
   Double doseQuantityValue(String source) {
-    if (source == null || source.isEmpty()) {
+    Double value;
+    if (source == null || isBlank(source)) {
       return null;
     }
-    return Double.valueOf(source);
+    try {
+      value = Double.valueOf(source);
+    } catch (NumberFormatException e) {
+      throw new IllegalArgumentException("Cannot create double value from " + source, e);
+    }
+    return value;
   }
 
-  Duration expectedSupplyDuration(CdwDuration source) {
-    if (source == null
-        || allNull(source.getValue(), source.getCode(), source.getSystem(), source.getUnit())) {
+  Duration expectedSupplyDuration(CdwDuration cdw) {
+    if (cdw == null || allNull(cdw.getUnit(), cdw.getSystem(), cdw.getCode(), cdw.getValue())) {
       return null;
     }
-    return Duration.builder()
-        .value(Double.valueOf(source.getValue()))
-        .unit(source.getUnit())
-        .system(source.getSystem())
-        .code(source.getCode())
-        .build();
+    return convert(
+        cdw,
+        source ->
+            Duration.builder()
+                .value(source.getValue().doubleValue())
+                .unit(source.getUnit())
+                .system(source.getSystem())
+                .code(source.getCode())
+                .build());
   }
 
   MedicationOrder medicationOrder(CdwMedicationOrder source) {
@@ -146,10 +180,16 @@ public class MedicationOrderTransformer implements MedicationOrderController.Tra
   }
 
   SimpleQuantity quantity(String source) {
-    if (source == null || source.isEmpty()) {
+    if (source == null || isBlank(source)) {
       return null;
     }
-    return SimpleQuantity.builder().value(Double.valueOf(source)).build();
+    Double value;
+    try {
+      value = Double.valueOf(source);
+    } catch (NumberFormatException e) {
+      throw new IllegalArgumentException("Cannot create double value from " + source, e);
+    }
+    return SimpleQuantity.builder().value(value).build();
   }
 
   Reference reference(CdwReference maybeSource) {
@@ -173,6 +213,9 @@ public class MedicationOrderTransformer implements MedicationOrderController.Tra
   }
 
   Status status(String source) {
+    if (source == null || isBlank(source)) {
+      return null;
+    }
     return convert(source, status -> EnumSearcher.of(MedicationOrder.Status.class)).find(source);
   }
 
@@ -187,6 +230,31 @@ public class MedicationOrderTransformer implements MedicationOrderController.Tra
     if (source == null) {
       return null;
     }
-    return CodeableConcept.builder().text(source.getText()).build();
+    if (source.getCoding().isEmpty() && isBlank(source.getText())) {
+      return null;
+    }
+    return CodeableConcept.builder()
+        .text(source.getText())
+        .coding(timeCodeCodings(source.getCoding()))
+        .build();
+  }
+
+  List<Coding> timeCodeCodings(List<CdwCoding> source) {
+    List<Coding> codings = convertAll(source, this::timingCodeCoding);
+    if (source == null) {
+      return null;
+    }
+    return source.isEmpty() ? null : codings;
+  }
+
+  private Coding timingCodeCoding(CdwCoding cdw) {
+    if (cdw == null || allNull(cdw.getCode(), cdw.getDisplay(), cdw.getSystem())) {
+      return null;
+    }
+    return Coding.builder()
+        .system(cdw.getSystem())
+        .code(cdw.getCode())
+        .display(cdw.getDisplay())
+        .build();
   }
 }

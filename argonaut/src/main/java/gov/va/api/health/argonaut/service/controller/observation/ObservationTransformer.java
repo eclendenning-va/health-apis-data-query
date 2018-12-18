@@ -5,6 +5,7 @@ import static gov.va.api.health.argonaut.service.controller.Transformers.asDateT
 import static gov.va.api.health.argonaut.service.controller.Transformers.convert;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convertAll;
 import static gov.va.api.health.argonaut.service.controller.Transformers.ifPresent;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
 import gov.va.api.health.argonaut.api.datatypes.Coding;
@@ -27,13 +28,16 @@ import gov.va.dvp.cdw.xsd.model.CdwObservation104Root.CdwObservations.CdwObserva
 import gov.va.dvp.cdw.xsd.model.CdwObservation104Root.CdwObservations.CdwObservation.CdwReferenceRanges.CdwReferenceRange;
 import gov.va.dvp.cdw.xsd.model.CdwObservation104Root.CdwObservations.CdwObservation.CdwValueCodeableConcept;
 import gov.va.dvp.cdw.xsd.model.CdwObservation104Root.CdwObservations.CdwObservation.CdwValueQuantity;
+import gov.va.dvp.cdw.xsd.model.CdwObservationCategoryCode;
+import gov.va.dvp.cdw.xsd.model.CdwObservationCategoryDisplay;
+import gov.va.dvp.cdw.xsd.model.CdwObservationCategorySystem;
+import gov.va.dvp.cdw.xsd.model.CdwObservationInterpretationSystem;
 import gov.va.dvp.cdw.xsd.model.CdwObservationRefRangeQuantity;
 import gov.va.dvp.cdw.xsd.model.CdwObservationStatus;
 import gov.va.dvp.cdw.xsd.model.CdwReference;
 import java.math.BigDecimal;
 import java.util.List;
 import javax.validation.constraints.NotNull;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -70,15 +74,22 @@ public class ObservationTransformer implements ObservationController.Transformer
     if (maybeCdw == null || maybeCdw.getCoding().isEmpty()) {
       return null;
     }
-    return CodeableConcept.builder()
-        .coding(
-            convertAll(
-                maybeCdw.getCoding(),
-                source ->
-                    coding(
-                        source.getSystem().value(),
-                        source.getCode().value(),
-                        source.getDisplay().value())))
+    return CodeableConcept.builder().coding(categoryCodings(maybeCdw.getCoding())).build();
+  }
+
+  List<Coding> categoryCodings(List<CdwCategory.CdwCoding> source) {
+    List<Coding> codings = convertAll(source, this::categoryCoding);
+    return codings == null || codings.isEmpty() ? null : codings;
+  }
+
+  private Coding categoryCoding(CdwCategory.CdwCoding cdw) {
+    if (cdw == null || allNull(cdw.getCode(), cdw.getDisplay(), cdw.getSystem())) {
+      return null;
+    }
+    return Coding.builder()
+        .system(ifPresent(cdw.getSystem(), CdwObservationCategorySystem::value))
+        .code(ifPresent(cdw.getCode(), CdwObservationCategoryCode::value))
+        .display(ifPresent(cdw.getDisplay(), CdwObservationCategoryDisplay::value))
         .build();
   }
 
@@ -86,20 +97,29 @@ public class ObservationTransformer implements ObservationController.Transformer
     if (maybeCdw == null) {
       return null;
     }
-    if (maybeCdw.getText() == null && maybeCdw.getCoding().isEmpty()) {
+    if (maybeCdw.getCoding().isEmpty() && isBlank(maybeCdw.getText())) {
       return null;
     }
     return CodeableConcept.builder()
         .text(maybeCdw.getText())
-        .coding(
-            convertAll(
-                maybeCdw.getCoding(),
-                source -> coding(source.getSystem(), source.getCode(), source.getDisplay())))
+        .coding(codeCodings(maybeCdw.getCoding()))
         .build();
   }
 
-  private Coding coding(String system, String code, String display) {
-    return Coding.builder().system(system).code(code).display(display).build();
+  List<Coding> codeCodings(List<CdwCode.CdwCoding> source) {
+    List<Coding> codings = convertAll(source, this::codeCoding);
+    return codings == null || codings.isEmpty() ? null : codings;
+  }
+
+  private Coding codeCoding(CdwCode.CdwCoding cdw) {
+    if (cdw == null || allNull(cdw.getCode(), cdw.getDisplay(), cdw.getSystem())) {
+      return null;
+    }
+    return Coding.builder()
+        .system(cdw.getSystem())
+        .code(cdw.getCode())
+        .display(cdw.getDisplay())
+        .build();
   }
 
   ObservationComponent component(CdwComponent maybeCdw) {
@@ -118,8 +138,8 @@ public class ObservationTransformer implements ObservationController.Transformer
                 .id(source.getId())
                 .code(componentCode(source.getCode()))
                 .valueCodeableConcept(
-                    componentValueCodeableConcept(maybeCdw.getValueCodeableConcept()))
-                .valueQuantity(componentValueQuantity(maybeCdw.getValueQuantity()))
+                    componentValueCodeableConcept(source.getValueCodeableConcept()))
+                .valueQuantity(componentValueQuantity(source.getValueQuantity()))
                 .build());
   }
 
@@ -127,15 +147,28 @@ public class ObservationTransformer implements ObservationController.Transformer
     if (maybeCdw == null) {
       return null;
     }
-    if (StringUtils.isBlank(maybeCdw.getText()) && maybeCdw.getCoding().isEmpty()) {
+    if (maybeCdw.getCoding().isEmpty() && isBlank(maybeCdw.getText())) {
       return null;
     }
     return CodeableConcept.builder()
         .text(maybeCdw.getText())
-        .coding(
-            convertAll(
-                maybeCdw.getCoding(),
-                source -> coding(source.getSystem(), source.getCode(), source.getDisplay())))
+        .coding(componentCodings(maybeCdw.getCoding()))
+        .build();
+  }
+
+  List<Coding> componentCodings(List<CdwComponent.CdwCode.CdwCoding> source) {
+    List<Coding> codings = convertAll(source, this::componentCoding);
+    return codings == null || codings.isEmpty() ? null : codings;
+  }
+
+  private Coding componentCoding(CdwComponent.CdwCode.CdwCoding cdw) {
+    if (cdw == null || allNull(cdw.getCode(), cdw.getDisplay(), cdw.getSystem())) {
+      return null;
+    }
+    return Coding.builder()
+        .system(cdw.getSystem())
+        .code(cdw.getCode())
+        .display(cdw.getDisplay())
         .build();
   }
 
@@ -143,15 +176,28 @@ public class ObservationTransformer implements ObservationController.Transformer
     if (maybeCdw == null) {
       return null;
     }
-    if (StringUtils.isBlank(maybeCdw.getText()) && maybeCdw.getCoding().isEmpty()) {
+    if (maybeCdw.getCoding().isEmpty() && isBlank(maybeCdw.getText())) {
       return null;
     }
     return CodeableConcept.builder()
         .text(maybeCdw.getText())
-        .coding(
-            convertAll(
-                maybeCdw.getCoding(),
-                source -> coding(source.getSystem(), source.getCode(), source.getDisplay())))
+        .coding(componentValueCodings(maybeCdw.getCoding()))
+        .build();
+  }
+
+  List<Coding> componentValueCodings(List<CdwComponent.CdwValueCodeableConcept.CdwCoding> source) {
+    List<Coding> codings = convertAll(source, this::componentValueCoding);
+    return codings == null || codings.isEmpty() ? null : codings;
+  }
+
+  private Coding componentValueCoding(CdwComponent.CdwValueCodeableConcept.CdwCoding cdw) {
+    if (cdw == null || allNull(cdw.getCode(), cdw.getDisplay(), cdw.getSystem())) {
+      return null;
+    }
+    return Coding.builder()
+        .system(cdw.getSystem())
+        .code(cdw.getCode())
+        .display(cdw.getDisplay())
         .build();
   }
 
@@ -179,18 +225,35 @@ public class ObservationTransformer implements ObservationController.Transformer
   }
 
   CodeableConcept interpretation(CdwInterpretation maybeCdw) {
+    if (maybeCdw == null) {
+      return null;
+    }
+    if (maybeCdw.getCoding().isEmpty() && isBlank(maybeCdw.getText())) {
+      return null;
+    }
     return ifPresent(
         maybeCdw,
         source ->
             CodeableConcept.builder()
                 .text(source.getText())
-                .coding(
-                    convertAll(
-                        source.getCoding(),
-                        coding ->
-                            coding(
-                                coding.getSystem().value(), coding.getCode(), coding.getDisplay())))
+                .coding(interpretationCodings(source.getCoding()))
                 .build());
+  }
+
+  List<Coding> interpretationCodings(List<CdwInterpretation.CdwCoding> source) {
+    List<Coding> codings = convertAll(source, this::interpretationCoding);
+    return codings == null || codings.isEmpty() ? null : codings;
+  }
+
+  private Coding interpretationCoding(CdwInterpretation.CdwCoding cdw) {
+    if (cdw == null || allNull(cdw.getCode(), cdw.getDisplay(), cdw.getSystem())) {
+      return null;
+    }
+    return Coding.builder()
+        .system(ifPresent(cdw.getSystem(), CdwObservationInterpretationSystem::value))
+        .code(cdw.getCode())
+        .display(cdw.getDisplay())
+        .build();
   }
 
   List<Reference> performers(CdwPerformers maybeCdw) {
@@ -198,6 +261,9 @@ public class ObservationTransformer implements ObservationController.Transformer
   }
 
   Reference reference(CdwReference maybeCdw) {
+    if (maybeCdw == null || allNull(maybeCdw.getReference(), maybeCdw.getDisplay())) {
+      return null;
+    }
     return convert(
         maybeCdw,
         source ->
@@ -241,19 +307,47 @@ public class ObservationTransformer implements ObservationController.Transformer
   }
 
   CodeableConcept valueCodeableConcept(CdwValueCodeableConcept maybeCdw) {
+    if (maybeCdw == null) {
+      return null;
+    }
+    if (maybeCdw.getCoding().isEmpty() && isBlank(maybeCdw.getText())) {
+      return null;
+    }
     return ifPresent(
         maybeCdw,
         source ->
             CodeableConcept.builder()
                 .text(source.getText())
-                .coding(
-                    convertAll(
-                        source.getCoding(),
-                        x -> coding(x.getSystem(), x.getCode(), x.getDisplay())))
+                .coding(valueCodings(source.getCoding()))
                 .build());
   }
 
+  List<Coding> valueCodings(List<CdwValueCodeableConcept.CdwCoding> source) {
+    List<Coding> codings = convertAll(source, this::valueCoding);
+    return codings == null || codings.isEmpty() ? null : codings;
+  }
+
+  private Coding valueCoding(CdwValueCodeableConcept.CdwCoding cdw) {
+    if (cdw == null || allNull(cdw.getCode(), cdw.getDisplay(), cdw.getSystem())) {
+      return null;
+    }
+    return Coding.builder()
+        .system(cdw.getSystem())
+        .code(cdw.getCode())
+        .display(cdw.getDisplay())
+        .build();
+  }
+
   Quantity valueQuantity(CdwValueQuantity maybeCdw) {
+    if (maybeCdw == null
+        || allNull(
+            maybeCdw.getCode(),
+            maybeCdw.getComparator(),
+            maybeCdw.getSystem(),
+            maybeCdw.getUnit(),
+            maybeCdw.getValue())) {
+      return null;
+    }
     return ifPresent(
         maybeCdw,
         cdw ->

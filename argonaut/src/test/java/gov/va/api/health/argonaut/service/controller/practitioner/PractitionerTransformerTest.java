@@ -110,6 +110,13 @@ public class PractitionerTransformerTest {
   }
 
   @Test
+  public void nameList() {
+    assertThat(tx.nameList(cdw.name().getSuffix())).isEqualTo(expected.name().suffix());
+    assertThat(tx.nameList(null)).isNull();
+    assertThat(tx.nameList("")).isNull();
+  }
+
+  @Test
   public void nameUse() {
     assertThat(tx.nameUse(CdwPractitionerNameUse.ANONYMOUS)).isEqualTo(NameUse.anonymous);
     assertThat(tx.nameUse(CdwPractitionerNameUse.MAIDEN)).isEqualTo(NameUse.maiden);

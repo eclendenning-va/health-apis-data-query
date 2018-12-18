@@ -78,8 +78,8 @@ public class PractitionerController {
 
     return transformer.apply(
         firstPayloadItem(
-            hasPayload(
-                search(Parameters.forIdentity(publicId)).getPractitioners().getPractitioner())));
+            hasPayload(search(Parameters.forIdentity(publicId)).getPractitioners())
+                .getPractitioner()));
   }
 
   private CdwPractitioner100Root search(MultiValueMap<String, String> params) {
@@ -90,7 +90,7 @@ public class PractitionerController {
             .version("1.00")
             .parameters(params)
             .build();
-    return mrAndersonClient.search(query);
+    return hasPayload(mrAndersonClient.search(query));
   }
 
   /** Search by _id. */
