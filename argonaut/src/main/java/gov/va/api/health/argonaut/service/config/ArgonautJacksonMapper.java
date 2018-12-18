@@ -2,6 +2,7 @@ package gov.va.api.health.argonaut.service.config;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.BeanDescription;
+import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationConfig;
 import com.fasterxml.jackson.databind.SerializerProvider;
@@ -10,6 +11,7 @@ import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
 import com.fasterxml.jackson.databind.ser.BeanSerializerModifier;
 import gov.va.api.health.argonaut.api.elements.Reference;
 import gov.va.api.health.autoconfig.configuration.JacksonConfig;
+import java.io.IOException;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -35,11 +37,18 @@ public class ArgonautJacksonMapper {
   /** These base path for resources, e.g. api */
   private String basePath;
 
+  /** Property defining the references to serialize. */
+  private final ReferenceSerializerProperties referenceSerializerProperties;
+
+  /** Custom Argonaut Jackson Mapper for serialization. */
   @Autowired
   public ArgonautJacksonMapper(
-      @Value("${argonaut.url}") String baseUrl, @Value("${argonaut.base-path}") String basePath) {
+      @Value("${argonaut.url}") String baseUrl,
+      @Value("${argonaut.base-path}") String basePath,
+      ReferenceSerializerProperties referenceSerializerProperties) {
     this.baseUrl = baseUrl;
     this.basePath = basePath;
+    this.referenceSerializerProperties = referenceSerializerProperties;
   }
 
   /**
@@ -60,6 +69,19 @@ public class ArgonautJacksonMapper {
       super.setupModule(context);
       context.addBeanSerializerModifier(
           new BeanSerializerModifier() {
+
+            /** Override default serialization of Reference.class objects */
+            @Override
+            public JsonSerializer<?> modifySerializer(
+                SerializationConfig config,
+                BeanDescription beanDesc,
+                JsonSerializer<?> serializer) {
+              if (Reference.class.isAssignableFrom(beanDesc.getBeanClass())) {
+                return new EnabledReferenceSerializer(serializer);
+              }
+              return super.modifySerializer(config, beanDesc, serializer);
+            }
+
             @Override
             public List<BeanPropertyWriter> changeProperties(
                 SerializationConfig config,
@@ -76,6 +98,32 @@ public class ArgonautJacksonMapper {
               return super.changeProperties(config, beanDesc, beanProperties);
             }
           });
+    }
+  }
+
+  private class EnabledReferenceSerializer extends JsonSerializer<Reference> {
+
+    private JsonSerializer serializer;
+
+    EnabledReferenceSerializer(JsonSerializer serializer) {
+      this.serializer = serializer;
+    }
+
+    /**
+     * If the resource reference is well formed, extract the name, and check if it is an enabled
+     * reference. Otherwise if it is malformed, always use default serialization.
+     */
+    @Override
+    public void serialize(Reference value, JsonGenerator jgen, SerializerProvider provider)
+        throws IOException {
+      if (value == null) {
+        return;
+      }
+      if (referenceSerializerProperties.isEnabled(value)) {
+        serializer.serialize(value, jgen, provider);
+      } else {
+        return;
+      }
     }
   }
 

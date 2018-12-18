@@ -25,29 +25,48 @@ public class ArgonautJacksonMapperTest {
   @Test
   @SneakyThrows
   public void referencesAreQualified() {
+    ReferenceSerializerProperties testProperties =
+        ReferenceSerializerProperties.builder()
+            .appointment(true)
+            .encounter(false)
+            .location(true)
+            .organization(true)
+            .practitioner(true)
+            .build();
+
     FugaziReferencemajig input =
         FugaziReferencemajig.builder()
-            .whocares("noone")
-            .me(true)
-            .ref(reference("r1"))
-            .thing(reference(null))
-            .thing(reference(""))
-            .thing(reference("http://qualified.is.not/touched"))
-            .thing(reference("no/slash"))
-            .thing(reference("/cool/a/slash"))
-            .inner(FugaziReferencemajig.builder().ref(reference("me/too")).build())
+            .whocares("noone") // kept
+            .me(true) // kept
+            .ref(reference("AllergyIntolerance/1234")) // kept
+            .thing(reference(null)) // kept
+            .thing(reference("")) // kept
+            .thing(reference("http://qualified.is.not/touched")) // kept
+            .thing(reference("no/slash")) // kept
+            .thing(reference("/cool/a/slash")) // kept
+            .thing(reference("Encounter")) // kept
+            .thing(reference("Encounter/1234")) // removed
+            .thing(reference("https://example.com/api/Encounter/1234")) // removed
+              .thing(reference("/Organization")) // kept
+            .thing(reference("Organization/1234")) // kept
+            .thing(reference("https://example.com/api/Organization/1234")) // kept
+            .inner(FugaziReferencemajig.builder().ref(reference("me/too")).build()) // kept
             .build();
 
     FugaziReferencemajig expected =
         FugaziReferencemajig.builder()
             .whocares("noone")
             .me(true)
-            .ref(reference("https://example.com/api/r1"))
+            .ref(reference("https://example.com/api/AllergyIntolerance/1234"))
             .thing(reference(null))
             .thing(reference(null))
             .thing(reference("http://qualified.is.not/touched"))
             .thing(reference("https://example.com/api/no/slash"))
             .thing(reference("https://example.com/api/cool/a/slash"))
+            .thing(reference("https://example.com/api/Encounter"))
+            .thing(reference("https://example.com/api/Organization"))
+            .thing(reference("https://example.com/api/Organization/1234"))
+            .thing(reference("https://example.com/api/Organization/1234"))
             .inner(
                 FugaziReferencemajig.builder()
                     .ref(reference("https://example.com/api/me/too"))
@@ -55,7 +74,7 @@ public class ArgonautJacksonMapperTest {
             .build();
 
     String qualifiedJson =
-        new ArgonautJacksonMapper("https://example.com", "api")
+        new ArgonautJacksonMapper("https://example.com", "api", testProperties)
             .objectMapper()
             .writeValueAsString(input);
 
