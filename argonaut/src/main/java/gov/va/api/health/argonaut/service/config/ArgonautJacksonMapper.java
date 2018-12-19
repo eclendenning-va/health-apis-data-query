@@ -33,12 +33,10 @@ public class ArgonautJacksonMapper {
    * application.
    */
   private final String baseUrl;
-
-  /** These base path for resources, e.g. api */
-  private String basePath;
-
   /** Property defining the references to serialize. */
   private final ReferenceSerializerProperties referenceSerializerProperties;
+  /** These base path for resources, e.g. api */
+  private String basePath;
 
   /** Custom Argonaut Jackson Mapper for serialization. */
   @Autowired
@@ -122,7 +120,7 @@ public class ArgonautJacksonMapper {
       if (referenceSerializerProperties.isEnabled(value)) {
         serializer.serialize(value, jgen, provider);
       } else {
-        return;
+        provider.defaultSerializeNull(jgen);
       }
     }
   }

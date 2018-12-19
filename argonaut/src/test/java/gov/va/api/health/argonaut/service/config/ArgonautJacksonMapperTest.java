@@ -47,10 +47,18 @@ public class ArgonautJacksonMapperTest {
             .thing(reference("Encounter")) // kept
             .thing(reference("Encounter/1234")) // removed
             .thing(reference("https://example.com/api/Encounter/1234")) // removed
-              .thing(reference("/Organization")) // kept
+            .thing(reference("/Organization")) // kept
             .thing(reference("Organization/1234")) // kept
             .thing(reference("https://example.com/api/Organization/1234")) // kept
-            .inner(FugaziReferencemajig.builder().ref(reference("me/too")).build()) // kept
+            .thing(reference("Practitioner/987"))
+            .inner(
+                FugaziReferencemajig.builder()
+                    .ref(
+                        Reference.builder()
+                            .reference("Appointment/615f31df-f0c7-5100-ac42-7fb952c630d0")
+                            .display(null)
+                            .build())
+                    .build()) // kept
             .build();
 
     FugaziReferencemajig expected =
@@ -67,9 +75,14 @@ public class ArgonautJacksonMapperTest {
             .thing(reference("https://example.com/api/Organization"))
             .thing(reference("https://example.com/api/Organization/1234"))
             .thing(reference("https://example.com/api/Organization/1234"))
+            .thing(reference("https://example.com/api/Practitioner/987"))
             .inner(
                 FugaziReferencemajig.builder()
-                    .ref(reference("https://example.com/api/me/too"))
+                    .ref(
+                        Reference.builder()
+                            .reference(
+                                "https://example.com/api/Appointment/615f31df-f0c7-5100-ac42-7fb952c630d0")
+                            .build())
                     .build())
             .build();
 
