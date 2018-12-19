@@ -14,13 +14,14 @@ import org.springframework.context.annotation.Configuration;
 @SuppressWarnings("DefaultAnnotationParam")
 @Configuration
 @EnableConfigurationProperties
-@ConfigurationProperties("enable.reference")
+@ConfigurationProperties("include")
 @Data
 @Accessors(fluent = false)
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class ReferenceSerializerProperties {
+
   private boolean appointment;
   private boolean encounter;
   private boolean location;
