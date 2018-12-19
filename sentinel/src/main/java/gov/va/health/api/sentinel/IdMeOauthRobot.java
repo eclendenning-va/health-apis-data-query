@@ -37,7 +37,7 @@ public class IdMeOauthRobot {
 
   private String authorize() {
     ChromeOptions chromeOptions = new ChromeOptions();
-    // chromeOptions.addArguments("--headless");
+    chromeOptions.addArguments("--headless");
     WebDriver driver = new ChromeDriver(chromeOptions);
 
     driver.get(config.authorization().asUrl());

@@ -319,7 +319,7 @@ public class LabDemoTest {
     return RestAssured.given()
         .contentType("application/fhir+json")
         .header("Authorization", "Bearer " + robot().token().accessToken())
-        .header("jargonaut", USE_JARGONAUT)
+        // TODO .header("jargonaut", USE_JARGONAUT)
         .baseUri("https://dev-api.va.gov/services/argonaut/v0");
   }
 }
