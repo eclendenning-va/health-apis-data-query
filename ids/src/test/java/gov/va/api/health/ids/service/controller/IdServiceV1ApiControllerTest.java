@@ -121,7 +121,7 @@ public class IdServiceV1ApiControllerTest {
     when(repo.findBySystemAndResourceAndIdentifier("s1", "r1", "i1"))
         .thenReturn(Arrays.asList(ResourceIdentityDetail.builder().build()));
     ResponseEntity<List<Registration>> registrationResult =
-        controller.register(Arrays.asList(id1,id2));
+        controller.register(Arrays.asList(id1, id2));
     assertThat(registrationResult.getStatusCode()).isEqualTo(HttpStatus.CREATED);
     ArgumentCaptor<Iterable> saveArgs = ArgumentCaptor.forClass(Iterable.class);
     verify(repo).saveAll(saveArgs.capture());
