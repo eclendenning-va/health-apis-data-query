@@ -1,7 +1,9 @@
 package gov.va.api.health.ids.service.controller;
 
+import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import gov.va.api.health.ids.api.IdentityService.UnknownIdentity;
@@ -11,7 +13,6 @@ import gov.va.api.health.ids.service.controller.IdServiceV1ApiController.UuidGen
 import gov.va.api.health.ids.service.controller.impl.ResourceIdentityDetail;
 import gov.va.api.health.ids.service.controller.impl.ResourceIdentityDetailRepository;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.junit.Before;
@@ -55,7 +56,7 @@ public class IdServiceV1ApiControllerTest {
   @Test
   public void lookupReturns200AndIdentitiesWhenFound() {
     List<ResourceIdentityDetail> searchResults =
-        Arrays.asList(existingDetail(3), existingDetail(2), existingDetail(1));
+        asList(existingDetail(3), existingDetail(2), existingDetail(1));
     when(repo.findByUuid("x")).thenReturn(searchResults);
 
     ResponseEntity<List<ResourceIdentity>> actual = controller.lookup("x");
@@ -92,6 +93,37 @@ public class IdServiceV1ApiControllerTest {
     return Registration.builder().uuid(uuid).resourceIdentity(resourceIdentity).build();
   }
 
+  @Test
+  public void registrationForAlreadyRegisteredIdentitiesDoesNotRegisterTwice() {
+    ResourceIdentity alreadyRegistered = resourceIdentity(1);
+    ResourceIdentity notRegisteredYet = resourceIdentity(2);
+
+    when(uuidGenerator.apply(notRegisteredYet)).thenReturn("u2");
+    when(repo.findBySystemAndResourceAndIdentifier("s1", "r1", "i1"))
+        .thenReturn(asList(existingDetail(1)));
+
+    ResponseEntity<List<Registration>> registrationResult =
+        controller.register(asList(alreadyRegistered, notRegisteredYet));
+
+    assertThat(registrationResult.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+    assertThat(registrationResult.getBody())
+        .containsExactlyInAnyOrder(
+            registration("x", alreadyRegistered), registration("u2", notRegisteredYet));
+
+    ArgumentCaptor<Iterable> saveArgs = ArgumentCaptor.forClass(Iterable.class);
+    verify(repo)
+        .findBySystemAndResourceAndIdentifier(
+            alreadyRegistered.system(),
+            alreadyRegistered.resource(),
+            alreadyRegistered.identifier());
+    verify(repo)
+        .findBySystemAndResourceAndIdentifier(
+            notRegisteredYet.system(), notRegisteredYet.resource(), notRegisteredYet.identifier());
+    verify(repo).saveAll(saveArgs.capture());
+    assertThat(saveArgs.getValue()).containsExactly(newDetail("2", 2));
+    verifyNoMoreInteractions(repo);
+  }
+
   @SuppressWarnings("unchecked")
   @Test
   public void registrationReturn201AndRegistrationsForUnregisteredId() {
@@ -103,29 +135,13 @@ public class IdServiceV1ApiControllerTest {
 
     ArgumentCaptor<Iterable> saveArgs = ArgumentCaptor.forClass(Iterable.class);
 
-    ResponseEntity<List<Registration>> actual = controller.register(Arrays.asList(id1, id2));
+    ResponseEntity<List<Registration>> actual = controller.register(asList(id1, id2));
 
     assertThat(actual.getStatusCode()).isEqualTo(HttpStatus.CREATED);
     assertThat(actual.getBody())
         .containsExactlyInAnyOrder(registration("1", id1), registration("2", id2));
     verify(repo).saveAll(saveArgs.capture());
     assertThat(saveArgs.getValue()).containsExactlyInAnyOrder(newDetail("1", 1), newDetail("2", 2));
-  }
-
-  @Test
-  public void registrationForAlreadyRegisteredIdentities() {
-    ResourceIdentity id1 = resourceIdentity(1);
-    ResourceIdentity id2 = resourceIdentity(2);
-    when(uuidGenerator.apply(id1)).thenReturn("1");
-    when(uuidGenerator.apply(id2)).thenReturn("2");
-    when(repo.findBySystemAndResourceAndIdentifier("s1", "r1", "i1"))
-        .thenReturn(Arrays.asList(ResourceIdentityDetail.builder().build()));
-    ResponseEntity<List<Registration>> registrationResult =
-        controller.register(Arrays.asList(id1, id2));
-    assertThat(registrationResult.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-    ArgumentCaptor<Iterable> saveArgs = ArgumentCaptor.forClass(Iterable.class);
-    verify(repo).saveAll(saveArgs.capture());
-    assertThat(saveArgs.getValue()).containsExactlyInAnyOrder(newDetail("2", 2));
   }
 
   private ResourceIdentity resourceIdentity(int i) {
