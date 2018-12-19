@@ -115,17 +115,17 @@ public class IdServiceV1ApiControllerTest {
   @Test
   public void registrationForAlreadyRegisteredIdentities() {
     ResourceIdentity id1 = resourceIdentity(1);
-    ResourceIdentity id2 = id1;
+    ResourceIdentity id2 = resourceIdentity(2);
     when(uuidGenerator.apply(id1)).thenReturn("1");
     when(uuidGenerator.apply(id2)).thenReturn("2");
-    ResponseEntity<List<Registration>> registrationResult1 =
-        controller.register(Arrays.asList(id1));
     when(repo.findBySystemAndResourceAndIdentifier("s1", "r1", "i1"))
         .thenReturn(Arrays.asList(ResourceIdentityDetail.builder().build()));
-    ResponseEntity<List<Registration>> registrationResult2 =
-        controller.register(Arrays.asList(id2));
-    assertThat(registrationResult1.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-    assertThat(registrationResult2.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+    ResponseEntity<List<Registration>> registrationResult =
+        controller.register(Arrays.asList(id1,id2));
+    assertThat(registrationResult.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+    ArgumentCaptor<Iterable> saveArgs = ArgumentCaptor.forClass(Iterable.class);
+    verify(repo).saveAll(saveArgs.capture());
+    assertThat(saveArgs.getValue()).containsExactlyInAnyOrder(newDetail("2", 2));
   }
 
   private ResourceIdentity resourceIdentity(int i) {
