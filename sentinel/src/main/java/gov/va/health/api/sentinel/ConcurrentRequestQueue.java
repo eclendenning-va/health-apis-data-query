@@ -39,26 +39,4 @@ public class ConcurrentRequestQueue implements RequestQueue {
     queue.add("https://localhost:8090/api/Procedure?patient=185601V825290");
     return queue;
   }
-
-  /** Features to come back to. */
-  /*ValueMap<String, Integer> counts;
-  ConcurrentSkipListSet completed;
-
-  public void startCount() {
-    counts.add("AllergyIntolerance", 0);
-    counts.add("Appointment", 0);
-    counts.add("Condition", 0);
-    counts.add("DiagnosticReport", 0);
-    counts.add("Encounter", 0);
-    counts.add("Immunization", 0);
-    counts.add("Location", 0);
-    counts.add("Medication", 0);
-    counts.add("MedicationOrder", 0);
-    counts.add("MedicationStatement", 0);
-    counts.add("Observation", 0);
-    counts.add("Organization", 0);
-    counts.add("Patient", 0);
-    counts.add("Practitioner", 0);
-    counts.add("Procedure", 0);
-  }*/
 }
