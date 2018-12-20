@@ -2,9 +2,9 @@ package gov.va.health.api.sentinel;
 
 /** The RequestQueue holds the Queue utilized by the Crawler. */
 public interface RequestQueue {
+  String next();
 
-  ServiceDefinition service();
+  boolean hasNext();
 
-  ExpectedResponse get(String path);
-
+  void add(String url);
 }

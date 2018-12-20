@@ -1,38 +1,50 @@
 package gov.va.health.api.sentinel;
 
-import io.restassured.response.Response;
-import io.restassured.http.Method;
 import java.util.PriorityQueue;
 import java.util.Queue;
-import lombok.Builder;
-import lombok.Value;
-import lombok.extern.slf4j.Slf4j;
 
-@Value
-@Builder
-@Slf4j
 public class ConcurrentRequestQueue implements RequestQueue {
 
-  private final ServiceDefinition service;
+  Queue<String> queries = setOriginalQueries();
 
   @Override
-  public ExpectedResponse get(String path) {
-    Response baselineRequest = get("application/json", path);
-    return ExpectedResponse.of(baselineRequest);
+  public String next() {
+    return queries.poll();
   }
 
-  Response get(String contentType, String path) {
-    return service()
-        .requestSpecification()
-        .contentType(contentType)
-        .request(Method.GET,path);
+  @Override
+  public boolean hasNext() {
+    if (queries.poll() == null) {
+      return false;
+    }
+    return true;
+  }
+
+  @Override
+  public void add(String url) {
+    queries.add(url);
+  }
+
+  /** Hardcoded temporarily. */
+  Queue<String> setOriginalQueries() {
+    Queue<String> queue = new PriorityQueue<>();
+    queue.add("https://localhost:8090/api/AllergyIntolerance?patient=185601V825290");
+    queue.add("https://localhost:8090/api/Condition?patient=185601V825290");
+    queue.add("https://localhost:8090/api/DiagnosticReport?patient=185601V825290");
+    queue.add("https://localhost:8090/api/Immunization?patient=185601V825290");
+    queue.add("https://localhost:8090/api/Medication?patient=185601V825290");
+    queue.add("https://localhost:8090/api/MedicationOrder?patient=185601V825290");
+    queue.add("https://localhost:8090/api/MedicationStatement?patient=185601V825290");
+    queue.add("https://localhost:8090/api/Observation?patient=185601V825290");
+    queue.add("https://localhost:8090/api/Procedure?patient=185601V825290");
+    return queue;
   }
 
   /** Features to come back to. */
   /*ValueMap<String, Integer> counts;
   ConcurrentSkipListSet completed;
 
-  public void populateMap() {
+  public void startCount() {
     counts.add("AllergyIntolerance", 0);
     counts.add("Appointment", 0);
     counts.add("Condition", 0);
