@@ -14,7 +14,7 @@ public class ConcurrentRequestQueue implements RequestQueue {
 
   @Override
   public boolean hasNext() {
-    if (queries.poll() == null) {
+    if (queries.peek() == null) {
       return false;
     }
     return true;
