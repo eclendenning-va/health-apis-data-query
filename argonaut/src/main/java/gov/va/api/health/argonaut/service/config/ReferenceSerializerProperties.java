@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Configuration;
 @SuppressWarnings("DefaultAnnotationParam")
 @Configuration
 @EnableConfigurationProperties
-@ConfigurationProperties("include")
+@ConfigurationProperties("included-references")
 @Data
 @Accessors(fluent = false)
 @NoArgsConstructor

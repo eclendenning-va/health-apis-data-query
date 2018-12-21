@@ -19,13 +19,13 @@ import org.junit.Test;
 public class ArgonautJacksonMapperTest {
 
   private Reference reference(String path) {
-    return Reference.builder().display("display").reference(path).id("id").build();
+    return Reference.builder().display("display-value").reference(path).id("id-value").build();
   }
 
   @Test
   @SneakyThrows
   public void referencesAreQualified() {
-    ReferenceSerializerProperties testProperties =
+    ReferenceSerializerProperties disableEncounter =
         ReferenceSerializerProperties.builder()
             .appointment(true)
             .encounter(false)
@@ -39,6 +39,7 @@ public class ArgonautJacksonMapperTest {
             .whocares("noone") // kept
             .me(true) // kept
             .ref(reference("AllergyIntolerance/1234")) // kept
+            .nope(reference("https://example.com/api/Encounter/1234")) // removed
             .thing(reference(null)) // kept
             .thing(reference("")) // kept
             .thing(reference("http://qualified.is.not/touched")) // kept
@@ -87,12 +88,16 @@ public class ArgonautJacksonMapperTest {
             .build();
 
     String qualifiedJson =
-        new ArgonautJacksonMapper("https://example.com", "api", testProperties)
+        new ArgonautJacksonMapper(
+                new MagicReferenceConfig("https://example.com", "api", disableEncounter))
             .objectMapper()
+            .writerWithDefaultPrettyPrinter()
             .writeValueAsString(input);
 
     FugaziReferencemajig actual =
         JacksonConfig.createMapper().readValue(qualifiedJson, FugaziReferencemajig.class);
+
+    System.out.println(qualifiedJson);
 
     assertThat(actual).isEqualTo(expected);
   }
@@ -107,6 +112,7 @@ public class ArgonautJacksonMapperTest {
   )
   public static class FugaziReferencemajig {
     Reference ref;
+    Reference nope;
     @Singular List<Reference> things;
     FugaziReferencemajig inner;
     String whocares;
