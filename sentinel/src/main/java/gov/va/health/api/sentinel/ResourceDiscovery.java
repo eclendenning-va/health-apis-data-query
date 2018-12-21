@@ -39,9 +39,7 @@ public class ResourceDiscovery {
     if (conformanceStatement.rest() == null || conformanceStatement.rest().isEmpty()) {
       return null;
     }
-    if (conformanceStatement.rest().get(0) == null) {
-      return null;
-    }
+    //dont get(0)
     return conformanceStatement.rest().get(0).resource();
   }
 
