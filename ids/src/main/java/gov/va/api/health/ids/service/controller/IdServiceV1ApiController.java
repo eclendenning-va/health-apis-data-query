@@ -5,6 +5,7 @@ import gov.va.api.health.ids.api.Registration;
 import gov.va.api.health.ids.api.ResourceIdentity;
 import gov.va.api.health.ids.service.controller.impl.ResourceIdentityDetail;
 import gov.va.api.health.ids.service.controller.impl.ResourceIdentityDetailRepository;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -33,8 +34,11 @@ public class IdServiceV1ApiController {
   private final ResourceIdentityDetailRepository repository;
   private final UuidGenerator uuidGenerator;
 
-  private boolean isNotRegistered(Registration registration) {
-    return repository.findByUuid(registration.uuid()).isEmpty();
+  private List<Registration> find(ResourceIdentity identity) {
+    List<ResourceIdentityDetail> previouslyRegistered =
+        repository.findBySystemAndResourceAndIdentifier(
+            identity.system(), identity.resource(), identity.identifier());
+    return previouslyRegistered.stream().map(this::toRegistration).collect(Collectors.toList());
   }
 
   /** Implementation of GET /v1/ids/{publicId}. See api-v1.yaml. */
@@ -71,20 +75,22 @@ public class IdServiceV1ApiController {
   )
   public ResponseEntity<List<Registration>> register(
       @Valid @RequestBody List<ResourceIdentity> identities) {
+    List<Registration> registrations = new LinkedList<>();
+    List<ResourceIdentityDetail> newRegistrations = new LinkedList<>();
 
-    List<Registration> registrations =
-        identities.stream().map(this::toRegistration).collect(Collectors.toList());
-
-    List<ResourceIdentityDetail> newRegistrations =
-        registrations
-            .stream()
-            .filter(this::isNotRegistered)
-            .map(this::toDatabaseEntry)
-            .collect(Collectors.toList());
-    newRegistrations.forEach(x -> log.info("{}", x));
-    log.info("Register {} entries ({} are new)", identities.size(), newRegistrations.size());
+    for (ResourceIdentity identity : identities) {
+      List<Registration> previouslyRegistered = find(identity);
+      if (previouslyRegistered.isEmpty()) {
+        ResourceIdentityDetail databaseEntry = toDatabaseEntry(identity);
+        newRegistrations.add(databaseEntry);
+        registrations.add(toRegistration(databaseEntry));
+      } else {
+        registrations.addAll(previouslyRegistered);
+      }
+    }
     repository.saveAll(newRegistrations);
 
+    log.info("Register {} entries ({} are new)", identities.size(), newRegistrations.size());
     return ResponseEntity.status(HttpStatus.CREATED).body(registrations);
   }
 
@@ -96,20 +102,19 @@ public class IdServiceV1ApiController {
     return value.replaceAll("[\\s\r\n]", "");
   }
 
-  private ResourceIdentityDetail toDatabaseEntry(Registration registration) {
-    ResourceIdentity resourceIdentity = registration.resourceIdentities().get(0);
+  private ResourceIdentityDetail toDatabaseEntry(ResourceIdentity resourceIdentity) {
     return ResourceIdentityDetail.builder()
-        .uuid(registration.uuid())
+        .uuid(uuidGenerator.apply(resourceIdentity))
         .system(resourceIdentity.system())
         .resource(resourceIdentity.resource())
         .identifier(resourceIdentity.identifier())
         .build();
   }
 
-  private Registration toRegistration(ResourceIdentity resourceIdentity) {
+  private Registration toRegistration(ResourceIdentityDetail resourceIdentityDetail) {
     return Registration.builder()
-        .uuid(uuidGenerator.apply(resourceIdentity))
-        .resourceIdentity(resourceIdentity)
+        .uuid(resourceIdentityDetail.uuid())
+        .resourceIdentity(resourceIdentityDetail.asResourceIdentity())
         .build();
   }
 
