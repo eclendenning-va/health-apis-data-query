@@ -19,7 +19,7 @@ The Sentinel is a set of acceptance tests that can be used to verify the correct
 
 The `Sentinel` provides the entry point for obtaining a set of test clients. Using the system
 property `sentinel`, it determines with environment should be accessed. 
-Supported `sentinel` values are `LOCAL`, `QA`, `STAGING`, `PROD`, and `STANDBY`. 
+Supported `sentinel` values are `LOCAL`, `QA`, `LAB`, `PROD`, and `STANDBY`. 
 For example, 
 
 ```
@@ -44,6 +44,26 @@ When ran in `LOCAL` mode, `ids` is started with an empty in-memory H2 database a
 is started with a [mock database](mock-database.md).
 
 
+###### Lab
+
+To support testing the Lab environment, Sentinel includes a Selenium based robot for working with
+OAuth and `id.me` authentication. 
+
+1. The `id.me` robot requires the Selenium Chrome Driver to be installed locally. You'll need to 
+   install it. See http://chromedriver.chromium.org/home
+
+2. JUnit categories are used to control which tests Sentinel run. 
+    - Most tests do not have a specific category and are intended to run as part of a normal build. 
+    - A `Lab` category is assigned to tests intended to run against the lab. 
+    - `Lab` tests are disabled by default. To run them, you must enable the `lab` profile. 
+      Lab profile disables normal unit and integration tests and enables only `Lab` category tests.
+
+3. Lab configuration is needed to interact with the lab. Sentinel will expect either System 
+   properties are specified or you've created a `sentinel/config/lab.properties` file.
+   It will complain about missing values if you've omitted. Please see a team member 
+   for sensitive information.
+
+
 ##### Java API
 To make a service request, use the `Sentinel` to create test clients for the configured environment.
 
@@ -57,4 +77,3 @@ List<ResourceIdentity> identities = Sentinel.get()
 
 // validate identities
 ```
-

@@ -19,48 +19,85 @@ import org.junit.Test;
 public class ArgonautJacksonMapperTest {
 
   private Reference reference(String path) {
-    return Reference.builder().display("display").reference(path).id("id").build();
+    return Reference.builder().display("display-value").reference(path).id("id-value").build();
   }
 
   @Test
   @SneakyThrows
   public void referencesAreQualified() {
+    ReferenceSerializerProperties disableEncounter =
+        ReferenceSerializerProperties.builder()
+            .appointment(true)
+            .encounter(false)
+            .location(true)
+            .organization(true)
+            .practitioner(true)
+            .build();
+
     FugaziReferencemajig input =
         FugaziReferencemajig.builder()
-            .whocares("noone")
-            .me(true)
-            .ref(reference("r1"))
-            .thing(reference(null))
-            .thing(reference(""))
-            .thing(reference("http://qualified.is.not/touched"))
-            .thing(reference("no/slash"))
-            .thing(reference("/cool/a/slash"))
-            .inner(FugaziReferencemajig.builder().ref(reference("me/too")).build())
+            .whocares("noone") // kept
+            .me(true) // kept
+            .ref(reference("AllergyIntolerance/1234")) // kept
+            .nope(reference("https://example.com/api/Encounter/1234")) // removed
+            .thing(reference(null)) // kept
+            .thing(reference("")) // kept
+            .thing(reference("http://qualified.is.not/touched")) // kept
+            .thing(reference("no/slash")) // kept
+            .thing(reference("/cool/a/slash")) // kept
+            .thing(reference("Encounter")) // kept
+            .thing(reference("Encounter/1234")) // removed
+            .thing(reference("https://example.com/api/Encounter/1234")) // removed
+            .thing(reference("/Organization")) // kept
+            .thing(reference("Organization/1234")) // kept
+            .thing(reference("https://example.com/api/Organization/1234")) // kept
+            .thing(reference("Practitioner/987"))
+            .inner(
+                FugaziReferencemajig.builder()
+                    .ref(
+                        Reference.builder()
+                            .reference("Appointment/615f31df-f0c7-5100-ac42-7fb952c630d0")
+                            .display(null)
+                            .build())
+                    .build()) // kept
             .build();
 
     FugaziReferencemajig expected =
         FugaziReferencemajig.builder()
             .whocares("noone")
             .me(true)
-            .ref(reference("https://example.com/api/r1"))
+            .ref(reference("https://example.com/api/AllergyIntolerance/1234"))
             .thing(reference(null))
             .thing(reference(null))
             .thing(reference("http://qualified.is.not/touched"))
             .thing(reference("https://example.com/api/no/slash"))
             .thing(reference("https://example.com/api/cool/a/slash"))
+            .thing(reference("https://example.com/api/Encounter"))
+            .thing(reference("https://example.com/api/Organization"))
+            .thing(reference("https://example.com/api/Organization/1234"))
+            .thing(reference("https://example.com/api/Organization/1234"))
+            .thing(reference("https://example.com/api/Practitioner/987"))
             .inner(
                 FugaziReferencemajig.builder()
-                    .ref(reference("https://example.com/api/me/too"))
+                    .ref(
+                        Reference.builder()
+                            .reference(
+                                "https://example.com/api/Appointment/615f31df-f0c7-5100-ac42-7fb952c630d0")
+                            .build())
                     .build())
             .build();
 
     String qualifiedJson =
-        new ArgonautJacksonMapper("https://example.com", "api")
+        new ArgonautJacksonMapper(
+                new MagicReferenceConfig("https://example.com", "api", disableEncounter))
             .objectMapper()
+            .writerWithDefaultPrettyPrinter()
             .writeValueAsString(input);
 
     FugaziReferencemajig actual =
         JacksonConfig.createMapper().readValue(qualifiedJson, FugaziReferencemajig.class);
+
+    System.out.println(qualifiedJson);
 
     assertThat(actual).isEqualTo(expected);
   }
@@ -75,6 +112,7 @@ public class ArgonautJacksonMapperTest {
   )
   public static class FugaziReferencemajig {
     Reference ref;
+    Reference nope;
     @Singular List<Reference> things;
     FugaziReferencemajig inner;
     String whocares;
