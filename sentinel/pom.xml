@@ -14,6 +14,9 @@
     <sentinel.skipLaunch>false</sentinel.skipLaunch>
     <process-exec-maven-plugin.version>0.7</process-exec-maven-plugin.version>
     <selenium.version>3.141.59</selenium.version>
+    <!-- JUnit -->
+    <groups/>
+    <excludedGroups>gov.va.health.api.sentinel.categories.Lab</excludedGroups>
   </properties>
   <dependencies>
     <dependency>
@@ -313,15 +316,18 @@
       </properties>
     </profile>
     <profile>
-      <id>staging</id>
+      <id>lab</id>
       <activation>
         <property>
           <name>sentinel</name>
-          <value>STAGING</value>
+          <value>LAB</value>
         </property>
       </activation>
       <properties>
         <sentinel.skipLaunch>true</sentinel.skipLaunch>
+        <groups>gov.va.health.api.sentinel.categories.Lab</groups>
+        <excludedGroups/>
+        <skipITs>true</skipITs>
       </properties>
     </profile>
     <profile>

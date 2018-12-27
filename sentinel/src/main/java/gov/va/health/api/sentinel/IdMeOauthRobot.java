@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Builder.Default;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,7 @@ import lombok.Singular;
 import lombok.SneakyThrows;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -37,7 +39,10 @@ public class IdMeOauthRobot {
 
   private String authorize() {
     ChromeOptions chromeOptions = new ChromeOptions();
-    chromeOptions.addArguments("--headless");
+    chromeOptions.setHeadless(config.headless());
+    if (StringUtils.isNotBlank(config.chromeDriver())) {
+      System.setProperty("webdriver.chrome.driver", config.chromeDriver());
+    }
     WebDriver driver = new ChromeDriver(chromeOptions);
 
     driver.get(config.authorization().asUrl());
@@ -97,6 +102,8 @@ public class IdMeOauthRobot {
     @NonNull Authorization authorization;
     @NonNull String tokenUrl;
     @NonNull UserCredentials user;
+    @Default boolean headless = true;
+    String chromeDriver;
 
     @Value
     @Builder
