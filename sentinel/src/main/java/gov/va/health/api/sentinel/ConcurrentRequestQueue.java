@@ -1,18 +1,27 @@
 package gov.va.health.api.sentinel;
 
-import java.util.PriorityQueue;
 import java.util.Queue;
+import java.util.Set;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ConcurrentSkipListSet;
 
+/** Provides a thread safe implementation of the request queue. */
 public class ConcurrentRequestQueue implements RequestQueue {
 
-  Queue<String> queries = setOriginalQueries();
+  /** The current items in the queue are stored here. */
+  private final Queue<String> queries = new ConcurrentLinkedQueue<>();
+  /**
+   * All items that have ever been stored in the queue are stored here. This is used to prevent
+   * duplicate entries.
+   */
+  private final Set<String> used = new ConcurrentSkipListSet<>();
 
   @Override
-  public String next() {
-    if (queries.isEmpty()) {
-      return null;
+  public void add(String url) {
+    if (!used.contains(url)) {
+      queries.add(url);
+      used.add(url);
     }
-    return queries.poll();
   }
 
   @Override
@@ -24,29 +33,10 @@ public class ConcurrentRequestQueue implements RequestQueue {
   }
 
   @Override
-  public void add(String url) {
-    queries.add(url);
-  }
-
-  public Queue<String> getQueue() {
-    if (queries.isEmpty() || queries == null) {
-      return null;
+  public String next() {
+    if (queries.isEmpty()) {
+      throw new IllegalStateException();
     }
-    return queries;
-  }
-
-  /** Hardcoded temporarily. */
-  Queue<String> setOriginalQueries() {
-    Queue<String> queue = new PriorityQueue<>();
-    queue.add("https://localhost:8090/api/AllergyIntolerance?patient=185601V825290");
-    queue.add("https://localhost:8090/api/Condition?patient=185601V825290");
-    queue.add("https://localhost:8090/api/DiagnosticReport?patient=185601V825290");
-    queue.add("https://localhost:8090/api/Immunization?patient=185601V825290");
-    queue.add("https://localhost:8090/api/Medication?patient=185601V825290");
-    queue.add("https://localhost:8090/api/MedicationOrder?patient=185601V825290");
-    queue.add("https://localhost:8090/api/MedicationStatement?patient=185601V825290");
-    queue.add("https://localhost:8090/api/Observation?patient=185601V825290");
-    queue.add("https://localhost:8090/api/Procedure?patient=185601V825290");
-    return queue;
+    return queries.poll();
   }
 }

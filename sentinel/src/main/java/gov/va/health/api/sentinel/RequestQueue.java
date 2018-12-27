@@ -1,14 +1,20 @@
 package gov.va.health.api.sentinel;
 
-import java.util.Queue;
-
-/** The RequestQueue holds the Queue utilized by the Crawler. */
+/**
+ * The request queue manages fully qualified URLs for reading Argonaut resources. It prohibits
+ * entries from being added multiple times. Implementations should make provisions for
+ * multi-threaded environments.
+ */
 public interface RequestQueue {
-  String next();
-
-  boolean hasNext();
-
+  /** Add a fully qualified URL if it has not been previously added. */
   void add(String url);
 
-  Queue<String> getQueue();
+  /** Return true if there is at least one more item in the queue. */
+  boolean hasNext();
+
+  /**
+   * Return the next item in the queue if available. If the queue has been depleted, an
+   * IllegalStateException will be thrown.
+   */
+  String next();
 }
