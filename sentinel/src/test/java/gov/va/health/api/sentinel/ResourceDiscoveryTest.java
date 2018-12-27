@@ -16,16 +16,24 @@ import lombok.NoArgsConstructor;
 import org.junit.Test;
 
 public class ResourceDiscoveryTest {
-  ResourceDiscovery resourceDiscovery = new ResourceDiscovery();
   private final ConformanceTestData data = ConformanceTestData.get();
+  ResourceDiscovery resourceDiscovery =
+      ResourceDiscovery.builder()
+          .url("https://localhost:8090/api/")
+          .patientId("185601V825290")
+          .build();
+
+  private String expectedSearchUrl(String resource) {
+    return resourceDiscovery.url() + resource + "?patient=" + resourceDiscovery.patientId();
+  }
 
   @Test
   public void extractRestResources() {
-    assertThat(resourceDiscovery.extractRestResources(null)).isNull();
+    assertThat(resourceDiscovery.extractRestResources(null)).isEmpty();
     assertThat(resourceDiscovery.extractRestResources(data.noRestListConformanceStatement))
-        .isNull();
+        .isEmpty();
     assertThat(resourceDiscovery.extractRestResources(data.emptyRestListConformanceStatement))
-        .isNull();
+        .isEmpty();
     assertThat(
             resourceDiscovery.extractRestResources(
                 data.singleResourceDoubleRestListConformanceStatement))
@@ -37,45 +45,42 @@ public class ResourceDiscoveryTest {
   }
 
   @Test
-  public void patientSearchableResources() {
-    assertThat(resourceDiscovery.patientSearchableResources(emptyList())).isEmpty();
-    assertThat(resourceDiscovery.patientSearchableResources(emptyList())).isEmpty();
-    assertThat(resourceDiscovery.patientSearchableResources(data.noSearchableResources)).isEmpty();
-    assertThat(resourceDiscovery.patientSearchableResources(data.mixedSearchableResources))
-        .isEqualTo(singletonList(data.patientSearchableRestResource.type()));
-    assertThat(resourceDiscovery.patientSearchableResources(data.bothSearchableResources))
-        .isEqualTo(
-            Arrays.asList(
-                data.patientSearchableRestResource.type(),
-                data.patientSearchableRestResource.type()));
-  }
-
-  @Test
   public void patientQueries() {
+    String read = resourceDiscovery.url() + "Patient/" + resourceDiscovery.patientId();
+    String search = resourceDiscovery.url() + "Patient?_id=" + resourceDiscovery.patientId();
     assertThat(resourceDiscovery.patientQueries(emptyList())).isEmpty();
     assertThat(
-            resourceDiscovery.patientSearchableResources(
+            resourceDiscovery.patientSearchableResourceQueries(
                 singletonList(data.emptySearchParamRestResource)))
         .isEmpty();
+    assertThat(resourceDiscovery.patientQueries(singletonList(data.readableAndSearchablePatient)))
+        .containsExactlyInAnyOrder(read, search);
     assertThat(
-            resourceDiscovery
-                .patientQueries(singletonList(data.readableAndSearchablePatient))
-                .size())
-        .isEqualTo(2);
+            resourceDiscovery.patientQueries(singletonList(data.readableAndNotSearchablePatient)))
+        .containsExactly(read);
     assertThat(
-            resourceDiscovery
-                .patientQueries(singletonList(data.readableAndNotSearchablePatient))
-                .size())
-        .isEqualTo(1);
-    assertThat(
-            resourceDiscovery
-                .patientQueries(singletonList(data.notReadableAndSearchablePatient))
-                .size())
-        .isEqualTo(1);
+            resourceDiscovery.patientQueries(singletonList(data.notReadableAndSearchablePatient)))
+        .containsExactly(search);
     assertThat(
             resourceDiscovery.patientQueries(
                 singletonList(data.notReadableAndNotSearchablePatient)))
         .isEmpty();
+  }
+
+  @Test
+  public void patientSearchableResources() {
+    assertThat(resourceDiscovery.patientSearchableResourceQueries(emptyList())).isEmpty();
+    assertThat(resourceDiscovery.patientSearchableResourceQueries(emptyList())).isEmpty();
+    assertThat(resourceDiscovery.patientSearchableResourceQueries(data.noSearchableResources))
+        .isEmpty();
+    assertThat(resourceDiscovery.patientSearchableResourceQueries(data.mixedSearchableResources))
+        .isEqualTo(singletonList(expectedSearchUrl(data.patientSearchableRestResource.type())));
+
+    assertThat(resourceDiscovery.patientSearchableResourceQueries(data.bothSearchableResources))
+        .isEqualTo(
+            Arrays.asList(
+                expectedSearchUrl(data.patientSearchableRestResource.type()),
+                expectedSearchUrl(data.patientSearchableRestResource.type())));
   }
 
   @NoArgsConstructor(staticName = "get")
@@ -111,16 +116,16 @@ public class ResourceDiscoveryTest {
             .build();
     RestResource patientSearchableRestResource =
         RestResource.builder()
-            .type("searchable by patient")
+            .type("searchable-by-patient")
             .searchParam(singletonList(SearchParam.builder().name("patient").build()))
             .build();
     RestResource identifierSearchableRestResource =
         RestResource.builder()
-            .type("not searchable by patient")
+            .type("not-searchable-by-patient")
             .searchParam(singletonList(SearchParam.builder().name("_id").build()))
             .build();
     RestResource emptySearchParamRestResource =
-        RestResource.builder().type("empty search param").searchParam(null).build();
+        RestResource.builder().type("empty-search-param").searchParam(null).build();
     List<RestResource> noSearchableResources =
         Arrays.asList(identifierSearchableRestResource, identifierSearchableRestResource);
     List<RestResource> mixedSearchableResources =
