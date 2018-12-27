@@ -39,11 +39,14 @@ public class ResourceDiscovery {
     if (conformanceStatement.rest() == null || conformanceStatement.rest().isEmpty()) {
       return null;
     }
-    //dont get(0)
-    return conformanceStatement.rest().get(0).resource();
+    return conformanceStatement
+        .rest()
+        .stream()
+        .flatMap(r -> r.resource().stream())
+        .collect(Collectors.toList());
   }
 
-  private List<String> patientQueries(List<RestResource> restResources) {
+  List<String> patientQueries(List<RestResource> restResources) {
     List<String> patientQueries = new ArrayList<>();
     Boolean isReadable;
     Boolean isSearchable;
@@ -73,7 +76,7 @@ public class ResourceDiscovery {
     return patientQueries;
   }
 
-  private List<String> patientSearchableResources(List<RestResource> restResources) {
+  List<String> patientSearchableResources(List<RestResource> restResources) {
     return restResources
         .stream()
         .filter(this::isSearchableByPatient)
