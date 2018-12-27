@@ -9,12 +9,15 @@ public class ConcurrentRequestQueue implements RequestQueue {
 
   @Override
   public String next() {
+    if (queries.isEmpty()) {
+      return null;
+    }
     return queries.poll();
   }
 
   @Override
   public boolean hasNext() {
-    if (queries.peek() == null) {
+    if (queries.isEmpty() || queries.peek() == null) {
       return false;
     }
     return true;
@@ -23,6 +26,13 @@ public class ConcurrentRequestQueue implements RequestQueue {
   @Override
   public void add(String url) {
     queries.add(url);
+  }
+
+  public Queue<String> getQueue() {
+    if (queries.isEmpty() || queries == null) {
+      return null;
+    }
+    return queries;
   }
 
   /** Hardcoded temporarily. */

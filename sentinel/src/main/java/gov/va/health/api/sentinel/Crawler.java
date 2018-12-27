@@ -12,7 +12,4 @@ public class Crawler {
       RestAssured.given().get(requestQueue.next()).then().log().all();
     }
   }
-
-  
-
 }
