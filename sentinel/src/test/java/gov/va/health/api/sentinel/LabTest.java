@@ -15,7 +15,7 @@ public class LabTest {
   LabRobots robots = LabRobots.fromSystemProperties();
 
   @Test
-  public void login() {
+  public void crawl() {
     assertThat(robots.user1().token().accessToken()).isNotBlank();
     ResourceDiscovery discovery =
         ResourceDiscovery.builder()

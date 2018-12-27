@@ -1,4 +1,4 @@
-package gov.va.health.api.sentinel;
+package gov.va.health.api.sentinel.crawler;
 
 /**
  * The request queue manages fully qualified URLs for reading Argonaut resources. It prohibits

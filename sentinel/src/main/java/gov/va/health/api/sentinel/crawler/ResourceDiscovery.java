@@ -1,4 +1,4 @@
-package gov.va.health.api.sentinel;
+package gov.va.health.api.sentinel.crawler;
 
 import static java.util.Collections.emptyList;
 
@@ -15,6 +15,7 @@ import java.util.stream.Stream;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * This class processes a conformance statment and generates a set of queries for resources as
@@ -27,6 +28,7 @@ import lombok.Value;
  * search-by-patient (.../Procedure?patient=1234) query is included.
  */
 @Value
+@Slf4j
 public class ResourceDiscovery {
   String url;
   String patientId;
@@ -121,6 +123,10 @@ public class ResourceDiscovery {
     List<String> queries = new LinkedList<>();
     queries.addAll(patientSearchableResourceQueries(restResources));
     queries.addAll(patientQueries(restResources));
+    log.info("Discovered {} queries", queries.size());
+    if (log.isInfoEnabled()) {
+      queries.forEach(q -> log.info("Found {}", q));
+    }
     return queries;
   }
 }
