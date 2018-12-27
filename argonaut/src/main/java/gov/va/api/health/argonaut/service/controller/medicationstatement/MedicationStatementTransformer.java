@@ -1,9 +1,11 @@
 package gov.va.api.health.argonaut.service.controller.medicationstatement;
 
+import static gov.va.api.health.argonaut.service.controller.Transformers.allNull;
 import static gov.va.api.health.argonaut.service.controller.Transformers.asDateTimeString;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convert;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convertAll;
 import static gov.va.api.health.argonaut.service.controller.Transformers.ifPresent;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
 import gov.va.api.health.argonaut.api.datatypes.Coding;
@@ -59,6 +61,12 @@ public class MedicationStatementTransformer implements MedicationStatementContro
   }
 
   CodeableConcept codeableConcept(CdwCodeableConcept maybeSource) {
+    if (maybeSource == null) {
+      return null;
+    }
+    if (maybeSource.getCoding().isEmpty() && isBlank(maybeSource.getText())) {
+      return null;
+    }
     return convert(
         maybeSource,
         source ->
@@ -74,17 +82,25 @@ public class MedicationStatementTransformer implements MedicationStatementContro
   }
 
   List<Coding> codings(List<CdwCoding> source) {
-    return convertAll(
-        source,
-        item ->
-            Coding.builder()
-                .system(item.getSystem())
-                .code(item.getCode())
-                .display(item.getDisplay())
-                .build());
+    List<Coding> codings = convertAll(source, this::coding);
+    return codings == null || codings.isEmpty() ? null : codings;
+  }
+
+  private Coding coding(CdwCoding cdw) {
+    if (cdw == null || allNull(cdw.getCode(), cdw.getSystem(), cdw.getDisplay())) {
+      return null;
+    }
+    return Coding.builder()
+        .system(cdw.getSystem())
+        .code(cdw.getCode())
+        .display(cdw.getDisplay())
+        .build();
   }
 
   Reference reference(CdwReference maybeCdw) {
+    if (maybeCdw == null || allNull(maybeCdw.getDisplay(), maybeCdw.getReference())) {
+      return null;
+    }
     return convert(
         maybeCdw,
         source ->

@@ -76,8 +76,8 @@ public class AppointmentController {
   public Appointment read(@PathVariable("publicId") String publicId) {
     return transformer.apply(
         firstPayloadItem(
-            hasPayload(
-                search(Parameters.forIdentity(publicId)).getAppointments().getAppointment())));
+            hasPayload(search(Parameters.forIdentity(publicId)).getAppointments())
+                .getAppointment()));
   }
 
   private CdwAppointment101Root search(MultiValueMap<String, String> params) {
@@ -88,7 +88,7 @@ public class AppointmentController {
             .version("1.01")
             .parameters(params)
             .build();
-    return mrAndersonClient.search(query);
+    return hasPayload(mrAndersonClient.search(query));
   }
 
   /** Search by _id. */

@@ -1,9 +1,11 @@
 package gov.va.api.health.argonaut.service.controller.immunization;
 
+import static gov.va.api.health.argonaut.service.controller.Transformers.allNull;
 import static gov.va.api.health.argonaut.service.controller.Transformers.asDateTimeString;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convert;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convertAll;
 import static gov.va.api.health.argonaut.service.controller.Transformers.ifPresent;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import gov.va.api.health.argonaut.api.DataAbsentReason;
 import gov.va.api.health.argonaut.api.DataAbsentReason.Reason;
@@ -57,14 +59,19 @@ public class ImmunizationTransformer implements ImmunizationController.Transform
   }
 
   List<Coding> codings(List<CdwCoding> source) {
-    return convertAll(
-        source,
-        item ->
-            Coding.builder()
-                .system(item.getSystem())
-                .code(item.getCode())
-                .display(item.getDisplay())
-                .build());
+    List<Coding> codings = convertAll(source, this::coding);
+    return codings == null || codings.isEmpty() ? null : codings;
+  }
+
+  private Coding coding(CdwCoding cdw) {
+    if (cdw == null || allNull(cdw.getCode(), cdw.getDisplay(), cdw.getSystem())) {
+      return null;
+    }
+    return Coding.builder()
+        .system(cdw.getSystem())
+        .code(cdw.getCode())
+        .display(cdw.getDisplay())
+        .build();
   }
 
   List<Identifier> identifier(CdwIdentifiers maybeSource) {
@@ -91,6 +98,9 @@ public class ImmunizationTransformer implements ImmunizationController.Transform
   }
 
   Reference reference(CdwReference maybeSource) {
+    if (maybeSource == null || allNull(maybeSource.getReference(), maybeSource.getDisplay())) {
+      return null;
+    }
     return convert(
         maybeSource,
         source ->
@@ -134,7 +144,13 @@ public class ImmunizationTransformer implements ImmunizationController.Transform
     return null;
   }
 
-  private CodeableConcept vaccineCode(CdwCodeableConcept maybeSource) {
+  CodeableConcept vaccineCode(CdwCodeableConcept maybeSource) {
+    if (maybeSource == null) {
+      return null;
+    }
+    if (maybeSource.getCoding().isEmpty() && isBlank(maybeSource.getText())) {
+      return null;
+    }
     return convert(
         maybeSource,
         source ->

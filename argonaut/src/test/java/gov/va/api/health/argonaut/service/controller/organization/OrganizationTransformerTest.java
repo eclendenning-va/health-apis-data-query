@@ -1,5 +1,6 @@
 package gov.va.api.health.argonaut.service.controller.organization;
 
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import gov.va.api.health.argonaut.api.datatypes.Address;
@@ -21,7 +22,6 @@ import gov.va.dvp.cdw.xsd.model.CdwOrganizationType.CdwCoding;
 import gov.va.dvp.cdw.xsd.model.CdwOrganizationTypeCode;
 import gov.va.dvp.cdw.xsd.model.CdwOrganizationTypeDisplay;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import org.junit.Test;
 
@@ -60,7 +60,7 @@ public class OrganizationTransformerTest {
   @Test
   public void contactPointSystem() {
     assertThat(tx.contactPointSystem(null)).isNull();
-    assertThat(tx.contactPointSystem(" ")).isNull();
+    assertThat(tx.contactPointSystem("")).isNull();
     assertThat(tx.contactPointSystem("phone")).isEqualTo(ContactPointSystem.phone);
     assertThat(tx.contactPointSystem("fax")).isEqualTo(ContactPointSystem.fax);
     assertThat(tx.contactPointSystem("email")).isEqualTo(ContactPointSystem.email);
@@ -95,7 +95,7 @@ public class OrganizationTransformerTest {
 
   private static class Expected {
     private List<Address> addresses() {
-      return Collections.singletonList(
+      return singletonList(
           Address.builder().line(lines()).city("HOUSTON").state("TX").postalCode("77027").build());
     }
 
@@ -116,7 +116,7 @@ public class OrganizationTransformerTest {
     }
 
     private List<ContactPoint> telecoms() {
-      return Collections.singletonList(
+      return singletonList(
           ContactPoint.builder()
               .system(ContactPointSystem.phone)
               .value("(800)466-8397")
@@ -129,7 +129,7 @@ public class OrganizationTransformerTest {
     }
 
     private List<Coding> typeCoding() {
-      return Collections.singletonList(
+      return singletonList(
           Coding.builder()
               .system("http://hl7.org/fhir/organization-type")
               .code("ins")

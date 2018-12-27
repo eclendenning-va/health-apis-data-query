@@ -16,7 +16,6 @@ import gov.va.api.health.argonaut.service.mranderson.client.Query;
 import gov.va.dvp.cdw.xsd.model.CdwProcedure101Root;
 import java.util.Collections;
 import java.util.function.Function;
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
@@ -52,15 +51,11 @@ public class ProcedureController {
   private MrAndersonClient mrAndersonClient;
   private Bundler bundler;
 
-  private Procedure.Bundle bundle(
-      MultiValueMap<String, String> parameters,
-      int page,
-      int count,
-      HttpServletRequest servletRequest) {
+  private Procedure.Bundle bundle(MultiValueMap<String, String> parameters, int page, int count) {
     CdwProcedure101Root root = search(parameters);
     LinkConfig linkConfig =
         LinkConfig.builder()
-            .path(servletRequest.getRequestURI())
+            .path("Procedure")
             .queryParams(parameters)
             .page(page)
             .recordsPerPage(count)
@@ -82,7 +77,7 @@ public class ProcedureController {
   public Procedure read(@PathVariable("publicId") String publicId) {
     return transformer.apply(
         firstPayloadItem(
-            hasPayload(search(Parameters.forIdentity(publicId)).getProcedures().getProcedure())));
+            hasPayload(search(Parameters.forIdentity(publicId)).getProcedures()).getProcedure()));
   }
 
   private CdwProcedure101Root search(MultiValueMap<String, String> params) {
@@ -93,7 +88,7 @@ public class ProcedureController {
             .version("1.01")
             .parameters(params)
             .build();
-    return mrAndersonClient.search(query);
+    return hasPayload(mrAndersonClient.search(query));
   }
 
   /** Search by _id. */
@@ -101,13 +96,12 @@ public class ProcedureController {
   public Procedure.Bundle searchById(
       @RequestParam("_id") String id,
       @RequestParam(value = "page", defaultValue = "1") @Min(1) int page,
-      @RequestParam(value = "_count", defaultValue = "1") @Min(0) int count,
-      HttpServletRequest servletRequest) {
+      @RequestParam(value = "_count", defaultValue = "1") @Min(0) int count) {
+
     return bundle(
         Parameters.builder().add("identifier", id).add("page", page).add("_count", count).build(),
         page,
-        count,
-        servletRequest);
+        count);
   }
 
   /** Search by Identifier. */
@@ -115,13 +109,11 @@ public class ProcedureController {
   public Procedure.Bundle searchByIdentifier(
       @RequestParam("identifier") String id,
       @RequestParam(value = "page", defaultValue = "1") @Min(1) int page,
-      @RequestParam(value = "_count", defaultValue = "1") @Min(0) int count,
-      HttpServletRequest servletRequest) {
+      @RequestParam(value = "_count", defaultValue = "1") @Min(0) int count) {
     return bundle(
         Parameters.builder().add("identifier", id).add("page", page).add("_count", count).build(),
         page,
-        count,
-        servletRequest);
+        count);
   }
 
   /** Search by patient. */
@@ -129,13 +121,11 @@ public class ProcedureController {
   public Procedure.Bundle searchByPatient(
       @RequestParam("patient") String patient,
       @RequestParam(value = "page", defaultValue = "1") @Min(1) int page,
-      @RequestParam(value = "_count", defaultValue = "15") @Min(0) int count,
-      HttpServletRequest servletRequest) {
+      @RequestParam(value = "_count", defaultValue = "15") @Min(0) int count) {
     return bundle(
         Parameters.builder().add("patient", patient).add("page", page).add("_count", count).build(),
         page,
-        count,
-        servletRequest);
+        count);
   }
 
   /** Search by patient and date. */
@@ -145,8 +135,7 @@ public class ProcedureController {
       @RequestParam(value = "date", required = false) @Valid @DateTimeParameter @Size(max = 2)
           String[] date,
       @RequestParam(value = "page", defaultValue = "1") @Min(1) int page,
-      @RequestParam(value = "_count", defaultValue = "15") @Min(0) int count,
-      HttpServletRequest servletRequest) {
+      @RequestParam(value = "_count", defaultValue = "15") @Min(0) int count) {
     return bundle(
         Parameters.builder()
             .add("patient", patient)
@@ -155,8 +144,7 @@ public class ProcedureController {
             .add("_count", count)
             .build(),
         page,
-        count,
-        servletRequest);
+        count);
   }
 
   /** Hey, this is a validate endpoint. It validates. */

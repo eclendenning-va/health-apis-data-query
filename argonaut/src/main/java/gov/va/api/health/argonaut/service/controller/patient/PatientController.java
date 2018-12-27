@@ -86,7 +86,7 @@ public class PatientController {
             .version("1.03")
             .parameters(params)
             .build();
-    return mrAndersonClient.search(query);
+    return hasPayload(mrAndersonClient.search(query));
   }
 
   /** Search by Family+Gender. */

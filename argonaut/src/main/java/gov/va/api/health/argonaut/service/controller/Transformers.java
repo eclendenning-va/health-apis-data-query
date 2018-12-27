@@ -130,7 +130,10 @@ public final class Transformers {
    */
   static class MissingPayload extends TransformationException {
     MissingPayload() {
-      super("Payload is missing, but no errors reported by Mr. Anderson.");
+      super(
+          "Payload is missing, but no errors reported by Mr. Anderson."
+              + " This can occur when the resource is registered with the identity service"
+              + " but the database returns an empty search result.");
     }
   }
 

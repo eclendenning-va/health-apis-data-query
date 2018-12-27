@@ -6,6 +6,7 @@ import static gov.va.api.health.argonaut.service.controller.Transformers.convert
 import static gov.va.api.health.argonaut.service.controller.Transformers.convertAll;
 import static gov.va.api.health.argonaut.service.controller.Transformers.ifPresent;
 import static java.util.Collections.singletonList;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import gov.va.api.health.argonaut.api.datatypes.Address;
 import gov.va.api.health.argonaut.api.datatypes.Address.AddressUse;
@@ -43,8 +44,6 @@ import gov.va.dvp.cdw.xsd.model.CdwPractitionerTelecomSystem;
 import gov.va.dvp.cdw.xsd.model.CdwPractitionerTelecomUse;
 import gov.va.dvp.cdw.xsd.model.CdwReference;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -133,7 +132,7 @@ public class PractitionerTransformer implements PractitionerController.Transform
   }
 
   List<String> nameList(String source) {
-    if (source == null) {
+    if (isBlank(source)) {
       return null;
     }
     return singletonList(source);
@@ -175,20 +174,10 @@ public class PractitionerTransformer implements PractitionerController.Transform
   }
 
   List<PractitionerRole> practitionerRoles(CdwPractitionerRoles source) {
-    if (source == null || source.getPractitionerRole() == null) {
-      return null;
-    }
     List<PractitionerRole> practitionerRoles =
-        source
-            .getPractitionerRole()
-            .stream()
-            .map(this::practitionerRole)
-            .filter(Objects::nonNull)
-            .collect(Collectors.toList());
-    if (practitionerRoles.isEmpty()) {
-      return null;
-    }
-    return practitionerRoles;
+        convertAll(
+            ifPresent(source, CdwPractitionerRoles::getPractitionerRole), this::practitionerRole);
+    return practitionerRoles == null || practitionerRoles.isEmpty() ? null : practitionerRoles;
   }
 
   CodeableConcept role(CdwPractitionerRoleCoding source) {

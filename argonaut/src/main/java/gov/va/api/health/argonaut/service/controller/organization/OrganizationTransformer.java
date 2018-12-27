@@ -63,8 +63,8 @@ public class OrganizationTransformer implements OrganizationController.Transform
         .build();
   }
 
-  private Coding coding(CdwCoding cdw) {
-    if (allNull(cdw.getCode(), cdw.getDisplay(), cdw.getSystem())) {
+  Coding coding(CdwCoding cdw) {
+    if (cdw == null || allNull(cdw.getCode(), cdw.getDisplay(), cdw.getSystem())) {
       return null;
     }
     return Coding.builder()
@@ -101,9 +101,9 @@ public class OrganizationTransformer implements OrganizationController.Transform
                 .build());
   }
 
-  CodeableConcept type(CdwOrganizationType optionalSource) {
+  CodeableConcept type(CdwOrganizationType maybeSource) {
     return convert(
-        ifPresent(optionalSource, CdwOrganizationType::getCoding),
+        ifPresent(maybeSource, CdwOrganizationType::getCoding),
         cdw -> CodeableConcept.builder().coding(codings(cdw)).build());
   }
 }

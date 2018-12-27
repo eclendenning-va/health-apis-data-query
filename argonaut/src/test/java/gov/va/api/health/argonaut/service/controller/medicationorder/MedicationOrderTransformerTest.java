@@ -1,9 +1,12 @@
 package gov.va.api.health.argonaut.service.controller.medicationorder;
 
 import static gov.va.api.health.argonaut.service.controller.Transformers.asDateTimeString;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
+import gov.va.api.health.argonaut.api.datatypes.Coding;
 import gov.va.api.health.argonaut.api.datatypes.Duration;
 import gov.va.api.health.argonaut.api.datatypes.SimpleQuantity;
 import gov.va.api.health.argonaut.api.datatypes.Timing;
@@ -13,6 +16,7 @@ import gov.va.api.health.argonaut.api.resources.MedicationOrder.DispenseRequest;
 import gov.va.api.health.argonaut.api.resources.MedicationOrder.DosageInstruction;
 import gov.va.api.health.argonaut.api.resources.MedicationOrder.Status;
 import gov.va.dvp.cdw.xsd.model.CdwCodeableConcept;
+import gov.va.dvp.cdw.xsd.model.CdwCoding;
 import gov.va.dvp.cdw.xsd.model.CdwDuration;
 import gov.va.dvp.cdw.xsd.model.CdwMedicationOrder103Root;
 import gov.va.dvp.cdw.xsd.model.CdwMedicationOrder103Root.CdwMedicationOrders.CdwMedicationOrder.CdwDispenseRequest;
@@ -22,7 +26,6 @@ import gov.va.dvp.cdw.xsd.model.CdwMedicationOrder103Root.CdwMedicationOrders.Cd
 import gov.va.dvp.cdw.xsd.model.CdwMedicationOrder103Root.CdwMedicationOrders.CdwMedicationOrder.CdwDosageInstructions.CdwDosageInstruction.CdwTiming;
 import gov.va.dvp.cdw.xsd.model.CdwReference;
 import gov.va.dvp.cdw.xsd.model.CdwSimpleQuantity;
-import java.util.Collections;
 import java.util.List;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -42,6 +45,15 @@ public class MedicationOrderTransformerTest {
         .isEqualTo(expected.additionalInstructions());
     assertThat(tx.additionalInstructions(null)).isNull();
     assertThat(tx.additionalInstructions(new CdwCodeableConcept()));
+  }
+
+  @Test
+  public void additionalInstructionsCodings() {
+    assertThat(tx.additionalInstructionsCodings(cdw.additionalInstructionsCodings()))
+        .isEqualTo(expected.additionalInstructionsCodings());
+    assertThat(tx.additionalInstructionsCodings(null)).isNull();
+    assertThat(tx.additionalInstructionsCodings(emptyList())).isNull();
+    assertThat(tx.additionalInstructionsCodings(singletonList(new CdwCoding()))).isNull();
   }
 
   @Test
@@ -89,17 +101,27 @@ public class MedicationOrderTransformerTest {
         .isEqualTo(expected.doseQuantity().value());
   }
 
+  @Test(expected = IllegalArgumentException.class)
+  public void doseQuantityValueCannotTransformStringToDouble() {
+    tx.doseQuantityValue("ten");
+  }
+
   @Test
   public void expectedSupplyDuration() {
     assertThat(tx.expectedSupplyDuration(cdw.expectedSupplyDuration()))
         .isEqualTo(expected.expectedSupplyDuration());
     assertThat(tx.expectedSupplyDuration(null)).isNull();
-    assertThat(tx.expectedSupplyDuration(new CdwDuration())).isNull();
   }
 
   @Test
   public void medicationOrder() {
     assertThat(tx.apply(cdw.medicationOrder())).isEqualTo(expected.medicationOrder());
+  }
+
+  @Test
+  public void numberOfRepeatsAllowed() {
+    assertThat(tx.numberOfRepeatsAllowed(null)).isNull();
+    assertThat(tx.numberOfRepeatsAllowed(0)).isNull();
   }
 
   @Test
@@ -109,11 +131,24 @@ public class MedicationOrderTransformerTest {
     assertThat(tx.quantity("")).isNull();
   }
 
+  @Test(expected = IllegalArgumentException.class)
+  public void quantityCannotTransformStringToDouble() {
+    tx.quantity("ten");
+  }
+
   @Test
   public void reference() {
     assertThat(tx.reference(null)).isNull();
     assertThat(tx.reference(new CdwReference())).isNull();
-    assertThat(tx.reference(cdw.cdwReference("patient"))).isEqualTo(expected.reference("patient"));
+    assertThat(
+            tx.reference(
+                cdw.cdwReference(
+                    "https://www.freedomstream.io/CDCArgonaut/api/Patient/185601V825290",
+                    "VETERAN,JOHN Q")))
+        .isEqualTo(
+            expected.reference(
+                "https://www.freedomstream.io/CDCArgonaut/api/Patient/185601V825290",
+                "VETERAN,JOHN Q"));
   }
 
   @Test
@@ -121,6 +156,14 @@ public class MedicationOrderTransformerTest {
     assertThat(tx.route(null)).isNull();
     assertThat(tx.route(new CdwRoute())).isNull();
     assertThat(tx.route(cdw.route())).isEqualTo(expected.route());
+  }
+
+  @Test
+  public void status() {
+    assertThat(tx.status(cdw.medicationOrder().getStatus()))
+        .isEqualTo(expected.medicationOrder().status());
+    assertThat(tx.status(null)).isNull();
+    assertThat(tx.status("")).isNull();
   }
 
   @Test
@@ -133,8 +176,17 @@ public class MedicationOrderTransformerTest {
   @Test
   public void timingCode() {
     assertThat(tx.timingCode(cdw.timingCode())).isEqualTo(expected.timingCode());
-    assertThat(tx.timingCode(new CdwDosageInstruction.CdwTiming().getCode())).isNull();
+    assertThat(tx.timingCode(new CdwCodeableConcept())).isNull();
     assertThat(tx.timingCode(null)).isNull();
+  }
+
+  @Test
+  public void timeCodeCoding() {
+    assertThat(tx.timeCodeCodings(cdw.timingCode().getCoding()))
+        .isEqualTo(expected.timingCode().coding());
+    assertThat(tx.timeCodeCodings(null)).isNull();
+    assertThat(tx.timeCodeCodings(emptyList())).isNull();
+    assertThat(tx.timeCodeCodings(singletonList(new CdwCoding()))).isNull();
   }
 
   private static class CdwSampleData {
@@ -152,10 +204,18 @@ public class MedicationOrderTransformerTest {
       return additionalInstructions;
     }
 
-    private CdwReference cdwReference(String prefix) {
+    List<CdwCoding> additionalInstructionsCodings() {
+      CdwCoding coding = new CdwCoding();
+      coding.setSystem("http://example.com");
+      coding.setDisplay("Additional Instructions display");
+      coding.setCode("Additional Instructions code");
+      return singletonList(coding);
+    }
+
+    private CdwReference cdwReference(String reference, String display) {
       CdwReference ref = new CdwReference();
-      ref.setReference(prefix + " reference");
-      ref.setDisplay(prefix + " display");
+      ref.setReference(reference);
+      ref.setDisplay(display);
       return ref;
     }
 
@@ -187,7 +247,7 @@ public class MedicationOrderTransformerTest {
 
     CdwDosageInstruction dosageInstruction() {
       CdwDosageInstruction dosageInstruction = new CdwDosageInstruction();
-      dosageInstruction.setText("dosage instruction text");
+      dosageInstruction.setText(" TAKE ONE TABLET BY MOUTH ONE TIME EACH DAY FOR CHOLESTEROL");
       dosageInstruction.setAdditionalInstructions(additionalInstructions());
       dosageInstruction.setTiming(timing());
       dosageInstruction.setAsNeededBoolean("true");
@@ -205,15 +265,18 @@ public class MedicationOrderTransformerTest {
     CdwSimpleQuantity doseQuantity() {
       CdwSimpleQuantity doseQuantity = new CdwSimpleQuantity();
       doseQuantity.setValue("10");
+      doseQuantity.setUnit("Dose quantity unit");
+      doseQuantity.setSystem("http://example.com");
+      doseQuantity.setCode("Dose quantity code");
       return doseQuantity;
     }
 
     CdwDuration expectedSupplyDuration() {
       CdwDuration expectedSupplyDuration = new CdwDuration();
-      expectedSupplyDuration.setCode("expected supply duration code");
-      expectedSupplyDuration.setSystem("http://example.com");
-      expectedSupplyDuration.setUnit("expected supply duration unit");
-      expectedSupplyDuration.setValue(10);
+      expectedSupplyDuration.setCode("d");
+      expectedSupplyDuration.setSystem("http://unitsofmeasure");
+      expectedSupplyDuration.setUnit("days");
+      expectedSupplyDuration.setValue(30);
       return expectedSupplyDuration;
     }
 
@@ -222,12 +285,21 @@ public class MedicationOrderTransformerTest {
           new CdwMedicationOrder103Root.CdwMedicationOrders.CdwMedicationOrder();
       sampleMedicationOrder.setRowNumber(1);
       sampleMedicationOrder.setCdwId("1234");
-      sampleMedicationOrder.setPatient(cdwReference("patient"));
+      sampleMedicationOrder.setPatient(
+          cdwReference(
+              "https://www.freedomstream.io/CDCArgonaut/api/Patient/185601V825290",
+              "VETERAN,JOHN Q"));
       sampleMedicationOrder.setDateWritten(dateWritten());
       sampleMedicationOrder.setStatus("active");
       sampleMedicationOrder.setDateEnded(dateEnded());
-      sampleMedicationOrder.setPrescriber(cdwReference("prescriber"));
-      sampleMedicationOrder.setMedicationReference(cdwReference("medication"));
+      sampleMedicationOrder.setPrescriber(
+          cdwReference(
+              "https://www.freedomstream.io/CDCArgonaut/api/Practitioner/93e4e3c3-8d8c-5b53-996f-6047d0232231",
+              "SMITH,ATTENDING D"));
+      sampleMedicationOrder.setMedicationReference(
+          cdwReference(
+              "https://www.freedomstream.io/CDCArgonaut/api/Medication/2f773f73-ad7f-56ca-891e-8e364c913fe0",
+              "ATORVASTATIN CALCIUM 80MG TAB"));
       sampleMedicationOrder.setDosageInstructions(dosageInstructions());
       sampleMedicationOrder.setDispenseRequest(dispenseRequest());
       return sampleMedicationOrder;
@@ -235,7 +307,7 @@ public class MedicationOrderTransformerTest {
 
     CdwRoute route() {
       CdwRoute route = new CdwRoute();
-      route.setText("route text");
+      route.setText("ORAL");
       return route;
     }
 
@@ -247,8 +319,17 @@ public class MedicationOrderTransformerTest {
 
     CdwCodeableConcept timingCode() {
       CdwCodeableConcept timingCode = new CdwCodeableConcept();
-      timingCode.setText("timing code text");
+      timingCode.setText("QDAILY");
+      timingCode.getCoding().add(timingCodeCoding());
       return timingCode;
+    }
+
+    CdwCoding timingCodeCoding() {
+      CdwCoding coding = new CdwCoding();
+      coding.setSystem("http://example.com");
+      coding.setDisplay("Time display");
+      coding.setCode("Time code");
+      return coding;
     }
   }
 
@@ -257,6 +338,15 @@ public class MedicationOrderTransformerTest {
 
     CodeableConcept additionalInstructions() {
       return CodeableConcept.builder().text("additional instructions text").build();
+    }
+
+    private List<Coding> additionalInstructionsCodings() {
+      return singletonList(
+          Coding.builder()
+              .code("Additional Instructions code")
+              .display("Additional Instructions display")
+              .system("http://example.com")
+              .build());
     }
 
     DispenseRequest dispenseRequest() {
@@ -269,7 +359,7 @@ public class MedicationOrderTransformerTest {
 
     private DosageInstruction dosageInstruction() {
       return DosageInstruction.builder()
-          .text("dosage instruction text")
+          .text(" TAKE ONE TABLET BY MOUTH ONE TIME EACH DAY FOR CHOLESTEROL")
           .additionalInstructions(additionalInstructions())
           .timing(timing())
           .asNeededBoolean(true)
@@ -279,19 +369,24 @@ public class MedicationOrderTransformerTest {
     }
 
     private List<DosageInstruction> dosageInstructions() {
-      return Collections.singletonList(dosageInstruction());
+      return singletonList(dosageInstruction());
     }
 
     private SimpleQuantity doseQuantity() {
-      return SimpleQuantity.builder().value(Double.valueOf(10)).build();
+      return SimpleQuantity.builder()
+          .value(Double.valueOf(10))
+          .system("http://example.com")
+          .unit("Dose quantity unit")
+          .code("Dose quantity code")
+          .build();
     }
 
     Duration expectedSupplyDuration() {
       return Duration.builder()
-          .code("expected supply duration code")
-          .system("http://example.com")
-          .unit("expected supply duration unit")
-          .value(Double.valueOf(10))
+          .code("d")
+          .system("http://unitsofmeasure")
+          .unit("days")
+          .value(Double.valueOf(30))
           .build();
     }
 
@@ -299,12 +394,21 @@ public class MedicationOrderTransformerTest {
       return MedicationOrder.builder()
           .resourceType("MedicationOrder")
           .id("1234")
-          .patient(reference("patient"))
+          .patient(
+              reference(
+                  "https://www.freedomstream.io/CDCArgonaut/api/Patient/185601V825290",
+                  "VETERAN,JOHN Q"))
           .dateWritten("2018-11-06")
           .status(Status.active)
           .dateEnded("2018-11-06")
-          .prescriber(reference("prescriber"))
-          .medicationReference(reference("medication"))
+          .prescriber(
+              reference(
+                  "https://www.freedomstream.io/CDCArgonaut/api/Practitioner/93e4e3c3-8d8c-5b53-996f-6047d0232231",
+                  "SMITH,ATTENDING D"))
+          .medicationReference(
+              reference(
+                  "https://www.freedomstream.io/CDCArgonaut/api/Medication/2f773f73-ad7f-56ca-891e-8e364c913fe0",
+                  "ATORVASTATIN CALCIUM 80MG TAB"))
           .dosageInstruction(dosageInstructions())
           .dispenseRequest(dispenseRequest())
           .build();
@@ -314,15 +418,12 @@ public class MedicationOrderTransformerTest {
       return SimpleQuantity.builder().value(Double.valueOf("10")).build();
     }
 
-    private Reference reference(String prefix) {
-      return Reference.builder()
-          .reference(prefix + " reference")
-          .display(prefix + " display")
-          .build();
+    private Reference reference(String reference, String display) {
+      return Reference.builder().reference(reference).display(display).build();
     }
 
     private CodeableConcept route() {
-      return CodeableConcept.builder().text("route text").build();
+      return CodeableConcept.builder().text("ORAL").build();
     }
 
     private Timing timing() {
@@ -330,7 +431,16 @@ public class MedicationOrderTransformerTest {
     }
 
     private CodeableConcept timingCode() {
-      return CodeableConcept.builder().text("timing code text").build();
+      return CodeableConcept.builder().text("QDAILY").coding(timingCodeCoding()).build();
+    }
+
+    private List<Coding> timingCodeCoding() {
+      return singletonList(
+          Coding.builder()
+              .code("Time code")
+              .display("Time display")
+              .system("http://example.com")
+              .build());
     }
   }
 }

@@ -78,10 +78,8 @@ public class MedicationStatementController {
 
     return transformer.apply(
         firstPayloadItem(
-            hasPayload(
-                search(Parameters.forIdentity(publicId))
-                    .getMedicationStatements()
-                    .getMedicationStatement())));
+            hasPayload(search(Parameters.forIdentity(publicId)).getMedicationStatements())
+                .getMedicationStatement()));
   }
 
   private CdwMedicationStatement102Root search(MultiValueMap<String, String> params) {
@@ -92,7 +90,7 @@ public class MedicationStatementController {
             .version("1.02")
             .parameters(params)
             .build();
-    return mrAndersonClient.search(query);
+    return hasPayload(mrAndersonClient.search(query));
   }
 
   /** Search by _id. */
@@ -102,7 +100,7 @@ public class MedicationStatementController {
       @RequestParam(value = "page", defaultValue = "1") @Min(1) int page,
       @RequestParam(value = "_count", defaultValue = "1") @Min(0) int count) {
     return bundle(
-        Parameters.builder().add("_id", id).add("page", page).add("_count", count).build(),
+        Parameters.builder().add("identifier", id).add("page", page).add("_count", count).build(),
         page,
         count);
   }
