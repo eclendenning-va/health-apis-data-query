@@ -1,4 +1,4 @@
-package gov.va.health.api.sentinel;
+package gov.va.health.api.sentinel.crawler;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
