@@ -3,9 +3,11 @@
   "https://checkstyle.org/dtds/suppressions_1_2.dtd">
 <suppressions>
   <!--
-    Immunization report _status and _reported are data absent reason fields.
-    Procedure _status is a data absent reason field.
+    The following resources have certain fields that are reported
+    as data absent reason extensions that is required to have a _
+    prefix by the Argonaut specification.
   -->
   <suppress checks="MemberName" files=".*(/|\\)Immunization.java" message="Member name '(_status|_reported)'"/>
   <suppress checks="MemberName" files=".*(/|\\)Procedure.java" message="Member name '(_status)'"/>
+  <suppress checks="MemberName" files=".*(/|\\)MedicationOrder.java" message="Member name '(_prescriber)'"/>
 </suppressions>
