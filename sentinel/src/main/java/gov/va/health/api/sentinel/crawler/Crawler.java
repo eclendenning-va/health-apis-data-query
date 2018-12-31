@@ -39,6 +39,7 @@ public class Crawler {
   private final ResultCollector results;
   private final Supplier<String> authenticationToken;
   private final ExecutorService executor;
+  private final boolean forceJargonaut;
 
   private void addLinksFromBundle(Object payload) {
     if (!(payload instanceof AbstractBundle<?>)) {
@@ -132,7 +133,7 @@ public class Crawler {
         RestAssured.given()
             .header("Authorization", "Bearer " + authenticationToken.get())
             .contentType("application/fhir+json")
-            // TODO .header("jargonaut", USE_JARGONAUT)
+            .header("jargonaut", forceJargonaut)
             .get(url)
             .andReturn();
     resultBuilder.httpStatus(response.getStatusCode()).body(response.getBody().asString());

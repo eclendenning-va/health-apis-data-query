@@ -1,16 +1,17 @@
 package gov.va.health.api.sentinel.crawler;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import gov.va.health.api.sentinel.crawler.Result.Outcome;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -27,6 +28,7 @@ public class FileResultsCollector implements ResultCollector {
 
   private final File directory;
   private final Set<String> summary = new ConcurrentSkipListSet<>();
+  private final AtomicInteger failures = new AtomicInteger(0);
 
   @Override
   @SneakyThrows
@@ -38,6 +40,7 @@ public class FileResultsCollector implements ResultCollector {
     if (result.outcome() != Outcome.OK) {
       log.error("{}", result.body());
       log.error("{}", result.additionalInfo());
+      failures.incrementAndGet();
     }
     printBody(filename, result);
     printMetadata(filename, result);
@@ -66,7 +69,7 @@ public class FileResultsCollector implements ResultCollector {
   public void done() {
     String csv = summary.stream().sorted().collect(Collectors.joining("\n"));
     log.info("Summary:\n{}", csv);
-    log.info("Made {} requests", summary.size());
+    log.info("Made {} requests, {} failures", summary.size(), failures.get());
     Files.write(
         new File(directory, "summary.csv").toPath(),
         summary,
@@ -78,9 +81,10 @@ public class FileResultsCollector implements ResultCollector {
   @Override
   public void init() {
     if (directory.exists()) {
-      directory.delete();
+      assertThat(directory.delete()).isTrue();
     }
-    directory.mkdirs();
+    assertThat(directory.mkdirs()).isTrue();
+    log.info("Collecting results to {}", directory.getAbsolutePath());
   }
 
   private void printBody(String filename, Result result) throws IOException {
@@ -97,8 +101,7 @@ public class FileResultsCollector implements ResultCollector {
 
   @SneakyThrows
   private void printMetadata(String filename, Result result) {
-    try (PrintWriter text =
-        new PrintWriter(new FileOutputStream(new File(directory, filename + ".txt")))) {
+    try (PrintWriter text = new PrintWriter(new File(directory, filename + ".txt"), "UTF-8")) {
       text.print("QUERY: ");
       text.println(result.query());
       text.print("TIMESTAMP: ");
