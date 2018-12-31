@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import gov.va.health.api.sentinel.categories.Lab;
 import gov.va.health.api.sentinel.crawler.ConcurrentRequestQueue;
 import gov.va.health.api.sentinel.crawler.Crawler;
+import gov.va.health.api.sentinel.crawler.FileResultsCollector;
 import gov.va.health.api.sentinel.crawler.RequestQueue;
 import gov.va.health.api.sentinel.crawler.ResourceDiscovery;
 import org.junit.Test;
@@ -27,6 +28,7 @@ public class LabTest {
     Crawler crawler =
         Crawler.builder()
             .requestQueue(q)
+            .results(new FileResultsCollector())
             .authenticationToken(() -> robots.user1().token().accessToken())
             .build();
     crawler.crawl();

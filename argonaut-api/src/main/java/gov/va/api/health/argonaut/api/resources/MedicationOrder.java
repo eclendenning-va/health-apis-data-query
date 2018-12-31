@@ -92,7 +92,7 @@ public class MedicationOrder implements Resource {
 
   @Valid CodeableConcept reasonEnded;
   @Valid @NotNull Reference patient;
-  @Valid @NotNull Reference prescriber;
+  @Valid Reference prescriber;
   @Valid Extension _prescriber;
   @Valid Reference encounter;
   @Valid CodeableConcept reasonCodeableConcept;
