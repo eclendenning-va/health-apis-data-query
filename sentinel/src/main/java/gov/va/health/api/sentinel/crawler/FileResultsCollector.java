@@ -13,25 +13,17 @@ public class FileResultsCollector implements ResultCollector {
   static final Set<String> results = new ConcurrentSkipListSet<>();
 
   @Override
-  public void init() {}
-
-  @Override
   public void add(Result result) {
     String basicInfo =
-        (results.size() + 1)
+        result.timestamp().toEpochMilli()
             + ","
             + createFilename(result.query())
             + ","
-            + result.health()
+            + result.outcome()
             + ","
             + result.query();
     results.add(basicInfo);
     log.info("Result: {}", basicInfo);
-  }
-
-  @Override
-  public void done() {
-    results.clear();
   }
 
   /**
@@ -51,4 +43,12 @@ public class FileResultsCollector implements ResultCollector {
     String filename = resourceName + params;
     return filename.replaceAll("[^A-Za-z0-9]", "");
   }
+
+  @Override
+  public void done() {
+    results.clear();
+  }
+
+  @Override
+  public void init() {}
 }
