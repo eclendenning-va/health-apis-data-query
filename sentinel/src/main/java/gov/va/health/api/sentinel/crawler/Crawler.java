@@ -11,14 +11,20 @@ import gov.va.health.api.sentinel.crawler.Result.ResultBuilder;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import java.time.Instant;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import lombok.Builder;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
 /** The Crawler will recursive request resources from an Argonaut server. I */
@@ -29,6 +35,7 @@ public class Crawler {
   private final RequestQueue requestQueue;
   private final ResultCollector results;
   private final Supplier<String> authenticationToken;
+  private final ExecutorService executor;
 
   private void addLinksFromBundle(Object payload) {
     if (!(payload instanceof AbstractBundle<?>)) {
@@ -61,18 +68,31 @@ public class Crawler {
   /** Crawler iterates through queue performing all queries. */
   public void crawl() {
     results.init();
-    while (requestQueue.hasNext()) {
-      String url = requestQueue.next();
-      ResultBuilder resultBuilder = Result.builder().timestamp(Instant.now()).query(url);
-      try {
-        process(url, resultBuilder);
-      } catch (Exception e) {
-        log.error("Failed to process {}", url, e);
-        resultBuilder.outcome(Outcome.REQUEST_FAILED).additionalInfo(asAdditionalInfo(e));
+    List<Future<?>> futures = new LinkedList<>();
+    while (hasPendingRequests(futures)) {
+      if (!requestQueue.hasNext()) {
+        continue;
       }
-      results.add(resultBuilder.build());
+      String url = requestQueue.next();
+      futures.add(
+          0,
+          executor.submit(
+              () -> {
+                ResultBuilder resultBuilder = Result.builder().timestamp(Instant.now()).query(url);
+                try {
+                  process(url, resultBuilder);
+                } catch (Exception e) {
+                  log.error("Failed to process {}", url, e);
+                  resultBuilder.outcome(Outcome.REQUEST_FAILED).additionalInfo(asAdditionalInfo(e));
+                }
+                results.add(resultBuilder.build());
+              }));
     }
     results.done();
+  }
+
+  private boolean hasPendingRequests(List<Future<?>> futures) {
+    return futures.isEmpty() || futures.stream().filter(f -> !f.isDone()).findFirst().isPresent();
   }
 
   @SneakyThrows
@@ -107,6 +127,37 @@ public class Crawler {
 
     } else {
       resultBuilder.outcome(Outcome.INVALID_STATUS);
+    }
+
+    slowDownIfApproachingRequestLimit(response);
+  }
+
+  private void slowDownIfApproachingRequestLimit(Response response) {
+    String rateLimitHeader = response.getHeader("X-RateLimit-Remaining-minute");
+    if (StringUtils.isBlank(rateLimitHeader)) {
+      return;
+    }
+    int remainingRequests;
+    try {
+      remainingRequests = Integer.parseInt(rateLimitHeader);
+    } catch (NumberFormatException e) {
+      log.warn("Cannot parse rate limit header {}, assuming full steam ahead!", rateLimitHeader);
+      return;
+    }
+    log.info("{} remaining requests per minute", remainingRequests);
+    long sleepSecs = 0;
+    if (remainingRequests < 30) {
+      sleepSecs = 15;
+    } else if (remainingRequests < 45) {
+      sleepSecs = 5;
+    }
+    if (sleepSecs > 0) {
+      log.info("Throttling requests by waiting {} seconds", sleepSecs);
+      try {
+        TimeUnit.SECONDS.sleep(sleepSecs);
+      } catch (InterruptedException e) {
+        log.warn("Got abruptly woken up by the rude neighbor!", e);
+      }
     }
   }
 }
