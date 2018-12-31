@@ -56,7 +56,7 @@ public class IdMeOauthRobot {
     userPassword.sendKeys(config.user().password());
     driver.findElement(By.className("btn-primary")).click();
     // Continue passed authentication code send form
-    log.info("Clicking to two factor authorization sham");
+    log.info("Clicking through two factor authorization sham");
     driver.findElement(By.className("btn-primary")).click();
     // Continue passed entering the authentication code
     driver.findElement(By.className("btn-primary")).click();

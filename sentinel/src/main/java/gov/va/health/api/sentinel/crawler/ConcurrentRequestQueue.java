@@ -23,7 +23,7 @@ public class ConcurrentRequestQueue implements RequestQueue {
     if (!used.contains(url)) {
       queries.add(url);
       used.add(url);
-      log.info("Added {} (depth is {})", url, queries.size());
+      log.info("Added {}", url);
     }
   }
 

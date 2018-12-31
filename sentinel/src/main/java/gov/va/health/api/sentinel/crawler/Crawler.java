@@ -16,9 +16,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import lombok.Builder;
@@ -69,10 +72,14 @@ public class Crawler {
   public void crawl() {
     results.init();
     List<Future<?>> futures = new LinkedList<>();
+
+    ScheduledExecutorService monitor = monitorPendingRequests(futures);
+
     while (hasPendingRequests(futures)) {
       if (!requestQueue.hasNext()) {
         continue;
       }
+
       String url = requestQueue.next();
       futures.add(
           0,
@@ -88,11 +95,33 @@ public class Crawler {
                 results.add(resultBuilder.build());
               }));
     }
+
+    monitor.shutdownNow();
     results.done();
   }
 
   private boolean hasPendingRequests(List<Future<?>> futures) {
-    return futures.isEmpty() || futures.stream().filter(f -> !f.isDone()).findFirst().isPresent();
+    if (futures.isEmpty()) {
+      /*
+       * If there are no futures in the list, then we have not yet processed any requests... this is
+       * the first time through the while loop.
+       */
+      return true;
+    }
+    return futures.stream().anyMatch(f -> !f.isDone());
+  }
+
+  private ScheduledExecutorService monitorPendingRequests(List<Future<?>> futures) {
+    ScheduledExecutorService monitor = Executors.newScheduledThreadPool(1);
+    monitor.scheduleAtFixedRate(
+        () -> {
+          long notDone = futures.stream().filter(f -> !f.isDone()).collect(Collectors.counting());
+          log.info("{} pending requests", notDone);
+        },
+        5,
+        5,
+        TimeUnit.SECONDS);
+    return monitor;
   }
 
   @SneakyThrows
@@ -144,7 +173,6 @@ public class Crawler {
       log.warn("Cannot parse rate limit header {}, assuming full steam ahead!", rateLimitHeader);
       return;
     }
-    log.info("{} remaining requests per minute", remainingRequests);
     long sleepSecs = 0;
     if (remainingRequests < 30) {
       sleepSecs = 15;
@@ -152,7 +180,10 @@ public class Crawler {
       sleepSecs = 5;
     }
     if (sleepSecs > 0) {
-      log.info("Throttling requests by waiting {} seconds", sleepSecs);
+      log.info(
+          "{} remaining requests per minute, throttling requests {} seconds",
+          remainingRequests,
+          sleepSecs);
       try {
         TimeUnit.SECONDS.sleep(sleepSecs);
       } catch (InterruptedException e) {

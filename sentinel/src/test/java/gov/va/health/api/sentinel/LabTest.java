@@ -8,6 +8,7 @@ import gov.va.health.api.sentinel.crawler.Crawler;
 import gov.va.health.api.sentinel.crawler.FileResultsCollector;
 import gov.va.health.api.sentinel.crawler.RequestQueue;
 import gov.va.health.api.sentinel.crawler.ResourceDiscovery;
+import java.io.File;
 import java.util.concurrent.Executors;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -30,7 +31,7 @@ public class LabTest {
         Crawler.builder()
             .executor(Executors.newFixedThreadPool(4))
             .requestQueue(q)
-            .results(new FileResultsCollector())
+            .results(new FileResultsCollector(new File("target/lab-crawl")))
             .authenticationToken(() -> robots.user1().token().accessToken())
             .build();
     crawler.crawl();
