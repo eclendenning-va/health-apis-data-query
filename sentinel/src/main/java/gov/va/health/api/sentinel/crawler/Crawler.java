@@ -2,11 +2,16 @@ package gov.va.health.api.sentinel.crawler;
 
 import static java.util.stream.Collectors.joining;
 
+import gov.va.api.health.argonaut.api.bundle.AbstractBundle;
+import gov.va.api.health.argonaut.api.bundle.AbstractEntry;
+import gov.va.api.health.argonaut.api.bundle.BundleLink;
+import gov.va.api.health.argonaut.api.bundle.BundleLink.LinkRelation;
 import gov.va.health.api.sentinel.crawler.Result.Outcome;
 import gov.va.health.api.sentinel.crawler.Result.ResultBuilder;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import java.time.Instant;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 import javax.validation.ConstraintViolation;
@@ -25,6 +30,23 @@ public class Crawler {
   private final ResultCollector results;
   private final Supplier<String> authenticationToken;
 
+  private void addLinksFromBundle(Object payload) {
+    if (!(payload instanceof AbstractBundle<?>)) {
+      return;
+    }
+    AbstractBundle<?> bundle = (AbstractBundle<?>) payload;
+    Optional<BundleLink> next =
+        bundle.link().stream().filter(l -> l.relation() == LinkRelation.next).findFirst();
+    if (next.isPresent()) {
+      requestQueue.add(next.get().url());
+    }
+    bundle.entry().stream().map(AbstractEntry::fullUrl).forEach(requestQueue::add);
+  }
+
+  private String asAdditionalInfo(ConstraintViolation<?> v) {
+    return v.getPropertyPath() + ": " + v.getMessage() + ", got: " + v.getInvalidValue();
+  }
+
   private String asAdditionalInfo(Exception e) {
     StringBuilder info = new StringBuilder();
     info.append("Exception: ")
@@ -34,10 +56,6 @@ public class Crawler {
         .append("\n----\n")
         .append(ExceptionUtils.getStackTrace(e));
     return info.toString();
-  }
-
-  private String asAdditionalInfo(ConstraintViolation<?> v) {
-    return v.getPropertyPath() + ": " + v.getMessage() + ", got: " + v.getInvalidValue();
   }
 
   /** Crawler iterates through queue performing all queries. */
@@ -73,10 +91,6 @@ public class Crawler {
     if (response.getStatusCode() == 200) {
       ReferenceInterceptor interceptor = new ReferenceInterceptor();
       Object payload = interceptor.mapper().readValue(response.asByteArray(), type);
-      log.info(
-          "Found {} references in {}",
-          interceptor.references().size(),
-          payload.getClass().getName());
       interceptor.references().forEach(u -> requestQueue.add(u));
 
       Set<ConstraintViolation<Object>> violations =
@@ -88,6 +102,9 @@ public class Crawler {
             .outcome(Outcome.INVALID_PAYLOAD)
             .additionalInfo(violations.stream().map(this::asAdditionalInfo).collect(joining("\n")));
       }
+
+      addLinksFromBundle(payload);
+
     } else {
       resultBuilder.outcome(Outcome.INVALID_STATUS);
     }

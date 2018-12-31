@@ -72,7 +72,7 @@ class ReferenceInterceptor {
         Reference reference = (Reference) value;
         if (StringUtils.isNotBlank(reference.reference())) {
           if (references.add(reference.reference())) {
-            log.info("Found reference to '{}' ({})", reference.display(), reference.reference());
+            log.debug("Found reference to '{}' ({})", reference.display(), reference.reference());
           }
         }
       }

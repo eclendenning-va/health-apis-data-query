@@ -52,8 +52,8 @@ public class FileResultsCollector implements ResultCollector {
 
   @Override
   public void done() {
-    log.info("Made {} requests", summary.size()); // TODO remove me
     log.info("Summary\n{}:", summary.stream().collect(Collectors.joining("\n")));
+    log.info("Made {} requests", summary.size());
   }
 
   @Override
