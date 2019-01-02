@@ -4,8 +4,10 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentSkipListSet;
+import lombok.extern.slf4j.Slf4j;
 
 /** Provides a thread safe implementation of the request queue. */
+@Slf4j
 public class ConcurrentRequestQueue implements RequestQueue {
 
   /** The current items in the queue are stored here. */
@@ -21,6 +23,7 @@ public class ConcurrentRequestQueue implements RequestQueue {
     if (!used.contains(url)) {
       queries.add(url);
       used.add(url);
+      log.info("Added {}", url);
     }
   }
 
