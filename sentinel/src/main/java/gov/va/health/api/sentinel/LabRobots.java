@@ -2,14 +2,19 @@ package gov.va.health.api.sentinel;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import gov.va.api.health.argonaut.api.elements.Extension;
+import gov.va.api.health.argonaut.api.resources.Conformance;
 import gov.va.health.api.sentinel.IdMeOauthRobot.Configuration.Authorization;
 import gov.va.health.api.sentinel.IdMeOauthRobot.Configuration.UserCredentials;
+import io.restassured.RestAssured;
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.Optional;
 import java.util.Properties;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
 
@@ -41,13 +46,16 @@ public class LabRobots {
   }
 
   IdMeOauthRobot makeRobot(UserCredentials user) {
+
+    SmartOnFhirUrls urls = new SmartOnFhirUrls("https://dev-api.va.gov/services/argonaut/v0");
+
     IdMeOauthRobot.Configuration config =
         IdMeOauthRobot.Configuration.builder()
             .authorization(
                 Authorization.builder()
                     .clientId(labConfig.clientId())
                     .clientSecret(labConfig.clientSecret())
-                    .authorizeUrl("https://dev-api.va.gov/oauth2/authorization")
+                    .authorizeUrl(urls.authorize())
                     .redirectUrl("https://app/after-auth")
                     .state("2VV5RqFzBG4GcgS-k6OKL6dMEUyt4FH5E-OcwaYaVzU")
                     .aud("alec")
@@ -66,7 +74,7 @@ public class LabRobots {
                     .scope("patient/Patient.read")
                     .scope("patient/Procedure.read")
                     .build())
-            .tokenUrl("https://dev-api.va.gov/oauth2/token")
+            .tokenUrl(urls.token())
             .user(user)
             .chromeDriver(labConfig.driver())
             .headless(labConfig.headless())
@@ -177,6 +185,53 @@ public class LabRobots {
       String value = properties.getProperty(name, "");
       assertThat(value).withFailMessage("System property %s must be specified.", name).isNotBlank();
       return value;
+    }
+  }
+
+  @Value
+  private static class SmartOnFhirUrls {
+    String token;
+    String authorize;
+
+    SmartOnFhirUrls(String baseUrl) {
+
+      log.info("Discovering authorization endpoints from {}", baseUrl);
+
+      Conformance conformanceStatement =
+          RestAssured.given().baseUri(baseUrl).get("metadata").as(Conformance.class);
+
+      assertThat(conformanceStatement.rest()).isNotEmpty();
+      Optional<Extension> smartOnFhir =
+          conformanceStatement
+              .rest()
+              .get(0)
+              .security()
+              .extension()
+              .stream()
+              .filter(
+                  e ->
+                      "http://fhir-registry.smarthealthit.org/StructureDefinition/oauth-uris"
+                          .equals(e.url()))
+              .findFirst();
+      assertThat(smartOnFhir).isPresent();
+
+      Optional<Extension> tokenUrl =
+          smartOnFhir.get().extension().stream().filter(e -> "token".equals(e.url())).findFirst();
+      assertThat(tokenUrl).isPresent();
+      token = tokenUrl.get().valueUri();
+
+      Optional<Extension> authorizeUrl =
+          smartOnFhir
+              .get()
+              .extension()
+              .stream()
+              .filter(e -> "authorize".equals(e.url()))
+              .findFirst();
+      assertThat(authorizeUrl).isPresent();
+      authorize = authorizeUrl.get().valueUri();
+
+      log.info("Authorize endpoint: {}", authorize);
+      log.info("Token endpoint: {}", token);
     }
   }
 }

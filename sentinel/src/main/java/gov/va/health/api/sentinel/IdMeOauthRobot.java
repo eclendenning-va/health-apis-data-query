@@ -45,14 +45,18 @@ public class IdMeOauthRobot {
     }
     WebDriver driver = new ChromeDriver(chromeOptions);
 
+    log.info("Loading {}", config.authorization().asUrl());
     driver.get(config.authorization().asUrl());
+    log.info("Using Id.me");
     driver.findElement(By.className("idme-signin")).click();
+    log.info("Entering credentials");
     WebElement userEmail = driver.findElement(By.id("user_email"));
     userEmail.sendKeys(config.user().id());
     WebElement userPassword = driver.findElement(By.id("user_password"));
     userPassword.sendKeys(config.user().password());
     driver.findElement(By.className("btn-primary")).click();
     // Continue passed authentication code send form
+    log.info("Clicking through two factor authorization sham");
     driver.findElement(By.className("btn-primary")).click();
     // Continue passed entering the authentication code
     driver.findElement(By.className("btn-primary")).click();
@@ -76,23 +80,21 @@ public class IdMeOauthRobot {
   }
 
   private TokenExchange exchangeForCodeForToken() {
-    return RestAssured.given()
-        .contentType(ContentType.URLENC.withCharset("UTF-8"))
-        .formParam("client_id", config.authorization().clientId())
-        .formParam("client_secret", config.authorization().clientSecret())
-        .formParam("grant_type", "authorization_code")
-        .formParam("redirect_uri", config.authorization().redirectUrl())
-        .formParam("code", code())
-        .log()
-        .all()
-        .log()
-        .body()
-        .post(config.tokenUrl())
-        .then()
-        .log()
-        .all()
-        .extract()
-        .as(TokenExchange.class);
+    log.info("Exchanging authorization code for token");
+    TokenExchange tokenExchange =
+        RestAssured.given()
+            .contentType(ContentType.URLENC.withCharset("UTF-8"))
+            .formParam("client_id", config.authorization().clientId())
+            .formParam("client_secret", config.authorization().clientSecret())
+            .formParam("grant_type", "authorization_code")
+            .formParam("redirect_uri", config.authorization().redirectUrl())
+            .formParam("code", code())
+            .post(config.tokenUrl())
+            .then()
+            .extract()
+            .as(TokenExchange.class);
+    log.info("{}", tokenExchange);
+    return tokenExchange;
   }
 
   @Value

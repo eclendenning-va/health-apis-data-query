@@ -24,6 +24,7 @@ import gov.va.api.health.argonaut.api.elements.Meta;
 import gov.va.api.health.argonaut.api.elements.Narrative;
 import gov.va.api.health.argonaut.api.elements.Reference;
 import gov.va.api.health.argonaut.api.validation.ExactlyOneOf;
+import gov.va.api.health.argonaut.api.validation.ExactlyOneOfs;
 import gov.va.api.health.argonaut.api.validation.ZeroOrOneOf;
 import gov.va.api.health.argonaut.api.validation.ZeroOrOneOfs;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -46,17 +47,19 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @JsonAutoDetect(fieldVisibility = Visibility.ANY)
 @Schema(
-  description =
-      "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-medicationorder.html"
-)
+    description =
+        "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-medicationorder.html")
 @ZeroOrOneOf(
-  fields = {"reasonCodeableConcept", "reasonReference"},
-  message = "Only one reason field may be specified"
-)
-@ExactlyOneOf(
-  fields = {"medicationCodeableConcept", "medicationReference"},
-  message = "Exactly one medication field must be specified"
-)
+    fields = {"reasonCodeableConcept", "reasonReference"},
+    message = "Only one reason field may be specified")
+@ExactlyOneOfs({
+  @ExactlyOneOf(
+      fields = {"medicationCodeableConcept", "medicationReference"},
+      message = "Exactly one medication field must be specified"),
+  @ExactlyOneOf(
+      fields = {"prescriber", "_prescriber"},
+      message = "Exactly one prescriber field must be specified"),
+})
 public class MedicationOrder implements Resource {
   @NotBlank String resourceType;
 
@@ -88,7 +91,8 @@ public class MedicationOrder implements Resource {
 
   @Valid CodeableConcept reasonEnded;
   @Valid @NotNull Reference patient;
-  @Valid @NotNull Reference prescriber;
+  @Valid Reference prescriber;
+  @Valid Extension _prescriber;
   @Valid Reference encounter;
   @Valid CodeableConcept reasonCodeableConcept;
   @Valid Reference reasonReference;
@@ -141,9 +145,8 @@ public class MedicationOrder implements Resource {
   @AllArgsConstructor
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
   @ZeroOrOneOf(
-    fields = {"medicationCodeableConcept", "medicationReference"},
-    message = "Only one medication field may be specified"
-  )
+      fields = {"medicationCodeableConcept", "medicationReference"},
+      message = "Only one medication field may be specified")
   public static class DispenseRequest implements BackboneElement {
     @Pattern(regexp = Fhir.ID)
     String id;
@@ -169,21 +172,17 @@ public class MedicationOrder implements Resource {
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
   @ZeroOrOneOfs({
     @ZeroOrOneOf(
-      fields = {"asNeededBoolean", "asNeededCodeableConcept"},
-      message = "Only one asNeeded field may be specified"
-    ),
+        fields = {"asNeededBoolean", "asNeededCodeableConcept"},
+        message = "Only one asNeeded field may be specified"),
     @ZeroOrOneOf(
-      fields = {"siteCodeableConcept", "siteReference"},
-      message = "Only one site field may be specified"
-    ),
+        fields = {"siteCodeableConcept", "siteReference"},
+        message = "Only one site field may be specified"),
     @ZeroOrOneOf(
-      fields = {"doseRange", "doseQuantity"},
-      message = "Only one dose field may be specified"
-    ),
+        fields = {"doseRange", "doseQuantity"},
+        message = "Only one dose field may be specified"),
     @ZeroOrOneOf(
-      fields = {"rateRatio", "rateRange"},
-      message = "Only one rate field may be specified"
-    )
+        fields = {"rateRatio", "rateRange"},
+        message = "Only one rate field may be specified")
   })
   public static class DosageInstruction implements BackboneElement {
     @Pattern(regexp = Fhir.ID)
