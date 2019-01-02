@@ -3,13 +3,13 @@ package gov.va.health.api.sentinel.crawler;
 import java.time.Instant;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.NonNull;
+import lombok.Value;
 
 /** The result of the query. */
 @AllArgsConstructor
 @Builder
-@Data
+@Value
 public class Result {
 
   @NonNull Instant timestamp;

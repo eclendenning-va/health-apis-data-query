@@ -24,6 +24,7 @@ import gov.va.api.health.argonaut.api.elements.Meta;
 import gov.va.api.health.argonaut.api.elements.Narrative;
 import gov.va.api.health.argonaut.api.elements.Reference;
 import gov.va.api.health.argonaut.api.validation.ExactlyOneOf;
+import gov.va.api.health.argonaut.api.validation.ExactlyOneOfs;
 import gov.va.api.health.argonaut.api.validation.ZeroOrOneOf;
 import gov.va.api.health.argonaut.api.validation.ZeroOrOneOfs;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -53,10 +54,13 @@ import lombok.NoArgsConstructor;
   fields = {"reasonCodeableConcept", "reasonReference"},
   message = "Only one reason field may be specified"
 )
-@ExactlyOneOf(
-  fields = {"medicationCodeableConcept", "medicationReference"},
-  message = "Exactly one medication field must be specified"
-)
+@ExactlyOneOfs({
+  @ExactlyOneOf(
+    fields = {"medicationCodeableConcept", "medicationReference"},
+    message = "Exactly one medication field must be specified"
+  ),
+  @ExactlyOneOf(fields = {"prescriber", "_prescriber"}),
+})
 public class MedicationOrder implements Resource {
   @NotBlank String resourceType;
 
@@ -88,7 +92,8 @@ public class MedicationOrder implements Resource {
 
   @Valid CodeableConcept reasonEnded;
   @Valid @NotNull Reference patient;
-  @Valid @NotNull Reference prescriber;
+  @Valid Reference prescriber;
+  @Valid Extension _prescriber;
   @Valid Reference encounter;
   @Valid CodeableConcept reasonCodeableConcept;
   @Valid Reference reasonReference;

@@ -1,7 +1,9 @@
 package gov.va.health.api.sentinel.crawler;
 
+import gov.va.health.api.sentinel.crawler.Result.Outcome;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -10,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class FileResultsCollector implements ResultCollector {
-  static final Set<String> results = new ConcurrentSkipListSet<>();
+  static final Set<String> summary = new ConcurrentSkipListSet<>();
 
   @Override
   public void add(Result result) {
@@ -22,8 +24,12 @@ public class FileResultsCollector implements ResultCollector {
             + result.outcome()
             + ","
             + result.query();
-    results.add(basicInfo);
-    log.info("Result: {}", basicInfo);
+    summary.add(basicInfo);
+    log.info("{} {}", result.query(), result.outcome());
+    if (result.outcome() != Outcome.OK) {
+      log.error("{}", result.body());
+      log.error("{}", result.additionalInfo());
+    }
   }
 
   /**
@@ -37,7 +43,7 @@ public class FileResultsCollector implements ResultCollector {
     if (params.contains("?")) {
       String[] searchParts = params.split("\\?");
       resourceName = searchParts[0];
-      params = searchParts[1];
+      params = searchParts[1].replaceAll("patient", "P");
     }
     resourceName = resourceName.replaceAll("([a-z]{2})([a-z]+)", "$1");
     String filename = resourceName + params;
@@ -46,7 +52,8 @@ public class FileResultsCollector implements ResultCollector {
 
   @Override
   public void done() {
-    results.clear();
+    log.info("Made {} requests", summary.size()); // TODO remove me
+    log.info("Summary\n{}:", summary.stream().collect(Collectors.joining("\n")));
   }
 
   @Override
