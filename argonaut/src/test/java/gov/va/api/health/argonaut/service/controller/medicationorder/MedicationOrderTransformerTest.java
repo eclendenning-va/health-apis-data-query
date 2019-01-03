@@ -118,7 +118,7 @@ public class MedicationOrderTransformerTest {
   @Test
   public void medicationOrder() {
     assertThat(tx.apply(cdw.medicationOrder())).isEqualTo(expected.medicationOrder());
-    assertThat(tx.apply(cdw.medicationOrderEmptyPrescriber()))
+    assertThat(tx.apply(cdw.medicationOrderNullPrescriber()))
         .isEqualTo(expected.medicationOrderNullPrescriber());
   }
 
@@ -135,6 +135,7 @@ public class MedicationOrderTransformerTest {
     assertThat(tx.prescriber(new CdwReference())).isNull();
     // _prescriber field
     assertThat(tx.prescriberExtension(null)).isEqualTo(DataAbsentReason.of(Reason.unknown));
+    assertThat(tx.prescriberExtension(cdw.prescriber())).isNull();
   }
 
   @Test
@@ -324,7 +325,7 @@ public class MedicationOrderTransformerTest {
     }
 
     CdwMedicationOrder103Root.CdwMedicationOrders.CdwMedicationOrder
-        medicationOrderEmptyPrescriber() {
+        medicationOrderNullPrescriber() {
       CdwMedicationOrder103Root.CdwMedicationOrders.CdwMedicationOrder sampleMedicationOrder =
           new CdwMedicationOrder103Root.CdwMedicationOrders.CdwMedicationOrder();
       sampleMedicationOrder.setRowNumber(1);
@@ -472,7 +473,6 @@ public class MedicationOrderTransformerTest {
           .dateWritten("2018-11-06")
           .status(Status.active)
           .dateEnded("2018-11-06")
-          .prescriber(null)
           ._prescriber(DataAbsentReason.of(Reason.unknown))
           .medicationReference(
               reference(
