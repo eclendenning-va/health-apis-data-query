@@ -80,6 +80,7 @@ public class DiagnosticReportTransformerTest {
     assertThat(tx.performer(new CdwReference())).isNull();
     // _performer
     assertThat(tx.performerExtenstion(null)).isEqualTo(DataAbsentReason.of(Reason.unknown));
+    assertThat(tx.performerExtenstion(cdw.cdwReference())).isNull();
   }
 
   @Test
