@@ -74,6 +74,15 @@ public class DiagnosticReportTransformerTest {
   }
 
   @Test
+  public void performer() {
+    assertThat(tx.performer(cdw.cdwReference())).isEqualTo(expected.reference());
+    assertThat(tx.performer(null)).isNull();
+    assertThat(tx.performer(new CdwReference())).isNull();
+    // _performer
+    assertThat(tx.performerExtenstion(null)).isEqualTo(DataAbsentReason.of(Reason.unknown));
+  }
+
+  @Test
   public void status() {
     assertThat(tx.status(cdw.status())).isEqualTo(expected.status());
     assertThat(tx.status(CdwDiagnosticReportStatus.APPENDED)).isEqualTo(Code.appended);
