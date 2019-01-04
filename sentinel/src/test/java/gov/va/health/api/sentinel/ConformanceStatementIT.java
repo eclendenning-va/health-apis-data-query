@@ -11,6 +11,7 @@ public class ConformanceStatementIT {
         .argonaut()
         .get("/api/metadata")
         .expect(200)
+        .expectNoNewlineOrTabChars()
         .expectValid(Conformance.class);
   }
 }
