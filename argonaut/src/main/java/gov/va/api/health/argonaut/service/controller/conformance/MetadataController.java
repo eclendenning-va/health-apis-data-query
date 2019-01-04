@@ -166,7 +166,7 @@ class MetadataController {
         .extension(
             singletonList(
                 Extension.builder()
-                    .url("http://www.hl7.org/fhir/smart-app-launch/index.html")
+                    .url("http://fhir-registry.smarthealthit.org/StructureDefinition/oauth-uris")
                     .extension(
                         asList(
                             Extension.builder()
