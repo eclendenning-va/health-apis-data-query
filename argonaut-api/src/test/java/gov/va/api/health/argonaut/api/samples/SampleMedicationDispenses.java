@@ -1,0 +1,75 @@
+package gov.va.api.health.argonaut.api.samples;
+
+import gov.va.api.health.argonaut.api.resources.MedicationDispense;
+import gov.va.api.health.argonaut.api.resources.MedicationDispense.Substitution;
+import gov.va.api.health.argonaut.api.resources.MedicationDispense.DosageInstruction;
+import gov.va.api.health.argonaut.api.resources.MedicationDispense.Status;
+import lombok.NoArgsConstructor;
+import lombok.experimental.Delegate;
+
+import static java.util.Collections.singletonList;
+
+@NoArgsConstructor(staticName = "get")
+public class SampleMedicationDispenses {
+
+    @Delegate SampleDataTypes dataTypes = SampleDataTypes.get();
+
+    public DosageInstruction dosageInstruction() {
+        return DosageInstruction.builder()
+                .id("123")
+                .modifierExtension(singletonList(extension()))
+                .extension(singletonList(extension()))
+                .text("Take orally, morning and night")
+                .additionalInstructions(codeableConcept())
+                .timing(timing())
+                .asNeededBoolean(false)
+                .siteCodeableConcept(codeableConcept())
+                .route(codeableConcept())
+                .method(codeableConcept())
+                .doseQuantity(simpleQuantity())
+                .rateRatio(ratio())
+                .maxDosePerPeriod(ratio())
+                .build();
+    }
+
+    public Substitution substitution() {
+        return Substitution.builder()
+                .id("456")
+                .modifierExtension(singletonList(extension()))
+                .extension(singletonList(extension()))
+                .type(codeableConcept())
+                .reason(singletonList(codeableConcept()))
+                .responsibleParty(singletonList(reference()))
+                .build();
+    }
+
+    public MedicationDispense medicationDispense() {
+    return MedicationDispense.builder()
+        .resourceType("MedicationDispense")
+        .id("789")
+        .meta(meta())
+        .implicitRules("http://HelloRules.com")
+        .language("English")
+        .contained(simpleResourceList())
+        .extension(singletonList(extension()))
+        .modifierExtension(singletonList(extension()))
+        .identifier(singletonList(identifier()))
+        .text(narrative())
+        .status(Status.completed)
+        .patient(reference())
+        .dispenser(reference())
+        .authorizingPrescription(singletonList(reference()))
+        .type(codeableConcept())
+        .quantity(simpleQuantity())
+        .daysSupply(simpleQuantity())
+        .medicationReference(reference())
+        .whenPrepared("2019-01-01")
+        .whenHandedOver("2019-01-02")
+        .destination(reference())
+        .receiver(singletonList(reference()))
+        .note("Do not feed to dogs")
+        .dosageInstruction(singletonList(dosageInstruction()))
+        .substitution(substitution())
+        .build();
+    }
+}

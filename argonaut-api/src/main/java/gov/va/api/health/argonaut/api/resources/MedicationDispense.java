@@ -55,12 +55,12 @@ public class MedicationDispense implements DomainResource {
     @Valid Reference patient;
     @Valid Reference dispenser;
     @Valid List<Reference> authorizingPrescription;
-    //Does this need to be an explicit enum?
     @Valid CodeableConcept type;
     @Valid SimpleQuantity quantity;
     @Valid SimpleQuantity daysSupply;
     @NotNull @Valid Reference medicationReference;
 
+    //These next two fields have a constraint that needs to be enforced. Prepared comes before Handed Over
     @Pattern(regexp = Fhir.DATETIME)
     String whenPrepared;
 
