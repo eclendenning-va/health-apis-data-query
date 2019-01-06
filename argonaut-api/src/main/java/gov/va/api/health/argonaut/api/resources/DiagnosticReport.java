@@ -43,7 +43,31 @@ import org.apache.commons.lang3.StringUtils;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @Schema(
   description =
-      "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-diagnosticreport.html"
+      "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-diagnosticreport.html",
+  example =
+      "{ \n"
+          + "   resourceType: \"DiagnosticReport\", \n"
+          + "   id: \"0757389a-6e06-51bd-aac0-bd0244e51e46\", \n"
+          + "   status: \"final\", \n"
+          + "   category: { \n"
+          + "      coding: [ \n"
+          + "         { \n"
+          + "            system: \"http://hl7.org/fhir/ValueSet/diagnostic-service-sections\", \n"
+          + "            code: \"LAB\", \n"
+          + "            display: \"Laboratory\" \n"
+          + "         } \n"
+          + "      ] \n"
+          + "   }, \n"
+          + "   code: { \n"
+          + "      text: \"panel\" \n"
+          + "   }, \n"
+          + "   effectiveDateTime: \"2011-04-04T01:15:52Z\", \n"
+          + "   issued: \"2011-04-04T01:15:52Z\", \n"
+          + "   subject: { \n"
+          + "      reference: \"https://dev-api.va.gov/services/argonaut/v0/Patient/2000163\", \n"
+          + "      display: \"Mr. Aurelio227 Cruickshank494\" \n"
+          + "   } \n"
+          + "} "
 )
 @ZeroOrOneOf(
   fields = {"effectiveDateTime", "effectivePeriod"},
