@@ -41,7 +41,43 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @Schema(
-  description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-immunization.html"
+  description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-immunization.html",
+  example =
+      "{ \n"
+          + "   resourceType: \"Immunization\", \n"
+          + "   id: \"1fd82e3a-a95b-5c04-9a68-c8ddf740ea0c\", \n"
+          + "   status: \"completed\", \n"
+          + "   date: \"2017-04-24T01:15:52Z\", \n"
+          + "   vaccineCode: { \n"
+          + "      text: \"meningococcal MCV4P\", \n"
+          + "      coding: [ \n"
+          + "         { \n"
+          + "            system: \"http://hl7.org/fhir/sid/cvx\", \n"
+          + "            code: \"114\" \n"
+          + "         } \n"
+          + "      ] \n"
+          + "   }, \n"
+          + "   patient: { \n"
+          + "      reference: \"https://dev-api.va.gov/services/argonaut/v0/Patient/2000163\", \n"
+          + "      display: \"Mr. Aurelio227 Cruickshank494\" \n"
+          + "   }, \n"
+          + "   wasNotGiven: \"false\", \n"
+          + "   _reported: { \n"
+          + "      extension: [ \n"
+          + "         { \n"
+          + "            url: \"http://hl7.org/fhir/StructureDefinition/data-absent-reason\", \n"
+          + "            valueCode: \"unsupported\" \n"
+          + "         } \n"
+          + "      ] \n"
+          + "   }, \n"
+          + "   reaction: [ \n"
+          + "      { \n"
+          + "            detail: { \n"
+          + "            display: \"Lethargy\" \n"
+          + "         } \n"
+          + "      } \n"
+          + "   ] \n"
+          + "} "
 )
 @ExactlyOneOfs({
   @ExactlyOneOf(fields = {"status", "_status"}),
