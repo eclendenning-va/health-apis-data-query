@@ -41,7 +41,38 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @Schema(
-  description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-condition.html"
+  description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-condition.html",
+  example =
+      "{ \n"
+          + "    resourceType: \"Condition\", \n"
+          + "    id: \"b34bacd3-42b6-5613-b1c2-1abafe1248ba\", \n"
+          + "    patient: { \n"
+          + "        reference: \"https://dev-api.va.gov/services/argonaut/v0/Patient/2000163\", \n"
+          + "        display: \"Mr. Aurelio227 Cruickshank494\" \n"
+          + "    }, \n"
+          + "    code: { \n"
+          + "        coding: [ \n"
+          + "            { \n"
+          + "                code: \"38341003\", \n"
+          + "                system: \"https://www.snomed.org/snomed-ct\", \n"
+          + "                display: \"Hypertension\" \n"
+          + "            } \n"
+          + "        ], \n"
+          + "        text: \"Hypertension\" \n"
+          + "    }, \n"
+          + "    category: { \n"
+          + "        coding: [ \n"
+          + "            { \n"
+          + "                system: \"http://argonaut.hl7.org\", \n"
+          + "                code: \"problem\" \n"
+          + "            } \n"
+          + "        ] \n"
+          + "    }, \n"
+          + "    clinicalStatus: \"active\", \n"
+          + "    verificationStatus: \"unknown\", \n"
+          + "    dateRecorded: \"2013-04-14\", \n"
+          + "    onsetDateTime: \"2013-04-15T01:15:52Z\" \n"
+          + "} "
 )
 @ZeroOrOneOfs({
   @ZeroOrOneOf(
