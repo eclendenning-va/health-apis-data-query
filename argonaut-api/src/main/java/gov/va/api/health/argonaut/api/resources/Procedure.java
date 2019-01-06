@@ -42,7 +42,28 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @JsonAutoDetect(fieldVisibility = Visibility.ANY)
 @Schema(
-  description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-procedure.html"
+  description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-procedure.html",
+  example =
+      "{ \n"
+          + "   resourceType: \"Procedure\", \n"
+          + "   id: \"532070f1-cb7b-582e-9380-9e0ef27bc817\", \n"
+          + "   subject: { \n"
+          + "      reference: \"https://dev-api.va.gov/services/argonaut/v0/Patient/2000163\", \n"
+          + "      display: \"Mr. Aurelio227 Cruickshank494\" \n"
+          + "   }, \n"
+          + "   status: \"completed\", \n"
+          + "   code: { \n"
+          + "      coding: [ \n"
+          + "         { \n"
+          + "            display: \"Documentation of current medications\", \n"
+          + "            system: \"http://www.ama-assn.org/go/cpt\", \n"
+          + "            code: \"XXXXX\" \n"
+          + "         } \n"
+          + "      ] \n"
+          + "   }, \n"
+          + "   notPerformed: \"false\", \n"
+          + "   performedDateTime: \"2017-04-24T01:15:52Z\" \n"
+          + "} "
 )
 @ExactlyOneOfs({
   @ExactlyOneOf(
