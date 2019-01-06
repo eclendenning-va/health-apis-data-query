@@ -49,7 +49,35 @@ import lombok.NoArgsConstructor;
 )
 @Schema(
   description =
-      "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-medicationstatement.html"
+      "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-medicationstatement.html",
+  example =
+      "{ \n"
+          + "   resourceType: \"MedicationStatement\", \n"
+          + "   id: \"1f46363d-af9b-5ba5-acda-b384373a9af2\", \n"
+          + "   patient: { \n"
+          + "      reference: \"https://dev-api.va.gov/services/argonaut/v0/Patient/2000163\", \n"
+          + "      display: \"Mr. Aurelio227 Cruickshank494\" \n"
+          + "   }, \n"
+          + "   dateAsserted: \"2013-04-15T01:15:52Z\", \n"
+          + "   status: \"active\", \n"
+          + "   medicationReference: { \n"
+          + "      reference: \"https://dev-api.va.gov/services/argonaut/v0/Medication/7b550d7f-2db8-5002-bc0c-150a70d02944\", \n"
+          + "      display: \"Hydrochlorothiazide 25 MG\" \n"
+          + "   }, \n"
+          + "   dosage: [ \n"
+          + "      { \n"
+          + "         text: \"Once per day.\", \n"
+          + "         timing: { \n"
+          + "            code: { \n"
+          + "               text: \"As directed by physician.\" \n"
+          + "            } \n"
+          + "         }, \n"
+          + "         route: { \n"
+          + "            text: \"As directed by physician.\" \n"
+          + "         } \n"
+          + "      } \n"
+          + "   ] \n"
+          + "} "
 )
 @ZeroOrOneOfs({
   @ZeroOrOneOf(
