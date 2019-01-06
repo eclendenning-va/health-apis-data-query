@@ -42,7 +42,44 @@ import lombok.NoArgsConstructor;
 )
 @Schema(
   description =
-      "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-allergyintolerance.html"
+      "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-allergyintolerance.html",
+  example =
+      "{ \n"
+          + "    resourceType: \"AllergyIntolerance\", \n"
+          + "    id: \"6f9a021b-07d5-53c8-8cce-b49a694d4ad9\", \n"
+          + "    onset: \"1995-04-30T01:15:52Z\", \n"
+          + "    patient: { \n"
+          + "       reference: \"https://dev-api.va.gov/services/argonaut/v0/Patient/2000163\", \n"
+          + "        display: \"Mr. Aurelio227 Cruickshank494\" \n"
+          + "    }, \n"
+          + "    substance: { \n"
+          + "        text: \"Allergy to peanuts\" \n"
+          + "   }, \n"
+          + "    status: \"active\", \n"
+          + "    type: \"allergy\", \n"
+          + "    category: \"food\", \n"
+          + "    note: { \n"
+          + "        time: \"1995-04-30T01:15:52Z\", \n"
+          + "        text: \"Allergy to peanuts\" \n"
+          + "    }, \n"
+          + "    reaction: [ \n"
+          + "        { \n"
+          + "            manifestation: [ \n"
+          + "                { \n"
+          + "                    coding: [ \n"
+          + "                        { \n"
+          + "                            display: \"Inflammation of Skin\", \n"
+          + "                            system: \"urn:oid:2.16.840.1.113883.6.233\", \n"
+          + "                            code: \"2000001\" \n"
+          + "                        } \n"
+          + "                    ], \n"
+          + "                    text: \"Inflammation of Skin\" \n"
+          + "                } \n"
+          + "            ], \n"
+          + "            certainty: \"likely\" \n"
+          + "        } \n"
+          + "    ] \n"
+          + "} "
 )
 public class AllergyIntolerance implements Resource {
   @NotBlank String resourceType;
