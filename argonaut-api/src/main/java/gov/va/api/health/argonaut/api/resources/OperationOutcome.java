@@ -26,7 +26,22 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-@Schema(description = "https://www.hl7.org/fhir/operationoutcome.html")
+@Schema(
+  description = "https://www.hl7.org/fhir/operationoutcome.html",
+  example =
+      "{ \n"
+          + "    resourceType: \"OperationOutcome\", \n"
+          + "    issue: [ \n"
+          + "        { \n"
+          + "            severity: \"error\", \n"
+          + "            code: \"forbidden\", \n"
+          + "            details: { \n"
+          + "                text: \"Token not allowed access to this patient.\" \n"
+          + "            } \n"
+          + "        } \n"
+          + "    ] \n"
+          + "} \n"
+)
 public class OperationOutcome implements DomainResource {
 
   @Pattern(regexp = Fhir.ID)
