@@ -47,7 +47,30 @@ import lombok.NoArgsConstructor;
 @JsonAutoDetect(fieldVisibility = Visibility.ANY)
 @Schema(
   description =
-      "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-medicationorder.html"
+      "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-medicationorder.html",
+  example =
+      "{ \n"
+          + "   resourceType: \"MedicationOrder\", \n"
+          + "   id: \"f07dd74e-844e-5463-99d4-0ca4d5cbeb41\", \n"
+          + "   dateWritten: \"2013-04-14T06:00:00Z\", \n"
+          + "   status: \"active\", \n"
+          + "   patient: { \n"
+          + "      reference: \"https://dev-api.va.gov/services/argonaut/v0/Patient/2000163\", \n"
+          + "      display: \"Mr. Aurelio227 Cruickshank494\" \n"
+          + "   }, \n"
+          + "   _prescriber: { \n"
+          + "       extension: [ \n"
+          + "           { \n"
+          + "               url: \"http://hl7.org/fhir/StructureDefinition/data-absent-reason\", \n"
+          + "               valueCode: \"unsupported\" \n"
+          + "           } \n"
+          + "       ] \n"
+          + "   }, \n"
+          + "   medicationReference: { \n"
+          + "       reference: \"https://dev-api.va.gov/services/argonaut/v0/Medication/7b550d7f-2db8-5002-bc0c-150a70d02944\", \n"
+          + "       display: \"Hydrochlorothiazide 25 MG\" \n"
+          + "   } \n"
+          + "} "
 )
 @ZeroOrOneOf(
   fields = {"reasonCodeableConcept", "reasonReference"},
