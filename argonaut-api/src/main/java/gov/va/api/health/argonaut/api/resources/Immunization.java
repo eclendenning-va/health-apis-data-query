@@ -42,48 +42,14 @@ import lombok.NoArgsConstructor;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @Schema(
   description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-immunization.html",
-  example =
-      "{ \n"
-          + "   resourceType: \"Immunization\", \n"
-          + "   id: \"1fd82e3a-a95b-5c04-9a68-c8ddf740ea0c\", \n"
-          + "   status: \"completed\", \n"
-          + "   date: \"2017-04-24T01:15:52Z\", \n"
-          + "   vaccineCode: { \n"
-          + "      text: \"meningococcal MCV4P\", \n"
-          + "      coding: [ \n"
-          + "         { \n"
-          + "            system: \"http://hl7.org/fhir/sid/cvx\", \n"
-          + "            code: \"114\" \n"
-          + "         } \n"
-          + "      ] \n"
-          + "   }, \n"
-          + "   patient: { \n"
-          + "      reference: \"https://dev-api.va.gov/services/argonaut/v0/Patient/2000163\", \n"
-          + "      display: \"Mr. Aurelio227 Cruickshank494\" \n"
-          + "   }, \n"
-          + "   wasNotGiven: \"false\", \n"
-          + "   _reported: { \n"
-          + "      extension: [ \n"
-          + "         { \n"
-          + "            url: \"http://hl7.org/fhir/StructureDefinition/data-absent-reason\", \n"
-          + "            valueCode: \"unsupported\" \n"
-          + "         } \n"
-          + "      ] \n"
-          + "   }, \n"
-          + "   reaction: [ \n"
-          + "      { \n"
-          + "            detail: { \n"
-          + "            display: \"Lethargy\" \n"
-          + "         } \n"
-          + "      } \n"
-          + "   ] \n"
-          + "} "
+  example = SwaggerExamples.IMMUNIZATION
 )
 @ExactlyOneOfs({
   @ExactlyOneOf(fields = {"status", "_status"}),
   @ExactlyOneOf(fields = {"reported", "_reported"})
 })
 public class Immunization implements Resource {
+
   @NotBlank String resourceType;
 
   @Pattern(regexp = Fhir.ID)
@@ -149,75 +115,9 @@ public class Immunization implements Resource {
   @EqualsAndHashCode(callSuper = true)
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
   @JsonDeserialize(builder = Immunization.Bundle.BundleBuilder.class)
-  @Schema(
-    name = "ImmunizationBundle",
-    example =
-        "{ \n"
-            + "    resourceType: \"Bundle\", \n"
-            + "    type: \"searchset\", \n"
-            + "    total: 1, \n"
-            + "    link: [ \n"
-            + "        { \n"
-            + "            relation: \"self\", \n"
-            + "            url: \"https://dev-api.va.gov/services/argonaut/v0/Immunization?patient=1017283148V813263&page=1&_count=15\" \n"
-            + "        }, \n"
-            + "        { \n"
-            + "            relation: \"first\", \n"
-            + "            url: \"https://dev-api.va.gov/services/argonaut/v0/Immunization?patient=1017283148V813263&page=1&_count=15\" \n"
-            + "        }, \n"
-            + "        { \n"
-            + "            relation: last\", \n"
-            + "            url: \"https://dev-api.va.gov/services/argonaut/v0/Immunization?patient=1017283148V813263&page=1&_count=15\" \n"
-            + "        } \n"
-            + "    ], \n"
-            + "    entry: [ \n"
-            + "        { \n"
-            + "            fullUrl: \"https://dev-api.va.gov/services/argonaut/v0/Immunization/1fd82e3a-a95b-5c04-9a68-c8ddf740ea0c\", \n"
-            + "            resource: { \n"
-            + "                fullUrl: \"https://dev-api.va.gov/services/argonaut/v0/Immunization/1fd82e3a-a95b-5c04-9a68-c8ddf740ea0c\", \n"
-            + "                resource: { \n"
-            + "                    resourceType: \"Immunization\", \n"
-            + "                    id: \"1fd82e3a-a95b-5c04-9a68-c8ddf740ea0c\", \n"
-            + "                    status: \"completed\", \n"
-            + "                    date: \"2017-04-24T01:15:52Z\", \n"
-            + "                    vaccineCode: { \n"
-            + "                       text: \"meningococcal MCV4P\", \n"
-            + "                       coding: [ \n"
-            + "                          { \n"
-            + "                             system: \"http://hl7.org/fhir/sid/cvx\", \n"
-            + "                             code: \"114\" \n"
-            + "                          } \n"
-            + "                       ] \n"
-            + "                    }, \n"
-            + "                    patient: { \n"
-            + "                       reference: \"https://dev-api.va.gov/services/argonaut/v0/Patient/2000163\", \n"
-            + "                       display: \"Mr. Aurelio227 Cruickshank494\" \n"
-            + "                    }, \n"
-            + "                    wasNotGiven: \"false\", \n"
-            + "                    _reported: { \n"
-            + "                       extension: [ \n"
-            + "                          { \n"
-            + "                             url: \"http://hl7.org/fhir/StructureDefinition/data-absent-reason\", \n"
-            + "                             valueCode: \"unsupported\" \n"
-            + "                          } \n"
-            + "                       ] \n"
-            + "                    }, \n"
-            + "                    reaction: [ \n"
-            + "                       { \n"
-            + "                           detail: { \n"
-            + "                               display: \"Lethargy\" \n"
-            + "                           } \n"
-            + "                       } \n"
-            + "                    ] \n"
-            + "                }, \n"
-            + "                search: { \n"
-            + "                    mode: \"match\" \n"
-            + "                } \n"
-            + "        } \n"
-            + "    ] \n"
-            + "} "
-  )
+  @Schema(name = "ImmunizationBundle", example = SwaggerExamples.IMMUNIZATION_BUNDLE)
   public static class Bundle extends AbstractBundle<Immunization.Entry> {
+
     @Builder
     public Bundle(
         @NotBlank String resourceType,

@@ -28,19 +28,7 @@ import lombok.NoArgsConstructor;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @Schema(
   description = "https://www.hl7.org/fhir/operationoutcome.html",
-  example =
-      "{ \n"
-          + "    resourceType: \"OperationOutcome\", \n"
-          + "    issue: [ \n"
-          + "        { \n"
-          + "            severity: \"error\", \n"
-          + "            code: \"forbidden\", \n"
-          + "            details: { \n"
-          + "                text: \"Token not allowed access to this patient.\" \n"
-          + "            } \n"
-          + "        } \n"
-          + "    ] \n"
-          + "} \n"
+  example = SwaggerExamples.OPERATION_OUTCOME
 )
 public class OperationOutcome implements DomainResource {
 

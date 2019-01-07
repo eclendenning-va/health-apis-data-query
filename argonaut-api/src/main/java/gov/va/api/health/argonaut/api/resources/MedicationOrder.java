@@ -48,29 +48,7 @@ import lombok.NoArgsConstructor;
 @Schema(
   description =
       "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-medicationorder.html",
-  example =
-      "{ \n"
-          + "   resourceType: \"MedicationOrder\", \n"
-          + "   id: \"f07dd74e-844e-5463-99d4-0ca4d5cbeb41\", \n"
-          + "   dateWritten: \"2013-04-14T06:00:00Z\", \n"
-          + "   status: \"active\", \n"
-          + "   patient: { \n"
-          + "      reference: \"https://dev-api.va.gov/services/argonaut/v0/Patient/2000163\", \n"
-          + "      display: \"Mr. Aurelio227 Cruickshank494\" \n"
-          + "   }, \n"
-          + "   _prescriber: { \n"
-          + "       extension: [ \n"
-          + "           { \n"
-          + "               url: \"http://hl7.org/fhir/StructureDefinition/data-absent-reason\", \n"
-          + "               valueCode: \"unsupported\" \n"
-          + "           } \n"
-          + "       ] \n"
-          + "   }, \n"
-          + "   medicationReference: { \n"
-          + "       reference: \"https://dev-api.va.gov/services/argonaut/v0/Medication/7b550d7f-2db8-5002-bc0c-150a70d02944\", \n"
-          + "       display: \"Hydrochlorothiazide 25 MG\" \n"
-          + "   } \n"
-          + "} "
+  example = SwaggerExamples.MEDICATION_ORDER
 )
 @ZeroOrOneOf(
   fields = {"reasonCodeableConcept", "reasonReference"},
@@ -81,6 +59,7 @@ import lombok.NoArgsConstructor;
   message = "Exactly one medication field must be specified"
 )
 public class MedicationOrder implements Resource {
+
   @NotBlank String resourceType;
 
   @Pattern(regexp = Fhir.ID)
@@ -140,62 +119,9 @@ public class MedicationOrder implements Resource {
   @EqualsAndHashCode(callSuper = true)
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
   @JsonDeserialize(builder = MedicationOrder.Bundle.BundleBuilder.class)
-  @Schema(
-    name = "MedicationOrderBundle",
-    example =
-        "{ \n"
-            + "    resourceType: \"Bundle\", \n"
-            + "    type: \"searchset\", \n"
-            + "    total: 1, \n"
-            + "    link: [ \n"
-            + "        { \n"
-            + "            relation: \"self\", \n"
-            + "            url: \"https://dev-api.va.gov/services/argonaut/v0/MedicationOrder?patient=1017283148V813263&page=1&_count=15\" \n"
-            + "        }, \n"
-            + "        { \n"
-            + "            relation: \"first\", \n"
-            + "            url: \"https://dev-api.va.gov/services/argonaut/v0/MedicationOrder?patient=1017283148V813263&page=1&_count=15\" \n"
-            + "        }, \n"
-            + "        { \n"
-            + "            relation: last\", \n"
-            + "            url: \"https://dev-api.va.gov/services/argonaut/v0/MedicationOrder?patient=1017283148V813263&page=1&_count=15\" \n"
-            + "        } \n"
-            + "    ], \n"
-            + "    entry: [ \n"
-            + "        { \n"
-            + "            fullUrl: \"https://dev-api.va.gov/services/argonaut/v0/MedicationOrder/f07dd74e-844e-5463-99d4-0ca4d5cbeb41\", \n"
-            + "            resource: { \n"
-            + "                fullUrl: \"https://dev-api.va.gov/services/argonaut/v0/MedicationOrder/f07dd74e-844e-5463-99d4-0ca4d5cbeb41\", \n"
-            + "                resource: { \n"
-            + "                    resourceType: \"MedicationOrder\", \n"
-            + "                    id: \"f07dd74e-844e-5463-99d4-0ca4d5cbeb41\", \n"
-            + "                    dateWritten: \"2013-04-14T06:00:00Z\", \n"
-            + "                    status: \"active\", \n"
-            + "                    patient: { \n"
-            + "                       reference: \"https://dev-api.va.gov/services/argonaut/v0/Patient/2000163\", \n"
-            + "                       display: \"Mr. Aurelio227 Cruickshank494\" \n"
-            + "                    }, \n"
-            + "                    _prescriber: { \n"
-            + "                        extension: [ \n"
-            + "                            { \n"
-            + "                                url: \"http://hl7.org/fhir/StructureDefinition/data-absent-reason\", \n"
-            + "                                valueCode: \"unsupported\" \n"
-            + "                            } \n"
-            + "                        ] \n"
-            + "                    }, \n"
-            + "                    medicationReference: { \n"
-            + "                        reference: \"https://dev-api.va.gov/services/argonaut/v0/Medication/7b550d7f-2db8-5002-bc0c-150a70d02944\", \n"
-            + "                        display: \"Hydrochlorothiazide 25 MG\" \n"
-            + "                    } \n"
-            + "                }, \n"
-            + "                search: { \n"
-            + "                    mode: \"match\" \n"
-            + "                } \n"
-            + "        } \n"
-            + "    ] \n"
-            + "} "
-  )
+  @Schema(name = "MedicationOrderBundle", example = SwaggerExamples.MEDICATION_ORDER_BUNDLE)
   public static class Bundle extends AbstractBundle<Entry> {
+
     @Builder
     public Bundle(
         @NotBlank String resourceType,

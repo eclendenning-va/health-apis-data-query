@@ -42,27 +42,7 @@ import lombok.NoArgsConstructor;
 )
 @Schema(
   description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-medication.html",
-  example =
-      "{ \n"
-          + "    resourceType: \"Medication\", \n"
-          + "    id: \"f4163f35-1565-552b-a1b9-a2f8870e6f4a\", \n"
-          + "    code: { \n"
-          + "        coding: [ \n"
-          + "            { \n"
-          + "                system: \"https://www.nlm.nih.gov/research/umls/rxnorm/\", \n"
-          + "                code: \"895994\", \n"
-          + "                display: \"120 Fluticasone propionate .044 MG/ACTUAT Inhaler\" \n"
-          + "            } \n"
-          + "        ], \n"
-          + "        text: \"120 ACTUAT Fluticasone propionate .044 MG/ACTUAT Inhaler\" \n"
-          + "    }, \n"
-          + "    product: { \n"
-          + "        id: \"4024655\", \n"
-          + "        form: { \n"
-          + "            text: \"1 dose(s) 1 time(s) per 1 days\" \n"
-          + "        } \n"
-          + "    } \n"
-          + "} "
+  example = SwaggerExamples.MEDICATION
 )
 public class Medication implements Resource {
 

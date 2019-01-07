@@ -50,34 +50,7 @@ import lombok.NoArgsConstructor;
 @Schema(
   description =
       "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-medicationstatement.html",
-  example =
-      "{ \n"
-          + "   resourceType: \"MedicationStatement\", \n"
-          + "   id: \"1f46363d-af9b-5ba5-acda-b384373a9af2\", \n"
-          + "   patient: { \n"
-          + "      reference: \"https://dev-api.va.gov/services/argonaut/v0/Patient/2000163\", \n"
-          + "      display: \"Mr. Aurelio227 Cruickshank494\" \n"
-          + "   }, \n"
-          + "   dateAsserted: \"2013-04-15T01:15:52Z\", \n"
-          + "   status: \"active\", \n"
-          + "   medicationReference: { \n"
-          + "      reference: \"https://dev-api.va.gov/services/argonaut/v0/Medication/7b550d7f-2db8-5002-bc0c-150a70d02944\", \n"
-          + "      display: \"Hydrochlorothiazide 25 MG\" \n"
-          + "   }, \n"
-          + "   dosage: [ \n"
-          + "      { \n"
-          + "         text: \"Once per day.\", \n"
-          + "         timing: { \n"
-          + "            code: { \n"
-          + "               text: \"As directed by physician.\" \n"
-          + "            } \n"
-          + "         }, \n"
-          + "         route: { \n"
-          + "            text: \"As directed by physician.\" \n"
-          + "         } \n"
-          + "      } \n"
-          + "   ] \n"
-          + "} "
+  example = SwaggerExamples.MEDICATION_STATEMENT
 )
 @ZeroOrOneOfs({
   @ZeroOrOneOf(
@@ -94,6 +67,7 @@ import lombok.NoArgsConstructor;
   message = "Exactly one medication value must be specified"
 )
 public class MedicationStatement implements Resource {
+
   @NotBlank String resourceType;
 
   @Pattern(regexp = Fhir.ID)
@@ -152,66 +126,7 @@ public class MedicationStatement implements Resource {
   @EqualsAndHashCode(callSuper = true)
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
   @JsonDeserialize(builder = MedicationStatement.Bundle.BundleBuilder.class)
-  @Schema(
-    name = "MedicationStatementBundle",
-    example =
-        "{ \n"
-            + "    resourceType: \"Bundle\", \n"
-            + "    type: \"searchset\", \n"
-            + "    total: 1, \n"
-            + "    link: [ \n"
-            + "        { \n"
-            + "            relation: \"self\", \n"
-            + "            url: \"https://dev-api.va.gov/services/argonaut/v0/MedicationStatement?patient=1017283148V813263&page=1&_count=15\" \n"
-            + "        }, \n"
-            + "        { \n"
-            + "            relation: \"first\", \n"
-            + "            url: \"https://dev-api.va.gov/services/argonaut/v0/MedicationStatement?patient=1017283148V813263&page=1&_count=15\" \n"
-            + "        }, \n"
-            + "        { \n"
-            + "            relation: last\", \n"
-            + "            url: \"https://dev-api.va.gov/services/argonaut/v0/MedicationStatement?patient=1017283148V813263&page=1&_count=15\" \n"
-            + "        } \n"
-            + "    ], \n"
-            + "    entry: [ \n"
-            + "        { \n"
-            + "            fullUrl: \"https://dev-api.va.gov/services/argonaut/v0/MedicationStatement/1f46363d-af9b-5ba5-acda-b384373a9af2\", \n"
-            + "            resource: { \n"
-            + "                fullUrl: \"https://dev-api.va.gov/services/argonaut/v0/MedicationStatement/1f46363d-af9b-5ba5-acda-b384373a9af2\", \n"
-            + "                resource: { \n"
-            + "                    resourceType: \"MedicationStatement\", \n"
-            + "                    id: \"1f46363d-af9b-5ba5-acda-b384373a9af2\", \n"
-            + "                    patient: { \n"
-            + "                       reference: \"https://dev-api.va.gov/services/argonaut/v0/Patient/2000163\", \n"
-            + "                       display: \"Mr. Aurelio227 Cruickshank494\" \n"
-            + "                    }, \n"
-            + "                    dateAsserted: \"2013-04-15T01:15:52Z\", \n"
-            + "                    status: \"active\", \n"
-            + "                    medicationReference: { \n"
-            + "                       reference: \"https://dev-api.va.gov/services/argonaut/v0/Medication/7b550d7f-2db8-5002-bc0c-150a70d02944\", \n"
-            + "                       display: \"Hydrochlorothiazide 25 MG\" \n"
-            + "                    }, \n"
-            + "                    dosage: [ \n"
-            + "                       { \n"
-            + "                          text: \"Once per day.\", \n"
-            + "                          timing: { \n"
-            + "                             code: { \n"
-            + "                                text: \"As directed by physician.\" \n"
-            + "                             } \n"
-            + "                          }, \n"
-            + "                          route: { \n"
-            + "                             text: \"As directed by physician.\" \n"
-            + "                          } \n"
-            + "                       } \n"
-            + "                    ] \n"
-            + "                }, \n"
-            + "                search: { \n"
-            + "                    mode: \"match\" \n"
-            + "                } \n"
-            + "        } \n"
-            + "    ] \n"
-            + "} "
-  )
+  @Schema(name = "MedicationStatementBundle", example = SwaggerExamples.MEDICATION_STATEMENT_BUNDLE)
   public static class Bundle extends AbstractBundle<MedicationStatement.Entry> {
 
     @Builder

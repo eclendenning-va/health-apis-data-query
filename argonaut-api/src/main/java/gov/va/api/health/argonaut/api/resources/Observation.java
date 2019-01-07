@@ -54,42 +54,7 @@ import org.apache.commons.lang3.StringUtils;
 @Schema(
   description =
       "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-observationresults.html",
-  example =
-      "{ \n"
-          + "   resourceType: \"Observation\", \n"
-          + "   id: \"7889e577-88d6-5e6f-8a4d-fb6988b7b3c1\", \n"
-          + "   status: \"final\", \n"
-          + "   category: { \n"
-          + "      coding: [ \n"
-          + "         { \n"
-          + "            system: \"http://hl7.org/fhir/observation-category\", \n"
-          + "            code: \"laboratory\", \n"
-          + "            display: \"Laboratory\" \n"
-          + "         } \n"
-          + "      ] \n"
-          + "   }, \n"
-          + "   code: { \n"
-          + "      coding: [ \n"
-          + "         { \n"
-          + "            system: \"http://loinc.org\", \n"
-          + "            code: \"32623-1\", \n"
-          + "            display: \"Platelet mean volume [Entitic volume] in Blood by \" \n"
-          + "         } \n"
-          + "      ] \n"
-          + "   }, \n"
-          + "   subject\": { \n"
-          + "      reference: \"https://dev-api.va.gov/services/argonaut/v0/Patient/2000163\", \n"
-          + "      display: \"Mr. Aurelio227 Cruickshank494\" \n"
-          + "   }, \n"
-          + "   effectiveDateTime: \"2017-04-24T01:15:52Z\", \n"
-          + "   issued: \"2017-04-24T01:15:52Z\", \n"
-          + "   valueQuantity: { \n"
-          + "      value: 10.226877417360429, \n"
-          + "      unit: \"fL\", \n"
-          + "      system: \"http://unitsofmeasure.org\", \n"
-          + "      code: \"fL\" \n"
-          + "   } \n"
-          + "} "
+  example = SwaggerExamples.OBSERVATION
 )
 @ZeroOrOneOfs({
   @ZeroOrOneOf(
@@ -113,6 +78,7 @@ import org.apache.commons.lang3.StringUtils;
   )
 })
 public class Observation implements Resource {
+
   @NotBlank String resourceType;
 
   @Pattern(regexp = Fhir.ID)
@@ -214,74 +180,7 @@ public class Observation implements Resource {
   @EqualsAndHashCode(callSuper = true)
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
   @JsonDeserialize(builder = Observation.Bundle.BundleBuilder.class)
-  @Schema(
-    name = "ObservationBundle",
-    example =
-        "{ \n"
-            + "    resourceType: \"Bundle\", \n"
-            + "    type: \"searchset\", \n"
-            + "    total: 1, \n"
-            + "    link: [ \n"
-            + "        { \n"
-            + "            relation: \"self\", \n"
-            + "            url: \"https://dev-api.va.gov/services/argonaut/v0/Observation?patient=1017283148V813263&page=1&_count=15\" \n"
-            + "        }, \n"
-            + "        { \n"
-            + "            relation: \"first\", \n"
-            + "            url: \"https://dev-api.va.gov/services/argonaut/v0/Observation?patient=1017283148V813263&page=1&_count=15\" \n"
-            + "        }, \n"
-            + "        { \n"
-            + "            relation: last\", \n"
-            + "            url: \"https://dev-api.va.gov/services/argonaut/v0/Observation?patient=1017283148V813263&page=1&_count=15\" \n"
-            + "        } \n"
-            + "    ], \n"
-            + "    entry: [ \n"
-            + "        { \n"
-            + "            fullUrl: \"https://dev-api.va.gov/services/argonaut/v0/Observation/7889e577-88d6-5e6f-8a4d-fb6988b7b3c1\", \n"
-            + "            resource: { \n"
-            + "                fullUrl: \"https://dev-api.va.gov/services/argonaut/v0/Observation/7889e577-88d6-5e6f-8a4d-fb6988b7b3c1\", \n"
-            + "                resource: { \n"
-            + "                    resourceType: \"Observation\", \n"
-            + "                    id: \"7889e577-88d6-5e6f-8a4d-fb6988b7b3c1\", \n"
-            + "                    status: \"final\", \n"
-            + "                    category: { \n"
-            + "                       coding: [ \n"
-            + "                          { \n"
-            + "                             system: \"http://hl7.org/fhir/observation-category\", \n"
-            + "                             code: \"laboratory\", \n"
-            + "                             display: \"Laboratory\" \n"
-            + "                          } \n"
-            + "                       ] \n"
-            + "                    }, \n"
-            + "                    code: { \n"
-            + "                       coding: [ \n"
-            + "                          { \n"
-            + "                             system: \"http://loinc.org\", \n"
-            + "                             code: \"32623-1\", \n"
-            + "                             display: \"Platelet mean volume in Blood by \" \n"
-            + "                          } \n"
-            + "                       ] \n"
-            + "                    }, \n"
-            + "                    subject\": { \n"
-            + "                       reference: \"https://dev-api.va.gov/services/argonaut/v0/Patient/2000163\", \n"
-            + "                       display: \"Mr. Aurelio227 Cruickshank494\" \n"
-            + "                    }, \n"
-            + "                    effectiveDateTime: \"2017-04-24T01:15:52Z\", \n"
-            + "                    issued: \"2017-04-24T01:15:52Z\", \n"
-            + "                    valueQuantity: { \n"
-            + "                       value: 10.226877417360429, \n"
-            + "                       unit: \"fL\", \n"
-            + "                       system: \"http://unitsofmeasure.org\", \n"
-            + "                       code: \"fL\" \n"
-            + "                    } \n"
-            + "                }, \n"
-            + "                search: { \n"
-            + "                    mode: \"match\" \n"
-            + "                } \n"
-            + "        } \n"
-            + "    ] \n"
-            + "} "
-  )
+  @Schema(name = "ObservationBundle", example = SwaggerExamples.OBSERVATION_BUNDLE)
   public static class Bundle extends AbstractBundle<Entry> {
 
     @Builder

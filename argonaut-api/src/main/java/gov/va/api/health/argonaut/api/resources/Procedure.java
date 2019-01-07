@@ -43,27 +43,7 @@ import lombok.NoArgsConstructor;
 @JsonAutoDetect(fieldVisibility = Visibility.ANY)
 @Schema(
   description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-procedure.html",
-  example =
-      "{ \n"
-          + "   resourceType: \"Procedure\", \n"
-          + "   id: \"532070f1-cb7b-582e-9380-9e0ef27bc817\", \n"
-          + "   subject: { \n"
-          + "      reference: \"https://dev-api.va.gov/services/argonaut/v0/Patient/2000163\", \n"
-          + "      display: \"Mr. Aurelio227 Cruickshank494\" \n"
-          + "   }, \n"
-          + "   status: \"completed\", \n"
-          + "   code: { \n"
-          + "      coding: [ \n"
-          + "         { \n"
-          + "            display: \"Documentation of current medications\", \n"
-          + "            system: \"http://www.ama-assn.org/go/cpt\", \n"
-          + "            code: \"XXXXX\" \n"
-          + "         } \n"
-          + "      ] \n"
-          + "   }, \n"
-          + "   notPerformed: \"false\", \n"
-          + "   performedDateTime: \"2017-04-24T01:15:52Z\" \n"
-          + "} "
+  example = SwaggerExamples.PROCEDURE
 )
 @ExactlyOneOfs({
   @ExactlyOneOf(
@@ -81,6 +61,7 @@ import lombok.NoArgsConstructor;
       message = "At most one reason may be specified."
     ))
 public class Procedure implements Resource {
+
   @NotBlank String resourceType;
 
   @Pattern(regexp = Fhir.ID)
@@ -147,60 +128,9 @@ public class Procedure implements Resource {
   @EqualsAndHashCode(callSuper = true)
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
   @JsonDeserialize(builder = Procedure.Bundle.BundleBuilder.class)
-  @Schema(
-    name = "ProcedureBundle",
-    example =
-        "{ \n"
-            + "    resourceType: \"Bundle\", \n"
-            + "    type: \"searchset\", \n"
-            + "    total: 1, \n"
-            + "    link: [ \n"
-            + "        { \n"
-            + "            relation: \"self\", \n"
-            + "            url: \"https://dev-api.va.gov/services/argonaut/v0/Procedure?patient=1017283148V813263&page=1&_count=15\" \n"
-            + "        }, \n"
-            + "        { \n"
-            + "            relation: \"first\", \n"
-            + "            url: \"https://dev-api.va.gov/services/argonaut/v0/Procedure?patient=1017283148V813263&page=1&_count=15\" \n"
-            + "        }, \n"
-            + "        { \n"
-            + "            relation: last\", \n"
-            + "            url: \"https://dev-api.va.gov/services/argonaut/v0/Procedure?patient=1017283148V813263&page=1&_count=15\" \n"
-            + "        } \n"
-            + "    ], \n"
-            + "    entry: [ \n"
-            + "        { \n"
-            + "            fullUrl: \"https://dev-api.va.gov/services/argonaut/v0/Procedure/532070f1-cb7b-582e-9380-9e0ef27bc817\", \n"
-            + "            resource: { \n"
-            + "                fullUrl: \"https://dev-api.va.gov/services/argonaut/v0/Procedure/532070f1-cb7b-582e-9380-9e0ef27bc817\", \n"
-            + "                resource: { \n"
-            + "                    resourceType: \"Procedure\", \n"
-            + "                    id: \"532070f1-cb7b-582e-9380-9e0ef27bc817\", \n"
-            + "                    subject: { \n"
-            + "                       reference: \"https://dev-api.va.gov/services/argonaut/v0/Patient/2000163\", \n"
-            + "                       display: \"Mr. Aurelio227 Cruickshank494\" \n"
-            + "                    }, \n"
-            + "                    status: \"completed\", \n"
-            + "                    code: { \n"
-            + "                       coding: [ \n"
-            + "                          { \n"
-            + "                             display: \"Documentation of current medications\", \n"
-            + "                             system: \"http://www.ama-assn.org/go/cpt\", \n"
-            + "                             code: \"XXXXX\" \n"
-            + "                          } \n"
-            + "                       ] \n"
-            + "                    }, \n"
-            + "                    notPerformed: \"false\", \n"
-            + "                    performedDateTime: \"2017-04-24T01:15:52Z\" \n"
-            + "                }, \n"
-            + "                search: { \n"
-            + "                    mode: \"match\" \n"
-            + "                } \n"
-            + "        } \n"
-            + "    ] \n"
-            + "} "
-  )
+  @Schema(name = "ProcedureBundle", example = SwaggerExamples.PROCEDURE_BUNDLE)
   public static class Bundle extends AbstractBundle<Procedure.Entry> {
+
     @Builder
     public Bundle(
         @NotBlank String resourceType,
