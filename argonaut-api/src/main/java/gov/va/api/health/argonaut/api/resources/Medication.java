@@ -96,7 +96,7 @@ public class Medication implements Resource {
   @EqualsAndHashCode(callSuper = true)
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
   @JsonDeserialize(builder = Medication.Bundle.BundleBuilder.class)
-  @Schema(name = "MedicationBundle")
+  @Schema(name = "MedicationBundle", example = SwaggerExamples.MEDICATION_BUNDLE)
   public static class Bundle extends AbstractBundle<Medication.Entry> {
     @Builder
     public Bundle(
