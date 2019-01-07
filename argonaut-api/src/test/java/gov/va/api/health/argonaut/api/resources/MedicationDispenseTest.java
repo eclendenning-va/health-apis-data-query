@@ -1,15 +1,21 @@
 package gov.va.api.health.argonaut.api.resources;
 
 import static gov.va.api.health.argonaut.api.RoundTrip.assertRoundTrip;
+import static org.assertj.core.api.Assertions.assertThat;
 import gov.va.api.health.argonaut.api.bundle.AbstractBundle.BundleType;
-import gov.va.api.health.argonaut.api.bundle.AbstractEntry;
 import gov.va.api.health.argonaut.api.bundle.BundleLink;
 import gov.va.api.health.argonaut.api.bundle.BundleLink.LinkRelation;
 import gov.va.api.health.argonaut.api.samples.SampleMedicationDispenses;
 import gov.va.api.health.argonaut.api.resources.MedicationDispense.Bundle;
 import gov.va.api.health.argonaut.api.resources.MedicationDispense.Entry;
 import java.util.Collections;
+import java.util.Set;
+
 import org.junit.Test;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.ValidatorFactory;
 
 public class MedicationDispenseTest {
     private final SampleMedicationDispenses data = SampleMedicationDispenses.get();
@@ -46,13 +52,49 @@ public class MedicationDispenseTest {
                 .build();
 
         assertRoundTrip(bundle);
-
-        //What is the point of this
-        AbstractEntry.Search.builder().build().id();
     }
 
     @Test
     public void medicationDispense() {
         assertRoundTrip(data.medicationDispense());
     }
+
+    @Test
+    public void validationIgnoresMissingWhenPrepared() {
+        assertThat(violationsOf(data.medicationDispense().whenPrepared(null))).isEmpty();
+    }
+
+    @Test
+    public void validationReturnsOnlyRegexViolationForBadDate() {
+        Set<ConstraintViolation<MedicationDispense>> violations = violationsOf(
+                data.medicationDispense()
+                        .whenPrepared("not-a-date"));
+        assertThat(violations).isNotEmpty();
+        //Checking to make sure no message about the dates being in the wrong order comes back
+        assertThat(violations).filteredOn(violation -> violation.getMessage().contains("before")).isEmpty();
+    }
+
+    @Test
+    public void validationFailsGivenEarlyHandedOver() {
+        assertThat(violationsOf(
+                data.medicationDispense()
+                        .whenPrepared("2019-02-01T04:00:00Z")
+                        .whenHandedOver("2019-01-01T13:00:00Z")))
+                .isNotEmpty();
+    }
+
+    @Test
+    public void validationPassesGivenGoodPreparedAndHandedOver() {
+        assertThat(violationsOf(
+                data.medicationDispense()
+                        .whenPrepared("2019-01-01T04:00:00Z")
+                        .whenHandedOver("2019-01-02T04:00:00Z")))
+                .isEmpty();
+    }
+
+    private <T> Set<ConstraintViolation<T>> violationsOf(T object) {
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        return factory.getValidator().validate(object);
+    }
+
 }

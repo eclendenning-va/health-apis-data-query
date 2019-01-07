@@ -1,6 +1,7 @@
 package gov.va.api.health.argonaut.api.resources;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import gov.va.api.health.argonaut.api.Fhir;
@@ -20,12 +21,17 @@ import gov.va.api.health.argonaut.api.elements.Meta;
 import gov.va.api.health.argonaut.api.elements.Narrative;
 import gov.va.api.health.argonaut.api.elements.Reference;
 import io.swagger.v3.oas.annotations.media.Schema;
+
+import java.time.Instant;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import javax.validation.Valid;
+import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -44,6 +50,25 @@ import lombok.NoArgsConstructor;
 @Schema(description = "https://www.hl7.org/fhir/DSTU2/medicationdispense.html")
 
 public class MedicationDispense implements DomainResource {
+
+    //Constraint mdd-1: whenHandedOver cannot be before whenPrepared
+    @JsonIgnore
+    @AssertTrue(message = "Prepared must come before handed over.")
+    private boolean isPreparedBeforeHandedOver() {
+        if (whenPrepared == null || whenHandedOver == null) {
+            return true;
+        }
+        //This catch is to avoid having redundant validation errors thrown
+        //We'd like the Pattern regex to be the only one thrown instead of this one with a more generic message
+        try {
+            Instant prepared = Instant.parse(whenPrepared);
+            Instant handedOver = Instant.parse(whenHandedOver);
+            return (prepared.compareTo(handedOver) < 1);
+        } catch (DateTimeParseException e) {
+            return true;
+        }
+    }
+
     @NotBlank String resourceType;
 
     @Pattern(regexp = Fhir.ID)
@@ -72,7 +97,6 @@ public class MedicationDispense implements DomainResource {
     @Valid SimpleQuantity daysSupply;
     @NotNull @Valid Reference medicationReference;
 
-    //These next two fields have a constraint that needs to be enforced. Prepared comes before Handed Over
     @Pattern(regexp = Fhir.DATETIME)
     String whenPrepared;
 
