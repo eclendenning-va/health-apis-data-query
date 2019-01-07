@@ -159,7 +159,62 @@ public class DiagnosticReport implements Resource {
   @EqualsAndHashCode(callSuper = true)
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
   @JsonDeserialize(builder = DiagnosticReport.Bundle.BundleBuilder.class)
-  @Schema(name = "DiagnosticReportBundle")
+  @Schema(
+    name = "DiagnosticReportBundle",
+    example =
+        "{ \n"
+            + "    resourceType: \"Bundle\", \n"
+            + "    type: \"searchset\", \n"
+            + "    total: 1, \n"
+            + "    link: [ \n"
+            + "        { \n"
+            + "            relation: \"self\", \n"
+            + "            url: \"https://dev-api.va.gov/services/argonaut/v0/DiagnosticReport?patient=1017283148V813263&page=1&_count=15\" \n"
+            + "        }, \n"
+            + "        { \n"
+            + "            relation: \"first\", \n"
+            + "            url: \"https://dev-api.va.gov/services/argonaut/v0/DiagnosticReport?patient=1017283148V813263&page=1&_count=15\" \n"
+            + "        }, \n"
+            + "        { \n"
+            + "            relation: last\", \n"
+            + "            url: \"https://dev-api.va.gov/services/argonaut/v0/DiagnosticReport?patient=1017283148V813263&page=1&_count=15\" \n"
+            + "        } \n"
+            + "    ], \n"
+            + "    entry: [ \n"
+            + "        { \n"
+            + "            fullUrl: \"https://dev-api.va.gov/services/argonaut/v0/DiagnosticReport/0757389a-6e06-51bd-aac0-bd0244e51e46\", \n"
+            + "            resource: { \n"
+            + "                fullUrl: \"https://dev-api.va.gov/services/argonaut/v0/DiagnosticReport/0757389a-6e06-51bd-aac0-bd0244e51e46\", \n"
+            + "                resource: { \n"
+            + "                    resourceType: \"DiagnosticReport\", \n"
+            + "                    id: \"0757389a-6e06-51bd-aac0-bd0244e51e46\", \n"
+            + "                    status: \"final\", \n"
+            + "                    category: { \n"
+            + "                        coding: [ \n"
+            + "                            { \n"
+            + "                                system: \"http://hl7.org/fhir/ValueSet/diagnostic-service-sections\", \n"
+            + "                                code: \"LAB\", \n"
+            + "                                display: \"Laboratory\" \n"
+            + "                            } \n"
+            + "                        ] \n"
+            + "                    }, \n"
+            + "                    code: { \n"
+            + "                        text: \"panel\" \n"
+            + "                    }, \n"
+            + "                    effectiveDateTime: \"2011-04-04T01:15:52Z\", \n"
+            + "                    issued: \"2011-04-04T01:15:52Z\", \n"
+            + "                    subject: { \n"
+            + "                        reference: \"https://dev-api.va.gov/services/argonaut/v0/Patient/2000163\", \n"
+            + "                        display: \"Mr. Aurelio227 Cruickshank494\" \n"
+            + "                    } \n"
+            + "                }, \n"
+            + "                search: { \n"
+            + "                    mode: \"match\" \n"
+            + "                } \n"
+            + "        } \n"
+            + "    ] \n"
+            + "} "
+  )
   public static class Bundle extends AbstractBundle<DiagnosticReport.Entry> {
 
     @Builder

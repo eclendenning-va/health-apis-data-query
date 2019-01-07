@@ -63,7 +63,7 @@ import lombok.NoArgsConstructor;
           + "        } \n"
           + "    } \n"
           + "} "
-) 
+)
 public class Medication implements Resource {
 
   @Pattern(regexp = Fhir.ID)
