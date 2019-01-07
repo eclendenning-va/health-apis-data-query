@@ -185,7 +185,9 @@ public class ObservationTransformerTest {
     assertThat(tx.referenceRangeQuantity(null)).isNull();
     assertThat(tx.referenceRangeQuantity(new CdwObservationRefRangeQuantity())).isNull();
     assertThat(tx.referenceRangeQuantity(cdw.referenceRangeQuantity(1)))
-        .isEqualTo(expected.simpleQuantity(1));
+        .isEqualTo(expected.referenceRangeQuantity(1));
+    assertThat(tx.referenceRangeQuantity(cdw.emptyReferenceRangeQuantity(1)))
+        .isEqualTo(expected.emptyCodeReferenceRangeQuantity(1));
   }
 
   @Test
@@ -228,6 +230,8 @@ public class ObservationTransformerTest {
     assertThat(tx.valueQuantity(null)).isNull();
     assertThat(tx.valueQuantity(new CdwValueQuantity())).isNull();
     assertThat(tx.valueQuantity(cdw.valueQuantity())).isEqualTo(expected.valueQuantity());
+    assertThat(tx.valueQuantity(cdw.emptyCodeValueQuantity()))
+        .isEqualTo(expected.emptyCodeValueQuantity());
   }
 
   @NoArgsConstructor(staticName = "get", access = AccessLevel.PUBLIC)
@@ -402,6 +406,14 @@ public class ObservationTransformerTest {
       return cdw;
     }
 
+    private CdwObservationRefRangeQuantity emptyReferenceRangeQuantity(long value) {
+      CdwObservationRefRangeQuantity cdw = new CdwObservationRefRangeQuantity();
+      cdw.setUnit("k/cmm");
+      cdw.setSystem("http://unitsofmeasure.org");
+      cdw.setValue(BigDecimal.valueOf(value));
+      return cdw;
+    }
+
     private CdwReferenceRanges referenceRanges() {
       CdwReferenceRanges cdw = new CdwReferenceRanges();
       cdw.getReferenceRange().add(referenceRange());
@@ -427,6 +439,15 @@ public class ObservationTransformerTest {
     private CdwValueQuantity valueQuantity() {
       CdwValueQuantity cdw = new CdwValueQuantity();
       cdw.setCode("/min");
+      cdw.setComparator("<");
+      cdw.setSystem("http://unitsofmeasure.org");
+      cdw.setUnit("/min");
+      cdw.setValue(BigDecimal.valueOf(74));
+      return cdw;
+    }
+
+    private CdwValueQuantity emptyCodeValueQuantity() {
+      CdwValueQuantity cdw = new CdwValueQuantity();
       cdw.setComparator("<");
       cdw.setSystem("http://unitsofmeasure.org");
       cdw.setUnit("/min");
@@ -550,8 +571,8 @@ public class ObservationTransformerTest {
 
     private ObservationReferenceRange referenceRange() {
       return ObservationReferenceRange.builder()
-          .high(simpleQuantity(10))
-          .low(simpleQuantity(1))
+          .high(referenceRangeQuantity(10))
+          .low(referenceRangeQuantity(1))
           .build();
     }
 
@@ -559,13 +580,17 @@ public class ObservationTransformerTest {
       return singletonList(referenceRange());
     }
 
-    private SimpleQuantity simpleQuantity(int value) {
+    private SimpleQuantity referenceRangeQuantity(int value) {
       return SimpleQuantity.builder()
           .system("http://unitsofmeasure.org")
           .code("k/cmm")
           .unit("k/cmm")
           .value((double) value)
           .build();
+    }
+
+    private SimpleQuantity emptyCodeReferenceRangeQuantity(int value) {
+      return SimpleQuantity.builder().unit("k/cmm").value((double) value).build();
     }
 
     CodeableConcept valueCodeableConcept() {
@@ -581,6 +606,10 @@ public class ObservationTransformerTest {
           .unit("/min")
           .value(74D)
           .build();
+    }
+
+    Quantity emptyCodeValueQuantity() {
+      return Quantity.builder().comparator("<").unit("/min").value(74D).build();
     }
   }
 }
