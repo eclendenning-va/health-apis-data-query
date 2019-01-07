@@ -161,11 +161,14 @@ public class MedicationOrderTransformer implements MedicationOrderController.Tra
   }
 
   private boolean isUsable(CdwReference reference) {
-    if (reference == null || allNull(reference.getDisplay(), reference.getReference())) {
+    /*if (reference == null || allNull(reference.getDisplay(), reference.getReference())) {
       return false;
     } else {
       return true;
-    }
+    }*/
+    return (reference == null) || allNull(reference.getReference(), reference.getDisplay())
+        ? false
+        : true;
   }
 
   MedicationOrder medicationOrder(CdwMedicationOrder source) {
