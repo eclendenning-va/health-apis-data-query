@@ -106,8 +106,8 @@ public class MedicationDispense implements DomainResource {
       return !prepared.isAfter(handedOver);
     } catch (IllegalArgumentException e) {
       /*
-       * We were unable to understand at least one of the dates. We're going to say this is OK since
-       * the regex parser should fail.
+       * We were not unable to understand at least one of the dates. We're going to say this is OK
+       * since the regex parser should fail.
        */
       return true;
     }
