@@ -111,12 +111,20 @@ public class DiagnosticReportTransformer implements DiagnosticReportController.T
         .build();
   }
 
-  Reference performer(CdwReference maybeSource) {
-    if (maybeSource == null || allNull(maybeSource.getReference(), maybeSource.getDisplay())) {
+  private boolean isUsable(CdwReference reference) {
+    if (reference == null || allNull(reference.getDisplay(), reference.getReference())) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  Reference performer(CdwReference maybeReference) {
+    if (!isUsable(maybeReference)) {
       return null;
     }
     return convert(
-        maybeSource,
+        maybeReference,
         source ->
             Reference.builder()
                 .reference(source.getReference())
@@ -124,15 +132,15 @@ public class DiagnosticReportTransformer implements DiagnosticReportController.T
                 .build());
   }
 
-  Extension performerExtenstion(CdwReference source) {
-    if (source == null) {
-      return DataAbsentReason.of(Reason.unknown);
+  Extension performerExtenstion(CdwReference maybeReference) {
+    if (isUsable(maybeReference)) {
+      return null;
     }
-    return null;
+    return DataAbsentReason.of(Reason.unknown);
   }
 
   Reference reference(CdwReference maybeSource) {
-    if (maybeSource == null || allNull(maybeSource.getReference(), maybeSource.getDisplay())) {
+    if (!isUsable(maybeSource)) {
       return null;
     }
     return convert(
