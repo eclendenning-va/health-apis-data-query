@@ -7,8 +7,11 @@ import static gov.va.api.health.argonaut.service.controller.Transformers.convert
 import static gov.va.api.health.argonaut.service.controller.Transformers.ifPresent;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
+import gov.va.api.health.argonaut.api.DataAbsentReason;
+import gov.va.api.health.argonaut.api.DataAbsentReason.Reason;
 import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
 import gov.va.api.health.argonaut.api.datatypes.Coding;
+import gov.va.api.health.argonaut.api.elements.Extension;
 import gov.va.api.health.argonaut.api.elements.Reference;
 import gov.va.api.health.argonaut.api.resources.DiagnosticReport;
 import gov.va.api.health.argonaut.service.controller.EnumSearcher;
@@ -103,12 +106,41 @@ public class DiagnosticReportTransformer implements DiagnosticReportController.T
         .encounter(reference(source.getEncounter()))
         .effectiveDateTime(asDateTimeString(source.getEffective()))
         .issued(asDateTimeString(source.getIssued()))
-        .performer(reference(source.getPerformer()))
+        .performer(performer(source.getPerformer()))
+        ._performer(performerExtenstion(source.getPerformer()))
         .build();
   }
 
+  private boolean isUsable(CdwReference reference) {
+    if (reference == null || allNull(reference.getDisplay(), reference.getReference())) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  Reference performer(CdwReference maybeReference) {
+    if (!isUsable(maybeReference)) {
+      return null;
+    }
+    return convert(
+        maybeReference,
+        source ->
+            Reference.builder()
+                .reference(source.getReference())
+                .display(source.getDisplay())
+                .build());
+  }
+
+  Extension performerExtenstion(CdwReference maybeReference) {
+    if (isUsable(maybeReference)) {
+      return null;
+    }
+    return DataAbsentReason.of(Reason.unknown);
+  }
+
   Reference reference(CdwReference maybeSource) {
-    if (maybeSource == null || allNull(maybeSource.getReference(), maybeSource.getDisplay())) {
+    if (!isUsable(maybeSource)) {
       return null;
     }
     return convert(

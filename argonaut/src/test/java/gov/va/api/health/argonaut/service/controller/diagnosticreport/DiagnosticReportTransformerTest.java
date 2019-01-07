@@ -3,6 +3,8 @@ package gov.va.api.health.argonaut.service.controller.diagnosticreport;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import gov.va.api.health.argonaut.api.DataAbsentReason;
+import gov.va.api.health.argonaut.api.DataAbsentReason.Reason;
 import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
 import gov.va.api.health.argonaut.api.datatypes.Coding;
 import gov.va.api.health.argonaut.api.elements.Reference;
@@ -67,6 +69,18 @@ public class DiagnosticReportTransformerTest {
   @Test
   public void diagnosticReport() {
     assertThat(tx.apply(cdw.diagnosticReport())).isEqualTo(expected.diagnosticReport());
+    assertThat(tx.apply(cdw.diagnosticReportNullPerformer()))
+        .isEqualTo(expected.diagnosticReportNullPerformer());
+  }
+
+  @Test
+  public void performer() {
+    assertThat(tx.performer(cdw.cdwReference())).isEqualTo(expected.reference());
+    assertThat(tx.performer(null)).isNull();
+    assertThat(tx.performer(new CdwReference())).isNull();
+    // _performer
+    assertThat(tx.performerExtenstion(null)).isEqualTo(DataAbsentReason.of(Reason.unknown));
+    assertThat(tx.performerExtenstion(cdw.cdwReference())).isNull();
   }
 
   @Test
@@ -136,6 +150,22 @@ public class DiagnosticReportTransformerTest {
       return sampleDR;
     }
 
+    CdwDiagnosticReport102Root.CdwDiagnosticReports.CdwDiagnosticReport
+        diagnosticReportNullPerformer() {
+      CdwDiagnosticReport102Root.CdwDiagnosticReports.CdwDiagnosticReport sampleDR =
+          new CdwDiagnosticReport102Root.CdwDiagnosticReports.CdwDiagnosticReport();
+      sampleDR.setCdwId("5d582505-650e-58b3-8673-49138f7b2b04");
+      sampleDR.setStatus(status());
+      sampleDR.setCategory(category());
+      sampleDR.setCode(code());
+      sampleDR.setSubject(cdwReference());
+      sampleDR.setEncounter(cdwReference());
+      sampleDR.setEffective(effective());
+      sampleDR.setIssued(issued());
+      sampleDR.setPerformer(null);
+      return sampleDR;
+    }
+
     private CdwDiagnosticReportStatus status() {
       return CdwDiagnosticReportStatus.FINAL;
     }
@@ -165,6 +195,21 @@ public class DiagnosticReportTransformerTest {
           .effectiveDateTime("2013-06-21T19:03:16Z")
           .issued("2013-06-21T20:05:12Z")
           .performer(reference())
+          .build();
+    }
+
+    DiagnosticReport diagnosticReportNullPerformer() {
+      return DiagnosticReport.builder()
+          .resourceType("DiagnosticReport")
+          .id("5d582505-650e-58b3-8673-49138f7b2b04")
+          .status(status())
+          .category(category())
+          .code(code())
+          .subject(reference())
+          .encounter(reference())
+          .effectiveDateTime("2013-06-21T19:03:16Z")
+          .issued("2013-06-21T20:05:12Z")
+          ._performer(DataAbsentReason.of(Reason.unknown))
           .build();
     }
 
