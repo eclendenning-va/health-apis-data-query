@@ -11,7 +11,25 @@ public class ConformanceStatementIT {
         .argonaut()
         .get("/api/metadata")
         .expect(200)
-        .expectNoNewlineOrTabChars()
         .expectValid(Conformance.class);
+  }
+
+  @Test
+  public void conformanceStatementShouldHaveNoNewlineOrTabChars() {
+    String conformanceBody =
+        Sentinel.get()
+            .clients()
+            .argonaut()
+            .service()
+            .requestSpecification()
+            .header("Accept", "application/json")
+            .get("/api/metadata")
+            .getBody()
+            .asString();
+
+    if (conformanceBody.contains("/n") || conformanceBody.contains("/t")) {
+      throw new AssertionError(
+          "Newline or Tab characters exist within the conformance statement JSON body");
+    }
   }
 }

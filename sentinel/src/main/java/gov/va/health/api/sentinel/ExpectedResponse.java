@@ -3,15 +3,14 @@ package gov.va.health.api.sentinel;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.va.api.health.autoconfig.configuration.JacksonConfig;
 import io.restassured.response.Response;
-import lombok.AllArgsConstructor;
-import lombok.Value;
-import lombok.extern.slf4j.Slf4j;
-
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import lombok.AllArgsConstructor;
+import lombok.Value;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * A decorator for the standard Rest Assured response that adds a little more error support, by
@@ -46,15 +45,6 @@ class ExpectedResponse {
       log();
       throw new AssertionError("Failed to parse JSON body", e);
     }
-  }
-
-  /** Expect no newline or tab characters within JSON body. */
-  ExpectedResponse expectNoNewlineOrTabChars() {
-    if (response.getBody().asString().contains("/n")
-        || response.getBody().asString().contains("/t")) {
-      throw new AssertionError("Newline or Tab characters exist inside of JSON body");
-    }
-    return this;
   }
 
   /**
