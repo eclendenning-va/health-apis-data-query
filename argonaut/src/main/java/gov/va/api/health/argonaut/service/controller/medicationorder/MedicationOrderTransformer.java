@@ -160,6 +160,14 @@ public class MedicationOrderTransformer implements MedicationOrderController.Tra
                 .build());
   }
 
+  private boolean isUsable(CdwReference reference) {
+    if (reference == null || allNull(reference.getDisplay(), reference.getReference())) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
   MedicationOrder medicationOrder(CdwMedicationOrder source) {
     return MedicationOrder.builder()
         .id(source.getCdwId())
@@ -196,12 +204,12 @@ public class MedicationOrderTransformer implements MedicationOrderController.Tra
     return SimpleQuantity.builder().value(value).build();
   }
 
-  Reference prescriber(CdwReference maybeSource) {
-    if (maybeSource == null || allNull(maybeSource.getDisplay(), maybeSource.getReference())) {
+  Reference prescriber(CdwReference maybeReference) {
+    if (!isUsable(maybeReference)) {
       return null;
     }
     return convert(
-        maybeSource,
+        maybeReference,
         source ->
             Reference.builder()
                 .display(source.getDisplay())
@@ -209,15 +217,15 @@ public class MedicationOrderTransformer implements MedicationOrderController.Tra
                 .build());
   }
 
-  Extension prescriberExtension(CdwReference source) {
-    if (source == null) {
-      return DataAbsentReason.of(Reason.unknown);
+  Extension prescriberExtension(CdwReference maybeReference) {
+    if (isUsable(maybeReference)) {
+      return null;
     }
-    return null;
+    return DataAbsentReason.of(Reason.unknown);
   }
 
   Reference reference(CdwReference maybeSource) {
-    if (maybeSource == null || allNull(maybeSource.getDisplay(), maybeSource.getReference())) {
+    if (!isUsable(maybeSource)) {
       return null;
     }
     return convert(
