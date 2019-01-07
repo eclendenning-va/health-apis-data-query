@@ -7,11 +7,14 @@ import static gov.va.api.health.argonaut.service.controller.Transformers.convert
 import static gov.va.api.health.argonaut.service.controller.Transformers.ifPresent;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
+import gov.va.api.health.argonaut.api.DataAbsentReason;
+import gov.va.api.health.argonaut.api.DataAbsentReason.Reason;
 import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
 import gov.va.api.health.argonaut.api.datatypes.Coding;
 import gov.va.api.health.argonaut.api.datatypes.Duration;
 import gov.va.api.health.argonaut.api.datatypes.SimpleQuantity;
 import gov.va.api.health.argonaut.api.datatypes.Timing;
+import gov.va.api.health.argonaut.api.elements.Extension;
 import gov.va.api.health.argonaut.api.elements.Reference;
 import gov.va.api.health.argonaut.api.resources.MedicationOrder;
 import gov.va.api.health.argonaut.api.resources.MedicationOrder.DispenseRequest;
@@ -157,6 +160,10 @@ public class MedicationOrderTransformer implements MedicationOrderController.Tra
                 .build());
   }
 
+  private boolean isUsable(CdwReference reference) {
+    return reference != null && !allNull(reference.getReference(), reference.getDisplay());
+  }
+
   MedicationOrder medicationOrder(CdwMedicationOrder source) {
     return MedicationOrder.builder()
         .id(source.getCdwId())
@@ -165,7 +172,8 @@ public class MedicationOrderTransformer implements MedicationOrderController.Tra
         .dateWritten(asDateTimeString(source.getDateWritten()))
         .status(status(source.getStatus()))
         .dateEnded(asDateTimeString(source.getDateEnded()))
-        .prescriber(reference(source.getPrescriber()))
+        .prescriber(prescriber(source.getPrescriber()))
+        ._prescriber(prescriberExtension(source.getPrescriber()))
         .medicationReference(reference(source.getMedicationReference()))
         .dosageInstruction(dosageInstructions(source.getDosageInstructions()))
         .dispenseRequest(dispenseRequest(source.getDispenseRequest()))
@@ -192,8 +200,28 @@ public class MedicationOrderTransformer implements MedicationOrderController.Tra
     return SimpleQuantity.builder().value(value).build();
   }
 
+  Reference prescriber(CdwReference maybeReference) {
+    if (!isUsable(maybeReference)) {
+      return null;
+    }
+    return convert(
+        maybeReference,
+        source ->
+            Reference.builder()
+                .display(source.getDisplay())
+                .reference(source.getReference())
+                .build());
+  }
+
+  Extension prescriberExtension(CdwReference maybeReference) {
+    if (isUsable(maybeReference)) {
+      return null;
+    }
+    return DataAbsentReason.of(Reason.unknown);
+  }
+
   Reference reference(CdwReference maybeSource) {
-    if (maybeSource == null || allNull(maybeSource.getDisplay(), maybeSource.getReference())) {
+    if (!isUsable(maybeSource)) {
       return null;
     }
     return convert(
