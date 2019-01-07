@@ -291,7 +291,7 @@ public class ObservationTransformer implements ObservationController.Transformer
       return null;
     }
     return SimpleQuantity.builder()
-        .system(StringUtils.isBlank(maybeCdw.getCode())?null:maybeCdw.getSystem())
+        .system(StringUtils.isBlank(maybeCdw.getCode()) ? null : maybeCdw.getSystem())
         .value(ifPresent(maybeCdw.getValue(), BigDecimal::doubleValue))
         .unit(maybeCdw.getUnit())
         .code(maybeCdw.getCode())
@@ -353,7 +353,7 @@ public class ObservationTransformer implements ObservationController.Transformer
         maybeCdw,
         cdw ->
             Quantity.builder()
-                .system(StringUtils.isBlank(cdw.getCode())?null:cdw.getSystem())
+                .system(StringUtils.isBlank(cdw.getCode()) ? null : cdw.getSystem())
                 .value(cdw.getValue().doubleValue())
                 .comparator(cdw.getComparator())
                 .code(cdw.getCode())
