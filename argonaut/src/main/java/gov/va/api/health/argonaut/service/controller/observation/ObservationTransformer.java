@@ -38,6 +38,7 @@ import gov.va.dvp.cdw.xsd.model.CdwReference;
 import java.math.BigDecimal;
 import java.util.List;
 import javax.validation.constraints.NotNull;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -289,14 +290,8 @@ public class ObservationTransformer implements ObservationController.Transformer
             maybeCdw.getSystem(), maybeCdw.getCode(), maybeCdw.getUnit(), maybeCdw.getValue())) {
       return null;
     }
-    if (maybeCdw.getCode() == null) {
-      return SimpleQuantity.builder()
-          .value(ifPresent(maybeCdw.getValue(), BigDecimal::doubleValue))
-          .unit(maybeCdw.getUnit())
-          .build();
-    }
     return SimpleQuantity.builder()
-        .system(maybeCdw.getSystem())
+        .system(StringUtils.isBlank(maybeCdw.getCode())?null:maybeCdw.getSystem())
         .value(ifPresent(maybeCdw.getValue(), BigDecimal::doubleValue))
         .unit(maybeCdw.getUnit())
         .code(maybeCdw.getCode())
@@ -354,21 +349,11 @@ public class ObservationTransformer implements ObservationController.Transformer
             maybeCdw.getValue())) {
       return null;
     }
-    if (maybeCdw.getCode() == null) {
-      return ifPresent(
-          maybeCdw,
-          cdw ->
-              Quantity.builder()
-                  .value(cdw.getValue().doubleValue())
-                  .comparator(cdw.getComparator())
-                  .unit(cdw.getUnit())
-                  .build());
-    }
     return ifPresent(
         maybeCdw,
         cdw ->
             Quantity.builder()
-                .system(cdw.getSystem())
+                .system(StringUtils.isBlank(cdw.getCode())?null:cdw.getSystem())
                 .value(cdw.getValue().doubleValue())
                 .comparator(cdw.getComparator())
                 .code(cdw.getCode())
