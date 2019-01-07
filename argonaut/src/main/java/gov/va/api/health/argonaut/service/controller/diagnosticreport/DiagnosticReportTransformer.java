@@ -112,11 +112,9 @@ public class DiagnosticReportTransformer implements DiagnosticReportController.T
   }
 
   private boolean isUsable(CdwReference reference) {
-    if (reference == null || allNull(reference.getDisplay(), reference.getReference())) {
-      return false;
-    } else {
-      return true;
-    }
+    return (reference == null) || allNull(reference.getReference(), reference.getDisplay())
+        ? false
+        : true;
   }
 
   Reference performer(CdwReference maybeReference) {
