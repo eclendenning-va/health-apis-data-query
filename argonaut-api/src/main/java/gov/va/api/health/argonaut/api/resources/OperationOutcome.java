@@ -26,7 +26,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-@Schema(description = "https://www.hl7.org/fhir/operationoutcome.html")
+@Schema(
+  description = "https://www.hl7.org/fhir/operationoutcome.html",
+  example = SwaggerExamples.OPERATION_OUTCOME
+)
 public class OperationOutcome implements DomainResource {
 
   @Pattern(regexp = Fhir.ID)

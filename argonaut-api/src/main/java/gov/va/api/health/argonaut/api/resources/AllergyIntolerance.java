@@ -42,7 +42,8 @@ import lombok.NoArgsConstructor;
 )
 @Schema(
   description =
-      "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-allergyintolerance.html"
+      "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-allergyintolerance.html",
+  example = SwaggerExamples.ALLERGY_INTOLERANCE
 )
 public class AllergyIntolerance implements Resource {
   @NotBlank String resourceType;
@@ -137,7 +138,7 @@ public class AllergyIntolerance implements Resource {
   @EqualsAndHashCode(callSuper = true)
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
   @JsonDeserialize(builder = AllergyIntolerance.Bundle.BundleBuilder.class)
-  @Schema(name = "AllergyIntoleranceBundle")
+  @Schema(name = "AllergyIntoleranceBundle", example = SwaggerExamples.ALLERGY_INTOLERANCE_BUNDLE)
   public static class Bundle extends AbstractBundle<AllergyIntolerance.Entry> {
 
     @Builder

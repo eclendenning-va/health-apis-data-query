@@ -42,7 +42,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @JsonAutoDetect(fieldVisibility = Visibility.ANY)
 @Schema(
-  description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-procedure.html"
+  description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-procedure.html",
+  example = SwaggerExamples.PROCEDURE
 )
 @ExactlyOneOfs({
   @ExactlyOneOf(
@@ -60,6 +61,7 @@ import lombok.NoArgsConstructor;
       message = "At most one reason may be specified."
     ))
 public class Procedure implements Resource {
+
   @NotBlank String resourceType;
 
   @Pattern(regexp = Fhir.ID)
@@ -126,8 +128,9 @@ public class Procedure implements Resource {
   @EqualsAndHashCode(callSuper = true)
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
   @JsonDeserialize(builder = Procedure.Bundle.BundleBuilder.class)
-  @Schema(name = "ProcedureBundle")
+  @Schema(name = "ProcedureBundle", example = SwaggerExamples.PROCEDURE_BUNDLE)
   public static class Bundle extends AbstractBundle<Procedure.Entry> {
+
     @Builder
     public Bundle(
         @NotBlank String resourceType,

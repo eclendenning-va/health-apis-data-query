@@ -5,6 +5,8 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import gov.va.api.health.argonaut.api.DataAbsentReason;
+import gov.va.api.health.argonaut.api.DataAbsentReason.Reason;
 import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
 import gov.va.api.health.argonaut.api.datatypes.Coding;
 import gov.va.api.health.argonaut.api.datatypes.Duration;
@@ -116,12 +118,24 @@ public class MedicationOrderTransformerTest {
   @Test
   public void medicationOrder() {
     assertThat(tx.apply(cdw.medicationOrder())).isEqualTo(expected.medicationOrder());
+    assertThat(tx.apply(cdw.medicationOrderNullPrescriber()))
+        .isEqualTo(expected.medicationOrderNullPrescriber());
   }
 
   @Test
   public void numberOfRepeatsAllowed() {
     assertThat(tx.numberOfRepeatsAllowed(null)).isNull();
     assertThat(tx.numberOfRepeatsAllowed(0)).isNull();
+  }
+
+  @Test
+  public void prescriber() {
+    assertThat(tx.prescriber(cdw.prescriber())).isEqualTo(expected.prescriber());
+    assertThat(tx.prescriber(null)).isNull();
+    assertThat(tx.prescriber(new CdwReference())).isNull();
+    // _prescriber field
+    assertThat(tx.prescriberExtension(null)).isEqualTo(DataAbsentReason.of(Reason.unknown));
+    assertThat(tx.prescriberExtension(cdw.prescriber())).isNull();
   }
 
   @Test
@@ -280,6 +294,14 @@ public class MedicationOrderTransformerTest {
       return expectedSupplyDuration;
     }
 
+    CdwReference prescriber() {
+      CdwReference prescriber = new CdwReference();
+      prescriber.setDisplay("SMITH,ATTENDING D");
+      prescriber.setReference(
+          "https://www.freedomstream.io/CDCArgonaut/api/Practitioner/93e4e3c3-8d8c-5b53-996f-6047d0232231");
+      return prescriber;
+    }
+
     CdwMedicationOrder103Root.CdwMedicationOrders.CdwMedicationOrder medicationOrder() {
       CdwMedicationOrder103Root.CdwMedicationOrders.CdwMedicationOrder sampleMedicationOrder =
           new CdwMedicationOrder103Root.CdwMedicationOrders.CdwMedicationOrder();
@@ -292,10 +314,30 @@ public class MedicationOrderTransformerTest {
       sampleMedicationOrder.setDateWritten(dateWritten());
       sampleMedicationOrder.setStatus("active");
       sampleMedicationOrder.setDateEnded(dateEnded());
-      sampleMedicationOrder.setPrescriber(
+      sampleMedicationOrder.setPrescriber(prescriber());
+      sampleMedicationOrder.setMedicationReference(
           cdwReference(
-              "https://www.freedomstream.io/CDCArgonaut/api/Practitioner/93e4e3c3-8d8c-5b53-996f-6047d0232231",
-              "SMITH,ATTENDING D"));
+              "https://www.freedomstream.io/CDCArgonaut/api/Medication/2f773f73-ad7f-56ca-891e-8e364c913fe0",
+              "ATORVASTATIN CALCIUM 80MG TAB"));
+      sampleMedicationOrder.setDosageInstructions(dosageInstructions());
+      sampleMedicationOrder.setDispenseRequest(dispenseRequest());
+      return sampleMedicationOrder;
+    }
+
+    CdwMedicationOrder103Root.CdwMedicationOrders.CdwMedicationOrder
+        medicationOrderNullPrescriber() {
+      CdwMedicationOrder103Root.CdwMedicationOrders.CdwMedicationOrder sampleMedicationOrder =
+          new CdwMedicationOrder103Root.CdwMedicationOrders.CdwMedicationOrder();
+      sampleMedicationOrder.setRowNumber(1);
+      sampleMedicationOrder.setCdwId("1234");
+      sampleMedicationOrder.setPatient(
+          cdwReference(
+              "https://www.freedomstream.io/CDCArgonaut/api/Patient/185601V825290",
+              "VETERAN,JOHN Q"));
+      sampleMedicationOrder.setDateWritten(dateWritten());
+      sampleMedicationOrder.setStatus("active");
+      sampleMedicationOrder.setDateEnded(dateEnded());
+      sampleMedicationOrder.setPrescriber(null);
       sampleMedicationOrder.setMedicationReference(
           cdwReference(
               "https://www.freedomstream.io/CDCArgonaut/api/Medication/2f773f73-ad7f-56ca-891e-8e364c913fe0",
@@ -390,6 +432,14 @@ public class MedicationOrderTransformerTest {
           .build();
     }
 
+    Reference prescriber() {
+      return Reference.builder()
+          .reference(
+              "https://www.freedomstream.io/CDCArgonaut/api/Practitioner/93e4e3c3-8d8c-5b53-996f-6047d0232231")
+          .display("SMITH,ATTENDING D")
+          .build();
+    }
+
     MedicationOrder medicationOrder() {
       return MedicationOrder.builder()
           .resourceType("MedicationOrder")
@@ -401,10 +451,29 @@ public class MedicationOrderTransformerTest {
           .dateWritten("2018-11-06")
           .status(Status.active)
           .dateEnded("2018-11-06")
-          .prescriber(
+          .prescriber(prescriber())
+          ._prescriber(null)
+          .medicationReference(
               reference(
-                  "https://www.freedomstream.io/CDCArgonaut/api/Practitioner/93e4e3c3-8d8c-5b53-996f-6047d0232231",
-                  "SMITH,ATTENDING D"))
+                  "https://www.freedomstream.io/CDCArgonaut/api/Medication/2f773f73-ad7f-56ca-891e-8e364c913fe0",
+                  "ATORVASTATIN CALCIUM 80MG TAB"))
+          .dosageInstruction(dosageInstructions())
+          .dispenseRequest(dispenseRequest())
+          .build();
+    }
+
+    MedicationOrder medicationOrderNullPrescriber() {
+      return MedicationOrder.builder()
+          .resourceType("MedicationOrder")
+          .id("1234")
+          .patient(
+              reference(
+                  "https://www.freedomstream.io/CDCArgonaut/api/Patient/185601V825290",
+                  "VETERAN,JOHN Q"))
+          .dateWritten("2018-11-06")
+          .status(Status.active)
+          .dateEnded("2018-11-06")
+          ._prescriber(DataAbsentReason.of(Reason.unknown))
           .medicationReference(
               reference(
                   "https://www.freedomstream.io/CDCArgonaut/api/Medication/2f773f73-ad7f-56ca-891e-8e364c913fe0",

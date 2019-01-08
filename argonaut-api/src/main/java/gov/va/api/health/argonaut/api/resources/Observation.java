@@ -53,7 +53,8 @@ import org.apache.commons.lang3.StringUtils;
 )
 @Schema(
   description =
-      "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-observationresults.html"
+      "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-observationresults.html",
+  example = SwaggerExamples.OBSERVATION
 )
 @ZeroOrOneOfs({
   @ZeroOrOneOf(
@@ -77,6 +78,7 @@ import org.apache.commons.lang3.StringUtils;
   )
 })
 public class Observation implements Resource {
+
   @NotBlank String resourceType;
 
   @Pattern(regexp = Fhir.ID)
@@ -178,7 +180,7 @@ public class Observation implements Resource {
   @EqualsAndHashCode(callSuper = true)
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
   @JsonDeserialize(builder = Observation.Bundle.BundleBuilder.class)
-  @Schema(name = "ObservationBundle")
+  @Schema(name = "ObservationBundle", example = SwaggerExamples.OBSERVATION_BUNDLE)
   public static class Bundle extends AbstractBundle<Entry> {
 
     @Builder

@@ -19,6 +19,7 @@ import gov.va.api.health.argonaut.api.elements.Extension;
 import gov.va.api.health.argonaut.api.elements.Meta;
 import gov.va.api.health.argonaut.api.elements.Narrative;
 import gov.va.api.health.argonaut.api.elements.Reference;
+import gov.va.api.health.argonaut.api.validation.ExactlyOneOf;
 import gov.va.api.health.argonaut.api.validation.ZeroOrOneOf;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
@@ -43,8 +44,10 @@ import org.apache.commons.lang3.StringUtils;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @Schema(
   description =
-      "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-diagnosticreport.html"
+      "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-diagnosticreport.html",
+  example = SwaggerExamples.DIAGNOSTIC_REPORT
 )
+@ExactlyOneOf(fields = {"performer", "_performer"})
 @ZeroOrOneOf(
   fields = {"effectiveDateTime", "effectivePeriod"},
   message = "Only one effective value may be specified"
@@ -86,7 +89,8 @@ public class DiagnosticReport implements Resource {
   @NotBlank
   String issued;
 
-  @NotNull @Valid Reference performer;
+  @Valid Reference performer;
+  @Valid Extension _performer;
 
   @Valid List<Reference> request;
   @Valid List<Reference> specimen;
@@ -135,7 +139,7 @@ public class DiagnosticReport implements Resource {
   @EqualsAndHashCode(callSuper = true)
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
   @JsonDeserialize(builder = DiagnosticReport.Bundle.BundleBuilder.class)
-  @Schema(name = "DiagnosticReportBundle")
+  @Schema(name = "DiagnosticReportBundle", example = SwaggerExamples.DIAGNOSTIC_REPORT_BUNDLE)
   public static class Bundle extends AbstractBundle<DiagnosticReport.Entry> {
 
     @Builder
