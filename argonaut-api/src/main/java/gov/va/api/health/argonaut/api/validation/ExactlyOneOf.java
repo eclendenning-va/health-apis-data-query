@@ -11,7 +11,7 @@ import javax.validation.Constraint;
 import javax.validation.Payload;
 
 /**
- * Constraint that indicates a class must have one of a collection of fields sets. This requrires
+ * Constraint that indicates a class must have one of a collection of fields sets. This requires
  * exactly one of the fields in the group to be set.
  *
  * <p>Consider the following example.

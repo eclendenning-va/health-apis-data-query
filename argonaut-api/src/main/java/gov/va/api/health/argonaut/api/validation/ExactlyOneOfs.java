@@ -14,7 +14,7 @@ import java.lang.annotation.Target;
  * <p>Consider the following example.
  *
  * <ul>
- *   <li>a and b , c and d are seperate groups that are looked at for ZeroOrOneOf validation
+ *   <li>a and b , c and d are separate groups that are looked at for ZeroOrOneOf validation
  * </ul>
  *
  * <pre>
@@ -34,6 +34,6 @@ import java.lang.annotation.Target;
 @Retention(RUNTIME)
 @Documented
 public @interface ExactlyOneOfs {
-  /** Collections of related field annotions. */
+  /** Collections of related field annotations. */
   ExactlyOneOf[] value();
 }

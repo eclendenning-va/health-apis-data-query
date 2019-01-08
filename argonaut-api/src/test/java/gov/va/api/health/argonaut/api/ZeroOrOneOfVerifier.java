@@ -9,8 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * This class will verify fields with a given prefix are properly configured in the same ZeroOrOneOf
- * group. This class will fiend related fields with the same prefix and systematically test
- * different combinations to ensure they are validate as expected.
+ * group. This class will find related fields with the same prefix and systematically test different
+ * combinations to ensure they are validated as expected.
  */
 @Slf4j
 public class ZeroOrOneOfVerifier<T> extends AbstractRelatedFieldVerifier<T> {
