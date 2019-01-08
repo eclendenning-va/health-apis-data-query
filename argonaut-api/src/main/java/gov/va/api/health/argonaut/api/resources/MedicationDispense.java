@@ -41,8 +41,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor
 @JsonAutoDetect(
-    fieldVisibility = JsonAutoDetect.Visibility.ANY,
-    isGetterVisibility = JsonAutoDetect.Visibility.NONE)
+  fieldVisibility = JsonAutoDetect.Visibility.ANY,
+  isGetterVisibility = JsonAutoDetect.Visibility.NONE
+)
 @Schema(description = "https://www.hl7.org/fhir/DSTU2/medicationdispense.html")
 public class MedicationDispense implements DomainResource {
 
@@ -97,7 +98,7 @@ public class MedicationDispense implements DomainResource {
       return true;
     }
     /*
-     * This catch is to avoid having redundant validation errors thrown We'd like the Pattern regex
+     * This catch is to avoid having redundant validation errors thrown. We'd like the Pattern regex
      * to be the only one thrown instead of this one with a more generic message.
      */
     try {
@@ -106,7 +107,7 @@ public class MedicationDispense implements DomainResource {
       return !prepared.isAfter(handedOver);
     } catch (IllegalArgumentException e) {
       /*
-       * We were not unable to understand at least one of the dates. We're going to say this is OK
+       * We were not able to understand at least one of the dates. We're going to say this is OK
        * since the regex parser should fail.
        */
       return true;
@@ -168,7 +169,10 @@ public class MedicationDispense implements DomainResource {
     @Valid CodeableConcept route;
     @Valid CodeableConcept method;
     @Valid SimpleQuantity doseQuantity;
-    // Picked ratio because the xsd contract did not specify, is this okay?
+    /*
+     * Picked rate[Ratio] because the XSD does not map this field so the type isn't important yet.
+     * This should be revisited if the field does get mapped.
+     */
     @Valid Ratio rateRatio;
     @Valid Ratio maxDosePerPeriod;
   }
