@@ -3,6 +3,8 @@ package gov.va.api.health.argonaut.api.resources;
 import static gov.va.api.health.argonaut.api.RoundTrip.assertRoundTrip;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import gov.va.api.health.argonaut.api.ExactlyOneOfVerifier;
+import gov.va.api.health.argonaut.api.ZeroOrOneOfVerifier;
 import gov.va.api.health.argonaut.api.bundle.AbstractBundle.BundleType;
 import gov.va.api.health.argonaut.api.bundle.BundleLink;
 import gov.va.api.health.argonaut.api.bundle.BundleLink.LinkRelation;
@@ -92,6 +94,18 @@ public class MedicationDispenseTest {
                     .whenPrepared("2019-01-01T04:00:00Z")
                     .whenHandedOver("2019-01-02T04:00:00Z")))
         .isEmpty();
+  }
+
+  @Test
+  public void relatedFields() {
+    ExactlyOneOfVerifier.builder()
+        .sample(data.medicationDispense())
+        .fieldPrefix("medication")
+        .build();
+    ZeroOrOneOfVerifier.builder().sample(data.medicationDispense()).fieldPrefix("rate").build();
+    ZeroOrOneOfVerifier.builder().sample(data.medicationDispense()).fieldPrefix("asNeeded").build();
+    ZeroOrOneOfVerifier.builder().sample(data.medicationDispense()).fieldPrefix("site").build();
+    ZeroOrOneOfVerifier.builder().sample(data.medicationDispense()).fieldPrefix("dose").build();
   }
 
   private <T> Set<ConstraintViolation<T>> violationsOf(T object) {

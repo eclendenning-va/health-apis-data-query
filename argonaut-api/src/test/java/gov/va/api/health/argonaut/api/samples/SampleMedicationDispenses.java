@@ -53,7 +53,7 @@ public class SampleMedicationDispenses {
         .contained(simpleResourceList())
         .extension(singletonList(extension()))
         .modifierExtension(singletonList(extension()))
-        .identifier(singletonList(identifier()))
+        .identifier(identifier())
         .text(narrative())
         .status(Status.completed)
         .patient(reference())

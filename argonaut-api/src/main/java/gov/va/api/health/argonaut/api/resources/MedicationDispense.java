@@ -10,6 +10,7 @@ import gov.va.api.health.argonaut.api.bundle.AbstractEntry;
 import gov.va.api.health.argonaut.api.bundle.BundleLink;
 import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
 import gov.va.api.health.argonaut.api.datatypes.Identifier;
+import gov.va.api.health.argonaut.api.datatypes.Range;
 import gov.va.api.health.argonaut.api.datatypes.Ratio;
 import gov.va.api.health.argonaut.api.datatypes.Signature;
 import gov.va.api.health.argonaut.api.datatypes.SimpleQuantity;
@@ -20,6 +21,9 @@ import gov.va.api.health.argonaut.api.elements.Extension;
 import gov.va.api.health.argonaut.api.elements.Meta;
 import gov.va.api.health.argonaut.api.elements.Narrative;
 import gov.va.api.health.argonaut.api.elements.Reference;
+import gov.va.api.health.argonaut.api.validation.ExactlyOneOf;
+import gov.va.api.health.argonaut.api.validation.ZeroOrOneOf;
+import gov.va.api.health.argonaut.api.validation.ZeroOrOneOfs;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.Instant;
 import java.util.List;
@@ -45,6 +49,10 @@ import lombok.NoArgsConstructor;
   isGetterVisibility = JsonAutoDetect.Visibility.NONE
 )
 @Schema(description = "https://www.hl7.org/fhir/DSTU2/medicationdispense.html")
+@ExactlyOneOf(
+  fields = {"medicationCodeableConcept", "medicationReference"},
+  message = "Exactly one medication field must be specified"
+)
 public class MedicationDispense implements DomainResource {
 
   @NotBlank String resourceType;
@@ -63,7 +71,7 @@ public class MedicationDispense implements DomainResource {
   @Valid List<SimpleResource> contained;
   @Valid List<Extension> extension;
   @Valid List<Extension> modifierExtension;
-  @Valid List<Identifier> identifier;
+  @Valid Identifier identifier;
   @Valid Narrative text;
   @NotNull Status status;
   @Valid Reference patient;
@@ -72,7 +80,8 @@ public class MedicationDispense implements DomainResource {
   @Valid CodeableConcept type;
   @Valid SimpleQuantity quantity;
   @Valid SimpleQuantity daysSupply;
-  @NotNull @Valid Reference medicationReference;
+  @Valid Reference medicationReference;
+  @Valid CodeableConcept medicationCodeableConcept;
 
   @Pattern(regexp = Fhir.DATETIME)
   String whenPrepared;
@@ -155,6 +164,24 @@ public class MedicationDispense implements DomainResource {
   @AllArgsConstructor
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
   @Schema(name = "MedicationDispenseDosageInstruction")
+  @ZeroOrOneOfs({
+    @ZeroOrOneOf(
+      fields = {"asNeededBoolean", "asNeededCodeableConcept"},
+      message = "Only one asNeeded field may be specified"
+    ),
+    @ZeroOrOneOf(
+      fields = {"siteCodeableConcept", "siteReference"},
+      message = "Only one site field may be specified"
+    ),
+    @ZeroOrOneOf(
+      fields = {"doseRange", "doseQuantity"},
+      message = "Only one dose field may be specified"
+    ),
+    @ZeroOrOneOf(
+      fields = {"rateRatio", "rateRange"},
+      message = "Only one rate field may be specified"
+    )
+  })
   public static class DosageInstruction implements BackboneElement {
     @Pattern(regexp = Fhir.ID)
     String id;
@@ -164,16 +191,16 @@ public class MedicationDispense implements DomainResource {
     String text;
     @Valid CodeableConcept additionalInstructions;
     @Valid Timing timing;
-    boolean asNeededBoolean;
+    Boolean asNeededBoolean;
+    @Valid CodeableConcept asNeededCodeableConcept;
     @Valid CodeableConcept siteCodeableConcept;
+    @Valid Reference siteReference;
     @Valid CodeableConcept route;
     @Valid CodeableConcept method;
+    @Valid Range doseRange;
     @Valid SimpleQuantity doseQuantity;
-    /*
-     * Picked rate[Ratio] because the XSD does not map this field so the type isn't important yet.
-     * This should be revisited if the field does get mapped.
-     */
     @Valid Ratio rateRatio;
+    @Valid Range rateRange;
     @Valid Ratio maxDosePerPeriod;
   }
 
