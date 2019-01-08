@@ -38,8 +38,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @Schema(
-        description = "http://www.hl7.org/fhir/DSTU2/organization.html",
-        example = SwaggerExamples.ORGANZIATON
+  description = "http://www.hl7.org/fhir/DSTU2/organization.html",
+  example = SwaggerExamples.ORGANZIATON
 )
 public class Organization implements DomainResource {
   @NotBlank String resourceType;

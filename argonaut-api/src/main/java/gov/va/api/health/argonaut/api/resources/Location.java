@@ -37,8 +37,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @Schema(
-        description = "https://www.hl7.org/fhir/DSTU2/location.html",
-        example = SwaggerExamples.LOCATION
+  description = "https://www.hl7.org/fhir/DSTU2/location.html",
+  example = SwaggerExamples.LOCATION
 )
 public class Location implements DomainResource {
   @NotBlank String resourceType;
