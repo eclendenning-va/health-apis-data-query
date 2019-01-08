@@ -40,7 +40,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-@Schema(description = "https://www.hl7.org/fhir/DSTU2/practitioner.html")
+@Schema(
+  description = "https://www.hl7.org/fhir/DSTU2/practitioner.html",
+  example = SwaggerExamples.PRACTITIONER
+)
 public class Practitioner implements DomainResource {
   @NotBlank String resourceType;
 
@@ -80,7 +83,7 @@ public class Practitioner implements DomainResource {
   @EqualsAndHashCode(callSuper = true)
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
   @JsonDeserialize(builder = Practitioner.Entry.EntryBuilder.class)
-  @Schema(name = "PractitionerEntry")
+  @Schema(name = "PractitionerEntry", example = SwaggerExamples.PRACTITIONER_BUNDLE)
   public static class Entry extends AbstractEntry<Practitioner> {
     @Builder
     public Entry(

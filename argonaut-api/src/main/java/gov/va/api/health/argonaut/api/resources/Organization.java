@@ -37,7 +37,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-@Schema(description = "http://www.hl7.org/fhir/DSTU2/organization.html")
+@Schema(
+  description = "http://www.hl7.org/fhir/DSTU2/organization.html",
+  example = SwaggerExamples.ORGANZIATON
+)
 public class Organization implements DomainResource {
   @NotBlank String resourceType;
 
@@ -71,7 +74,7 @@ public class Organization implements DomainResource {
   @EqualsAndHashCode(callSuper = true)
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
   @JsonDeserialize(builder = Organization.Bundle.BundleBuilder.class)
-  @Schema(name = "OrganizationBundle")
+  @Schema(name = "OrganizationBundle", example = SwaggerExamples.ORGANZIATION_BUNDLE)
   public static class Bundle extends AbstractBundle<Organization.Entry> {
     @Builder
     public Bundle(

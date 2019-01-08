@@ -48,7 +48,8 @@ import lombok.NoArgsConstructor;
 @JsonAutoDetect(fieldVisibility = Visibility.ANY)
 @Schema(
   description =
-      "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-medicationorder.html"
+      "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-medicationorder.html",
+  example = SwaggerExamples.MEDICATION_ORDER
 )
 @ZeroOrOneOf(
   fields = {"reasonCodeableConcept", "reasonReference"},
@@ -65,6 +66,7 @@ import lombok.NoArgsConstructor;
   ),
 })
 public class MedicationOrder implements Resource {
+
   @NotBlank String resourceType;
 
   @Pattern(regexp = Fhir.ID)
@@ -125,8 +127,9 @@ public class MedicationOrder implements Resource {
   @EqualsAndHashCode(callSuper = true)
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
   @JsonDeserialize(builder = MedicationOrder.Bundle.BundleBuilder.class)
-  @Schema(name = "MedicationOrderBundle")
+  @Schema(name = "MedicationOrderBundle", example = SwaggerExamples.MEDICATION_ORDER_BUNDLE)
   public static class Bundle extends AbstractBundle<Entry> {
+
     @Builder
     public Bundle(
         @NotBlank String resourceType,

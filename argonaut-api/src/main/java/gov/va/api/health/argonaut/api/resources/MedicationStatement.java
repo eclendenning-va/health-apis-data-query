@@ -49,7 +49,8 @@ import lombok.NoArgsConstructor;
 )
 @Schema(
   description =
-      "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-medicationstatement.html"
+      "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-medicationstatement.html",
+  example = SwaggerExamples.MEDICATION_STATEMENT
 )
 @ZeroOrOneOfs({
   @ZeroOrOneOf(
@@ -66,6 +67,7 @@ import lombok.NoArgsConstructor;
   message = "Exactly one medication value must be specified"
 )
 public class MedicationStatement implements Resource {
+
   @NotBlank String resourceType;
 
   @Pattern(regexp = Fhir.ID)
@@ -124,7 +126,7 @@ public class MedicationStatement implements Resource {
   @EqualsAndHashCode(callSuper = true)
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
   @JsonDeserialize(builder = MedicationStatement.Bundle.BundleBuilder.class)
-  @Schema(name = "MedicationStatementBundle")
+  @Schema(name = "MedicationStatementBundle", example = SwaggerExamples.MEDICATION_STATEMENT_BUNDLE)
   public static class Bundle extends AbstractBundle<MedicationStatement.Entry> {
 
     @Builder

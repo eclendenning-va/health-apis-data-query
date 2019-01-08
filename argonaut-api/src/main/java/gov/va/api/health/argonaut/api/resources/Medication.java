@@ -41,7 +41,8 @@ import lombok.NoArgsConstructor;
   isGetterVisibility = Visibility.NONE
 )
 @Schema(
-  description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-medication.html"
+  description = "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-medication.html",
+  example = SwaggerExamples.MEDICATION
 )
 public class Medication implements Resource {
 
@@ -95,7 +96,7 @@ public class Medication implements Resource {
   @EqualsAndHashCode(callSuper = true)
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
   @JsonDeserialize(builder = Medication.Bundle.BundleBuilder.class)
-  @Schema(name = "MedicationBundle")
+  @Schema(name = "MedicationBundle", example = SwaggerExamples.MEDICATION_BUNDLE)
   public static class Bundle extends AbstractBundle<Medication.Entry> {
     @Builder
     public Bundle(

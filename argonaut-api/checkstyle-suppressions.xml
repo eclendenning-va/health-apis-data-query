@@ -11,4 +11,8 @@
   <suppress checks="MemberName" files=".*(/|\\)DiagnosticReport.java" message="Member name '(_performer)'"/>
   <suppress checks="MemberName" files=".*(/|\\)MedicationOrder.java" message="Member name '(_prescriber)'"/>
   <suppress checks="MemberName" files=".*(/|\\)Procedure.java" message="Member name '(_status)'"/>
+  <!--
+    Swagger examples can be quite long.
+  -->
+  <suppress checks="LineLength" files=".*(/|\\)SwaggerExamples.java"/>
 </suppressions>
