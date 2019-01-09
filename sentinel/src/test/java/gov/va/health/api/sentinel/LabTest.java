@@ -18,9 +18,38 @@ import org.junit.experimental.categories.Category;
 @Category(Lab.class)
 @Slf4j
 public class LabTest {
-  LabRobots robots = LabRobots.fromSystemProperties();
+
+  private static final String SAPIDER =
+      "\n"
+          + "                   /\\\n"
+          + "                  /  \\\n"
+          + "                 |  _ \\                  _\n"
+          + "                 | / \\ \\                / \\\n"
+          + "                 |/   \\ \\              /   \\\n"
+          + "                 /     \\ |        /\\  /     \\\n"
+          + "                /|      \\| ~  ~  /  \\/       \\\n"
+          + "        _______/_|_______\\(o)(o)/___/\\_____   \\\n"
+          + "       /      /  |       (______)     \\    \\   \\_\n"
+          + "      /      /   |                     \\    \\\n"
+          + "     /      /    |                      \\    \\\n"
+          + "    /      /     |                       \\    \\\n"
+          + "   /     _/      |                        \\    \\\n"
+          + "  /             _|                         \\    \\_\n"
+          + "_/                                          \\\n"
+          + "                                             \\\n"
+          + "                                              \\_"
+          + "\n";
+
+  private LabRobots robots = LabRobots.fromSystemProperties();
 
   private void crawl(IdMeOauthRobot robot) {
+    log.info(
+        "\n\n                     SWIGGITY SWOOTY!\n"
+            + SAPIDER
+            + "\n          doot! doot! "
+            + robot.config().user().id()
+            + "\n");
+
     assertThat(robot.token().accessToken()).isNotBlank();
     ResourceDiscovery discovery =
         ResourceDiscovery.builder()

@@ -14,11 +14,18 @@ Commands
   list-categories
   test [--category <category>] [-Dkey=value] <name> [name] [...]
 
+Example
+  test \
+    --category gov.va.health.api.sentinel.categories.Lab \
+    -Dlab.client-id=12345 \
+    -Dlab.client-secret=ABCDEF \
+    -Dlab.user-password=secret \
+    gov.va.health.api.sentinel.LabTest
+
 $1
 EOF
 exit 1
 }
-
 
 doTest() {
   [ -z "$@" ] && usage "No tests specified"
@@ -29,14 +36,20 @@ doTest() {
 }
 
 doListTests() {
-  jar -tf $SENTINEL_TEST_JAR | grep -E '(IT|Test)\.class' | sed 's/\.class//' | tr / . | sort
+  jar -tf $SENTINEL_TEST_JAR \
+    | grep -E '(IT|Test)\.class' \
+    | sed 's/\.class//' \
+    | tr / . \
+    | sort
 }
 
 doListCategories() {
-  jar -tf $SENTINEL_JAR | grep -E 'gov/va/health/api/sentinel/categories/.*\.class' | sed 's/\.class//' | tr / . | sort
+  jar -tf $SENTINEL_JAR \
+    | grep -E 'gov/va/health/api/sentinel/categories/.*\.class' \
+    | sed 's/\.class//' \
+    | tr / . \
+    | sort
 }
-
-
 
 
 ARGS=$(getopt -n $(basename ${0}) \
@@ -69,13 +82,3 @@ case "$COMMAND" in
 esac
 
 exit 0
-echo "SENTINEL"
-
-
-
-
-
-java -cp "$(pwd)/*" org.junit.runner.JUnitCore $@
-
-echo java -cp $(pwd)/target/sentinel-1.0.73-SNAPSHOT.jar:$(pwd)/target/sentinel-1.0.73-SNAPSHOT-tests.jar org.junit.runner.JUnitCore  --filter=org.junit.experimental.categories.IncludeCategories=gov.va.health.api.sentinel.categories.Lab gov.va.health.api.sentinel.crawler.ConcurrentRequestQueueTest
-
