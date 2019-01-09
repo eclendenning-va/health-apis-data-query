@@ -8,12 +8,15 @@ import gov.va.health.api.sentinel.crawler.Crawler;
 import gov.va.health.api.sentinel.crawler.FileResultsCollector;
 import gov.va.health.api.sentinel.crawler.RequestQueue;
 import gov.va.health.api.sentinel.crawler.ResourceDiscovery;
+import gov.va.health.api.sentinel.crawler.SummarizingResultCollector;
 import java.io.File;
 import java.util.concurrent.Executors;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 @Category(Lab.class)
+@Slf4j
 public class LabTest {
   LabRobots robots = LabRobots.fromSystemProperties();
 
@@ -24,18 +27,26 @@ public class LabTest {
             .patientId(robot.token().patient())
             .url("https://dev-api.va.gov/services/argonaut/v0")
             .build();
+    SummarizingResultCollector results =
+        SummarizingResultCollector.wrap(
+            new FileResultsCollector(new File("target/lab-crawl-" + robot.token().patient())));
     RequestQueue q = new ConcurrentRequestQueue();
     discovery.queries().forEach(q::add);
     Crawler crawler =
         Crawler.builder()
             .executor(Executors.newFixedThreadPool(4))
             .requestQueue(q)
-            .results(
-                new FileResultsCollector(new File("target/lab-crawl-" + robot.token().patient())))
+            .results(results)
             .authenticationToken(() -> robot.token().accessToken())
             .forceJargonaut(true)
             .build();
     crawler.crawl();
+    log.info(
+        "Results for {} ({})\n{}",
+        robot.config().user().id(),
+        robot.token().patient(),
+        results.message());
+    assertThat(results.failures()).withFailMessage("%d Failures", results.failures()).isEqualTo(0);
   }
 
   @Test
