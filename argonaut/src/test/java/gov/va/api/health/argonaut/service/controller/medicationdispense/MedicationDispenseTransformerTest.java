@@ -1,15 +1,24 @@
 package gov.va.api.health.argonaut.service.controller.medicationdispense;
 
+import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
+import gov.va.api.health.argonaut.api.datatypes.Coding;
+import gov.va.api.health.argonaut.api.datatypes.SimpleQuantity;
 import gov.va.api.health.argonaut.api.elements.Reference;
 import gov.va.api.health.argonaut.api.resources.MedicationDispense;
 import gov.va.api.health.argonaut.api.resources.MedicationDispense.Status;
 import gov.va.dvp.cdw.xsd.model.CdwMedicationDispense100Root.CdwMedicationDispenses.CdwMedicationDispense;
 import gov.va.dvp.cdw.xsd.model.CdwMedicationDispenseStatus;
+import gov.va.dvp.cdw.xsd.model.CdwMedicationDispenseType;
+import gov.va.dvp.cdw.xsd.model.CdwMedicationDispenseTypeCode;
+import gov.va.dvp.cdw.xsd.model.CdwMedicationDispenseTypeCoding;
+import gov.va.dvp.cdw.xsd.model.CdwMedicationDispenseTypeDisplay;
 import gov.va.dvp.cdw.xsd.model.CdwReference;
+import gov.va.dvp.cdw.xsd.model.CdwSimpleQuantity;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.junit.Test;
 
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class MedicationDispenseTransformerTest {
@@ -56,6 +65,10 @@ public class MedicationDispenseTransformerTest {
       cdw.setStatus(CdwMedicationDispenseStatus.COMPLETED);
       cdw.setPatient(patient());
       cdw.setDispenser(dispenser());
+      cdw.setType(type());
+      cdw.setQuantity(quantity());
+      cdw.setDaysSupply(daysSupply());
+      cdw.setMedicationReference(medication());
       return cdw;
     }
 
@@ -76,6 +89,41 @@ public class MedicationDispenseTransformerTest {
           "https://www.freedomstream.io/CDCArgonaut/api/Practitioner/5e27c469-82e4-5725-babb-49cf7eee948f",
           "BONES,ATTENDING C");
     }
+
+    private CdwReference medication() {
+      return reference(
+          "https://www.freedomstream.io/CDCArgonaut/api/Medication/2f773f73-ad7f-56ca-891e-8e364c913fe0",
+          "ALBUTEROL 90MCG (CFC-F) 200D ORAL INHL");
+    }
+
+    private CdwMedicationDispenseType type() {
+      CdwMedicationDispenseType type = new CdwMedicationDispenseType();
+      CdwMedicationDispenseTypeCoding coding = new CdwMedicationDispenseTypeCoding();
+      coding.setCode(CdwMedicationDispenseTypeCode.FF);
+      coding.setDisplay(CdwMedicationDispenseTypeDisplay.FIRST_FILL);
+      coding.setSystem("http://hl7.org/fhir/v3/ActCode");
+      type.setCoding(coding);
+      type.setText("First time filling.");
+      return type;
+    }
+
+    private CdwSimpleQuantity simpleQuantity(
+        String value, String unit, String system, String code) {
+      CdwSimpleQuantity cdw = new CdwSimpleQuantity();
+      cdw.setValue(value);
+      cdw.setUnit(unit);
+      cdw.setSystem(system);
+      cdw.setCode(code);
+      return cdw;
+    }
+
+    private CdwSimpleQuantity quantity() {
+      return simpleQuantity("2", "EA", null, null);
+    }
+
+    private CdwSimpleQuantity daysSupply() {
+      return simpleQuantity("30", "Day", "http://unitsofmeasure.org", "D");
+    }
   }
 
   @NoArgsConstructor(staticName = "get")
@@ -87,6 +135,10 @@ public class MedicationDispenseTransformerTest {
           .status(MedicationDispense.Status.completed)
           .patient(patient())
           .dispenser(dispenser())
+          .type(type())
+          .quantity(quantity())
+          .daysSupply(daysSupply())
+          .medicationReference(medication())
           .build();
     }
 
@@ -103,6 +155,38 @@ public class MedicationDispenseTransformerTest {
       return reference(
           "https://www.freedomstream.io/CDCArgonaut/api/Practitioner/5e27c469-82e4-5725-babb-49cf7eee948f",
           "BONES,ATTENDING C");
+    }
+
+    private Reference medication() {
+      return reference(
+          "https://www.freedomstream.io/CDCArgonaut/api/Medication/2f773f73-ad7f-56ca-891e-8e364c913fe0",
+          "ALBUTEROL 90MCG (CFC-F) 200D ORAL INHL");
+    }
+
+    CodeableConcept codeableConcept(Coding coding) {
+      return CodeableConcept.builder().coding(singletonList(coding)).build();
+    }
+
+    Coding coding(String system, String code, String display) {
+      return Coding.builder().system(system).code(code).display(display).build();
+    }
+
+    SimpleQuantity quantity() {
+      return SimpleQuantity.builder().value(Double.parseDouble("2")).unit("EA").build();
+    }
+
+    SimpleQuantity daysSupply() {
+      return SimpleQuantity.builder()
+          .value(Double.parseDouble("30"))
+          .unit("Day")
+          .system("http://unitsofmeasure.org")
+          .code("D")
+          .build();
+    }
+
+    private CodeableConcept type() {
+      return codeableConcept(coding("http://hl7.org/fhir/v3/ActCode", "FF", "First Fill"))
+          .text("First time filling.");
     }
   }
 }
