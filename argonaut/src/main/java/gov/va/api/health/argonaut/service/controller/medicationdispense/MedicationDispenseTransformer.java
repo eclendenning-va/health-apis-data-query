@@ -76,6 +76,8 @@ public class MedicationDispenseTransformer implements MedicationDispenseControll
          return convertAll(ifPresent(maybeCdw,
   CdwAuthorizingPrescriptions::getAuthorizingPrescription), this::reference);
      }*/
+
+  /** Maps codeable concept out of Type field*/
   CodeableConcept typeCodeableConcept(CdwMedicationDispenseType maybeCdw) {
     if (maybeCdw == null) {
       return null;
@@ -100,7 +102,7 @@ public class MedicationDispenseTransformer implements MedicationDispenseControll
         .build();
   }
 
-  /*simpleQuantity and quantityValue might be useful to take out to Transformers? This same pattern is in Observation*/
+  /** simpleQuantity and quantityValue might be useful to take out to Transformers? This same pattern is in Observation*/
   SimpleQuantity simpleQuantity(CdwSimpleQuantity source) {
     if (source == null
         || allNull(source.getCode(), source.getSystem(), source.getUnit(), source.getValue())) {
@@ -127,6 +129,7 @@ public class MedicationDispenseTransformer implements MedicationDispenseControll
     return value;
   }
 
+  /** Maps dosage instructions out which is a complex type with multiple complex types contained within*/
   List<DosageInstruction> dosageInstructions(CdwDosageInstructions cdw) {
     if (cdw == null || cdw.getDosageInstruction().isEmpty()) {
       return null;
@@ -135,25 +138,23 @@ public class MedicationDispenseTransformer implements MedicationDispenseControll
         ifPresent(cdw, CdwDosageInstructions::getDosageInstruction), this::dosageInstruction);
   }
 
-  CodeableConcept additionalInstructions(CdwCodeableConcept source) {
-    if (source == null) {
-      return null;
-    }
-    if (source.getCoding().isEmpty() && isBlank(source.getText())) {
+  /** Generic codeable concept transformer for when cdw isn't returning a one off type*/
+  CodeableConcept codeableConcept(CdwCodeableConcept source) {
+    if (source == null || (source.getCoding().isEmpty() && isBlank(source.getText()))) {
       return null;
     }
     return CodeableConcept.builder()
-        .coding(additionalInstructionsCodings(source.getCoding()))
+        .coding(codings(source.getCoding()))
         .text(source.getText())
         .build();
   }
 
-  List<Coding> additionalInstructionsCodings(List<CdwCoding> source) {
-    List<Coding> codings = convertAll(source, this::additionalInstructionsCoding);
+  List<Coding> codings(List<CdwCoding> source) {
+    List<Coding> codings = convertAll(source, this::coding);
     return codings == null || codings.isEmpty() ? null : codings;
   }
 
-  private Coding additionalInstructionsCoding(CdwCoding cdw) {
+  private Coding coding(CdwCoding cdw) {
     if (cdw == null || allNull(cdw.getCode(), cdw.getDisplay(), cdw.getSystem())) {
       return null;
     }
@@ -164,45 +165,25 @@ public class MedicationDispenseTransformer implements MedicationDispenseControll
         .build();
   }
 
+  /** Our version of Timing is just a wrapper around a codeable concept*/
   Timing timing(CdwTiming maybeCdw) {
     if (maybeCdw == null || allNull(maybeCdw.getCode())) {
       return null;
     }
-    return Timing.builder().code(timingCodeableConcept(maybeCdw.getCode())).build();
+    return Timing.builder().code(codeableConcept(maybeCdw.getCode())).build();
   }
 
   /**
    * Not a fan of having multiple methods for building codeable concepts just because of these one
    * off cdw versions. Maybe make more generic so this isn't like this?
    */
-  CodeableConcept timingCodeableConcept(CdwCodeableConcept maybeCdw) {
-    if (maybeCdw == null || allNull(maybeCdw.getCoding(), maybeCdw.getText())) {
+  CodeableConcept routeCodeableConcept(CdwRoute maybeCdw) {
+    if (maybeCdw == null || isBlank(maybeCdw.getText())) {
       return null;
     }
     return CodeableConcept.builder()
         .text(maybeCdw.getText())
-        .coding(timingCodings(maybeCdw.getCoding()))
         .build();
-  }
-
-  List<Coding> timingCodings(List<CdwCoding> source) {
-    List<Coding> codings = convertAll(source, this::timingCoding);
-    return codings == null || codings.isEmpty() ? null : codings;
-  }
-
-  private Coding timingCoding(CdwCoding cdw) {
-    if (cdw == null || allNull(cdw.getCode(), cdw.getDisplay(), cdw.getSystem())) {
-      return null;
-    }
-    return Coding.builder()
-        .system(cdw.getSystem())
-        .code(cdw.getCode())
-        .display(cdw.getDisplay())
-        .build();
-  }
-
-  CodeableConcept routeCodeableConcept(CdwRoute maybeCdw) {
-    return null;
   }
 
   DosageInstruction dosageInstruction(CdwDosageInstruction cdw) {
@@ -221,7 +202,7 @@ public class MedicationDispenseTransformer implements MedicationDispenseControll
         source ->
             DosageInstruction.builder()
                 .text(source.getText())
-                .additionalInstructions(additionalInstructions(source.getAdditionalInstructions()))
+                .additionalInstructions(codeableConcept(source.getAdditionalInstructions()))
                 .doseQuantity(simpleQuantity(source.getDoseQuantity()))
                 .timing(timing(source.getTiming()))
                 .asNeededBoolean(Boolean.valueOf(source.isAsNeededBoolean()))
