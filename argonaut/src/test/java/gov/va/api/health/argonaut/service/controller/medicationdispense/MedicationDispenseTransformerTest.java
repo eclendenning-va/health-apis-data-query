@@ -16,7 +16,11 @@ import gov.va.dvp.cdw.xsd.model.CdwReference;
 import gov.va.dvp.cdw.xsd.model.CdwSimpleQuantity;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
 import org.junit.Test;
+
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
 
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -57,6 +61,10 @@ public class MedicationDispenseTransformerTest {
                 "VETERAN,JOHN Q"));
   }
 
+  /* Need to add unit testing for Type. Should test all enum values for display and code. */
+
+    /* Null and sadpath tests for all the fields. */
+
   @NoArgsConstructor(staticName = "get", access = AccessLevel.PUBLIC)
   static class CdwSampleData {
     CdwMedicationDispense medicationDispense() {
@@ -69,6 +77,9 @@ public class MedicationDispenseTransformerTest {
       cdw.setQuantity(quantity());
       cdw.setDaysSupply(daysSupply());
       cdw.setMedicationReference(medication());
+      cdw.setWhenPrepared(dateTime("2015-04-15T04:00:00Z"));
+      cdw.setWhenHandedOver(dateTime("2015-04-22T16:00:00Z"));
+      cdw.setNote("Take when breathing feels difficult.");
       return cdw;
     }
 
@@ -124,6 +135,11 @@ public class MedicationDispenseTransformerTest {
     private CdwSimpleQuantity daysSupply() {
       return simpleQuantity("30", "Day", "http://unitsofmeasure.org", "D");
     }
+
+    @SneakyThrows
+    private XMLGregorianCalendar dateTime(String timestamp) {
+      return DatatypeFactory.newInstance().newXMLGregorianCalendar(timestamp);
+    }
   }
 
   @NoArgsConstructor(staticName = "get")
@@ -139,6 +155,9 @@ public class MedicationDispenseTransformerTest {
           .quantity(quantity())
           .daysSupply(daysSupply())
           .medicationReference(medication())
+          .whenPrepared("2015-04-15T04:00:00Z")
+          .whenHandedOver("2015-04-22T16:00:00Z")
+          .note("Take when breathing feels difficult.")
           .build();
     }
 
