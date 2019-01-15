@@ -47,6 +47,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import javax.xml.datatype.XMLGregorianCalendar;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -330,7 +331,7 @@ public class PatientTransformer implements PatientController.Transformer {
         .address(addresses(source.getAddresses()))
         .gender(gender(source.getGender()))
         .birthDate(asDateString(source.getBirthDate()))
-        .deceasedBoolean(source.isDeceasedBoolean())
+        .deceasedBoolean(deceasedBoolean(source.getDeceasedDateTime(),source.isDeceasedBoolean()))
         .deceasedDateTime(asDateTimeString(source.getDeceasedDateTime()))
         .maritalStatus(maritalStatus(source.getMaritalStatus()))
         .contact(contacts(source.getContacts()))
@@ -366,6 +367,15 @@ public class PatientTransformer implements PatientController.Transformer {
 
   Gender gender(CdwAdministrativeGenderCodes source) {
     return ifPresent(source, gender -> EnumSearcher.of(Patient.Gender.class).find(gender.value()));
+  }
+
+  Boolean deceasedBoolean (XMLGregorianCalendar deceasedDateTime, Boolean deceasedBoolean){
+    if (deceasedDateTime == null){
+      return deceasedBoolean;
+    }
+    else{
+      return null;
+    }
   }
 
   private Boolean isUnusableContactAddress(CdwContact source) {
