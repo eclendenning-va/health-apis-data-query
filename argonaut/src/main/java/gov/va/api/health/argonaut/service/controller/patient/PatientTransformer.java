@@ -331,7 +331,7 @@ public class PatientTransformer implements PatientController.Transformer {
         .address(addresses(source.getAddresses()))
         .gender(gender(source.getGender()))
         .birthDate(asDateString(source.getBirthDate()))
-        .deceasedBoolean(deceasedBoolean(source.getDeceasedDateTime(),source.isDeceasedBoolean()))
+        .deceasedBoolean(deceasedBoolean(source.getDeceasedDateTime(), source.isDeceasedBoolean()))
         .deceasedDateTime(asDateTimeString(source.getDeceasedDateTime()))
         .maritalStatus(maritalStatus(source.getMaritalStatus()))
         .contact(contacts(source.getContacts()))
@@ -369,13 +369,11 @@ public class PatientTransformer implements PatientController.Transformer {
     return ifPresent(source, gender -> EnumSearcher.of(Patient.Gender.class).find(gender.value()));
   }
 
-  Boolean deceasedBoolean (XMLGregorianCalendar deceasedDateTime, Boolean deceasedBoolean){
-    if (deceasedDateTime == null){
-      return deceasedBoolean;
+  Boolean deceasedBoolean(XMLGregorianCalendar deceasedDateTime, Boolean deceasedBoolean) {
+    if (deceasedDateTime != null) {
+      deceasedBoolean = null;
     }
-    else{
-      return null;
-    }
+    return deceasedBoolean;
   }
 
   private Boolean isUnusableContactAddress(CdwContact source) {

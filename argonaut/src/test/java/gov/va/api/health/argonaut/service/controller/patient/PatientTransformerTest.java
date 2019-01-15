@@ -172,7 +172,6 @@ public class PatientTransformerTest {
     assertThat(tx.deceasedBoolean(cdw.patient().getDeceasedDateTime(), false)).isNull();
     assertThat(tx.deceasedBoolean(null, true)).isTrue();
     assertThat(tx.deceasedBoolean(null, false)).isFalse();
-
   }
 
   @Test
@@ -449,7 +448,6 @@ public class PatientTransformerTest {
           .identifier(identifier())
           .birthDate("1941-08-30")
           .contact(contact())
-          .deceasedBoolean(true)
           .deceasedDateTime("1991-08-30T06:00:00Z")
           .gender(Gender.male)
           .name(name())
