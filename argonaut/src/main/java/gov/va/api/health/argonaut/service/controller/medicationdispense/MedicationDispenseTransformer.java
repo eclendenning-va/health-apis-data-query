@@ -12,6 +12,7 @@ import gov.va.api.health.argonaut.service.controller.EnumSearcher;
 import gov.va.dvp.cdw.xsd.model.CdwCodeableConcept;
 import gov.va.dvp.cdw.xsd.model.CdwCoding;
 import gov.va.dvp.cdw.xsd.model.CdwMedicationDispense100Root.CdwMedicationDispenses.CdwMedicationDispense;
+import gov.va.dvp.cdw.xsd.model.CdwMedicationDispense100Root.CdwMedicationDispenses.CdwMedicationDispense.CdwAuthorizingPrescriptions;
 import gov.va.dvp.cdw.xsd.model.CdwMedicationDispense100Root.CdwMedicationDispenses.CdwMedicationDispense.CdwDosageInstructions;
 import gov.va.dvp.cdw.xsd.model.CdwMedicationDispense100Root.CdwMedicationDispenses.CdwMedicationDispense.CdwDosageInstructions.CdwDosageInstruction.CdwRoute;
 import gov.va.dvp.cdw.xsd.model.CdwMedicationDispense100Root.CdwMedicationDispenses.CdwMedicationDispense.CdwDosageInstructions.CdwDosageInstruction;
@@ -42,6 +43,7 @@ public class MedicationDispenseTransformer implements MedicationDispenseControll
     return MedicationDispense.builder()
         .resourceType("MedicationDispense")
         .id(cdw.getCdwId())
+        .authorizingPrescription(authorizingPrescriptions(cdw.getAuthorizingPrescriptions()))
         .status(status(cdw.getStatus()))
         .patient(reference(cdw.getPatient()))
         .dispenser(reference(cdw.getDispenser()))
@@ -52,11 +54,17 @@ public class MedicationDispenseTransformer implements MedicationDispenseControll
         .whenPrepared(asDateTimeString(cdw.getWhenPrepared()))
         .whenHandedOver(asDateTimeString(cdw.getWhenHandedOver()))
         .note(cdw.getNote())
+        .dosageInstruction(dosageInstructions(cdw.getDosageInstructions()))
         .build();
   }
 
   Status status(CdwMedicationDispenseStatus source) {
     return EnumSearcher.of(MedicationDispense.Status.class).find(source.value());
+  }
+
+  // This is wrong, fix when prescriptions is mapped right
+  List<Reference> authorizingPrescriptions(List<CdwAuthorizingPrescriptions> maybeCdw) {
+    return null;
   }
 
   Reference reference(CdwReference maybeSource) {
@@ -72,12 +80,7 @@ public class MedicationDispenseTransformer implements MedicationDispenseControll
                 .build());
   }
 
-  /*    List<Reference> authorizingPrescriptions(List<CdwAuthorizingPrescriptions> maybeCdw) {
-         return convertAll(ifPresent(maybeCdw,
-  CdwAuthorizingPrescriptions::getAuthorizingPrescription), this::reference);
-     }*/
-
-  /** Maps codeable concept out of Type field*/
+  /** Maps codeable concept out of Type field */
   CodeableConcept typeCodeableConcept(CdwMedicationDispenseType maybeCdw) {
     if (maybeCdw == null) {
       return null;
@@ -102,7 +105,10 @@ public class MedicationDispenseTransformer implements MedicationDispenseControll
         .build();
   }
 
-  /** simpleQuantity and quantityValue might be useful to take out to Transformers? This same pattern is in Observation*/
+  /**
+   * simpleQuantity and quantityValue might be useful to take out to Transformers? This same pattern
+   * is in Observation
+   */
   SimpleQuantity simpleQuantity(CdwSimpleQuantity source) {
     if (source == null
         || allNull(source.getCode(), source.getSystem(), source.getUnit(), source.getValue())) {
@@ -129,7 +135,10 @@ public class MedicationDispenseTransformer implements MedicationDispenseControll
     return value;
   }
 
-  /** Maps dosage instructions out which is a complex type with multiple complex types contained within*/
+  /**
+   * Maps dosage instructions out which is a complex type with multiple complex types contained
+   * within
+   */
   List<DosageInstruction> dosageInstructions(CdwDosageInstructions cdw) {
     if (cdw == null || cdw.getDosageInstruction().isEmpty()) {
       return null;
@@ -138,7 +147,7 @@ public class MedicationDispenseTransformer implements MedicationDispenseControll
         ifPresent(cdw, CdwDosageInstructions::getDosageInstruction), this::dosageInstruction);
   }
 
-  /** Generic codeable concept transformer for when cdw isn't returning a one off type*/
+  /** Generic codeable concept transformer for when cdw isn't returning a one off type */
   CodeableConcept codeableConcept(CdwCodeableConcept source) {
     if (source == null || (source.getCoding().isEmpty() && isBlank(source.getText()))) {
       return null;
@@ -165,7 +174,7 @@ public class MedicationDispenseTransformer implements MedicationDispenseControll
         .build();
   }
 
-  /** Our version of Timing is just a wrapper around a codeable concept*/
+  /** Our version of Timing is just a wrapper around a codeable concept */
   Timing timing(CdwTiming maybeCdw) {
     if (maybeCdw == null || allNull(maybeCdw.getCode())) {
       return null;
@@ -181,9 +190,7 @@ public class MedicationDispenseTransformer implements MedicationDispenseControll
     if (maybeCdw == null || isBlank(maybeCdw.getText())) {
       return null;
     }
-    return CodeableConcept.builder()
-        .text(maybeCdw.getText())
-        .build();
+    return CodeableConcept.builder().text(maybeCdw.getText()).build();
   }
 
   DosageInstruction dosageInstruction(CdwDosageInstruction cdw) {
@@ -194,6 +201,7 @@ public class MedicationDispenseTransformer implements MedicationDispenseControll
             cdw.getDoseQuantity(),
             cdw.getRoute(),
             cdw.getText(),
+            cdw.getSiteCodeableConcept(),
             cdw.getTiming())) {
       return null;
     }
@@ -206,6 +214,7 @@ public class MedicationDispenseTransformer implements MedicationDispenseControll
                 .doseQuantity(simpleQuantity(source.getDoseQuantity()))
                 .timing(timing(source.getTiming()))
                 .asNeededBoolean(Boolean.valueOf(source.isAsNeededBoolean()))
+                .siteCodeableConcept(codeableConcept(source.getSiteCodeableConcept()))
                 .route(routeCodeableConcept(source.getRoute()))
                 .build());
   }

@@ -3,10 +3,18 @@ package gov.va.api.health.argonaut.service.controller.medicationdispense;
 import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
 import gov.va.api.health.argonaut.api.datatypes.Coding;
 import gov.va.api.health.argonaut.api.datatypes.SimpleQuantity;
+import gov.va.api.health.argonaut.api.datatypes.Timing;
 import gov.va.api.health.argonaut.api.elements.Reference;
 import gov.va.api.health.argonaut.api.resources.MedicationDispense;
+import gov.va.api.health.argonaut.api.resources.MedicationDispense.DosageInstruction;
 import gov.va.api.health.argonaut.api.resources.MedicationDispense.Status;
+import gov.va.dvp.cdw.xsd.model.CdwCodeableConcept;
+import gov.va.dvp.cdw.xsd.model.CdwCoding;
 import gov.va.dvp.cdw.xsd.model.CdwMedicationDispense100Root.CdwMedicationDispenses.CdwMedicationDispense;
+import gov.va.dvp.cdw.xsd.model.CdwMedicationDispense100Root.CdwMedicationDispenses.CdwMedicationDispense.CdwDosageInstructions;
+import gov.va.dvp.cdw.xsd.model.CdwMedicationDispense100Root.CdwMedicationDispenses.CdwMedicationDispense.CdwDosageInstructions.CdwDosageInstruction;
+import gov.va.dvp.cdw.xsd.model.CdwMedicationDispense100Root.CdwMedicationDispenses.CdwMedicationDispense.CdwDosageInstructions.CdwDosageInstruction.CdwRoute;
+import gov.va.dvp.cdw.xsd.model.CdwMedicationDispense100Root.CdwMedicationDispenses.CdwMedicationDispense.CdwDosageInstructions.CdwDosageInstruction.CdwTiming;
 import gov.va.dvp.cdw.xsd.model.CdwMedicationDispenseStatus;
 import gov.va.dvp.cdw.xsd.model.CdwMedicationDispenseType;
 import gov.va.dvp.cdw.xsd.model.CdwMedicationDispenseTypeCode;
@@ -22,8 +30,11 @@ import org.junit.Test;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import java.util.Collections;
+
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class MedicationDispenseTransformerTest {
 
@@ -61,9 +72,26 @@ public class MedicationDispenseTransformerTest {
                 "VETERAN,JOHN Q"));
   }
 
-  /* Need to add unit testing for Type. Should test all enum values for display and code. */
+  @Test
+  public void nullSimpleQuantity() {
+    CdwSimpleQuantity quantity = new CdwSimpleQuantity();
+    assertThat(tx.simpleQuantity(quantity)).isNull();
+  }
 
-    /* Null and sadpath tests for all the fields. */
+  @Test
+  public void nullQuantityValue() {
+    assertThat(tx.quantityValue(null)).isNull();
+    assertThat(tx.quantityValue("   ")).isNull();
+    assertThatThrownBy(
+            () -> {
+              tx.quantityValue("this is not a double");
+            })
+        .isInstanceOf(Exception.class)
+        .hasMessageContaining("Cannot create double value from");
+  }
+
+
+  /* Null and sadpath tests for all the fields. */
 
   @NoArgsConstructor(staticName = "get", access = AccessLevel.PUBLIC)
   static class CdwSampleData {
@@ -80,6 +108,7 @@ public class MedicationDispenseTransformerTest {
       cdw.setWhenPrepared(dateTime("2015-04-15T04:00:00Z"));
       cdw.setWhenHandedOver(dateTime("2015-04-22T16:00:00Z"));
       cdw.setNote("Take when breathing feels difficult.");
+      cdw.setDosageInstructions(cdwDosageInstructions());
       return cdw;
     }
 
@@ -140,6 +169,47 @@ public class MedicationDispenseTransformerTest {
     private XMLGregorianCalendar dateTime(String timestamp) {
       return DatatypeFactory.newInstance().newXMLGregorianCalendar(timestamp);
     }
+
+    private CdwCodeableConcept codeableConcept(String text, String code, String system, String display) {
+      CdwCodeableConcept codeableConcept = new CdwCodeableConcept();
+      codeableConcept.setText(text);
+      CdwCoding coding = new CdwCoding();
+      coding.setCode(code);
+      coding.setSystem(system);
+      coding.setDisplay(display);
+      codeableConcept.getCoding().add(coding);
+      return codeableConcept;
+    }
+
+    private CdwTiming timing (String text, String code, String display) {
+      CdwTiming cdw = new CdwTiming();
+      cdw.setCode(codeableConcept(text, code, "https://unitsofmeasure.com", display));
+      return cdw;
+    }
+
+    private CdwRoute cdwRoute() {
+      CdwRoute cdw = new CdwRoute();
+      cdw.setText("ORALLY");
+      return cdw;
+    }
+
+    private CdwDosageInstructions cdwDosageInstructions() {
+      CdwDosageInstructions cdw = new CdwDosageInstructions();
+      cdw.getDosageInstruction().add(cdwDosageInstruction());
+      return cdw;
+    }
+
+    private CdwDosageInstruction cdwDosageInstruction() {
+      CdwDosageInstruction cdw = new CdwDosageInstruction();
+      cdw.setText("Take with water");
+      cdw.setAdditionalInstructions(codeableConcept("Use bottled water", "BW", "https://things.com", "Bottled Water"));
+      cdw.setAsNeededBoolean(true);
+      cdw.setTiming(timing("Every 3 hours", "HR", "Hour"));
+      cdw.setSiteCodeableConcept(codeableConcept("ORAL", "836005", "http://snomed.info/sct", "Oral region of face"));
+      cdw.setDoseQuantity(simpleQuantity("1", null, null, null));
+      cdw.setRoute(cdwRoute());
+      return cdw;
+    }
   }
 
   @NoArgsConstructor(staticName = "get")
@@ -158,6 +228,7 @@ public class MedicationDispenseTransformerTest {
           .whenPrepared("2015-04-15T04:00:00Z")
           .whenHandedOver("2015-04-22T16:00:00Z")
           .note("Take when breathing feels difficult.")
+          .dosageInstruction(Collections.singletonList(dosageInstruction()))
           .build();
     }
 
@@ -182,19 +253,22 @@ public class MedicationDispenseTransformerTest {
           "ALBUTEROL 90MCG (CFC-F) 200D ORAL INHL");
     }
 
-    CodeableConcept codeableConcept(Coding coding) {
-      return CodeableConcept.builder().coding(singletonList(coding)).build();
+    private CodeableConcept codeableConcept(String text, String system, String code, String display) {
+      if (system == null && code == null && display == null) {
+        return CodeableConcept.builder().text(text).build();
+      }
+      return CodeableConcept.builder().text(text).coding(singletonList(coding(system, code, display))).build();
     }
 
-    Coding coding(String system, String code, String display) {
+    private Coding coding(String system, String code, String display) {
       return Coding.builder().system(system).code(code).display(display).build();
     }
 
-    SimpleQuantity quantity() {
+    private SimpleQuantity quantity() {
       return SimpleQuantity.builder().value(Double.parseDouble("2")).unit("EA").build();
     }
 
-    SimpleQuantity daysSupply() {
+    private SimpleQuantity daysSupply() {
       return SimpleQuantity.builder()
           .value(Double.parseDouble("30"))
           .unit("Day")
@@ -204,8 +278,23 @@ public class MedicationDispenseTransformerTest {
     }
 
     private CodeableConcept type() {
-      return codeableConcept(coding("http://hl7.org/fhir/v3/ActCode", "FF", "First Fill"))
-          .text("First time filling.");
+      return codeableConcept("First time filling.","http://hl7.org/fhir/v3/ActCode", "FF", "First Fill");
+    }
+
+    private Timing timing(String text, String code, String display) {
+      return Timing.builder().code(codeableConcept(text, "https://unitsofmeasure.com", code, display)).build();
+    }
+
+    private DosageInstruction dosageInstruction() {
+      return DosageInstruction.builder()
+          .text("Take with water")
+          .additionalInstructions(codeableConcept("Use bottled water", "https://things.com", "BW", "Bottled Water" ))
+          .asNeededBoolean(true)
+          .timing(timing("Every 3 hours", "HR", "Hour"))
+          .siteCodeableConcept(codeableConcept("ORAL", "http://snomed.info/sct", "836005", "Oral region of face"))
+          .doseQuantity(SimpleQuantity.builder().value(Double.parseDouble("1")).build())
+          .route(codeableConcept("ORALLY", null, null, null))
+          .build();
     }
   }
 }
