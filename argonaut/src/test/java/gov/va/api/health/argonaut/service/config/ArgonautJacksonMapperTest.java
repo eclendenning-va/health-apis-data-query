@@ -4,7 +4,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import gov.va.api.health.argonaut.api.DataAbsentReason;
+import gov.va.api.health.argonaut.api.DataAbsentReason.Reason;
+import gov.va.api.health.argonaut.api.elements.Extension;
 import gov.va.api.health.argonaut.api.elements.Reference;
+import gov.va.api.health.argonaut.api.validation.ExactlyOneOf;
 import gov.va.api.health.autoconfig.configuration.JacksonConfig;
 import java.util.List;
 import lombok.AccessLevel;
@@ -12,6 +16,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import lombok.Singular;
 import lombok.SneakyThrows;
 import org.junit.Test;
@@ -102,6 +107,41 @@ public class ArgonautJacksonMapperTest {
     assertThat(actual).isEqualTo(expected);
   }
 
+  @Test
+  @SneakyThrows
+  public void requiredReferencesEmitDar() {
+    ReferenceSerializerProperties disableEncounter =
+        ReferenceSerializerProperties.builder()
+            .encounter(false)
+            .build();
+
+    FugaziRequiredReferencemajig input =
+        FugaziRequiredReferencemajig.builder()
+            .required(reference("https://example.com/api/Encounter/1234")) // emits DAR
+            ._required(null)
+            .build();
+
+    FugaziRequiredReferencemajig expected =
+        FugaziRequiredReferencemajig.builder()
+            .required(null)
+            ._required(DataAbsentReason.of(Reason.unknown))
+            .build();
+
+    String qualifiedJson =
+        new ArgonautJacksonMapper(
+            new MagicReferenceConfig("https://example.com", "api", disableEncounter))
+            .objectMapper()
+            .writerWithDefaultPrettyPrinter()
+            .writeValueAsString(input);
+
+    FugaziRequiredReferencemajig actual =
+        JacksonConfig.createMapper().readValue(qualifiedJson, FugaziRequiredReferencemajig.class);
+
+    System.out.println(qualifiedJson);
+
+    assertThat(actual).isEqualTo(expected);
+  }
+
   @Data
   @Builder
   @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -117,5 +157,19 @@ public class ArgonautJacksonMapperTest {
     FugaziReferencemajig inner;
     String whocares;
     Boolean me;
+  }
+
+  @Data
+  @Builder
+  @NoArgsConstructor(access = AccessLevel.PRIVATE)
+  @AllArgsConstructor
+  @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+  @ExactlyOneOf(
+      fields = {"required", "_required"},
+      message = "Exactly one required field must be specified"
+  )
+  public static class FugaziRequiredReferencemajig {
+    Reference required;
+    Extension _required;
   }
 }
