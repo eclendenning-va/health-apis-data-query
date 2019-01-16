@@ -45,11 +45,9 @@ import gov.va.dvp.cdw.xsd.model.CdwPatient103Root.CdwPatients.CdwPatient.CdwTele
 import gov.va.dvp.cdw.xsd.model.CdwPatient103Root.CdwPatients.CdwPatient.CdwTelecoms.CdwTelecom;
 import gov.va.dvp.cdw.xsd.model.CdwPatientContactRelationshipCodes;
 import gov.va.dvp.cdw.xsd.model.CdwPatientContactRelationshipSystem;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import lombok.AccessLevel;
@@ -66,10 +64,14 @@ public class PatientTransformerTest {
   @Test
   public void patient() {
     assertThat(tx.apply(cdw.patient())).isEqualTo(expected.patient());
-    assertThat(tx.apply(cdw.noBooleanDeceasedPatient())).isEqualTo(expected.noBooleanDeceasedPatient());
-    assertThat(tx.apply(cdw.noDateTimeDeceasedPatient())).isEqualTo(expected.noDateTimeDeceasedPatient());
-    assertThat(tx.apply(cdw.noDateTimeNotDeceasedPatient())).isEqualTo(expected.noDateTimeNotDeceasedPatient());
-    assertThat(tx.apply(cdw.noDeceasedValuesPatient())).isEqualTo(expected.noDeceasedValuesPatient());
+    assertThat(tx.apply(cdw.noBooleanDeceasedPatient()))
+        .isEqualTo(expected.noBooleanDeceasedPatient());
+    assertThat(tx.apply(cdw.noDateTimeDeceasedPatient()))
+        .isEqualTo(expected.noDateTimeDeceasedPatient());
+    assertThat(tx.apply(cdw.noDateTimeNotDeceasedPatient()))
+        .isEqualTo(expected.noDateTimeNotDeceasedPatient());
+    assertThat(tx.apply(cdw.noDeceasedValuesPatient()))
+        .isEqualTo(expected.noDeceasedValuesPatient());
     assertThat(tx.apply(cdw.notDeceasedPatient())).isEqualTo(expected.noBooleanDeceasedPatient());
   }
 
@@ -484,16 +486,20 @@ public class PatientTransformerTest {
           .build();
     }
 
-    private Patient noBooleanDeceasedPatient()  {
+    private Patient noBooleanDeceasedPatient() {
       return Patient.builder()
           .resourceType("Patient")
-      .deceasedDateTime("1991-08-30T06:00:00Z")
+          .deceasedDateTime("1991-08-30T06:00:00Z")
           .extension(Collections.emptyList())
           .build();
     }
 
-      private Patient noDateTimeDeceasedPatient() {
-        return Patient.builder().resourceType("Patient").extension(Collections.emptyList()).deceasedBoolean(true).build();
+    private Patient noDateTimeDeceasedPatient() {
+      return Patient.builder()
+          .resourceType("Patient")
+          .extension(Collections.emptyList())
+          .deceasedBoolean(true)
+          .build();
     }
 
     private Patient noDateTimeNotDeceasedPatient() {
@@ -505,10 +511,7 @@ public class PatientTransformerTest {
     }
 
     private Patient noDeceasedValuesPatient() {
-      return Patient.builder()
-          .resourceType("Patient")
-          .extension(Collections.emptyList())
-          .build();
+      return Patient.builder().resourceType("Patient").extension(Collections.emptyList()).build();
     }
 
     private List<Address> address() {
