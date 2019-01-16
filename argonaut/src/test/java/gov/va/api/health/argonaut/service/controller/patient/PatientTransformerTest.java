@@ -165,16 +165,6 @@ public class PatientTransformerTest {
   }
 
   @Test
-  public void deceasedBoolean() {
-    assertThat(tx.deceasedBoolean(null, null)).isNull();
-    assertThat(tx.deceasedBoolean(cdw.patient().getDeceasedDateTime(), null)).isNull();
-    assertThat(tx.deceasedBoolean(cdw.patient().getDeceasedDateTime(), true)).isNull();
-    assertThat(tx.deceasedBoolean(cdw.patient().getDeceasedDateTime(), false)).isNull();
-    assertThat(tx.deceasedBoolean(null, true)).isTrue();
-    assertThat(tx.deceasedBoolean(null, false)).isFalse();
-  }
-
-  @Test
   public void identifier() {
     assertThat(tx.identifiers(singletonList(cdw.identifier()))).isEqualTo(expected.identifier());
     assertThat(tx.identifiers(Collections.emptyList())).isNull();
