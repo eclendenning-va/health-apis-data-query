@@ -31,9 +31,8 @@ import java.util.function.Function;
 @SuppressWarnings("WeakerAccess")
 @RestController
 @RequestMapping(
-        value = {"/api/MedicationDispense"},
-        produces = {"application/json", "application/json+fhir", "application/fhir+json"}
-)
+    value = {"/api/MedicationDispense"},
+    produces = {"application/json", "application/json+fhir", "application/fhir+json"})
 @AllArgsConstructor(onConstructor = @__({@Autowired}))
 @Slf4j
 public class MedicationDispenseController {
@@ -113,20 +112,21 @@ public class MedicationDispenseController {
   /** Searching by patient. */
   @GetMapping(params = {"patient"})
   public MedicationDispense.Bundle searchByPatient(
-          @RequestParam("patient") String patient,
-          @RequestParam(value = "page", defaultValue = "1") int page,
-          @RequestParam(value = "_count", defaultValue = "15") int count) {
-      return bundle(
-              Parameters.builder().add("patient", patient).add("page", page).add("_count", count).build(),page,count);
+      @RequestParam("patient") String patient,
+      @RequestParam(value = "page", defaultValue = "1") int page,
+      @RequestParam(value = "_count", defaultValue = "15") int count) {
+    return bundle(
+        Parameters.builder().add("patient", patient).add("page", page).add("_count", count).build(),
+        page,
+        count);
   }
 
   /** Validation endpoint. */
   @PostMapping(
-          value = "/$validate",
-          consumes = {"application/json", "application/json+fhir", "application/fhir+json"}
-  )
+      value = "/$validate",
+      consumes = {"application/json", "application/json+fhir", "application/fhir+json"})
   public OperationOutcome validate(@RequestBody MedicationDispense.Bundle bundle) {
-      return Validator.create().validate(bundle);
+    return Validator.create().validate(bundle);
   }
 
   public interface Transformer

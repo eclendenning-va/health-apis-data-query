@@ -43,6 +43,9 @@ public class MedicationDispenseTransformer implements MedicationDispenseControll
     return MedicationDispense.builder()
         .resourceType("MedicationDispense")
         .id(cdw.getCdwId())
+        /* Need to ask about what the identifier actually is here.
+        Sample data is for Patient ICN information which seems wrong*/
+        // .identifier()
         .authorizingPrescription(authorizingPrescriptions(cdw.getAuthorizingPrescriptions()))
         .status(status(cdw.getStatus()))
         .patient(reference(cdw.getPatient()))
@@ -62,9 +65,18 @@ public class MedicationDispenseTransformer implements MedicationDispenseControll
     return EnumSearcher.of(MedicationDispense.Status.class).find(source.value());
   }
 
-  // This is wrong, fix when prescriptions is mapped right
+  /**
+   * This takes the first element if it exists of Authorizing Prescriptions because it's a 2d array,
+   * which is a funky mapping for this field.
+   */
   List<Reference> authorizingPrescriptions(List<CdwAuthorizingPrescriptions> maybeCdw) {
-    return null;
+    if (maybeCdw == null
+        || maybeCdw.get(0) == null
+        || maybeCdw.get(0).getAuthorizingPrescription() == null) {
+      return null;
+    }
+    List<CdwReference> firstList = maybeCdw.get(0).getAuthorizingPrescription();
+    return convertAll(firstList, this::reference);
   }
 
   Reference reference(CdwReference maybeSource) {
@@ -147,52 +159,6 @@ public class MedicationDispenseTransformer implements MedicationDispenseControll
         ifPresent(cdw, CdwDosageInstructions::getDosageInstruction), this::dosageInstruction);
   }
 
-  /** Generic codeable concept transformer for when cdw isn't returning a one off type */
-  CodeableConcept codeableConcept(CdwCodeableConcept source) {
-    if (source == null || (source.getCoding().isEmpty() && isBlank(source.getText()))) {
-      return null;
-    }
-    return CodeableConcept.builder()
-        .coding(codings(source.getCoding()))
-        .text(source.getText())
-        .build();
-  }
-
-  List<Coding> codings(List<CdwCoding> source) {
-    List<Coding> codings = convertAll(source, this::coding);
-    return codings == null || codings.isEmpty() ? null : codings;
-  }
-
-  private Coding coding(CdwCoding cdw) {
-    if (cdw == null || allNull(cdw.getCode(), cdw.getDisplay(), cdw.getSystem())) {
-      return null;
-    }
-    return Coding.builder()
-        .system(cdw.getSystem())
-        .code(cdw.getCode())
-        .display(cdw.getDisplay())
-        .build();
-  }
-
-  /** Our version of Timing is just a wrapper around a codeable concept */
-  Timing timing(CdwTiming maybeCdw) {
-    if (maybeCdw == null || allNull(maybeCdw.getCode())) {
-      return null;
-    }
-    return Timing.builder().code(codeableConcept(maybeCdw.getCode())).build();
-  }
-
-  /**
-   * Not a fan of having multiple methods for building codeable concepts just because of these one
-   * off cdw versions. Maybe make more generic so this isn't like this?
-   */
-  CodeableConcept routeCodeableConcept(CdwRoute maybeCdw) {
-    if (maybeCdw == null || isBlank(maybeCdw.getText())) {
-      return null;
-    }
-    return CodeableConcept.builder().text(maybeCdw.getText()).build();
-  }
-
   DosageInstruction dosageInstruction(CdwDosageInstruction cdw) {
     if (cdw == null
         || allNull(
@@ -217,6 +183,53 @@ public class MedicationDispenseTransformer implements MedicationDispenseControll
                 .siteCodeableConcept(codeableConcept(source.getSiteCodeableConcept()))
                 .route(routeCodeableConcept(source.getRoute()))
                 .build());
+  }
+
+  /** Generic codeable concept transformer for when cdw isn't returning a one off type */
+  CodeableConcept codeableConcept(CdwCodeableConcept source) {
+    if (source == null || (source.getCoding().isEmpty() && isBlank(source.getText()))) {
+      return null;
+    }
+    return CodeableConcept.builder()
+        .coding(codings(source.getCoding()))
+        .text(source.getText())
+        .build();
+  }
+
+  List<Coding> codings(List<CdwCoding> source) {
+    List<Coding> codings = convertAll(source, this::coding);
+    return codings == null || codings.isEmpty() ? null : codings;
+  }
+
+  /* Is there a nice way to check if all the fields are blank?*/
+  Coding coding(CdwCoding cdw) {
+    if (cdw == null || allNull(cdw.getCode(), cdw.getDisplay(), cdw.getSystem())) {
+      return null;
+    }
+    return Coding.builder()
+        .system(cdw.getSystem())
+        .code(cdw.getCode())
+        .display(cdw.getDisplay())
+        .build();
+  }
+
+  /** Our version of Timing is just a wrapper around a codeable concept */
+  Timing timing(CdwTiming maybeCdw) {
+    if (maybeCdw == null || maybeCdw.getCode() == null) {
+      return null;
+    }
+    return Timing.builder().code(codeableConcept(maybeCdw.getCode())).build();
+  }
+
+  /**
+   * Not a fan of having multiple methods for building codeable concepts just because of these one
+   * off cdw versions. Maybe make more generic so this isn't like this?
+   */
+  CodeableConcept routeCodeableConcept(CdwRoute maybeCdw) {
+    if (maybeCdw == null || isBlank(maybeCdw.getText())) {
+      return null;
+    }
+    return CodeableConcept.builder().text(maybeCdw.getText()).build();
   }
 
   private boolean isUsable(CdwReference reference) {

@@ -11,6 +11,7 @@ import gov.va.api.health.argonaut.api.resources.MedicationDispense.Status;
 import gov.va.dvp.cdw.xsd.model.CdwCodeableConcept;
 import gov.va.dvp.cdw.xsd.model.CdwCoding;
 import gov.va.dvp.cdw.xsd.model.CdwMedicationDispense100Root.CdwMedicationDispenses.CdwMedicationDispense;
+import gov.va.dvp.cdw.xsd.model.CdwMedicationDispense100Root.CdwMedicationDispenses.CdwMedicationDispense.CdwAuthorizingPrescriptions;
 import gov.va.dvp.cdw.xsd.model.CdwMedicationDispense100Root.CdwMedicationDispenses.CdwMedicationDispense.CdwDosageInstructions;
 import gov.va.dvp.cdw.xsd.model.CdwMedicationDispense100Root.CdwMedicationDispenses.CdwMedicationDispense.CdwDosageInstructions.CdwDosageInstruction;
 import gov.va.dvp.cdw.xsd.model.CdwMedicationDispense100Root.CdwMedicationDispenses.CdwMedicationDispense.CdwDosageInstructions.CdwDosageInstruction.CdwRoute;
@@ -31,6 +32,7 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import java.util.Collections;
+import java.util.List;
 
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -73,13 +75,13 @@ public class MedicationDispenseTransformerTest {
   }
 
   @Test
-  public void nullSimpleQuantity() {
+  public void simpleQuantity() {
     CdwSimpleQuantity quantity = new CdwSimpleQuantity();
     assertThat(tx.simpleQuantity(quantity)).isNull();
   }
 
   @Test
-  public void nullQuantityValue() {
+  public void quantityValue() {
     assertThat(tx.quantityValue(null)).isNull();
     assertThat(tx.quantityValue("   ")).isNull();
     assertThatThrownBy(
@@ -90,7 +92,71 @@ public class MedicationDispenseTransformerTest {
         .hasMessageContaining("Cannot create double value from");
   }
 
+  @Test
+  public void authorizingPrescriptions() {
+    assertThat(tx.authorizingPrescriptions(null)).isNull();
+    assertThat(tx.authorizingPrescriptions(Collections.singletonList(null))).isNull();
+  }
 
+  @Test
+  public void typeCodeableConcept() {
+    assertThat(tx.typeCodeableConcept(null)).isNull();
+    CdwMedicationDispenseType cdw = new CdwMedicationDispenseType();
+    cdw.setText("   ");
+    assertThat(tx.typeCodeableConcept(cdw)).isNull();
+  }
+
+  @Test
+  public void typeCoding() {
+    assertThat(tx.typeCoding(null)).isNull();
+    assertThat(tx.typeCoding(new CdwMedicationDispenseTypeCoding())).isNull();
+  }
+
+  @Test
+  public void dosageInstructions() {
+    assertThat(tx.dosageInstructions(null)).isNull();
+    assertThat(tx.dosageInstructions(new CdwDosageInstructions())).isNull();
+  }
+
+  @Test
+  public void dosageInstruction() {
+    assertThat(tx.dosageInstruction(null)).isNull();
+    assertThat(tx.dosageInstruction(new CdwDosageInstruction())).isNull();
+  }
+
+  @Test
+  public void codeableConcept() {
+    assertThat(tx.codeableConcept(null)).isNull();
+    assertThat(tx.codeableConcept(new CdwCodeableConcept())).isNull();
+  }
+
+  @Test
+  public void codings() {
+    assertThat(tx.codings(null)).isNull();
+    List<CdwCoding> cdw = Collections.singletonList(null);
+    assertThat(tx.codings(cdw));
+  }
+
+  @Test
+  public void coding() {
+    assertThat(tx.coding(null)).isNull();
+    assertThat(tx.coding(new CdwCoding())).isNull();
+  }
+
+  @Test
+  public void timing() {
+    assertThat(tx.timing(null)).isNull();
+    assertThat(tx.timing(new CdwTiming())).isNull();
+  }
+
+  @Test
+  public void routeCodeableConcept() {
+    assertThat(tx.routeCodeableConcept(null)).isNull();
+    CdwRoute cdw = new CdwRoute();
+    assertThat(tx.routeCodeableConcept(cdw)).isNull();
+    cdw.setText("   ");
+    assertThat(tx.routeCodeableConcept(cdw)).isNull();
+  }
   /* Null and sadpath tests for all the fields. */
 
   @NoArgsConstructor(staticName = "get", access = AccessLevel.PUBLIC)
@@ -99,6 +165,7 @@ public class MedicationDispenseTransformerTest {
       CdwMedicationDispense cdw = new CdwMedicationDispense();
       cdw.setCdwId("1200738474343:R");
       cdw.setStatus(CdwMedicationDispenseStatus.COMPLETED);
+      cdw.getAuthorizingPrescriptions().add(authorizingPrescriptions());
       cdw.setPatient(patient());
       cdw.setDispenser(dispenser());
       cdw.setType(type());
@@ -116,6 +183,12 @@ public class MedicationDispenseTransformerTest {
       CdwReference cdw = new CdwReference();
       cdw.setReference(ref);
       cdw.setDisplay(display);
+      return cdw;
+    }
+
+    private CdwAuthorizingPrescriptions authorizingPrescriptions() {
+      CdwAuthorizingPrescriptions cdw = new CdwAuthorizingPrescriptions();
+      cdw.getAuthorizingPrescription().add(reference("MedicationOrder/1200738474346:O", "OUTPATIENT PHARMACY"));
       return cdw;
     }
 
@@ -219,6 +292,7 @@ public class MedicationDispenseTransformerTest {
           .resourceType("MedicationDispense")
           .id("1200738474343:R")
           .status(MedicationDispense.Status.completed)
+          .authorizingPrescription(authorizingPrescriptions())
           .patient(patient())
           .dispenser(dispenser())
           .type(type())
@@ -234,6 +308,10 @@ public class MedicationDispenseTransformerTest {
 
     private Reference reference(String ref, String display) {
       return Reference.builder().reference(ref).display(display).build();
+    }
+
+    private List<Reference> authorizingPrescriptions() {
+      return Collections.singletonList(reference("MedicationOrder/1200738474346:O", "OUTPATIENT PHARMACY"));
     }
 
     private Reference patient() {
