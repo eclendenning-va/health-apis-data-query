@@ -45,9 +45,11 @@ import gov.va.dvp.cdw.xsd.model.CdwPatient103Root.CdwPatients.CdwPatient.CdwTele
 import gov.va.dvp.cdw.xsd.model.CdwPatient103Root.CdwPatients.CdwPatient.CdwTelecoms.CdwTelecom;
 import gov.va.dvp.cdw.xsd.model.CdwPatientContactRelationshipCodes;
 import gov.va.dvp.cdw.xsd.model.CdwPatientContactRelationshipSystem;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import lombok.AccessLevel;
@@ -64,6 +66,11 @@ public class PatientTransformerTest {
   @Test
   public void patient() {
     assertThat(tx.apply(cdw.patient())).isEqualTo(expected.patient());
+    assertThat(tx.apply(cdw.noBooleanDeceasedPatient())).isEqualTo(expected.noBooleanDeceasedPatient());
+    assertThat(tx.apply(cdw.noDateTimeDeceasedPatient())).isEqualTo(expected.noDateTimeDeceasedPatient());
+    assertThat(tx.apply(cdw.noDateTimeNotDeceasedPatient())).isEqualTo(expected.noDateTimeNotDeceasedPatient());
+    assertThat(tx.apply(cdw.noDeceasedValuesPatient())).isEqualTo(expected.noDeceasedValuesPatient());
+    assertThat(tx.apply(cdw.notDeceasedPatient())).isEqualTo(expected.noBooleanDeceasedPatient());
   }
 
   @Test
@@ -229,6 +236,36 @@ public class PatientTransformerTest {
       cdw.setName(name());
       cdw.getIdentifier().add(identifier());
       cdw.setTelecoms(telecoms());
+      return cdw;
+    }
+
+    private CdwPatient noBooleanDeceasedPatient() {
+      CdwPatient cdw = new CdwPatient();
+      cdw.setDeceasedDateTime(dateTime("1991-08-30T06:00:00Z"));
+      return cdw;
+    }
+
+    private CdwPatient noDateTimeDeceasedPatient() {
+      CdwPatient cdw = new CdwPatient();
+      cdw.setDeceasedBoolean(true);
+      return cdw;
+    }
+
+    private CdwPatient notDeceasedPatient() {
+      CdwPatient cdw = new CdwPatient();
+      cdw.setDeceasedDateTime(dateTime("1991-08-30T06:00:00Z"));
+      cdw.setDeceasedBoolean(false);
+      return cdw;
+    }
+
+    private CdwPatient noDateTimeNotDeceasedPatient() {
+      CdwPatient cdw = new CdwPatient();
+      cdw.setDeceasedBoolean(false);
+      return cdw;
+    }
+
+    private CdwPatient noDeceasedValuesPatient() {
+      CdwPatient cdw = new CdwPatient();
       return cdw;
     }
 
@@ -444,6 +481,33 @@ public class PatientTransformerTest {
           .telecom(telecom())
           .extension(argoCdwExtensions())
           .maritalStatus(maritalStatus())
+          .build();
+    }
+
+    private Patient noBooleanDeceasedPatient()  {
+      return Patient.builder()
+          .resourceType("Patient")
+      .deceasedDateTime("1991-08-30T06:00:00Z")
+          .extension(Collections.emptyList())
+          .build();
+    }
+
+      private Patient noDateTimeDeceasedPatient() {
+        return Patient.builder().resourceType("Patient").extension(Collections.emptyList()).deceasedBoolean(true).build();
+    }
+
+    private Patient noDateTimeNotDeceasedPatient() {
+      return Patient.builder()
+          .resourceType("Patient")
+          .extension(Collections.emptyList())
+          .deceasedBoolean(false)
+          .build();
+    }
+
+    private Patient noDeceasedValuesPatient() {
+      return Patient.builder()
+          .resourceType("Patient")
+          .extension(Collections.emptyList())
           .build();
     }
 
