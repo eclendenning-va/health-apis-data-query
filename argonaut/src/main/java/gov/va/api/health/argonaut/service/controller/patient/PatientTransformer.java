@@ -330,7 +330,7 @@ public class PatientTransformer implements PatientController.Transformer {
         .address(addresses(source.getAddresses()))
         .gender(gender(source.getGender()))
         .birthDate(asDateString(source.getBirthDate()))
-        .deceasedBoolean(source.isDeceasedBoolean())
+        .deceasedBoolean(source.getDeceasedDateTime() == null ? source.isDeceasedBoolean() : null)
         .deceasedDateTime(asDateTimeString(source.getDeceasedDateTime()))
         .maritalStatus(maritalStatus(source.getMaritalStatus()))
         .contact(contacts(source.getContacts()))
