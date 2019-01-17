@@ -83,19 +83,43 @@ public class SystemDefinitions {
                   .build())
           .build();
 
-  SystemDefinition PROD =
+  SystemDefinition prod =
       SystemDefinition.builder()
-          .ids(ServiceDefinition.builder().url("https://argonaut.lighthouse.va.gov/api").port(443).build())
-          .mrAnderson(ServiceDefinition.builder().url("https://argonaut.lighthouse.va.gov/api").port(443).build())
-          .argonaut(ServiceDefinition.builder().url("https://argonaut.lighthouse.va.gov/api").port(443).build())
+          .ids(
+              ServiceDefinition.builder()
+                  .url("https://argonaut.lighthouse.va.gov/api")
+                  .port(443)
+                  .build())
+          .mrAnderson(
+              ServiceDefinition.builder()
+                  .url("https://argonaut.lighthouse.va.gov/api")
+                  .port(443)
+                  .build())
+          .argonaut(
+              ServiceDefinition.builder()
+                  .url("https://argonaut.lighthouse.va.gov/api")
+                  .port(443)
+                  .build())
           .cdwIds(prodAndQaIds())
           .build();
 
-  SystemDefinition QA =
+  SystemDefinition qa =
       SystemDefinition.builder()
-          .ids(ServiceDefinition.builder().url("https://qa-argonaut.lighthouse.va.gov/api").port(443).build())
-          .mrAnderson(ServiceDefinition.builder().url("https://qa-argonaut.lighthouse.va.gov/api").port(443).build())
-          .argonaut(ServiceDefinition.builder().url("https://qa-argonaut.lighthouse.va.gov/api").port(443).build())
+          .ids(
+              ServiceDefinition.builder()
+                  .url("https://qa-argonaut.lighthouse.va.gov/api")
+                  .port(443)
+                  .build())
+          .mrAnderson(
+              ServiceDefinition.builder()
+                  .url("https://qa-argonaut.lighthouse.va.gov/api")
+                  .port(443)
+                  .build())
+          .argonaut(
+              ServiceDefinition.builder()
+                  .url("https://qa-argonaut.lighthouse.va.gov/api")
+                  .port(443)
+                  .build())
           .cdwIds(prodAndQaIds())
           .build();
 
@@ -127,8 +151,7 @@ public class SystemDefinitions {
                 .dateEqual("eq1970-01-01")
                 .dateLessOrEqual("le2038-01-19")
                 .dateLessThan("lt2038-01-19")
-                .build()
-        )
+                .build())
         .encounter("1200444375877")
         .immunization("809653231")
         .location("279467:L")
@@ -142,19 +165,13 @@ public class SystemDefinitions {
                 .loinc2("777-3")
                 .onDate("2015-04-15")
                 .dateRange(Range.allTime())
-                .build()
-        )
+                .build())
         .organization("26366")
         .patient("1011537977V693883")
         .practitioner("1294240")
         .procedure("1200002649508")
         .procedures(
-            Procedures.builder()
-                .fromDate("ge2009")
-                .onDate("ge2009")
-                .toDate("le2010")
-                .build()
-        )
+            Procedures.builder().fromDate("ge2009").onDate("ge2009").toDate("le2010").build())
         .build();
   }
 }
