@@ -85,26 +85,26 @@ public class SystemDefinitions {
 
   SystemDefinition PROD =
       SystemDefinition.builder()
-          .ids(ServiceDefinition.builder().url("https://argonaut.lighthouse.va.gov/api").port(8089).build())
-          .mrAnderson(ServiceDefinition.builder().url("https://argonaut.lighthouse.va.gov/api").port(8088).build())
-          .argonaut(ServiceDefinition.builder().url("https://argonaut.lighthouse.va.gov/api").port(8090).build())
+          .ids(ServiceDefinition.builder().url("https://argonaut.lighthouse.va.gov/api").port(443).build())
+          .mrAnderson(ServiceDefinition.builder().url("https://argonaut.lighthouse.va.gov/api").port(443).build())
+          .argonaut(ServiceDefinition.builder().url("https://argonaut.lighthouse.va.gov/api").port(443).build())
           .cdwIds(prodAndQaIds())
           .build();
 
   SystemDefinition QA =
       SystemDefinition.builder()
-          .ids(ServiceDefinition.builder().url("https://qa-argonaut.lighthouse.va.gov/api").port(8089).build())
-          .mrAnderson(ServiceDefinition.builder().url("https://qa-argonaut.lighthouse.va.gov/api").port(8088).build())
-          .argonaut(ServiceDefinition.builder().url("https://qa-argonaut.lighthouse.va.gov/api").port(8090).build())
+          .ids(ServiceDefinition.builder().url("https://qa-argonaut.lighthouse.va.gov/api").port(443).build())
+          .mrAnderson(ServiceDefinition.builder().url("https://qa-argonaut.lighthouse.va.gov/api").port(443).build())
+          .argonaut(ServiceDefinition.builder().url("https://qa-argonaut.lighthouse.va.gov/api").port(443).build())
           .cdwIds(prodAndQaIds())
           .build();
 
   TestIds prodAndQaIds() {
     return TestIds.builder()
-        .allergyIntolerance("")
-        .appointment("")
-        .condition("")
-        .diagnosticReport("")
+        .allergyIntolerance("800000001542")
+        .appointment("800295609816")
+        .condition("800000007353:P")
+        .diagnosticReport("800000005788:M")
         .diagnosticReports(
             DiagnosticReports.builder()
                 .loinc1("10000-8")
@@ -129,13 +129,13 @@ public class SystemDefinitions {
                 .dateLessThan("lt2038-01-19")
                 .build()
         )
-        .encounter("")
-        .immunization("")
-        .location("")
-        .medication("")
-        .medicationOrder("")
-        .medicationStatement("")
-        .observation("")
+        .encounter("1200444375877")
+        .immunization("809653231")
+        .location("279467:L")
+        .medication("885302")
+        .medicationOrder("800130510958:O")
+        .medicationStatement("800000000706")
+        .observation("800436526883:V")
         .observations(
             Observations.builder()
                 .loinc1("72166-2")
@@ -144,19 +144,10 @@ public class SystemDefinitions {
                 .dateRange(Range.allTime())
                 .build()
         )
-        .organization("")
-        .patient("")
-        .pii(
-            PersonallyIdentifiableInformation.builder()
-                .gender("")
-                .birthdate("")
-                .given("")
-                .name(",")
-                .family("")
-                .build()
-        )
-        .practitioner("")
-        .procedure("")
+        .organization("26366")
+        .patient("1011537977V693883")
+        .practitioner("1294240")
+        .procedure("1200002649508")
         .procedures(
             Procedures.builder()
                 .fromDate("ge2009")
@@ -166,6 +157,4 @@ public class SystemDefinitions {
         )
         .build();
   }
-
-
 }
