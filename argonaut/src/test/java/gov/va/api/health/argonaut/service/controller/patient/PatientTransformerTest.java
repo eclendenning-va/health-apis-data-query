@@ -62,20 +62,6 @@ public class PatientTransformerTest {
   private final Expected expected = Expected.get();
 
   @Test
-  public void patient() {
-    assertThat(tx.apply(cdw.patient())).isEqualTo(expected.patient());
-    assertThat(tx.apply(cdw.noBooleanDeceasedPatient()))
-        .isEqualTo(expected.noBooleanDeceasedPatient());
-    assertThat(tx.apply(cdw.noDateTimeDeceasedPatient()))
-        .isEqualTo(expected.noDateTimeDeceasedPatient());
-    assertThat(tx.apply(cdw.noDateTimeNotDeceasedPatient()))
-        .isEqualTo(expected.noDateTimeNotDeceasedPatient());
-    assertThat(tx.apply(cdw.noDeceasedValuesPatient()))
-        .isEqualTo(expected.noDeceasedValuesPatient());
-    assertThat(tx.apply(cdw.notDeceasedPatient())).isEqualTo(expected.noBooleanDeceasedPatient());
-  }
-
-  @Test
   public void addresses() {
     assertThat(tx.addresses(cdw.addresses())).isEqualTo(expected.address());
     assertThat(tx.addresses(null)).isNull();
@@ -83,41 +69,11 @@ public class PatientTransformerTest {
   }
 
   @Test
-  public void contactAddress() {
-    assertThat(tx.contactAddress(cdw.contact())).isEqualTo(expected.contactAddress());
-    assertThat(tx.contactAddress(null)).isNull();
-    assertThat(tx.contactAddress(new CdwContact())).isNull();
-  }
-
-  @Test
-  public void contacts() {
-    assertThat(tx.contacts(cdw.contacts())).isEqualTo(expected.contact());
-    assertThat(tx.contacts(null)).isNull();
-    assertThat(tx.contacts(new CdwContacts())).isNull();
-  }
-
-  @Test
-  public void contact() {
-    assertThat(tx.contact(cdw.contact())).isEqualTo(expected.contactTelecom());
-    assertThat(tx.contact(null)).isEqualTo(Collections.emptyList());
-    assertThat(tx.contact(new CdwContact())).isEqualTo(Collections.emptyList());
-  }
-
-  @Test
-  public void gender() {
-    assertThat(tx.gender(CdwAdministrativeGenderCodes.MALE)).isEqualTo(Gender.male);
-    assertThat(tx.gender(CdwAdministrativeGenderCodes.OTHER)).isEqualTo(Gender.other);
-    assertThat(tx.gender(CdwAdministrativeGenderCodes.UNKNOWN)).isEqualTo(Gender.unknown);
-    assertThat(tx.gender(CdwAdministrativeGenderCodes.FEMALE)).isEqualTo(Gender.female);
-    assertThat(tx.gender(null)).isNull();
-  }
-
-  @Test
-  public void argoRace() {
-    assertThat(tx.argoRace(singletonList(cdw.argoRaces())))
-        .isEqualTo(Optional.of(expected.argoCdwExtensions().get(0)));
-    assertThat(tx.argoRace(Collections.emptyList())).isEqualTo(Optional.empty());
-    assertThat(tx.argoRace(null)).isEqualTo(Optional.empty());
+  public void argoBirthsex() {
+    assertThat(tx.argoBirthSex(cdw.argoBirthsex()))
+        .isEqualTo(Optional.of(expected.argoCdwExtensions().get(2)));
+    assertThat(tx.argoBirthSex(new CdwBirthsexExtension())).isEqualTo(Optional.empty());
+    assertThat(tx.argoBirthSex(null)).isEqualTo(Optional.empty());
   }
 
   @Test
@@ -129,11 +85,11 @@ public class PatientTransformerTest {
   }
 
   @Test
-  public void argoBirthsex() {
-    assertThat(tx.argoBirthSex(cdw.argoBirthsex()))
-        .isEqualTo(Optional.of(expected.argoCdwExtensions().get(2)));
-    assertThat(tx.argoBirthSex(new CdwBirthsexExtension())).isEqualTo(Optional.empty());
-    assertThat(tx.argoBirthSex(null)).isEqualTo(Optional.empty());
+  public void argoRace() {
+    assertThat(tx.argoRace(singletonList(cdw.argoRaces())))
+        .isEqualTo(Optional.of(expected.argoCdwExtensions().get(0)));
+    assertThat(tx.argoRace(Collections.emptyList())).isEqualTo(Optional.empty());
+    assertThat(tx.argoRace(null)).isEqualTo(Optional.empty());
   }
 
   @Test
@@ -151,10 +107,17 @@ public class PatientTransformerTest {
   }
 
   @Test
-  public void name() {
-    assertThat(tx.names(cdw.name())).isEqualTo(expected.name());
-    assertThat(tx.names(null)).isNull();
-    assertThat(tx.names(new CdwName())).isNull();
+  public void contact() {
+    assertThat(tx.contact(cdw.contact())).isEqualTo(expected.contactTelecom());
+    assertThat(tx.contact(null)).isEqualTo(Collections.emptyList());
+    assertThat(tx.contact(new CdwContact())).isEqualTo(Collections.emptyList());
+  }
+
+  @Test
+  public void contactAddress() {
+    assertThat(tx.contactAddress(cdw.contact())).isEqualTo(expected.contactAddress());
+    assertThat(tx.contactAddress(null)).isNull();
+    assertThat(tx.contactAddress(new CdwContact())).isNull();
   }
 
   @Test
@@ -174,6 +137,22 @@ public class PatientTransformerTest {
   }
 
   @Test
+  public void contacts() {
+    assertThat(tx.contacts(cdw.contacts())).isEqualTo(expected.contact());
+    assertThat(tx.contacts(null)).isNull();
+    assertThat(tx.contacts(new CdwContacts())).isNull();
+  }
+
+  @Test
+  public void gender() {
+    assertThat(tx.gender(CdwAdministrativeGenderCodes.MALE)).isEqualTo(Gender.male);
+    assertThat(tx.gender(CdwAdministrativeGenderCodes.OTHER)).isEqualTo(Gender.other);
+    assertThat(tx.gender(CdwAdministrativeGenderCodes.UNKNOWN)).isEqualTo(Gender.unknown);
+    assertThat(tx.gender(CdwAdministrativeGenderCodes.FEMALE)).isEqualTo(Gender.female);
+    assertThat(tx.gender(null)).isNull();
+  }
+
+  @Test
   public void identifier() {
     assertThat(tx.identifiers(singletonList(cdw.identifier()))).isEqualTo(expected.identifier());
     assertThat(tx.identifiers(Collections.emptyList())).isNull();
@@ -186,22 +165,6 @@ public class PatientTransformerTest {
         .isEqualTo(expected.identifierTypeCoding());
     assertThat(tx.identifierTypeCodings(singletonList(null))).isNull();
     assertThat(tx.identifierTypeCodings(null)).isNull();
-  }
-
-  @Test
-  public void valueCodings() {
-    assertThat(tx.valueCoding(cdw.argoEthnicity().getValueCoding()))
-        .isEqualTo(expected.argoEthnicityCoding());
-    assertThat(tx.valueCoding(cdw.argoRace().getValueCoding()))
-        .isEqualTo(expected.argoRaceCoding());
-    assertThat(tx.valueCoding(null)).isNull();
-  }
-
-  @Test
-  public void telecoms() {
-    assertThat(tx.telecoms(cdw.telecoms())).isEqualTo(expected.telecom());
-    assertThat(tx.telecoms(new CdwTelecoms())).isNull();
-    assertThat(tx.telecoms(null)).isNull();
   }
 
   @Test
@@ -219,63 +182,45 @@ public class PatientTransformerTest {
     assertThat(tx.maritalStatusCodings(null)).isNull();
   }
 
+  @Test
+  public void name() {
+    assertThat(tx.names(cdw.name())).isEqualTo(expected.name());
+    assertThat(tx.names(null)).isNull();
+    assertThat(tx.names(new CdwName())).isNull();
+  }
+
+  @Test
+  public void patient() {
+    assertThat(tx.apply(cdw.patient())).isEqualTo(expected.patient());
+    assertThat(tx.apply(cdw.noBooleanDeceasedPatient()))
+        .isEqualTo(expected.noBooleanDeceasedPatient());
+    assertThat(tx.apply(cdw.noDateTimeDeceasedPatient()))
+        .isEqualTo(expected.noDateTimeDeceasedPatient());
+    assertThat(tx.apply(cdw.noDateTimeNotDeceasedPatient()))
+        .isEqualTo(expected.noDateTimeNotDeceasedPatient());
+    assertThat(tx.apply(cdw.noDeceasedValuesPatient()))
+        .isEqualTo(expected.noDeceasedValuesPatient());
+    assertThat(tx.apply(cdw.notDeceasedPatient())).isEqualTo(expected.noBooleanDeceasedPatient());
+  }
+
+  @Test
+  public void telecoms() {
+    assertThat(tx.telecoms(cdw.telecoms())).isEqualTo(expected.telecom());
+    assertThat(tx.telecoms(new CdwTelecoms())).isNull();
+    assertThat(tx.telecoms(null)).isNull();
+  }
+
+  @Test
+  public void valueCodings() {
+    assertThat(tx.valueCoding(cdw.argoEthnicity().getValueCoding()))
+        .isEqualTo(expected.argoEthnicityCoding());
+    assertThat(tx.valueCoding(cdw.argoRace().getValueCoding()))
+        .isEqualTo(expected.argoRaceCoding());
+    assertThat(tx.valueCoding(null)).isNull();
+  }
+
   @NoArgsConstructor(staticName = "get", access = AccessLevel.PUBLIC)
   static class CdwSampleData {
-
-    private CdwPatient patient() {
-      CdwPatient cdw = new CdwPatient();
-      cdw.setCdwId("185601V825290");
-      cdw.setAddresses(addresses());
-      cdw.setArgoBirthsex(argoBirthsex());
-      cdw.getArgoEthnicity().add(argoEthnicities());
-      cdw.getArgoRace().add(argoRaces());
-      cdw.setBirthDate(dateTime("1941-08-30"));
-      cdw.setContacts(contacts());
-      cdw.setDeceasedBoolean(true);
-      cdw.setDeceasedDateTime(dateTime("1991-08-30T06:00:00Z"));
-      cdw.setGender(CdwAdministrativeGenderCodes.MALE);
-      cdw.setMaritalStatus(maritalStatus());
-      cdw.setName(name());
-      cdw.getIdentifier().add(identifier());
-      cdw.setTelecoms(telecoms());
-      return cdw;
-    }
-
-    private CdwPatient noBooleanDeceasedPatient() {
-      CdwPatient cdw = new CdwPatient();
-      cdw.setDeceasedDateTime(dateTime("1991-08-30T06:00:00Z"));
-      return cdw;
-    }
-
-    private CdwPatient noDateTimeDeceasedPatient() {
-      CdwPatient cdw = new CdwPatient();
-      cdw.setDeceasedBoolean(true);
-      return cdw;
-    }
-
-    private CdwPatient notDeceasedPatient() {
-      CdwPatient cdw = new CdwPatient();
-      cdw.setDeceasedDateTime(dateTime("1991-08-30T06:00:00Z"));
-      cdw.setDeceasedBoolean(false);
-      return cdw;
-    }
-
-    private CdwPatient noDateTimeNotDeceasedPatient() {
-      CdwPatient cdw = new CdwPatient();
-      cdw.setDeceasedBoolean(false);
-      return cdw;
-    }
-
-    private CdwPatient noDeceasedValuesPatient() {
-      CdwPatient cdw = new CdwPatient();
-      return cdw;
-    }
-
-    private CdwAddresses addresses() {
-      CdwAddresses cdw = new CdwAddresses();
-      cdw.getAddress().add(address());
-      return cdw;
-    }
 
     private CdwAddress address() {
       CdwAddress cdw = new CdwAddress();
@@ -288,6 +233,12 @@ public class PatientTransformerTest {
       cdw.setGisFipsCode("04019");
       cdw.setGisPatientAddressLatitude(32.1802f);
       cdw.setGisPatientAddressLongitude(-110.965f);
+      return cdw;
+    }
+
+    private CdwAddresses addresses() {
+      CdwAddresses cdw = new CdwAddresses();
+      cdw.getAddress().add(address());
       return cdw;
     }
 
@@ -320,20 +271,6 @@ public class PatientTransformerTest {
       return cdw;
     }
 
-    private List<CdwExtension> argoTextEthnicity() {
-      CdwExtension cdw = new CdwExtension();
-      cdw.setUrl("text");
-      cdw.setValueString("Not Hispanic or Latino");
-      return singletonList(cdw);
-    }
-
-    private CdwExtensions argoRaces() {
-      CdwExtensions cdw = new CdwExtensions();
-      cdw.setUrl("http://fhir.org/guides/argonaut/StructureDefinition/argo-race");
-      cdw.getExtension().add(argoRace());
-      return cdw;
-    }
-
     private CdwExtension argoRace() {
       CdwExtension cdw = new CdwExtension();
       cdw.setUrl("ombCategory");
@@ -349,6 +286,20 @@ public class PatientTransformerTest {
       return cdw;
     }
 
+    private CdwExtensions argoRaces() {
+      CdwExtensions cdw = new CdwExtensions();
+      cdw.setUrl("http://fhir.org/guides/argonaut/StructureDefinition/argo-race");
+      cdw.getExtension().add(argoRace());
+      return cdw;
+    }
+
+    private List<CdwExtension> argoTextEthnicity() {
+      CdwExtension cdw = new CdwExtension();
+      cdw.setUrl("text");
+      cdw.setValueString("Not Hispanic or Latino");
+      return singletonList(cdw);
+    }
+
     private List<CdwExtension> argoTextRace() {
       CdwExtension cdw = new CdwExtension();
       cdw.setUrl("text");
@@ -356,14 +307,9 @@ public class PatientTransformerTest {
       return singletonList(cdw);
     }
 
-    @SneakyThrows
-    private XMLGregorianCalendar dateTime(String timestamp) {
-      return DatatypeFactory.newInstance().newXMLGregorianCalendar(timestamp);
-    }
-
-    private CdwContacts contacts() {
-      CdwContacts cdw = new CdwContacts();
-      cdw.getContact().add(contact());
+    private CdwAssigner assigner() {
+      CdwAssigner cdw = new CdwAssigner();
+      cdw.setDisplay("Master Veteran Index");
       return cdw;
     }
 
@@ -382,19 +328,37 @@ public class PatientTransformerTest {
       return cdw;
     }
 
-    private CdwRelationship relationship() {
-      CdwRelationship cdw = new CdwRelationship();
-      cdw.setCoding(relationshipCoding());
-      cdw.setText("Emergency Contact");
+    private CdwContacts contacts() {
+      CdwContacts cdw = new CdwContacts();
+      cdw.getContact().add(contact());
       return cdw;
     }
 
-    private CdwCoding relationshipCoding() {
-      CdwCoding cdw = new CdwCoding();
-      cdw.setCode(CdwPatientContactRelationshipCodes.EMERGENCY);
-      cdw.setDisplay("Emergency");
-      cdw.setSystem(
-          CdwPatientContactRelationshipSystem.HTTP_HL_7_ORG_FHIR_PATIENT_CONTACT_RELATIONSHIP);
+    @SneakyThrows
+    private XMLGregorianCalendar dateTime(String timestamp) {
+      return DatatypeFactory.newInstance().newXMLGregorianCalendar(timestamp);
+    }
+
+    CdwPatient.CdwIdentifier identifier() {
+      CdwPatient.CdwIdentifier identifier = new CdwPatient.CdwIdentifier();
+      identifier.setUse(CdwIdentifierUseCodes.USUAL);
+      identifier.setType(identifierType());
+      identifier.setSystem("http://va.gov/mvi");
+      identifier.setValue("185601V825290");
+      identifier.setAssigner(assigner());
+      return identifier;
+    }
+
+    private CdwType.CdwCoding identifierCoding() {
+      CdwType.CdwCoding cdw = new CdwType.CdwCoding();
+      cdw.setSystem("http://hl7.org/fhir/v2/0203");
+      cdw.setCode("MR");
+      return cdw;
+    }
+
+    private CdwType identifierType() {
+      CdwPatient.CdwIdentifier.CdwType cdw = new CdwPatient.CdwIdentifier.CdwType();
+      cdw.getCoding().add(identifierCoding());
       return cdw;
     }
 
@@ -422,9 +386,72 @@ public class PatientTransformerTest {
       return cdw;
     }
 
-    private CdwTelecoms telecoms() {
-      CdwTelecoms cdw = new CdwTelecoms();
-      cdw.getTelecom().add(telecom());
+    private CdwPatient noBooleanDeceasedPatient() {
+      CdwPatient cdw = patient();
+      cdw.setDeceasedDateTime(dateTime("1991-08-30T06:00:00Z"));
+      return cdw;
+    }
+
+    private CdwPatient noDateTimeDeceasedPatient() {
+      CdwPatient cdw = patient();
+      cdw.setDeceasedDateTime(null);
+      cdw.setDeceasedBoolean(true);
+      return cdw;
+    }
+
+    private CdwPatient noDateTimeNotDeceasedPatient() {
+      CdwPatient cdw = patient();
+      cdw.setDeceasedDateTime(null);
+      cdw.setDeceasedBoolean(false);
+      return cdw;
+    }
+
+    private CdwPatient noDeceasedValuesPatient() {
+      CdwPatient cdw = patient();
+      cdw.setDeceasedBoolean(null);
+      cdw.setDeceasedDateTime(null);
+      return cdw;
+    }
+
+    private CdwPatient notDeceasedPatient() {
+      CdwPatient cdw = patient();
+      cdw.setDeceasedDateTime(dateTime("1991-08-30T06:00:00Z"));
+      cdw.setDeceasedBoolean(false);
+      return cdw;
+    }
+
+    private CdwPatient patient() {
+      CdwPatient cdw = new CdwPatient();
+      cdw.setCdwId("185601V825290");
+      cdw.setAddresses(addresses());
+      cdw.setArgoBirthsex(argoBirthsex());
+      cdw.getArgoEthnicity().add(argoEthnicities());
+      cdw.getArgoRace().add(argoRaces());
+      cdw.setBirthDate(dateTime("1941-08-30"));
+      cdw.setContacts(contacts());
+      cdw.setDeceasedBoolean(true);
+      cdw.setDeceasedDateTime(dateTime("1991-08-30T06:00:00Z"));
+      cdw.setGender(CdwAdministrativeGenderCodes.MALE);
+      cdw.setMaritalStatus(maritalStatus());
+      cdw.setName(name());
+      cdw.getIdentifier().add(identifier());
+      cdw.setTelecoms(telecoms());
+      return cdw;
+    }
+
+    private CdwRelationship relationship() {
+      CdwRelationship cdw = new CdwRelationship();
+      cdw.setCoding(relationshipCoding());
+      cdw.setText("Emergency Contact");
+      return cdw;
+    }
+
+    private CdwCoding relationshipCoding() {
+      CdwCoding cdw = new CdwCoding();
+      cdw.setCode(CdwPatientContactRelationshipCodes.EMERGENCY);
+      cdw.setDisplay("Emergency");
+      cdw.setSystem(
+          CdwPatientContactRelationshipSystem.HTTP_HL_7_ORG_FHIR_PATIENT_CONTACT_RELATIONSHIP);
       return cdw;
     }
 
@@ -436,83 +463,15 @@ public class PatientTransformerTest {
       return cdw;
     }
 
-    CdwPatient.CdwIdentifier identifier() {
-      CdwPatient.CdwIdentifier identifier = new CdwPatient.CdwIdentifier();
-      identifier.setUse(CdwIdentifierUseCodes.USUAL);
-      identifier.setType(identifierType());
-      identifier.setSystem("http://va.gov/mvi");
-      identifier.setValue("185601V825290");
-      identifier.setAssigner(assigner());
-      return identifier;
-    }
-
-    private CdwType identifierType() {
-      CdwPatient.CdwIdentifier.CdwType cdw = new CdwPatient.CdwIdentifier.CdwType();
-      cdw.getCoding().add(identifierCoding());
-      return cdw;
-    }
-
-    private CdwType.CdwCoding identifierCoding() {
-      CdwType.CdwCoding cdw = new CdwType.CdwCoding();
-      cdw.setSystem("http://hl7.org/fhir/v2/0203");
-      cdw.setCode("MR");
-      return cdw;
-    }
-
-    private CdwAssigner assigner() {
-      CdwAssigner cdw = new CdwAssigner();
-      cdw.setDisplay("Master Veteran Index");
+    private CdwTelecoms telecoms() {
+      CdwTelecoms cdw = new CdwTelecoms();
+      cdw.getTelecom().add(telecom());
       return cdw;
     }
   }
 
   @NoArgsConstructor(staticName = "get")
   public static class Expected {
-
-    private Patient patient() {
-      return Patient.builder()
-          .id("185601V825290")
-          .resourceType("Patient")
-          .address(address())
-          .identifier(identifier())
-          .birthDate("1941-08-30")
-          .contact(contact())
-          .deceasedDateTime("1991-08-30T06:00:00Z")
-          .gender(Gender.male)
-          .name(name())
-          .telecom(telecom())
-          .extension(argoCdwExtensions())
-          .maritalStatus(maritalStatus())
-          .build();
-    }
-
-    private Patient noBooleanDeceasedPatient() {
-      return Patient.builder()
-          .resourceType("Patient")
-          .deceasedDateTime("1991-08-30T06:00:00Z")
-          .extension(Collections.emptyList())
-          .build();
-    }
-
-    private Patient noDateTimeDeceasedPatient() {
-      return Patient.builder()
-          .resourceType("Patient")
-          .extension(Collections.emptyList())
-          .deceasedBoolean(true)
-          .build();
-    }
-
-    private Patient noDateTimeNotDeceasedPatient() {
-      return Patient.builder()
-          .resourceType("Patient")
-          .extension(Collections.emptyList())
-          .deceasedBoolean(false)
-          .build();
-    }
-
-    private Patient noDeceasedValuesPatient() {
-      return Patient.builder().resourceType("Patient").extension(Collections.emptyList()).build();
-    }
 
     private List<Address> address() {
       return singletonList(
@@ -528,95 +487,6 @@ public class PatientTransformerTest {
       return asList("3601 S 6TH AVE", "CHANGE 1", "POST POSTGRES UPGRADE 5-22");
     }
 
-    private List<Identifier> identifier() {
-      return singletonList(
-          Identifier.builder()
-              .use(IdentifierUse.usual)
-              .system("http://va.gov/mvi")
-              .value("185601V825290")
-              .assigner(Reference.builder().display("Master Veteran Index").build())
-              .type(identifierType())
-              .build());
-    }
-
-    private CodeableConcept identifierType() {
-      return CodeableConcept.builder().coding(identifierTypeCoding()).build();
-    }
-
-    private List<Coding> identifierTypeCoding() {
-      return singletonList(
-          Coding.builder().system("http://hl7.org/fhir/v2/0203").code("MR").build());
-    }
-
-    private List<Contact> contact() {
-      return singletonList(
-          Contact.builder()
-              .address(contactAddress())
-              .name(contactName())
-              .telecom(contactTelecom())
-              .relationship(contactRelationship())
-              .build());
-    }
-
-    private Address contactAddress() {
-      return Address.builder()
-          .country("UNITED STATES OF AMERICA")
-          .city("TUCSON")
-          .state("ARIZONA")
-          .postalCode("85713")
-          .line(contactAddressLine())
-          .build();
-    }
-
-    private List<String> contactAddressLine() {
-      return asList("3601 S. 6TH AVE", "CHANGE 1", "85713");
-    }
-
-    private HumanName contactName() {
-      return HumanName.builder().text("DUCK,DAFFY JOHN").build();
-    }
-
-    private List<ContactPoint> contactTelecom() {
-      return singletonList(
-          ContactPoint.builder().value("5206164321").system(ContactPointSystem.phone).build());
-    }
-
-    private List<CodeableConcept> contactRelationship() {
-      return singletonList(
-          CodeableConcept.builder()
-              .coding(contactRelationshipCoding())
-              .text("Emergency Contact")
-              .build());
-    }
-
-    private List<Coding> contactRelationshipCoding() {
-      return singletonList(
-          Coding.builder()
-              .code("emergency")
-              .display("Emergency")
-              .system("http://hl7.org/fhir/patient-contact-relationship")
-              .build());
-    }
-
-    private List<HumanName> name() {
-      return singletonList(
-          HumanName.builder()
-              .family(singletonList("VETERAN"))
-              .given(singletonList("JOHN Q"))
-              .use(NameUse.usual)
-              .text("VETERAN,JOHN Q")
-              .build());
-    }
-
-    private List<ContactPoint> telecom() {
-      return singletonList(
-          ContactPoint.builder()
-              .system(ContactPointSystem.phone)
-              .use(ContactPointUse.home)
-              .value("5201234567")
-              .build());
-    }
-
     private List<Extension> argoCdwExtensions() {
       List<Extension> race =
           singletonList(
@@ -625,33 +495,6 @@ public class PatientTransformerTest {
       List<Extension> ethnicity =
           singletonList(
               Extension.builder().url("ombCategory").valueCoding(argoEthnicityCoding()).build());
-
-      return asList(
-          Extension.builder()
-              .url("http://fhir.org/guides/argonaut/StructureDefinition/argo-race")
-              .extension(race)
-              .build(),
-          Extension.builder()
-              .url("http://fhir.org/guides/argonaut/StructureDefinition/argo-ethnicity")
-              .extension(ethnicity)
-              .build(),
-          Extension.builder()
-              .url("http://fhir.org/guides/argonaut/StructureDefinition/argo-birthsex")
-              .valueCode("M")
-              .build());
-    }
-
-    private List<Extension> argoTextCdwExtensions() {
-      List<Extension> race =
-          singletonList(
-              Extension.builder()
-                  .url("text")
-                  .valueString("American Indian or Alaska Native")
-                  .build());
-
-      List<Extension> ethnicity =
-          singletonList(
-              Extension.builder().url("text").valueString("Not Hispanic or Latino").build());
 
       return asList(
           Extension.builder()
@@ -684,6 +527,103 @@ public class PatientTransformerTest {
           .build();
     }
 
+    private List<Extension> argoTextCdwExtensions() {
+      List<Extension> race =
+          singletonList(
+              Extension.builder()
+                  .url("text")
+                  .valueString("American Indian or Alaska Native")
+                  .build());
+
+      List<Extension> ethnicity =
+          singletonList(
+              Extension.builder().url("text").valueString("Not Hispanic or Latino").build());
+
+      return asList(
+          Extension.builder()
+              .url("http://fhir.org/guides/argonaut/StructureDefinition/argo-race")
+              .extension(race)
+              .build(),
+          Extension.builder()
+              .url("http://fhir.org/guides/argonaut/StructureDefinition/argo-ethnicity")
+              .extension(ethnicity)
+              .build(),
+          Extension.builder()
+              .url("http://fhir.org/guides/argonaut/StructureDefinition/argo-birthsex")
+              .valueCode("M")
+              .build());
+    }
+
+    private List<Contact> contact() {
+      return singletonList(
+          Contact.builder()
+              .address(contactAddress())
+              .name(contactName())
+              .telecom(contactTelecom())
+              .relationship(contactRelationship())
+              .build());
+    }
+
+    private Address contactAddress() {
+      return Address.builder()
+          .country("UNITED STATES OF AMERICA")
+          .city("TUCSON")
+          .state("ARIZONA")
+          .postalCode("85713")
+          .line(contactAddressLine())
+          .build();
+    }
+
+    private List<String> contactAddressLine() {
+      return asList("3601 S. 6TH AVE", "CHANGE 1", "85713");
+    }
+
+    private HumanName contactName() {
+      return HumanName.builder().text("DUCK,DAFFY JOHN").build();
+    }
+
+    private List<CodeableConcept> contactRelationship() {
+      return singletonList(
+          CodeableConcept.builder()
+              .coding(contactRelationshipCoding())
+              .text("Emergency Contact")
+              .build());
+    }
+
+    private List<Coding> contactRelationshipCoding() {
+      return singletonList(
+          Coding.builder()
+              .code("emergency")
+              .display("Emergency")
+              .system("http://hl7.org/fhir/patient-contact-relationship")
+              .build());
+    }
+
+    private List<ContactPoint> contactTelecom() {
+      return singletonList(
+          ContactPoint.builder().value("5206164321").system(ContactPointSystem.phone).build());
+    }
+
+    private List<Identifier> identifier() {
+      return singletonList(
+          Identifier.builder()
+              .use(IdentifierUse.usual)
+              .system("http://va.gov/mvi")
+              .value("185601V825290")
+              .assigner(Reference.builder().display("Master Veteran Index").build())
+              .type(identifierType())
+              .build());
+    }
+
+    private CodeableConcept identifierType() {
+      return CodeableConcept.builder().coding(identifierTypeCoding()).build();
+    }
+
+    private List<Coding> identifierTypeCoding() {
+      return singletonList(
+          Coding.builder().system("http://hl7.org/fhir/v2/0203").code("MR").build());
+    }
+
     private CodeableConcept maritalStatus() {
       return CodeableConcept.builder().text("").coding(maritalStatusCoding()).build();
     }
@@ -694,6 +634,58 @@ public class PatientTransformerTest {
               .system("http://hl7.org/fhir/marital-status")
               .display("Married")
               .code("M")
+              .build());
+    }
+
+    private List<HumanName> name() {
+      return singletonList(
+          HumanName.builder()
+              .family(singletonList("VETERAN"))
+              .given(singletonList("JOHN Q"))
+              .use(NameUse.usual)
+              .text("VETERAN,JOHN Q")
+              .build());
+    }
+
+    private Patient noBooleanDeceasedPatient() {
+      return patient().resourceType("Patient").deceasedDateTime("1991-08-30T06:00:00Z");
+    }
+
+    private Patient noDateTimeDeceasedPatient() {
+      return patient().resourceType("Patient").deceasedBoolean(true).deceasedDateTime(null);
+    }
+
+    private Patient noDateTimeNotDeceasedPatient() {
+      return patient().deceasedBoolean(false).deceasedDateTime(null);
+    }
+
+    private Patient noDeceasedValuesPatient() {
+      return patient().deceasedBoolean(null).deceasedDateTime(null);
+    }
+
+    private Patient patient() {
+      return Patient.builder()
+          .id("185601V825290")
+          .resourceType("Patient")
+          .address(address())
+          .identifier(identifier())
+          .birthDate("1941-08-30")
+          .contact(contact())
+          .deceasedDateTime("1991-08-30T06:00:00Z")
+          .gender(Gender.male)
+          .name(name())
+          .telecom(telecom())
+          .extension(argoCdwExtensions())
+          .maritalStatus(maritalStatus())
+          .build();
+    }
+
+    private List<ContactPoint> telecom() {
+      return singletonList(
+          ContactPoint.builder()
+              .system(ContactPointSystem.phone)
+              .use(ContactPointUse.home)
+              .value("5201234567")
               .build());
     }
   }
