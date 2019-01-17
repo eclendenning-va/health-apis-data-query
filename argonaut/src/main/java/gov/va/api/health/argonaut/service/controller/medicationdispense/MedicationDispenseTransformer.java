@@ -1,7 +1,15 @@
 package gov.va.api.health.argonaut.service.controller.medicationdispense;
 
+import static gov.va.api.health.argonaut.service.controller.Transformers.allNull;
+import static gov.va.api.health.argonaut.service.controller.Transformers.asDateTimeString;
+import static gov.va.api.health.argonaut.service.controller.Transformers.convert;
+import static gov.va.api.health.argonaut.service.controller.Transformers.convertAll;
+import static gov.va.api.health.argonaut.service.controller.Transformers.ifPresent;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+
 import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
 import gov.va.api.health.argonaut.api.datatypes.Coding;
+import gov.va.api.health.argonaut.api.datatypes.Identifier;
 import gov.va.api.health.argonaut.api.datatypes.SimpleQuantity;
 import gov.va.api.health.argonaut.api.datatypes.Timing;
 import gov.va.api.health.argonaut.api.elements.Reference;
@@ -11,28 +19,22 @@ import gov.va.api.health.argonaut.api.resources.MedicationDispense.Status;
 import gov.va.api.health.argonaut.service.controller.EnumSearcher;
 import gov.va.dvp.cdw.xsd.model.CdwCodeableConcept;
 import gov.va.dvp.cdw.xsd.model.CdwCoding;
+import gov.va.dvp.cdw.xsd.model.CdwIdentifierUseCodes;
 import gov.va.dvp.cdw.xsd.model.CdwMedicationDispense100Root.CdwMedicationDispenses.CdwMedicationDispense;
 import gov.va.dvp.cdw.xsd.model.CdwMedicationDispense100Root.CdwMedicationDispenses.CdwMedicationDispense.CdwAuthorizingPrescriptions;
 import gov.va.dvp.cdw.xsd.model.CdwMedicationDispense100Root.CdwMedicationDispenses.CdwMedicationDispense.CdwDosageInstructions;
-import gov.va.dvp.cdw.xsd.model.CdwMedicationDispense100Root.CdwMedicationDispenses.CdwMedicationDispense.CdwDosageInstructions.CdwDosageInstruction.CdwRoute;
 import gov.va.dvp.cdw.xsd.model.CdwMedicationDispense100Root.CdwMedicationDispenses.CdwMedicationDispense.CdwDosageInstructions.CdwDosageInstruction;
+import gov.va.dvp.cdw.xsd.model.CdwMedicationDispense100Root.CdwMedicationDispenses.CdwMedicationDispense.CdwDosageInstructions.CdwDosageInstruction.CdwRoute;
 import gov.va.dvp.cdw.xsd.model.CdwMedicationDispense100Root.CdwMedicationDispenses.CdwMedicationDispense.CdwDosageInstructions.CdwDosageInstruction.CdwTiming;
+import gov.va.dvp.cdw.xsd.model.CdwMedicationDispense100Root.CdwMedicationDispenses.CdwMedicationDispense.CdwIdentifier;
 import gov.va.dvp.cdw.xsd.model.CdwMedicationDispenseStatus;
 import gov.va.dvp.cdw.xsd.model.CdwMedicationDispenseType;
 import gov.va.dvp.cdw.xsd.model.CdwMedicationDispenseTypeCoding;
 import gov.va.dvp.cdw.xsd.model.CdwReference;
 import gov.va.dvp.cdw.xsd.model.CdwSimpleQuantity;
-import org.springframework.stereotype.Service;
-
 import java.util.Collections;
 import java.util.List;
-
-import static gov.va.api.health.argonaut.service.controller.Transformers.allNull;
-import static gov.va.api.health.argonaut.service.controller.Transformers.asDateTimeString;
-import static gov.va.api.health.argonaut.service.controller.Transformers.convert;
-import static gov.va.api.health.argonaut.service.controller.Transformers.convertAll;
-import static gov.va.api.health.argonaut.service.controller.Transformers.ifPresent;
-import static org.apache.commons.lang3.StringUtils.isBlank;
+import org.springframework.stereotype.Service;
 
 @Service
 public class MedicationDispenseTransformer implements MedicationDispenseController.Transformer {
@@ -43,9 +45,7 @@ public class MedicationDispenseTransformer implements MedicationDispenseControll
     return MedicationDispense.builder()
         .resourceType("MedicationDispense")
         .id(cdw.getCdwId())
-        /* Need to ask about what the identifier actually is here.
-        Sample data is for Patient ICN information which seems wrong*/
-        // .identifier()
+        .identifier(identifier(cdw.getIdentifier()))
         .authorizingPrescription(authorizingPrescriptions(cdw.getAuthorizingPrescriptions()))
         .status(status(cdw.getStatus()))
         .patient(reference(cdw.getPatient()))
@@ -63,6 +63,26 @@ public class MedicationDispenseTransformer implements MedicationDispenseControll
 
   Status status(CdwMedicationDispenseStatus source) {
     return EnumSearcher.of(MedicationDispense.Status.class).find(source.value());
+  }
+
+  Identifier.IdentifierUse identifierUse(CdwIdentifierUseCodes source) {
+    return EnumSearcher.of(Identifier.IdentifierUse.class).find(source.value());
+  }
+
+  /**
+   * This is from a cardinality mismatch between the XSD and model. XSD says that there can be an
+   * array of identifiers coming back, but the DSTU2 spec specifies only one should return.
+   */
+  Identifier identifier(List<CdwIdentifier> maybeCdw) {
+    if (maybeCdw == null || maybeCdw.isEmpty() || maybeCdw.get(0) == null) {
+      return null;
+    }
+    CdwIdentifier firstItem = maybeCdw.get(0);
+    return Identifier.builder()
+        .system(firstItem.getSystem())
+        .value(firstItem.getValue())
+        .use(identifierUse(firstItem.getUse()))
+        .build();
   }
 
   /**
@@ -92,7 +112,7 @@ public class MedicationDispenseTransformer implements MedicationDispenseControll
                 .build());
   }
 
-  /** Maps codeable concept out of Type field */
+  /** Maps codeable concept out of Type field. */
   CodeableConcept typeCodeableConcept(CdwMedicationDispenseType maybeCdw) {
     if (maybeCdw == null) {
       return null;
@@ -119,7 +139,7 @@ public class MedicationDispenseTransformer implements MedicationDispenseControll
 
   /**
    * simpleQuantity and quantityValue might be useful to take out to Transformers? This same pattern
-   * is in Observation
+   * is in Observation.
    */
   SimpleQuantity simpleQuantity(CdwSimpleQuantity source) {
     if (source == null
@@ -149,7 +169,7 @@ public class MedicationDispenseTransformer implements MedicationDispenseControll
 
   /**
    * Maps dosage instructions out which is a complex type with multiple complex types contained
-   * within
+   * within.
    */
   List<DosageInstruction> dosageInstructions(CdwDosageInstructions cdw) {
     if (cdw == null || cdw.getDosageInstruction().isEmpty()) {
@@ -179,13 +199,13 @@ public class MedicationDispenseTransformer implements MedicationDispenseControll
                 .additionalInstructions(codeableConcept(source.getAdditionalInstructions()))
                 .doseQuantity(simpleQuantity(source.getDoseQuantity()))
                 .timing(timing(source.getTiming()))
-                .asNeededBoolean(Boolean.valueOf(source.isAsNeededBoolean()))
+                .asNeededBoolean(source.isAsNeededBoolean())
                 .siteCodeableConcept(codeableConcept(source.getSiteCodeableConcept()))
                 .route(routeCodeableConcept(source.getRoute()))
                 .build());
   }
 
-  /** Generic codeable concept transformer for when cdw isn't returning a one off type */
+  /** Generic codeable concept transformer for when cdw isn't returning a one off type. */
   CodeableConcept codeableConcept(CdwCodeableConcept source) {
     if (source == null || (source.getCoding().isEmpty() && isBlank(source.getText()))) {
       return null;
@@ -213,7 +233,7 @@ public class MedicationDispenseTransformer implements MedicationDispenseControll
         .build();
   }
 
-  /** Our version of Timing is just a wrapper around a codeable concept */
+  /** Our version of Timing is just a wrapper around a codeable concept. */
   Timing timing(CdwTiming maybeCdw) {
     if (maybeCdw == null || maybeCdw.getCode() == null) {
       return null;

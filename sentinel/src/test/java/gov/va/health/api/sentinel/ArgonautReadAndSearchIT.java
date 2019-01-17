@@ -274,11 +274,37 @@ public class ArgonautReadAndSearchIT {
         expect(200, Medication.Bundle.class, "/api/Medication?identifier={id}", ids.medication()),
         expect(404, OperationOutcome.class, "/api/Medication?_id={id}", ids.unknown()),
         // Medication Dispense
-        expect(200, MedicationDispense.class, "/api/MedicationDispense/{id}", ids.medicationDispense()),
+        expect(
+            200,
+            MedicationDispense.class,
+            "/api/MedicationDispense/{id}",
+            ids.medicationDispense()),
         expect(404, OperationOutcome.class, "/api/MedicationDispense/{id}", ids.unknown()),
-        expect(200, MedicationDispense.Bundle.class, "/api/MedicationDispense?_id={id}", ids.medicationDispense()),
-        expect(200, MedicationDispense.Bundle.class, "/api/MedicationDispense?identifier={id}", ids.medicationDispense()),
-        expect(200, MedicationDispense.Bundle.class, "/api/MedicationDispense?patient={patient}", ids.medicationDispense()),
+        expect(
+            200,
+            MedicationDispense.Bundle.class,
+            "/api/MedicationDispense?_id={id}",
+            ids.medicationDispense()),
+        expect(
+            200,
+            MedicationDispense.Bundle.class,
+            "/api/MedicationDispense?identifier={id}",
+            ids.medicationDispense()),
+        expect(
+            200,
+            MedicationDispense.Bundle.class,
+            "/api/MedicationDispense?patient={patient}",
+            ids.patient()),
+        expect(
+            200,
+            MedicationDispense.Bundle.class,
+            "/api/MedicationDispense?patient={patient}&status=stopped,completed",
+            ids.patient()),
+        expect(
+            200,
+            MedicationDispense.Bundle.class,
+            "/api/MedicationDispense?patient={patient}&type=FF,UD",
+            ids.patient()),
         // Medication Order
         expect(200, MedicationOrder.class, "/api/MedicationOrder/{id}", ids.medicationOrder()),
         expect(404, OperationOutcome.class, "/api/MedicationOrder/{id}", ids.unknown()),

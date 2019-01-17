@@ -14,6 +14,9 @@ import gov.va.api.health.argonaut.service.mranderson.client.MrAndersonClient;
 import gov.va.api.health.argonaut.service.mranderson.client.Query;
 import gov.va.dvp.cdw.xsd.model.CdwMedicationDispense100Root;
 import groovy.util.logging.Slf4j;
+import java.util.Collections;
+import java.util.function.Function;
+import javax.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.MultiValueMap;
@@ -25,14 +28,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Collections;
-import java.util.function.Function;
-
 @SuppressWarnings("WeakerAccess")
 @RestController
 @RequestMapping(
-    value = {"/api/MedicationDispense"},
-    produces = {"application/json", "application/json+fhir", "application/fhir+json"})
+  value = {"/api/MedicationDispense"},
+  produces = {"application/json", "application/json+fhir", "application/fhir+json"}
+)
 @AllArgsConstructor(onConstructor = @__({@Autowired}))
 @Slf4j
 public class MedicationDispenseController {
@@ -89,8 +90,8 @@ public class MedicationDispenseController {
   @GetMapping(params = {"_id"})
   public MedicationDispense.Bundle searchById(
       @RequestParam("_id") String id,
-      @RequestParam(value = "page", defaultValue = "1") int page,
-      @RequestParam(value = "_count", defaultValue = "1") int count) {
+      @RequestParam(value = "page", defaultValue = "1") @Min(1) int page,
+      @RequestParam(value = "_count", defaultValue = "1") @Min(0) int count) {
     return bundle(
         Parameters.builder().add("identifier", id).add("page", page).add("_count", count).build(),
         page,
@@ -101,8 +102,8 @@ public class MedicationDispenseController {
   @GetMapping(params = {"identifier"})
   public MedicationDispense.Bundle searchByIdentifier(
       @RequestParam("identifier") String id,
-      @RequestParam(value = "page", defaultValue = "1") int page,
-      @RequestParam(value = "_count", defaultValue = "1") int count) {
+      @RequestParam(value = "page", defaultValue = "1") @Min(1) int page,
+      @RequestParam(value = "_count", defaultValue = "1") @Min(0) int count) {
     return bundle(
         Parameters.builder().add("identifier", id).add("page", page).add("_count", count).build(),
         page,
@@ -113,18 +114,55 @@ public class MedicationDispenseController {
   @GetMapping(params = {"patient"})
   public MedicationDispense.Bundle searchByPatient(
       @RequestParam("patient") String patient,
-      @RequestParam(value = "page", defaultValue = "1") int page,
-      @RequestParam(value = "_count", defaultValue = "15") int count) {
+      @RequestParam(value = "page", defaultValue = "1") @Min(1) int page,
+      @RequestParam(value = "_count", defaultValue = "15") @Min(0) int count) {
     return bundle(
         Parameters.builder().add("patient", patient).add("page", page).add("_count", count).build(),
         page,
         count);
   }
 
+  /** Searching by patient and type. */
+  @GetMapping(params = {"patient, type"})
+  public MedicationDispense.Bundle searchByPatientAndType(
+      @RequestParam("patient") String patient,
+      @RequestParam("type") String type,
+      @RequestParam(value = "page", defaultValue = "1") @Min(1) int page,
+      @RequestParam(value = "_count", defaultValue = "15") @Min(0) int count) {
+    return bundle(
+        Parameters.builder()
+            .add("patient", patient)
+            .add("type", type)
+            .add("page", page)
+            .add("_count", count)
+            .build(),
+        page,
+        count);
+  }
+
+  /** Searching by patient and status. */
+  @GetMapping(params = {"patient, status"})
+  public MedicationDispense.Bundle searchByPatientAndStatus(
+      @RequestParam("patient") String patient,
+      @RequestParam("status") String status,
+      @RequestParam(value = "page", defaultValue = "1") @Min(1) int page,
+      @RequestParam(value = "_count", defaultValue = "15") @Min(0) int count) {
+    return bundle(
+        Parameters.builder()
+            .add("patient", patient)
+            .add("status", status)
+            .add("page", page)
+            .add("_count", count)
+            .build(),
+        page,
+        count);
+  }
+
   /** Validation endpoint. */
   @PostMapping(
-      value = "/$validate",
-      consumes = {"application/json", "application/json+fhir", "application/fhir+json"})
+    value = "/$validate",
+    consumes = {"application/json", "application/json+fhir", "application/fhir+json"}
+  )
   public OperationOutcome validate(@RequestBody MedicationDispense.Bundle bundle) {
     return Validator.create().validate(bundle);
   }

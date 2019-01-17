@@ -1,5 +1,9 @@
 package gov.va.api.health.argonaut.service.controller.medicationdispense;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import gov.va.api.health.argonaut.api.bundle.AbstractBundle.BundleType;
 import gov.va.api.health.argonaut.api.resources.MedicationDispense;
 import gov.va.api.health.argonaut.api.resources.MedicationDispense.Bundle;
@@ -15,6 +19,10 @@ import gov.va.api.health.autoconfig.configuration.JacksonConfig;
 import gov.va.dvp.cdw.xsd.model.CdwMedicationDispense100Root;
 import gov.va.dvp.cdw.xsd.model.CdwMedicationDispense100Root.CdwMedicationDispenses;
 import gov.va.dvp.cdw.xsd.model.CdwMedicationDispense100Root.CdwMedicationDispenses.CdwMedicationDispense;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.function.Supplier;
+import javax.validation.ConstraintViolationException;
 import lombok.SneakyThrows;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,15 +31,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.util.MultiValueMap;
-
-import javax.validation.ConstraintViolationException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.function.Supplier;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @SuppressWarnings("WeakerAccess")
 public class MedicationDispenseControllerTest {
@@ -142,6 +141,30 @@ public class MedicationDispenseControllerTest {
     assertSearch(
         () -> controller.searchByPatient("me", 1, 10),
         Parameters.builder().add("patient", "me").add("page", 1).add("_count", 10).build());
+  }
+
+  @Test
+  public void searchByPatientAndType() {
+    assertSearch(
+        () -> controller.searchByPatientAndType("me", "FF,UD", 1, 10),
+        Parameters.builder()
+            .add("patient", "me")
+            .add("type", "FF,UD")
+            .add("page", 1)
+            .add("_count", 10)
+            .build());
+  }
+
+  @Test
+  public void searchByPatientAndStatus() {
+    assertSearch(
+        () -> controller.searchByPatientAndStatus("me", "stopped,completed", 1, 10),
+        Parameters.builder()
+            .add("patient", "me")
+            .add("status", "stopped,completed")
+            .add("page", 1)
+            .add("_count", 10)
+            .build());
   }
 
   @Test
