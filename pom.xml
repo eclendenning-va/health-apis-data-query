@@ -10,7 +10,7 @@
   </parent>
   <groupId>gov.va.api.health</groupId>
   <artifactId>health-apis-parent</artifactId>
-  <version>1.0.122</version>
+  <version>1.0.123-SNAPSHOT</version>
   <packaging>pom</packaging>
   <properties>
     <cdw-schemas.version>1.0.40</cdw-schemas.version>
