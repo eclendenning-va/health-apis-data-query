@@ -26,6 +26,10 @@ public class Sentinel {
     switch (env) {
       case "LOCAL":
         return new Sentinel(SystemDefinitions.get().local());
+      case "PROD":
+        return new Sentinel(SystemDefinitions.get().prod());
+      case "QA":
+        return new Sentinel(SystemDefinitions.get().qa());
       default:
         throw new IllegalArgumentException("Unknown sentinel environment: " + env);
     }
