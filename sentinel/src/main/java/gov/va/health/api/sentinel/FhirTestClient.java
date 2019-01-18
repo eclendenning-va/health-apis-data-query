@@ -95,6 +95,7 @@ public class FhirTestClient implements TestClient {
     return service()
         .requestSpecification()
         .contentType(contentType)
+        .accept(contentType)
         .request(Method.GET, path, params);
   }
 

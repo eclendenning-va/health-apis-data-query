@@ -13,8 +13,12 @@ import com.fasterxml.jackson.databind.ser.BeanSerializerModifier;
 import com.fasterxml.jackson.databind.ser.PropertyWriter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
+import gov.va.api.health.argonaut.api.DataAbsentReason;
+import gov.va.api.health.argonaut.api.DataAbsentReason.Reason;
+import gov.va.api.health.argonaut.api.elements.Extension;
 import gov.va.api.health.argonaut.api.elements.Reference;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -81,6 +85,15 @@ public class MagicReferenceConfig {
     return mapper;
   }
 
+  private boolean hasExtensionField(Object object, String name) {
+    try {
+      Field field = object.getClass().getDeclaredField(name);
+      return field.getType() == Extension.class;
+    } catch (NoSuchFieldException e) {
+      return false;
+    }
+  }
+
   /**
    * This mix-in is applied to all objects and used to trigger optional reference filter on all
    * fields.
@@ -111,8 +124,18 @@ public class MagicReferenceConfig {
 
       if (include) {
         writer.serializeAsField(pojo, jgen, provider);
-      } else if (!jgen.canOmitFields()) {
-        writer.serializeAsOmittedField(pojo, jgen, provider);
+      } else {
+        /*
+         * Since the field isn't included, we need to emit a Data Absent Reason if the field is
+         * required. Required fields can be detected by finding an underscore prefixed version of
+         * type Extension.
+         */
+        String extensionField = "_" + writer.getName();
+        if (hasExtensionField(pojo, extensionField)) {
+          jgen.writeObjectField(extensionField, DataAbsentReason.of(Reason.unsupported));
+        } else if (!jgen.canOmitFields()) {
+          writer.serializeAsOmittedField(pojo, jgen, provider);
+        }
       }
     }
   }
@@ -173,6 +196,7 @@ public class MagicReferenceConfig {
                   }
                 }
               }
+
               return super.changeProperties(config, beanDesc, beanProperties);
             }
 

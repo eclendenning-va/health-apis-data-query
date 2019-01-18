@@ -81,9 +81,9 @@ public class FileResultsCollector implements ResultCollector {
   @Override
   public void init() {
     if (directory.exists()) {
-      assertThat(directory.delete()).isTrue();
+      assertThat(directory.delete()).withFailMessage("Failed to delete %s", directory).isTrue();
     }
-    assertThat(directory.mkdirs()).isTrue();
+    assertThat(directory.mkdirs()).withFailMessage("Failed to create %s", directory).isTrue();
     log.info("Collecting results to {}", directory.getAbsolutePath());
   }
 

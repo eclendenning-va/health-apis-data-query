@@ -40,6 +40,7 @@ public class IdMeOauthRobot {
   private String authorize() {
     ChromeOptions chromeOptions = new ChromeOptions();
     chromeOptions.setHeadless(config.headless());
+    chromeOptions.addArguments("--whitelisted-ips", "--disable-extensions", "--no-sandbox");
     if (StringUtils.isNotBlank(config.chromeDriver())) {
       System.setProperty("webdriver.chrome.driver", config.chromeDriver());
     }
