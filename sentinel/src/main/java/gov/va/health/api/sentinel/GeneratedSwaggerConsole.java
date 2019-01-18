@@ -7,7 +7,6 @@ import java.io.FileInputStream;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
-import lombok.Builder;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
@@ -23,8 +22,9 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 @Slf4j
 public class GeneratedSwaggerConsole {
 
-  private static ChromeDriver driver;
-  private static WebDriverWait wait;
+  private ChromeDriver driver;
+  private WebDriverWait wait;
+
   public static class Config {
     private Properties properties;
 
@@ -57,7 +57,8 @@ public class GeneratedSwaggerConsole {
     }
   }
 
-  public void initializeDriver(){
+  /** Set up the chrome driver with the proper properties. */
+  public void initializeDriver() {
     Config config = new Config(new File("config/lab.properties"));
     ChromeOptions chromeOptions = new ChromeOptions();
     if (StringUtils.isNotBlank(config.driver())) {
@@ -69,26 +70,29 @@ public class GeneratedSwaggerConsole {
     driver.get("https://argonaut.lighthouse.va.gov/console/");
   }
 
-  public void initializeWait(){
+  public void initializeWait() {
     wait = new WebDriverWait(driver, 10);
   }
-
 
   public String title() {
     return driver.getTitle();
   }
 
+  /** Return a list of resources listed on the console. */
   public List<WebElement> resources() {
-    return driver.findElement(By.id("raml-console-resources-container")).findElements(By.tagName("li"));
+    return driver
+        .findElement(By.id("raml-console-resources-container"))
+        .findElements(By.tagName("li"));
   }
 
+  /** Click the get button on the resource provided . */
   public void clickGet(WebElement resource) {
     JavascriptExecutor js = (JavascriptExecutor) driver;
     js.executeScript(
-        "arguments[0].click()",
-        resource.findElement(By.className("raml-console-tab-get")));
+        "arguments[0].click()", resource.findElement(By.className("raml-console-tab-get")));
   }
 
+  /** Close the resource documentation panel. */
   public void close() {
     JavascriptExecutor js = (JavascriptExecutor) driver;
     js.executeScript(
@@ -104,5 +108,4 @@ public class GeneratedSwaggerConsole {
       return false;
     }
   }
-
 }

@@ -1,6 +1,5 @@
 package gov.va.health.api.sentinel;
 
-
 import gov.va.health.api.sentinel.categories.Lab;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -13,17 +12,15 @@ import org.openqa.selenium.chrome.ChromeDriver;
 @Slf4j
 public class SwaggerAvailabilityTest {
 
-
   private static ChromeDriver driver;
   private StringBuffer verificationErrors = new StringBuffer();
+
   @Test
-  public void checkAvailibility(){
-   GeneratedSwaggerConsole swaggerPage = new GeneratedSwaggerConsole();
-   swaggerPage.initializeDriver();
-   log.info(swaggerPage.title());
-    List<WebElement> resources =swaggerPage.resources();
+  public void checkAvailibility() {
+    GeneratedSwaggerConsole swaggerPage = new GeneratedSwaggerConsole();
+    swaggerPage.initializeDriver();
+    log.info(swaggerPage.title());
+    List<WebElement> resources = swaggerPage.resources();
     resources.stream().skip(1).forEach(w -> swaggerPage.clickGet(w));
   }
-
-
 }
