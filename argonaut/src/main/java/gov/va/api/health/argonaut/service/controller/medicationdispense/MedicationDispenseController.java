@@ -123,7 +123,7 @@ public class MedicationDispenseController {
   }
 
   /** Searching by patient and type. */
-  @GetMapping(params = {"patient, type"})
+  @GetMapping(params = {"patient", "type"})
   public MedicationDispense.Bundle searchByPatientAndType(
       @RequestParam("patient") String patient,
       @RequestParam("type") String type,
@@ -141,7 +141,7 @@ public class MedicationDispenseController {
   }
 
   /** Searching by patient and status. */
-  @GetMapping(params = {"patient, status"})
+  @GetMapping(params = {"patient", "status"})
   public MedicationDispense.Bundle searchByPatientAndStatus(
       @RequestParam("patient") String patient,
       @RequestParam("status") String status,
