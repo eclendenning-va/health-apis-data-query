@@ -92,12 +92,10 @@ public class GeneratedSwaggerConsole {
 
   /** Clicks the child found by class name on the element provided. */
   public void clickChild(WebElement element, String childClassName) {
-    wait.until(
-        ExpectedConditions.elementToBeClickable(By.className(childClassName)));
-    try{
+    wait.until(ExpectedConditions.elementToBeClickable(By.className(childClassName)));
+    try {
       click(element.findElement(By.className(childClassName)));
-    }
-    catch (NoSuchElementException e) {
+    } catch (NoSuchElementException e) {
       log.error("Child does not exist");
     }
   }
@@ -105,19 +103,18 @@ public class GeneratedSwaggerConsole {
   /** Clicks the element provided. */
   public void click(WebElement element) {
     JavascriptExecutor js = (JavascriptExecutor) driver;
-    wait.until(
-        ExpectedConditions.elementToBeClickable(element));
-    js.executeScript(
-        "arguments[0].click()",element);
+    wait.until(ExpectedConditions.elementToBeClickable(element));
+    js.executeScript("arguments[0].click()", element);
   }
 
-  public void quit(){
+  /** Tears down driver. */
+  public void quit() {
     driver.quit();
   }
 
+  /** Returns true if the element exists, and false if not. */
   public boolean isElementPresent(By by) {
-    wait.until(
-        ExpectedConditions.presenceOfElementLocated(by));
+    wait.until(ExpectedConditions.presenceOfElementLocated(by));
     try {
       driver.findElement(by);
       log.info("Exists");
