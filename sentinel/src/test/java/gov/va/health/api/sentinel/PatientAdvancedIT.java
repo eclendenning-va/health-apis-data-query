@@ -62,8 +62,12 @@ public class PatientAdvancedIT {
   }
 
   @Test
-  public void resourceRequestTest() {
+  public void getResource() {
     resourceRequest.getResource(path, params, status, response);
+  }
+
+  @Test
+  public void pagingParameterBounds() {
     resourceRequest.pagingParameterBounds(path, params, response);
   }
 }
