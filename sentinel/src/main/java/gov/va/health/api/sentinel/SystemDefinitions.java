@@ -87,17 +87,17 @@ public class SystemDefinitions {
       SystemDefinition.builder()
           .ids(
               ServiceDefinition.builder()
-                  .url("https://argonaut.lighthouse.va.gov/api")
+                  .url("https://argonaut.lighthouse.va.gov")
                   .port(443)
                   .build())
           .mrAnderson(
               ServiceDefinition.builder()
-                  .url("https://argonaut.lighthouse.va.gov/api")
+                  .url("https://argonaut.lighthouse.va.gov")
                   .port(443)
                   .build())
           .argonaut(
               ServiceDefinition.builder()
-                  .url("https://argonaut.lighthouse.va.gov/api")
+                  .url("https://argonaut.lighthouse.va.gov")
                   .port(443)
                   .build())
           .cdwIds(prodAndQaIds())
@@ -107,17 +107,17 @@ public class SystemDefinitions {
       SystemDefinition.builder()
           .ids(
               ServiceDefinition.builder()
-                  .url("https://qa-argonaut.lighthouse.va.gov/api")
+                  .url("https://qa-argonaut.lighthouse.va.gov")
                   .port(443)
                   .build())
           .mrAnderson(
               ServiceDefinition.builder()
-                  .url("https://qa-argonaut.lighthouse.va.gov/api")
+                  .url("https://qa-argonaut.lighthouse.va.gov")
                   .port(443)
                   .build())
           .argonaut(
               ServiceDefinition.builder()
-                  .url("https://qa-argonaut.lighthouse.va.gov/api")
+                  .url("https://qa-argonaut.lighthouse.va.gov")
                   .port(443)
                   .build())
           .cdwIds(prodAndQaIds())
