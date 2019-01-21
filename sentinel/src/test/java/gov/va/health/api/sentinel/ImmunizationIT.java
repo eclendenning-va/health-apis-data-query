@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
@@ -15,6 +16,7 @@ import org.junit.runners.Parameterized.Parameters;
 
 @SuppressWarnings({"DefaultAnnotationParam", "WeakerAccess"})
 @RunWith(Parameterized.class)
+@Category({Local.class, Prod.class, Qa.class})
 @Slf4j
 public class ImmunizationIT {
 

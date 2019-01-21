@@ -2,6 +2,10 @@ package gov.va.health.api.sentinel;
 
 import gov.va.api.health.argonaut.api.bundle.AbstractBundle;
 import gov.va.api.health.argonaut.api.resources.OperationOutcome;
+import org.junit.Test;
+import org.junit.experimental.categories.Categories;
+import org.junit.experimental.categories.Category;
+import org.junit.runner.RunWith;
 
 public class ResourceRequest {
 
@@ -22,6 +26,7 @@ public class ResourceRequest {
    * If the response is a bundle, then the query is a search. We want to verify paging parameters
    * restrict page >= 1, _count >=1, and _count <= 20
    */
+  @Test
   public void pagingParameterBounds(String path, String[] params, Class<?> response) {
     if (!AbstractBundle.class.isAssignableFrom(response)) {
       return;
