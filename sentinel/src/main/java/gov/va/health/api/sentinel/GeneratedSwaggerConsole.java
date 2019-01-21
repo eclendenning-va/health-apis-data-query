@@ -17,6 +17,7 @@ import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 @Slf4j
@@ -58,20 +59,17 @@ public class GeneratedSwaggerConsole {
   }
 
   /** Set up the chrome driver with the proper properties. */
-  public void initializeDriver() {
+  public void initializeDriver(int defaultTimeOutInSeconds) {
     Config config = new Config(new File("config/lab.properties"));
     ChromeOptions chromeOptions = new ChromeOptions();
     if (StringUtils.isNotBlank(config.driver())) {
       System.setProperty("webdriver.chrome.driver", config.driver());
     }
     driver = new ChromeDriver(chromeOptions);
-    driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+    wait = new WebDriverWait(driver, defaultTimeOutInSeconds);
+    driver.manage().timeouts().implicitlyWait(defaultTimeOutInSeconds, TimeUnit.SECONDS);
     driver.manage().window().maximize();
     driver.get("https://argonaut.lighthouse.va.gov/console/");
-  }
-
-  public void initializeWait() {
-    wait = new WebDriverWait(driver, 10);
   }
 
   public String title() {
@@ -85,26 +83,47 @@ public class GeneratedSwaggerConsole {
         .findElements(By.tagName("li"));
   }
 
-  /** Click the get button on the resource provided . */
-  public void clickGet(WebElement resource) {
-    JavascriptExecutor js = (JavascriptExecutor) driver;
-    js.executeScript(
-        "arguments[0].click()", resource.findElement(By.className("raml-console-tab-get")));
+  /** Return a list of content types available for a resource. */
+  public List<WebElement> contentTypes() {
+    return driver
+        .findElement(By.className("raml-console-resource-body-heading"))
+        .findElements(By.tagName("span"));
   }
 
-  /** Close the resource documentation panel. */
-  public void close() {
-    JavascriptExecutor js = (JavascriptExecutor) driver;
-    js.executeScript(
-        "arguments[0].click()",
-        driver.findElement(By.className("raml-console-resource-close-btn")));
+  /** Clicks the child found by class name on the element provided. */
+  public void clickChild(WebElement element, String childClassName) {
+    wait.until(
+        ExpectedConditions.elementToBeClickable(By.className(childClassName)));
+    try{
+      click(element.findElement(By.className(childClassName)));
+    }
+    catch (NoSuchElementException e) {
+      log.error("Child does not exist");
+    }
   }
 
-  private boolean isElementPresent(By by) {
+  /** Clicks the element provided. */
+  public void click(WebElement element) {
+    JavascriptExecutor js = (JavascriptExecutor) driver;
+    wait.until(
+        ExpectedConditions.elementToBeClickable(element));
+    js.executeScript(
+        "arguments[0].click()",element);
+  }
+
+  public void quit(){
+    driver.quit();
+  }
+
+  public boolean isElementPresent(By by) {
+    wait.until(
+        ExpectedConditions.presenceOfElementLocated(by));
     try {
       driver.findElement(by);
+      log.info("Exists");
       return true;
     } catch (NoSuchElementException e) {
+      log.info("Does Not Exist");
       return false;
     }
   }
