@@ -62,13 +62,13 @@ public class GeneratedSwaggerConsole {
   public void initializeDriver(int defaultTimeOutInSeconds) {
     Config config = new Config(new File("config/lab.properties"));
     ChromeOptions chromeOptions = new ChromeOptions();
+    chromeOptions.setHeadless(config.headless());
     if (StringUtils.isNotBlank(config.driver())) {
       System.setProperty("webdriver.chrome.driver", config.driver());
     }
     driver = new ChromeDriver(chromeOptions);
     wait = new WebDriverWait(driver, defaultTimeOutInSeconds);
     driver.manage().timeouts().implicitlyWait(defaultTimeOutInSeconds, TimeUnit.SECONDS);
-    driver.manage().window().maximize();
     driver.get("https://argonaut.lighthouse.va.gov/console/");
   }
 
