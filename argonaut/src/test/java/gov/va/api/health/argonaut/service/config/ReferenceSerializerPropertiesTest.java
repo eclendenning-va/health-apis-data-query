@@ -16,6 +16,7 @@ public class ReferenceSerializerPropertiesTest {
             .location(true)
             .organization(false)
             .practitioner(true)
+            .medicationDispense(true)
             .build();
 
     assertThat(testProperties.isEnabled(Reference.builder().build())).isTrue();
@@ -72,6 +73,9 @@ public class ReferenceSerializerPropertiesTest {
     assertThat(
             testProperties.isEnabled(
                 Reference.builder().reference("http://localhost:90001/api/encounter/1234").build()))
+        .isTrue();
+
+    assertThat(testProperties.isEnabled(Reference.builder().reference("/MedicationDispense/5678").build()))
         .isTrue();
   }
 }

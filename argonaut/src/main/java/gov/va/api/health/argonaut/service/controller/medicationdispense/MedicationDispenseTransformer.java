@@ -62,6 +62,9 @@ public class MedicationDispenseTransformer implements MedicationDispenseControll
   }
 
   Status status(CdwMedicationDispenseStatus source) {
+    if (source == null) {
+      return null;
+    }
     return EnumSearcher.of(MedicationDispense.Status.class).find(source.value());
   }
 

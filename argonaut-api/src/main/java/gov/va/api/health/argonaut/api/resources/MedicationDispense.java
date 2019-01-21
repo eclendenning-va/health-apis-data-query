@@ -76,7 +76,7 @@ public class MedicationDispense implements DomainResource {
   @Valid List<Extension> modifierExtension;
   @Valid Identifier identifier;
   @Valid Narrative text;
-  @NotNull Status status;
+  @Valid Status status;
   @Valid Reference patient;
   @Valid Reference dispenser;
   @Valid List<Reference> authorizingPrescription;

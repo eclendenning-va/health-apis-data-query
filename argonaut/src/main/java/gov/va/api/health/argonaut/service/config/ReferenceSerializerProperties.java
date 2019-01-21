@@ -27,6 +27,7 @@ public class ReferenceSerializerProperties {
   private boolean location;
   private boolean organization;
   private boolean practitioner;
+  private boolean medicationDispense;
 
   /**
    * Return true if the given reference is well formed, AllergyIntolerance/1234 or
@@ -49,6 +50,8 @@ public class ReferenceSerializerProperties {
         return organization;
       case "Practitioner":
         return practitioner;
+      case "MedicationDispense":
+        return medicationDispense;
       default:
         return true;
     }

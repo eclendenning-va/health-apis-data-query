@@ -52,6 +52,7 @@ public class MedicationDispenseTransformerTest {
 
   @Test
   public void status() {
+    assertThat(tx.status(null)).isEqualTo(null);
     assertThat(tx.status(CdwMedicationDispenseStatus.COMPLETED)).isEqualTo(Status.completed);
     assertThat(tx.status(CdwMedicationDispenseStatus.ENTERED_IN_ERROR))
         .isEqualTo(Status.entered_in_error);
