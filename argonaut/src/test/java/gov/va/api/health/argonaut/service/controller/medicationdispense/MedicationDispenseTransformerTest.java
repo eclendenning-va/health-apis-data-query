@@ -7,6 +7,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
 import gov.va.api.health.argonaut.api.datatypes.Coding;
 import gov.va.api.health.argonaut.api.datatypes.Identifier;
+import gov.va.api.health.argonaut.api.datatypes.Identifier.IdentifierUse;
 import gov.va.api.health.argonaut.api.datatypes.SimpleQuantity;
 import gov.va.api.health.argonaut.api.datatypes.Timing;
 import gov.va.api.health.argonaut.api.elements.Reference;
@@ -66,6 +67,17 @@ public class MedicationDispenseTransformerTest {
     assertThat(tx.identifier(null)).isNull();
     List<CdwIdentifier> cdw = Collections.singletonList(null);
     assertThat(tx.identifier(cdw)).isNull();
+    cdw.add(new CdwIdentifier());
+    assertThat(tx.identifier(cdw)).isNull();
+  }
+
+  @Test
+  public void identifierUse() {
+    assertThat(tx.identifierUse(null)).isNull();
+    assertThat(tx.identifierUse(CdwIdentifierUseCodes.OFFICIAL)).isEqualTo(IdentifierUse.official);
+    assertThat(tx.identifierUse(CdwIdentifierUseCodes.SECONDARY)).isEqualTo(IdentifierUse.secondary);
+    assertThat(tx.identifierUse(CdwIdentifierUseCodes.TEMP)).isEqualTo(IdentifierUse.temp);
+    assertThat(tx.identifierUse(CdwIdentifierUseCodes.USUAL)).isEqualTo(IdentifierUse.usual);
   }
 
   @Test

@@ -69,6 +69,9 @@ public class MedicationDispenseTransformer implements MedicationDispenseControll
   }
 
   Identifier.IdentifierUse identifierUse(CdwIdentifierUseCodes source) {
+    if (source == null) {
+      return null;
+    }
     return EnumSearcher.of(Identifier.IdentifierUse.class).find(source.value());
   }
 
@@ -77,10 +80,14 @@ public class MedicationDispenseTransformer implements MedicationDispenseControll
    * array of identifiers coming back, but the DSTU2 spec specifies only one should return.
    */
   Identifier identifier(List<CdwIdentifier> maybeCdw) {
-    if (maybeCdw == null || maybeCdw.isEmpty() || maybeCdw.get(0) == null) {
+    if (maybeCdw == null || maybeCdw.isEmpty()) {
       return null;
     }
     CdwIdentifier firstItem = maybeCdw.get(0);
+    if (firstItem == null
+        || allNull(firstItem.getSystem(), firstItem.getValue(), firstItem.getUse())) {
+      return null;
+    }
     return Identifier.builder()
         .system(firstItem.getSystem())
         .value(firstItem.getValue())
@@ -93,13 +100,16 @@ public class MedicationDispenseTransformer implements MedicationDispenseControll
    * which is a funky mapping for this field.
    */
   List<Reference> authorizingPrescriptions(List<CdwAuthorizingPrescriptions> maybeCdw) {
-    if (maybeCdw == null
-        || maybeCdw.get(0) == null
-        || maybeCdw.get(0).getAuthorizingPrescription() == null) {
+    if (maybeCdw == null || maybeCdw.isEmpty()) {
       return null;
     }
-    List<CdwReference> firstList = maybeCdw.get(0).getAuthorizingPrescription();
-    return convertAll(firstList, this::reference);
+    CdwAuthorizingPrescriptions firstList = maybeCdw.get(0);
+    if (firstList == null
+        || firstList.getAuthorizingPrescription() == null
+        || firstList.getAuthorizingPrescription().isEmpty()) {
+      return null;
+    }
+    return convertAll(firstList.getAuthorizingPrescription(), this::reference);
   }
 
   Reference reference(CdwReference maybeSource) {
@@ -158,16 +168,14 @@ public class MedicationDispenseTransformer implements MedicationDispenseControll
   }
 
   Double quantityValue(String source) {
-    Double value;
-    if (source == null || isBlank(source)) {
+    if (isBlank(source)) {
       return null;
     }
     try {
-      value = Double.valueOf(source);
+      return (Double.valueOf(source));
     } catch (NumberFormatException e) {
       throw new IllegalArgumentException("Cannot create double value from " + source, e);
     }
-    return value;
   }
 
   /**
@@ -220,8 +228,7 @@ public class MedicationDispenseTransformer implements MedicationDispenseControll
   }
 
   List<Coding> codings(List<CdwCoding> source) {
-    List<Coding> codings = convertAll(source, this::coding);
-    return codings == null || codings.isEmpty() ? null : codings;
+    return convertAll(source, this::coding);
   }
 
   /* Is there a nice way to check if all the fields are blank?*/

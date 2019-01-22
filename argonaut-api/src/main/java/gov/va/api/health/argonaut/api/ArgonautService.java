@@ -37,7 +37,6 @@ public interface ArgonautService
         ImmunizationApi,
         MedicationOrderApi,
         MedicationApi,
-        MedicationDispenseApi,
         MedicationStatementApi,
         MetadataApi,
         ObservationApi,
