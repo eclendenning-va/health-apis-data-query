@@ -1,71 +1,171 @@
 package gov.va.health.api.sentinel;
 
-import static gov.va.health.api.sentinel.ResourceRequest.assertRequest;
+import static gov.va.health.api.sentinel.ResourceVerifier.test;
 
 import gov.va.api.health.argonaut.api.resources.DiagnosticReport;
 import gov.va.api.health.argonaut.api.resources.OperationOutcome;
-import java.util.Arrays;
-import java.util.List;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameter;
-import org.junit.runners.Parameterized.Parameters;
 
-@SuppressWarnings({"DefaultAnnotationParam", "WeakerAccess"})
-@RunWith(Parameterized.class)
-@Slf4j
 public class DiagnosticReportIT {
 
-  @Parameter(0)
-  public int status;
+  ResourceVerifier verifier = ResourceVerifier.get();
 
-  @Parameter(1)
-  public Class<?> response;
+  @Test
+  public void advanced() {
+    verifier.verifyAll(
+        test(
+            200,
+            DiagnosticReport.Bundle.class,
+            "/api/DiagnosticReport?patient={patient}&category=LAB",
+            verifier.ids().patient()),
+        test(
+            200,
+            DiagnosticReport.Bundle.class,
+            "/api/DiagnosticReport?patient={patient}&code={loinc1}",
+            verifier.ids().patient(),
+            verifier.ids().diagnosticReports().loinc1()),
+        test(
+            200,
+            DiagnosticReport.Bundle.class,
+            "/api/DiagnosticReport?patient={patient}&code={loinc1},{loinc2}",
+            verifier.ids().patient(),
+            verifier.ids().diagnosticReports().loinc1(),
+            verifier.ids().diagnosticReports().loinc2()),
+        test(
+            200,
+            DiagnosticReport.Bundle.class,
+            "/api/DiagnosticReport?patient={patient}&category=LAB&date={onDate}",
+            verifier.ids().patient(),
+            verifier.ids().diagnosticReports().onDate()),
+        test(
+            200,
+            DiagnosticReport.Bundle.class,
+            "/api/DiagnosticReport?patient={patient}&category=LAB&date={fromDate}&date={toDate}",
+            verifier.ids().patient(),
+            verifier.ids().diagnosticReports().fromDate(),
+            verifier.ids().diagnosticReports().toDate()),
+        test(
+            200,
+            DiagnosticReport.Bundle.class,
+            "/api/DiagnosticReport?patient={patient}&category=LAB&date={dateYear}",
+            verifier.ids().patient(),
+            verifier.ids().diagnosticReports().dateYear()),
+        test(
+            200,
+            DiagnosticReport.Bundle.class,
+            "/api/DiagnosticReport?patient={patient}&category=LAB&date={dateYearMonth}",
+            verifier.ids().patient(),
+            verifier.ids().diagnosticReports().dateYearMonth()),
+        test(
+            200,
+            DiagnosticReport.Bundle.class,
+            "/api/DiagnosticReport?patient={patient}&category=LAB&date={dateYearMonthDay}",
+            verifier.ids().patient(),
+            verifier.ids().diagnosticReports().dateYearMonthDay()),
+        test(
+            400,
+            OperationOutcome.class,
+            "/api/DiagnosticReport?patient={patient}&category=LAB&date={dateYearMonthDayHour}",
+            verifier.ids().patient(),
+            verifier.ids().diagnosticReports().dateYearMonthDayHour()),
+        test(
+            400,
+            OperationOutcome.class,
+            "/api/DiagnosticReport?patient={patient}&category=LAB&date={dateYearMonthDayHourMinute}",
+            verifier.ids().patient(),
+            verifier.ids().diagnosticReports().dateYearMonthDayHourMinute()),
+        test(
+            400,
+            OperationOutcome.class,
+            "/api/DiagnosticReport?patient={patient}&category=LAB&date={dateYearMonthDayHourMinuteSecond}",
+            verifier.ids().patient(),
+            verifier.ids().diagnosticReports().dateYearMonthDayHourMinuteSecond()),
+        test(
+            200,
+            DiagnosticReport.Bundle.class,
+            "/api/DiagnosticReport?patient={patient}&category=LAB&date={dateYearMonthDayHourMinuteSecondTimezone}",
+            verifier.ids().patient(),
+            verifier.ids().diagnosticReports().dateYearMonthDayHourMinuteSecondTimezone()),
+        test(
+            200,
+            DiagnosticReport.Bundle.class,
+            "/api/DiagnosticReport?patient={patient}&category=LAB&date={dateYearMonthDayHourMinuteSecondZulu}",
+            verifier.ids().patient(),
+            verifier.ids().diagnosticReports().dateYearMonthDayHourMinuteSecondZulu()),
+        test(
+            200,
+            DiagnosticReport.Bundle.class,
+            "/api/DiagnosticReport?patient={patient}&category=LAB&date={dateGreaterThan}",
+            verifier.ids().patient(),
+            verifier.ids().diagnosticReports().dateGreaterThan()),
+        test(
+            200,
+            DiagnosticReport.Bundle.class,
+            "/api/DiagnosticReport?patient={patient}&category=LAB&date={dateNotEqual}",
+            verifier.ids().patient(),
+            verifier.ids().diagnosticReports().dateNotEqual()),
+        test(
+            200,
+            DiagnosticReport.Bundle.class,
+            "/api/DiagnosticReport?patient={patient}&category=LAB&date={dateStartsWith}",
+            verifier.ids().patient(),
+            verifier.ids().diagnosticReports().dateStartsWith()),
+        test(
+            200,
+            DiagnosticReport.Bundle.class,
+            "/api/DiagnosticReport?patient={patient}&category=LAB&date={dateNoPrefix}",
+            verifier.ids().patient(),
+            verifier.ids().diagnosticReports().dateNoPrefix()),
+        test(
+            200,
+            DiagnosticReport.Bundle.class,
+            "/api/DiagnosticReport?patient={patient}&category=LAB&date={dateEqual}",
+            verifier.ids().patient(),
+            verifier.ids().diagnosticReports().dateEqual()),
+        test(
+            200,
+            DiagnosticReport.Bundle.class,
+            "/api/DiagnosticReport?patient={patient}&category=LAB&date={dateLessOrEqual}",
+            verifier.ids().patient(),
+            verifier.ids().diagnosticReports().dateLessOrEqual()),
+        test(
+            200,
+            DiagnosticReport.Bundle.class,
+            "/api/DiagnosticReport?patient={patient}&category=LAB&date={dateLessThan}",
+            verifier.ids().patient(),
+            verifier.ids().diagnosticReports().dateLessThan()));
+  }
 
-  @Parameter(2)
-  public String path;
-
-  @Parameter(3)
-  public String[] params;
-
-  ResourceRequest resourceRequest = new ResourceRequest();
-
-  @Parameters(name = "{index}: {0} {2}")
-  public static List<Object[]> parameters() {
-    TestIds ids = IdRegistrar.of(Sentinel.get().system()).registeredIds();
-    return Arrays.asList(
-        assertRequest(
-            200, DiagnosticReport.class, "/api/DiagnosticReport/{id}", ids.diagnosticReport()),
-        assertRequest(404, OperationOutcome.class, "/api/DiagnosticReport/{id}", ids.unknown()),
-        assertRequest(
+  @Test
+  public void basic() {
+    verifier.verifyAll(
+        test(
+            200,
+            DiagnosticReport.class,
+            "/api/DiagnosticReport/{id}",
+            verifier.ids().diagnosticReport()),
+        test(404, OperationOutcome.class, "/api/DiagnosticReport/{id}", verifier.ids().unknown()),
+        test(
             200,
             DiagnosticReport.Bundle.class,
             "api/DiagnosticReport?_id={id}",
-            ids.diagnosticReport()),
-        assertRequest(404, OperationOutcome.class, "api/DiagnosticReport?_id={id}", ids.unknown()),
-        assertRequest(
+            verifier.ids().diagnosticReport()),
+        test(
+            404, OperationOutcome.class, "api/DiagnosticReport?_id={id}", verifier.ids().unknown()),
+        test(
             200,
             DiagnosticReport.Bundle.class,
             "api/DiagnosticReport?identifier={id}",
-            ids.diagnosticReport()),
-        assertRequest(
-            404, OperationOutcome.class, "/api/DiagnosticReport?identifier={id}", ids.unknown()),
-        assertRequest(
+            verifier.ids().diagnosticReport()),
+        test(
+            404,
+            OperationOutcome.class,
+            "/api/DiagnosticReport?identifier={id}",
+            verifier.ids().unknown()),
+        test(
             200,
             DiagnosticReport.Bundle.class,
             "/api/DiagnosticReport?patient={patient}",
-            ids.patient()));
-  }
-
-  @Test
-  public void getResource() {
-    resourceRequest.getResource(path, params, status, response);
-  }
-
-  @Test
-  public void pagingParameterBounds() {
-    resourceRequest.pagingParameterBounds(path, params, response);
+            verifier.ids().patient()));
   }
 }

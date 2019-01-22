@@ -1,71 +1,46 @@
 package gov.va.health.api.sentinel;
 
-import static gov.va.health.api.sentinel.ResourceRequest.assertRequest;
+import static gov.va.health.api.sentinel.ResourceVerifier.test;
 
 import gov.va.api.health.argonaut.api.resources.AllergyIntolerance;
 import gov.va.api.health.argonaut.api.resources.OperationOutcome;
-import java.util.Arrays;
-import java.util.List;
-import lombok.extern.slf4j.Slf4j;
+import gov.va.health.api.sentinel.categories.BasicResource;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameter;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.experimental.categories.Category;
 
-@SuppressWarnings({"DefaultAnnotationParam", "WeakerAccess"})
-@RunWith(Parameterized.class)
-@Slf4j
 public class AllergyIntoleranceIT {
 
-  @Parameter(0)
-  public int status;
+  ResourceVerifier verifier = ResourceVerifier.get();
 
-  @Parameter(1)
-  public Class<?> response;
-
-  @Parameter(2)
-  public String path;
-
-  @Parameter(3)
-  public String[] params;
-
-  ResourceRequest resourceRequest = new ResourceRequest();
-
-  @Parameters(name = "{index}: {0} {2}")
-  public static List<Object[]> parameters() {
-    TestIds ids = IdRegistrar.of(Sentinel.get().system()).registeredIds();
-    return Arrays.asList(
-        assertRequest(
+  @Test
+  @Category({BasicResource.class})
+  public void basic() {
+    verifier.verifyAll(
+        test(
             200,
             AllergyIntolerance.class,
             "/api/AllergyIntolerance/{id}",
-            ids.allergyIntolerance()),
-        assertRequest(404, OperationOutcome.class, "/api/AllergyIntolerance/{id}", ids.unknown()),
-        assertRequest(
+            verifier.ids().allergyIntolerance()),
+        test(
+            200,
+            AllergyIntolerance.class,
+            "/api/AllergyIntolerance/{id}",
+            verifier.ids().allergyIntolerance()),
+        test(404, OperationOutcome.class, "/api/AllergyIntolerance/{id}", verifier.ids().unknown()),
+        test(
             200,
             AllergyIntolerance.Bundle.class,
             "/api/AllergyIntolerance?_id={id}",
-            ids.allergyIntolerance()),
-        assertRequest(
+            verifier.ids().allergyIntolerance()),
+        test(
             200,
             AllergyIntolerance.Bundle.class,
             "/api/AllergyIntolerance?identifier={id}",
-            ids.allergyIntolerance()),
-        assertRequest(
+            verifier.ids().allergyIntolerance()),
+        test(
             200,
             AllergyIntolerance.Bundle.class,
             "/api/AllergyIntolerance?patient={patient}",
-            ids.patient()));
-  }
-
-  @Test
-  public void getResource() {
-    resourceRequest.getResource(path, params, status, response);
-  }
-
-  @Test
-  public void pagingParameterBounds() {
-    resourceRequest.pagingParameterBounds(path, params, response);
+            verifier.ids().patient()));
   }
 }

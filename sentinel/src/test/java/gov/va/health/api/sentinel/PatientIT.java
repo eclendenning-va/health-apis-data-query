@@ -1,55 +1,51 @@
 package gov.va.health.api.sentinel;
 
-import static gov.va.health.api.sentinel.ResourceRequest.assertRequest;
+import static gov.va.health.api.sentinel.ResourceVerifier.test;
 
 import gov.va.api.health.argonaut.api.resources.OperationOutcome;
 import gov.va.api.health.argonaut.api.resources.Patient;
-import java.util.Arrays;
-import java.util.List;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameter;
-import org.junit.runners.Parameterized.Parameters;
 
-@SuppressWarnings({"DefaultAnnotationParam", "WeakerAccess"})
-@RunWith(Parameterized.class)
-@Slf4j
 public class PatientIT {
 
-  @Parameter(0)
-  public int status;
+  ResourceVerifier verifier = ResourceVerifier.get();
 
-  @Parameter(1)
-  public Class<?> response;
-
-  @Parameter(2)
-  public String path;
-
-  @Parameter(3)
-  public String[] params;
-
-  ResourceRequest resourceRequest = new ResourceRequest();
-
-  @Parameters(name = "{index}: {0} {2}")
-  public static List<Object[]> parameters() {
-    TestIds ids = IdRegistrar.of(Sentinel.get().system()).registeredIds();
-    return Arrays.asList(
-        assertRequest(200, Patient.class, "/api/Patient/{id}", ids.patient()),
-        assertRequest(404, OperationOutcome.class, "/api/Patient/{id}", ids.unknown()),
-        assertRequest(200, Patient.Bundle.class, "/api/Patient?_id={id}", ids.patient()),
-        assertRequest(200, Patient.Bundle.class, "/api/Patient?identifier={id}", ids.patient()),
-        assertRequest(404, OperationOutcome.class, "/api/Patient?_id={id}", ids.unknown()));
+  @Test
+  public void advanced() {
+    verifier.verifyAll(
+        test(
+            200,
+            Patient.Bundle.class,
+            "/api/Patient?family={family}&gender={gender}",
+            verifier.ids().pii().family(),
+            verifier.ids().pii().gender()),
+        test(
+            200,
+            Patient.Bundle.class,
+            "/api/Patient?given={given}&gender={gender}",
+            verifier.ids().pii().given(),
+            verifier.ids().pii().gender()),
+        test(
+            200,
+            Patient.Bundle.class,
+            "/api/Patient?name={name}&birthdate={birthdate}",
+            verifier.ids().pii().name(),
+            verifier.ids().pii().birthdate()),
+        test(
+            200,
+            Patient.Bundle.class,
+            "/api/Patient?name={name}&gender={gender}",
+            verifier.ids().pii().name(),
+            verifier.ids().pii().gender()));
   }
 
   @Test
-  public void getResource() {
-    resourceRequest.getResource(path, params, status, response);
-  }
-
-  @Test
-  public void pagingParameterBounds() {
-    resourceRequest.pagingParameterBounds(path, params, response);
+  public void basic() {
+    verifier.verifyAll(
+        test(200, Patient.class, "/api/Patient/{id}", verifier.ids().patient()),
+        test(404, OperationOutcome.class, "/api/Patient/{id}", verifier.ids().unknown()),
+        test(200, Patient.Bundle.class, "/api/Patient?_id={id}", verifier.ids().patient()),
+        test(200, Patient.Bundle.class, "/api/Patient?identifier={id}", verifier.ids().patient()),
+        test(404, OperationOutcome.class, "/api/Patient?_id={id}", verifier.ids().unknown()));
   }
 }

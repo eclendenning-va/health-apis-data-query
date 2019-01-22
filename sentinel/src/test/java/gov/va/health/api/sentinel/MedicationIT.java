@@ -1,56 +1,26 @@
 package gov.va.health.api.sentinel;
 
-import static gov.va.health.api.sentinel.ResourceRequest.assertRequest;
+import static gov.va.health.api.sentinel.ResourceVerifier.test;
 
 import gov.va.api.health.argonaut.api.resources.Medication;
 import gov.va.api.health.argonaut.api.resources.OperationOutcome;
-import java.util.Arrays;
-import java.util.List;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameter;
-import org.junit.runners.Parameterized.Parameters;
 
-@SuppressWarnings({"DefaultAnnotationParam", "WeakerAccess"})
-@RunWith(Parameterized.class)
-@Slf4j
 public class MedicationIT {
 
-  @Parameter(0)
-  public int status;
-
-  @Parameter(1)
-  public Class<?> response;
-
-  @Parameter(2)
-  public String path;
-
-  @Parameter(3)
-  public String[] params;
-
-  ResourceRequest resourceRequest = new ResourceRequest();
-
-  @Parameters(name = "{index}: {0} {2}")
-  public static List<Object[]> parameters() {
-    TestIds ids = IdRegistrar.of(Sentinel.get().system()).registeredIds();
-    return Arrays.asList(
-        assertRequest(200, Medication.class, "/api/Medication/{id}", ids.medication()),
-        assertRequest(404, OperationOutcome.class, "/api/Medication/{id}", ids.unknown()),
-        assertRequest(200, Medication.Bundle.class, "/api/Medication?_id={id}", ids.medication()),
-        assertRequest(
-            200, Medication.Bundle.class, "/api/Medication?identifier={id}", ids.medication()),
-        assertRequest(404, OperationOutcome.class, "/api/Medication?_id={id}", ids.unknown()));
-  }
+  ResourceVerifier verifier = ResourceVerifier.get();
 
   @Test
-  public void getResource() {
-    resourceRequest.getResource(path, params, status, response);
-  }
-
-  @Test
-  public void pagingParameterBounds() {
-    resourceRequest.pagingParameterBounds(path, params, response);
+  public void basic() {
+    verifier.verifyAll(
+        test(200, Medication.class, "/api/Medication/{id}", verifier.ids().medication()),
+        test(404, OperationOutcome.class, "/api/Medication/{id}", verifier.ids().unknown()),
+        test(200, Medication.Bundle.class, "/api/Medication?_id={id}", verifier.ids().medication()),
+        test(
+            200,
+            Medication.Bundle.class,
+            "/api/Medication?identifier={id}",
+            verifier.ids().medication()),
+        test(404, OperationOutcome.class, "/api/Medication?_id={id}", verifier.ids().unknown()));
   }
 }
