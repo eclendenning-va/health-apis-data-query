@@ -19,7 +19,7 @@ public class SwaggerAvailabilityTest {
   public void checkAvailability(String url) {
     log.info("Checking {} for API Documentation", url);
     apiPortalPage.initializeDriver(url, 10);
-    assertThat(apiPortalPage.isElementPresent(By.className("swagger-ui"))).isTrue();
+    assertThat(apiPortalPage.getElement(By.className("swagger-ui"))).isNotNull();
     WebElement headerGroup = apiPortalPage.getElement(By.tagName("hgroup"));
     assertThat(headerGroup).isNotNull();
     WebElement link = apiPortalPage.getChild(headerGroup, By.partialLinkText("openapi.json"));

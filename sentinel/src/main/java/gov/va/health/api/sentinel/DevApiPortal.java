@@ -14,13 +14,11 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
 @Slf4j
 public class DevApiPortal {
 
   private ChromeDriver driver;
-  private WebDriverWait wait;
 
   public static class Config {
     private Properties properties;
@@ -55,7 +53,7 @@ public class DevApiPortal {
   }
 
   /** Set up the chrome driver with the proper properties. */
-  public void initializeDriver(String url, int defaultTimeOutInSeconds) {
+  public void initializeDriver(String url, int timeOutInSeconds) {
     Config config = new Config(new File("config/lab.properties"));
     ChromeOptions chromeOptions = new ChromeOptions();
     chromeOptions.addArguments("--whitelisted-ips", "--disable-extensions", "--no-sandbox");
@@ -64,8 +62,7 @@ public class DevApiPortal {
       System.setProperty("webdriver.chrome.driver", config.driver());
     }
     driver = new ChromeDriver(chromeOptions);
-    wait = new WebDriverWait(driver, defaultTimeOutInSeconds);
-    driver.manage().timeouts().implicitlyWait(defaultTimeOutInSeconds, TimeUnit.SECONDS);
+    driver.manage().timeouts().implicitlyWait(timeOutInSeconds, TimeUnit.SECONDS);
     driver.get(url);
   }
 
@@ -79,11 +76,5 @@ public class DevApiPortal {
 
   public void quit() {
     driver.quit();
-  }
-
-  /** Returns true if the element exists, and errors if not. */
-  public boolean isElementPresent(By by) {
-    driver.findElement(by);
-    return true;
   }
 }
