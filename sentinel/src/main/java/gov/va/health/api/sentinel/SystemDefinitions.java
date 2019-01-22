@@ -13,31 +13,6 @@ import lombok.Value;
 @NoArgsConstructor(staticName = "get")
 public class SystemDefinitions {
 
-  DiagnosticReports diagnosticReports() {
-    return DiagnosticReports.builder()
-        .loinc1("10000-8")
-        .loinc2("99999-9")
-        .onDate("eq1970-01-01")
-        .fromDate("gt1970-01-01")
-        .toDate("lt2038-01-01")
-        .dateYear("ge1970")
-        .dateYearMonth("ge1970-01")
-        .dateYearMonthDay("ge1970-01-01")
-        .dateYearMonthDayHour("ge1970-01-01T07")
-        .dateYearMonthDayHourMinute("ge1970-01-01T07:00")
-        .dateYearMonthDayHourMinuteSecond("ge1970-01-01T07:00:00")
-        .dateYearMonthDayHourMinuteSecondTimezone("ge1970-01-01T07:00:00+05:00")
-        .dateYearMonthDayHourMinuteSecondZulu("ge1970-01-01T07:00:00Z")
-        .dateGreaterThan("ge1970-01-01")
-        .dateNotEqual("ne1970-01-01")
-        .dateStartsWith("sa1970-01-01")
-        .dateNoPrefix("1970-01-01")
-        .dateEqual("1970-01-01")
-        .dateLessOrEqual("le2038-01-19")
-        .dateLessThan("lt2038-01-19")
-        .build();
-  }
-
   SystemDefinition local =
       SystemDefinition.builder()
           .ids(ServiceDefinition.builder().url("https://localhost").port(8089).build())
@@ -75,19 +50,6 @@ public class SystemDefinitions {
                   .build())
           .build();
 
-  private Observations observations() {
-    return Observations.builder()
-        .loinc1("72166-2")
-        .loinc2("777-3")
-        .onDate("2015-04-15")
-        .dateRange(Range.allTime())
-        .build();
-  }
-
-  Procedures procedures() {
-    return Procedures.builder().fromDate("ge2009").onDate("ge2009").toDate("le2010").build();
-  }
-
   SystemDefinition prod =
       SystemDefinition.builder()
           .ids(
@@ -108,7 +70,65 @@ public class SystemDefinitions {
           .cdwIds(prodAndQaIds())
           .build();
 
-  TestIds prodAndQaIds() {
+  SystemDefinition qa =
+      SystemDefinition.builder()
+          .ids(
+              ServiceDefinition.builder()
+                  .url("https://qa-argonaut.lighthouse.va.gov")
+                  .port(443)
+                  .build())
+          .mrAnderson(
+              ServiceDefinition.builder()
+                  .url("https://qa-argonaut.lighthouse.va.gov")
+                  .port(443)
+                  .build())
+          .argonaut(
+              ServiceDefinition.builder()
+                  .url("https://qa-argonaut.lighthouse.va.gov")
+                  .port(443)
+                  .build())
+          .cdwIds(prodAndQaIds())
+          .build();
+
+  private DiagnosticReports diagnosticReports() {
+    return DiagnosticReports.builder()
+        .loinc1("10000-8")
+        .loinc2("99999-9")
+        .onDate("eq1970-01-01")
+        .fromDate("gt1970-01-01")
+        .toDate("lt2038-01-01")
+        .dateYear("ge1970")
+        .dateYearMonth("ge1970-01")
+        .dateYearMonthDay("ge1970-01-01")
+        .dateYearMonthDayHour("ge1970-01-01T07")
+        .dateYearMonthDayHourMinute("ge1970-01-01T07:00")
+        .dateYearMonthDayHourMinuteSecond("ge1970-01-01T07:00:00")
+        .dateYearMonthDayHourMinuteSecondTimezone("ge1970-01-01T07:00:00+05:00")
+        .dateYearMonthDayHourMinuteSecondZulu("ge1970-01-01T07:00:00Z")
+        .dateGreaterThan("ge1970-01-01")
+        .dateNotEqual("ne1970-01-01")
+        .dateStartsWith("sa1970-01-01")
+        .dateNoPrefix("1970-01-01")
+        .dateEqual("1970-01-01")
+        .dateLessOrEqual("le2038-01-19")
+        .dateLessThan("lt2038-01-19")
+        .build();
+  }
+
+  private Observations observations() {
+    return Observations.builder()
+        .loinc1("72166-2")
+        .loinc2("777-3")
+        .onDate("2015-04-15")
+        .dateRange(Range.allTime())
+        .build();
+  }
+
+  private Procedures procedures() {
+    return Procedures.builder().fromDate("ge2009").onDate("ge2009").toDate("le2010").build();
+  }
+
+  private TestIds prodAndQaIds() {
     return TestIds.builder()
         .allergyIntolerance("800000001542")
         .appointment("800295609816")
@@ -131,24 +151,4 @@ public class SystemDefinitions {
         .unknown("5555555555555")
         .build();
   }
-
-  SystemDefinition qa =
-      SystemDefinition.builder()
-          .ids(
-              ServiceDefinition.builder()
-                  .url("https://qa-argonaut.lighthouse.va.gov")
-                  .port(443)
-                  .build())
-          .mrAnderson(
-              ServiceDefinition.builder()
-                  .url("https://qa-argonaut.lighthouse.va.gov")
-                  .port(443)
-                  .build())
-          .argonaut(
-              ServiceDefinition.builder()
-                  .url("https://qa-argonaut.lighthouse.va.gov")
-                  .port(443)
-                  .build())
-          .cdwIds(prodAndQaIds())
-          .build();
 }
