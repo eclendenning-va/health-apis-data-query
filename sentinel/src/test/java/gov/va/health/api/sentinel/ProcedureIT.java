@@ -1,60 +1,54 @@
 package gov.va.health.api.sentinel;
 
-import static gov.va.health.api.sentinel.ResourceRequest.assertRequest;
+import static gov.va.health.api.sentinel.ResourceVerifier.test;
 
 import gov.va.api.health.argonaut.api.resources.OperationOutcome;
 import gov.va.api.health.argonaut.api.resources.Procedure;
-import java.util.Arrays;
-import java.util.List;
-import lombok.extern.slf4j.Slf4j;
+import gov.va.health.api.sentinel.categories.AdvancedResource;
+import gov.va.health.api.sentinel.categories.BasicResource;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameter;
-import org.junit.runners.Parameterized.Parameters;
 
-@SuppressWarnings({"DefaultAnnotationParam", "WeakerAccess"})
-@RunWith(Parameterized.class)
-@Category({Local.class, Prod.class, Qa.class})
-@Slf4j
 public class ProcedureIT {
 
-  @Parameter(0)
-  public int status;
+  ResourceVerifier verifier = ResourceVerifier.get();
 
-  @Parameter(1)
-  public Class<?> response;
-
-  @Parameter(2)
-  public String path;
-
-  @Parameter(3)
-  public String[] params;
-
-  ResourceRequest resourceRequest = new ResourceRequest();
-
-  @Parameters(name = "{index}: {0} {2}")
-  public static List<Object[]> parameters() {
-    TestIds ids = IdRegistrar.of(Sentinel.get().system()).registeredIds();
-    return Arrays.asList(
-        assertRequest(200, Procedure.class, "/api/Procedure/{id}", ids.procedure()),
-        assertRequest(404, OperationOutcome.class, "/api/Procedure/{id}", ids.unknown()),
-        assertRequest(200, Procedure.Bundle.class, "/api/Procedure?_id={id}", ids.procedure()),
-        assertRequest(404, OperationOutcome.class, "/api/Procedure?_id={id}", ids.unknown()),
-        assertRequest(
-            200, Procedure.Bundle.class, "/api/Procedure?identifier={id}", ids.procedure()),
-        assertRequest(
-            200, Procedure.Bundle.class, "/api/Procedure?patient={patient}", ids.patient()));
+  @Test
+  @Category({AdvancedResource.class})
+  public void advanced() {
+    verifier.verifyAll(
+        test(
+            200,
+            Procedure.Bundle.class,
+            "api/Procedure?patient={patient}&date={onDate}",
+            verifier.ids().patient(),
+            verifier.ids().procedures().onDate()),
+        test(
+            200,
+            Procedure.Bundle.class,
+            "api/Procedure?patient={patient}&date={fromDate}&date={toDate}",
+            verifier.ids().patient(),
+            verifier.ids().procedures().fromDate(),
+            verifier.ids().procedures().toDate()));
   }
 
   @Test
-  public void getResource() {
-    resourceRequest.getResource(path, params, status, response);
-  }
-
-  @Test
-  public void pagingParameterBounds() {
-    resourceRequest.pagingParameterBounds(path, params, response);
+  @Category({BasicResource.class})
+  public void basic() {
+    verifier.verifyAll(
+        test(200, Procedure.class, "/api/Procedure/{id}", verifier.ids().procedure()),
+        test(404, OperationOutcome.class, "/api/Procedure/{id}", verifier.ids().unknown()),
+        test(200, Procedure.Bundle.class, "/api/Procedure?_id={id}", verifier.ids().procedure()),
+        test(404, OperationOutcome.class, "/api/Procedure?_id={id}", verifier.ids().unknown()),
+        test(
+            200,
+            Procedure.Bundle.class,
+            "/api/Procedure?identifier={id}",
+            verifier.ids().procedure()),
+        test(
+            200,
+            Procedure.Bundle.class,
+            "/api/Procedure?patient={patient}",
+            verifier.ids().patient()));
   }
 }
