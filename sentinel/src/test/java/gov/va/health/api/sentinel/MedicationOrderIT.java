@@ -4,13 +4,16 @@ import static gov.va.health.api.sentinel.ResourceVerifier.test;
 
 import gov.va.api.health.argonaut.api.resources.MedicationOrder;
 import gov.va.api.health.argonaut.api.resources.OperationOutcome;
+import gov.va.health.api.sentinel.categories.BasicResource;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 public class MedicationOrderIT {
 
   ResourceVerifier verifier = ResourceVerifier.get();
 
   @Test
+  @Category({BasicResource.class})
   public void basic() {
     verifier.verifyAll(
         test(

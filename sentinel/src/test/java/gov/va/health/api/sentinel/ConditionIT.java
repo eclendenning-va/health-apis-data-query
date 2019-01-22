@@ -4,12 +4,16 @@ import static gov.va.health.api.sentinel.ResourceVerifier.test;
 
 import gov.va.api.health.argonaut.api.resources.Condition;
 import gov.va.api.health.argonaut.api.resources.OperationOutcome;
+import gov.va.health.api.sentinel.categories.AdvancedResource;
+import gov.va.health.api.sentinel.categories.BasicResource;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 public class ConditionIT {
   ResourceVerifier verifier = ResourceVerifier.get();
 
   @Test
+  @Category({AdvancedResource.class})
   public void advanced() {
     verifier.verifyAll(
         test(
@@ -30,6 +34,7 @@ public class ConditionIT {
   }
 
   @Test
+  @Category({BasicResource.class})
   public void basic() {
     verifier.verifyAll(
         test(200, Condition.class, "/api/Condition/{id}", verifier.ids().condition()),

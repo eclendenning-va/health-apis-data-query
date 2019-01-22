@@ -4,13 +4,16 @@ import static gov.va.health.api.sentinel.ResourceVerifier.test;
 
 import gov.va.api.health.argonaut.api.resources.OperationOutcome;
 import gov.va.api.health.argonaut.api.resources.Practitioner;
+import gov.va.health.api.sentinel.categories.BasicResource;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 public class PractitionerIT {
 
   ResourceVerifier verifier = ResourceVerifier.get();
 
   @Test
+  @Category({BasicResource.class})
   public void basic() {
     verifier.verifyAll(
         test(200, Practitioner.class, "/api/Practitioner/{id}", verifier.ids().practitioner()),
