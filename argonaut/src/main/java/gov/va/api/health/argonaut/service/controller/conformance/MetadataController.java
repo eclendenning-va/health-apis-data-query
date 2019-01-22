@@ -38,8 +38,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(
-    value = {"/api/metadata"},
-    produces = {"application/json", "application/json+fhir", "application/fhir+json"})
+  value = {"/api/metadata"},
+  produces = {"application/json", "application/json+fhir", "application/fhir+json"}
+)
 @AllArgsConstructor(onConstructor = @__({@Autowired}))
 @Slf4j
 class MetadataController {
@@ -258,7 +259,8 @@ class MetadataController {
       if (search.isEmpty()) {
         return null;
       }
-      return search.stream()
+      return search
+          .stream()
           .map(s -> Conformance.SearchParam.builder().name(s.param()).type(s.type()).build())
           .collect(Collectors.toList());
     }
