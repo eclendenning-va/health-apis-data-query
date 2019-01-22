@@ -27,11 +27,16 @@ EOF
 exit 1
 }
 
+defaultTests() {
+  doListTests | grep 'IT$'
+}
+
 doTest() {
-  [ -z "$@" ] && usage "No tests specified"
+  local tests="$@"
+  [ -z "$tests" ] && tests=$(defaultTests)
   local filter
   [ -n "$CATEGORY" ] && filter="--filter=org.junit.experimental.categories.IncludeCategories=$CATEGORY"
-  java -cp "$(pwd)/*" $SYSTEM_PROPERTIES org.junit.runner.JUnitCore $filter $@
+  java -cp "$(pwd)/*" $SYSTEM_PROPERTIES org.junit.runner.JUnitCore $filter $tests
   exit $?
 }
 
