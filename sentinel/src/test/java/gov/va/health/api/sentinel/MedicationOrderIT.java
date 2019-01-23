@@ -25,17 +25,24 @@ public class MedicationOrderIT {
         test(
             200,
             MedicationOrder.Bundle.class,
+            "/api/MedicationOrder?patient={patient}",
+            verifier.ids().patient()));
+  }
+
+  @Test
+  public void advanced() {
+    verifier.verifyAll(
+        test(
+            200,
+            MedicationOrder.Bundle.class,
             "/api/MedicationOrder?_id={id}",
             verifier.ids().medicationOrder()),
+        test(
+            404, OperationOutcome.class, "/api/MedicationOrder?_id={id}", verifier.ids().unknown()),
         test(
             200,
             MedicationOrder.Bundle.class,
             "/api/MedicationOrder?identifier={id}",
-            verifier.ids().medicationOrder()),
-        test(
-            200,
-            MedicationOrder.Bundle.class,
-            "/api/MedicationOrder?patient={patient}",
-            verifier.ids().patient()));
+            verifier.ids().medicationOrder()));
   }
 }

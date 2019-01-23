@@ -135,19 +135,7 @@ public class DiagnosticReportIT {
             DiagnosticReport.Bundle.class,
             "/api/DiagnosticReport?patient={patient}&category=LAB&date={dateLessThan}",
             verifier.ids().patient(),
-            verifier.ids().diagnosticReports().dateLessThan()));
-  }
-
-  @Test
-  @Category({Prod.class})
-  public void basic() {
-    verifier.verifyAll(
-        test(
-            200,
-            DiagnosticReport.class,
-            "/api/DiagnosticReport/{id}",
-            verifier.ids().diagnosticReport()),
-        test(404, OperationOutcome.class, "/api/DiagnosticReport/{id}", verifier.ids().unknown()),
+            verifier.ids().diagnosticReports().dateLessThan()),
         test(
             200,
             DiagnosticReport.Bundle.class,
@@ -164,7 +152,19 @@ public class DiagnosticReportIT {
             404,
             OperationOutcome.class,
             "/api/DiagnosticReport?identifier={id}",
-            verifier.ids().unknown()),
+            verifier.ids().unknown()));
+  }
+
+  @Test
+  @Category({Prod.class})
+  public void basic() {
+    verifier.verifyAll(
+        test(
+            200,
+            DiagnosticReport.class,
+            "/api/DiagnosticReport/{id}",
+            verifier.ids().diagnosticReport()),
+        test(404, OperationOutcome.class, "/api/DiagnosticReport/{id}", verifier.ids().unknown()),
         test(
             200,
             DiagnosticReport.Bundle.class,

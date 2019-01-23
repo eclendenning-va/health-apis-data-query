@@ -26,12 +26,17 @@ public class MedicationStatementIT {
         test(
             200,
             MedicationStatement.Bundle.class,
-            "/api/MedicationStatement?_id={id}",
-            verifier.ids().medicationStatement()),
+            "/api/MedicationStatement?patient={patient}",
+            verifier.ids().patient()));
+  }
+
+  @Test
+  public void advanced() {
+    verifier.verifyAll(
         test(
             200,
             MedicationStatement.Bundle.class,
-            "/api/MedicationStatement?identifier={id}",
+            "/api/MedicationStatement?_id={id}",
             verifier.ids().medicationStatement()),
         test(
             404,
@@ -41,7 +46,7 @@ public class MedicationStatementIT {
         test(
             200,
             MedicationStatement.Bundle.class,
-            "/api/MedicationStatement?patient={patient}",
-            verifier.ids().patient()));
+            "/api/MedicationStatement?identifier={id}",
+            verifier.ids().medicationStatement()));
   }
 }
