@@ -98,9 +98,9 @@ public class SystemDefinitions {
   }
 
   private Supplier<Optional<String>> magicAccessToken() {
-    String magic = System.getProperty("accessToken");
+    String magic = System.getProperty("access-token");
     if (isBlank(magic)) {
-      throw new IllegalStateException("Access token not specified, -DaccessToken=<value>");
+      throw new IllegalStateException("Access token not specified, -Daccess-token=<value>");
     }
     return () -> Optional.of(magic);
   }
