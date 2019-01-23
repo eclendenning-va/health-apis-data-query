@@ -15,6 +15,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class Sentinel {
 
+  static {
+    String env = System.getProperty("sentinel", "LOCAL").toUpperCase(Locale.ENGLISH);
+    log.info("Using {} Sentinel environment (Override with -Dsentinel=LOCAL|QA|PROD)", env);
+  }
+
   private SystemDefinition system;
 
   /**

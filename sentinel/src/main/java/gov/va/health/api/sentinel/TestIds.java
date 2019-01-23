@@ -10,6 +10,7 @@ import lombok.Value;
 @Value
 @Builder(toBuilder = true)
 public class TestIds {
+  boolean publicIds;
   @NonNull String allergyIntolerance;
   @NonNull String appointment;
   @NonNull String condition;

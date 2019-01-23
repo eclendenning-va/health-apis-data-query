@@ -1,94 +1,19 @@
 package gov.va.health.api.sentinel;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
+
 import gov.va.health.api.sentinel.TestIds.DiagnosticReports;
 import gov.va.health.api.sentinel.TestIds.Observations;
 import gov.va.health.api.sentinel.TestIds.PersonallyIdentifiableInformation;
 import gov.va.health.api.sentinel.TestIds.Procedures;
 import gov.va.health.api.sentinel.TestIds.Range;
+import java.util.Optional;
+import java.util.function.Supplier;
 import lombok.NoArgsConstructor;
-import lombok.Value;
 
 /** The standard system configurations for typical environments like QA or PROD. */
-@Value
 @NoArgsConstructor(staticName = "get")
 public class SystemDefinitions {
-
-  SystemDefinition local =
-      SystemDefinition.builder()
-          .ids(ServiceDefinition.builder().url("https://localhost").port(8089).build())
-          .mrAnderson(ServiceDefinition.builder().url("https://localhost").port(8088).build())
-          .argonaut(ServiceDefinition.builder().url("https://localhost").port(8090).build())
-          .cdwIds(
-              TestIds.builder()
-                  .allergyIntolerance("1000001782544")
-                  .appointment("1200438317388")
-                  .condition("1400007575530:P")
-                  .diagnosticReport("1000000031384:L")
-                  .encounter("1200753214085")
-                  .diagnosticReports(diagnosticReports())
-                  .immunization("1000000043979")
-                  .location("166365:L")
-                  .medication("212846")
-                  .medicationOrder("1200389904206:O")
-                  .medicationStatement("1400000182116")
-                  .observation("1201051417263:V")
-                  .observations(observations())
-                  .organization("1000025431:C")
-                  .pii(
-                      PersonallyIdentifiableInformation.builder()
-                          .gender("male")
-                          .birthdate("1970-01-01")
-                          .given("JOHN Q")
-                          .name("VETERAN,JOHN")
-                          .family("VETERAN")
-                          .build())
-                  .patient("185601V825290")
-                  .practitioner("10092125")
-                  .procedure("1400000140034")
-                  .procedures(procedures())
-                  .unknown("5555555555555")
-                  .build())
-          .build();
-
-  SystemDefinition prod =
-      SystemDefinition.builder()
-          .ids(
-              ServiceDefinition.builder()
-                  .url("https://argonaut.lighthouse.va.gov")
-                  .port(443)
-                  .build())
-          .mrAnderson(
-              ServiceDefinition.builder()
-                  .url("https://argonaut.lighthouse.va.gov")
-                  .port(443)
-                  .build())
-          .argonaut(
-              ServiceDefinition.builder()
-                  .url("https://argonaut.lighthouse.va.gov")
-                  .port(443)
-                  .build())
-          .cdwIds(prodAndQaIds())
-          .build();
-
-  SystemDefinition qa =
-      SystemDefinition.builder()
-          .ids(
-              ServiceDefinition.builder()
-                  .url("https://qa-argonaut.lighthouse.va.gov")
-                  .port(443)
-                  .build())
-          .mrAnderson(
-              ServiceDefinition.builder()
-                  .url("https://qa-argonaut.lighthouse.va.gov")
-                  .port(443)
-                  .build())
-          .argonaut(
-              ServiceDefinition.builder()
-                  .url("https://qa-argonaut.lighthouse.va.gov")
-                  .port(443)
-                  .build())
-          .cdwIds(prodAndQaIds())
-          .build();
 
   private DiagnosticReports diagnosticReports() {
     return DiagnosticReports.builder()
@@ -115,6 +40,75 @@ public class SystemDefinitions {
         .build();
   }
 
+  /**
+   * Return system definitions for local running applications as started by the Maven build process.
+   */
+  public SystemDefinition local() {
+    return SystemDefinition.builder()
+        .ids(
+            ServiceDefinition.builder()
+                .url("https://localhost")
+                .port(8089)
+                .accessToken(noAccessToken())
+                .build())
+        .mrAnderson(
+            ServiceDefinition.builder()
+                .url("https://localhost")
+                .port(8088)
+                .accessToken(noAccessToken())
+                .build())
+        .argonaut(
+            ServiceDefinition.builder()
+                .url("https://localhost")
+                .port(8090)
+                .accessToken(noAccessToken())
+                .build())
+        .cdwIds(
+            TestIds.builder()
+                .publicIds(false)
+                .allergyIntolerance("1000001782544")
+                .appointment("1200438317388")
+                .condition("1400007575530:P")
+                .diagnosticReport("1000000031384:L")
+                .encounter("1200753214085")
+                .diagnosticReports(diagnosticReports())
+                .immunization("1000000043979")
+                .location("166365:L")
+                .medication("212846")
+                .medicationOrder("1200389904206:O")
+                .medicationStatement("1400000182116")
+                .observation("1201051417263:V")
+                .observations(observations())
+                .organization("1000025431:C")
+                .pii(
+                    PersonallyIdentifiableInformation.builder()
+                        .gender("male")
+                        .birthdate("1970-01-01")
+                        .given("JOHN Q")
+                        .name("VETERAN,JOHN")
+                        .family("VETERAN")
+                        .build())
+                .patient("185601V825290")
+                .practitioner("10092125")
+                .procedure("1400000140034")
+                .procedures(procedures())
+                .unknown("5555555555555")
+                .build())
+        .build();
+  }
+
+  private Supplier<Optional<String>> magicAccessToken() {
+    String magic = System.getProperty("access-token");
+    if (isBlank(magic)) {
+      throw new IllegalStateException("Access token not specified, -Daccess-token=<value>");
+    }
+    return () -> Optional.of(magic);
+  }
+
+  private Supplier<Optional<String>> noAccessToken() {
+    return () -> Optional.empty();
+  }
+
   private Observations observations() {
     return Observations.builder()
         .loinc1("72166-2")
@@ -128,27 +122,78 @@ public class SystemDefinitions {
     return Procedures.builder().fromDate("ge2009").onDate("ge2009").toDate("le2010").build();
   }
 
+  /** Return definitions for the production environment. */
+  public SystemDefinition prod() {
+    return SystemDefinition.builder()
+        .ids(
+            ServiceDefinition.builder()
+                .url("https://argonaut.lighthouse.va.gov")
+                .port(443)
+                .accessToken(noAccessToken())
+                .build())
+        .mrAnderson(
+            ServiceDefinition.builder()
+                .url("https://argonaut.lighthouse.va.gov")
+                .port(443)
+                .accessToken(noAccessToken())
+                .build())
+        .argonaut(
+            ServiceDefinition.builder()
+                .url("https://argonaut.lighthouse.va.gov")
+                .port(443)
+                .accessToken(magicAccessToken())
+                .build())
+        .cdwIds(prodAndQaIds())
+        .build();
+  }
+
   private TestIds prodAndQaIds() {
     return TestIds.builder()
-        .allergyIntolerance("800000001542")
-        .appointment("800295609816")
-        .condition("800000007353:P")
-        .diagnosticReport("800000005788:M")
+        .publicIds(true)
+        .allergyIntolerance("3be00408-b0ff-598d-8ba1-1e0bbfb02b99")
+        .appointment("f7721341-03ad-56cf-b0e5-e96fded23a1b")
+        .condition("ea59bc29-d507-571b-a4c6-9ac0d2146c45")
+        .diagnosticReport("0bca2c42-8d23-5d36-90b8-81a8b12bb1b5")
         .diagnosticReports(diagnosticReports())
-        .encounter("1200444375877")
-        .immunization("809653231")
-        .location("279467:L")
-        .medication("885302")
-        .medicationOrder("800130510958:O")
-        .medicationStatement("800000000706")
-        .observation("800436526883:V")
+        .encounter("05d66afc-3a1a-5277-8b26-a8084ac46a08")
+        .immunization("00f4000a-b1c9-5190-993a-644569d2722b")
+        .location("a146313b-9a77-5337-a442-bee6ceb4aa5c")
+        .medication("89a46bce-8b95-5a91-bbef-1fb5f8a2a292")
+        .medicationOrder("91f4a9d2-e7fa-5b34-a875-6d75761221c7")
+        .medicationStatement("e4573ebc-40e4-51bb-9da1-20a91b31ff24")
+        .observation("40e2ced6-32e2-503e-85b8-198690f6611b")
         .observations(observations())
-        .organization("26366")
+        .organization("3e5dbe7a-72ca-5441-9287-0b639ae7a1bc")
         .patient("1011537977V693883")
-        .practitioner("1294240")
-        .procedure("1200002649508")
+        .practitioner("7b4c6b83-2c5a-5cbf-836c-875253fb9bf9")
+        .procedure("c416df15-fc1d-5a04-ab11-34d7bf453d15")
         .procedures(procedures())
         .unknown("5555555555555")
+        .build();
+  }
+
+  /** Return definitions for the qa environment. */
+  public SystemDefinition qa() {
+    return SystemDefinition.builder()
+        .ids(
+            ServiceDefinition.builder()
+                .url("https://qa-argonaut.lighthouse.va.gov")
+                .port(443)
+                .accessToken(noAccessToken())
+                .build())
+        .mrAnderson(
+            ServiceDefinition.builder()
+                .url("https://qa-argonaut.lighthouse.va.gov")
+                .port(443)
+                .accessToken(noAccessToken())
+                .build())
+        .argonaut(
+            ServiceDefinition.builder()
+                .url("https://qa-argonaut.lighthouse.va.gov")
+                .port(443)
+                .accessToken(magicAccessToken())
+                .build())
+        .cdwIds(prodAndQaIds())
         .build();
   }
 }
