@@ -17,7 +17,7 @@
     <selenium.version>3.141.59</selenium.version>
     <!-- JUnit -->
     <groups/>
-    <excludedGroups>gov.va.health.api.sentinel.categories.Lab</excludedGroups>
+    <excludedGroups>gov.va.health.api.sentinel.categories.Lab,gov.va.health.api.sentinel.categories.CrawlProd,gov.va.health.api.sentinel.categories.CrawlQa</excludedGroups>
     <!-- Docker -->
     <docker-maven-plugin.version>0.24.0</docker-maven-plugin.version>
     <docker.organization>vasdvp</docker.organization>
@@ -412,7 +412,7 @@
       <properties>
         <sentinel.skipLaunch>true</sentinel.skipLaunch>
         <groups>gov.va.health.api.sentinel.categories.Lab</groups>
-        <excludedGroups/>
+        <excludedGroups>gov.va.health.api.sentinel.categories.CrawlProd,gov.va.health.api.sentinel.categories.CrawlQa</excludedGroups>
         <skipITs>true</skipITs>
       </properties>
     </profile>
