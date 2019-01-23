@@ -8,7 +8,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 
 /** Defines particulars for interacting with a specific service. */
 @Slf4j
@@ -28,7 +27,8 @@ public class ServiceDefinition {
             .relaxedHTTPSValidation()
             .log()
             .ifValidationFails();
-    if (!StringUtils.isBlank(System.getenv("jargonaut"))) {
+    Optional<String> jargonaut = Optional.ofNullable(System.getenv("jargonaut"));
+    if (jargonaut.isPresent()) {
       spec.header("jargonaut", System.getenv("jargonaut"));
     }
     Optional<String> token = accessToken.get();
