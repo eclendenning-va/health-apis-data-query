@@ -129,7 +129,12 @@ public class MedicationDispenseTransformerTest {
   @Test
   public void typeCoding() {
     assertThat(tx.typeCoding(null)).isNull();
-    assertThat(tx.typeCoding(new CdwMedicationDispenseTypeCoding())).isNull();
+    CdwMedicationDispenseTypeCoding codingTest = new CdwMedicationDispenseTypeCoding();
+    assertThat(tx.typeCoding(codingTest)).isNull();
+    /* Check that null values for code and display aren't going to throw NPEs */
+    codingTest.setSystem("https://hellotest");
+    assertThat(tx.typeCoding(codingTest))
+        .isEqualTo(Coding.builder().system("https://hellotest").build());
   }
 
   @Test
@@ -141,7 +146,9 @@ public class MedicationDispenseTransformerTest {
   @Test
   public void dosageInstruction() {
     assertThat(tx.dosageInstruction(null)).isNull();
-    assertThat(tx.dosageInstruction(new CdwDosageInstruction())).isNull();
+    CdwDosageInstruction testDose = new CdwDosageInstruction();
+    testDose.setText("   ");
+    assertThat(tx.dosageInstruction(testDose)).isNull();
   }
 
   @Test

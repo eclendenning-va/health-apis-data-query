@@ -104,9 +104,7 @@ public class MedicationDispenseTransformer implements MedicationDispenseControll
       return null;
     }
     CdwAuthorizingPrescriptions firstList = maybeCdw.get(0);
-    if (firstList == null
-        || firstList.getAuthorizingPrescription() == null
-        || firstList.getAuthorizingPrescription().isEmpty()) {
+    if (firstList == null) {
       return null;
     }
     return convertAll(firstList.getAuthorizingPrescription(), this::reference);
@@ -130,12 +128,13 @@ public class MedicationDispenseTransformer implements MedicationDispenseControll
     if (maybeCdw == null) {
       return null;
     }
-    if (maybeCdw.getCoding() == null && isBlank(maybeCdw.getText())) {
+    Coding maybeCoding = typeCoding(maybeCdw.getCoding());
+    if (maybeCoding == null && isBlank(maybeCdw.getText())) {
       return null;
     }
     return CodeableConcept.builder()
         .text(maybeCdw.getText())
-        .coding(Collections.singletonList(typeCoding(maybeCdw.getCoding())))
+        .coding(Collections.singletonList(maybeCoding))
         .build();
   }
 
@@ -143,11 +142,14 @@ public class MedicationDispenseTransformer implements MedicationDispenseControll
     if (source == null || allNull(source.getCode(), source.getDisplay(), source.getSystem())) {
       return null;
     }
-    return Coding.builder()
-        .code(source.getCode().value())
-        .display(source.getDisplay().value())
-        .system(source.getSystem())
-        .build();
+    Coding.CodingBuilder builder = Coding.builder();
+    if (source.getCode() != null) {
+      builder.code(source.getCode().value());
+    }
+    if (source.getDisplay() != null) {
+      builder.display(source.getDisplay().value());
+    }
+    return builder.system(source.getSystem()).build();
   }
 
   /**
@@ -172,7 +174,7 @@ public class MedicationDispenseTransformer implements MedicationDispenseControll
       return null;
     }
     try {
-      return (Double.valueOf(source));
+      return Double.valueOf(source);
     } catch (NumberFormatException e) {
       throw new IllegalArgumentException("Cannot create double value from " + source, e);
     }
@@ -183,23 +185,19 @@ public class MedicationDispenseTransformer implements MedicationDispenseControll
    * within.
    */
   List<DosageInstruction> dosageInstructions(CdwDosageInstructions cdw) {
-    if (cdw == null || cdw.getDosageInstruction().isEmpty()) {
-      return null;
-    }
     return convertAll(
         ifPresent(cdw, CdwDosageInstructions::getDosageInstruction), this::dosageInstruction);
   }
 
   DosageInstruction dosageInstruction(CdwDosageInstruction cdw) {
     if (cdw == null
-        || allNull(
-            cdw.getAdditionalInstructions(),
-            cdw.isAsNeededBoolean(),
-            cdw.getDoseQuantity(),
-            cdw.getRoute(),
-            cdw.getText(),
-            cdw.getSiteCodeableConcept(),
-            cdw.getTiming())) {
+        || (allNull(
+                cdw.getAdditionalInstructions(),
+                cdw.isAsNeededBoolean(),
+                cdw.getDoseQuantity(),
+                cdw.getSiteCodeableConcept(),
+                cdw.getTiming())
+            && isBlank(cdw.getText()))) {
       return null;
     }
     return convert(

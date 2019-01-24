@@ -160,6 +160,7 @@ public class SystemDefinitions {
         .immunization("00f4000a-b1c9-5190-993a-644569d2722b")
         .location("a146313b-9a77-5337-a442-bee6ceb4aa5c")
         .medication("89a46bce-8b95-5a91-bbef-1fb5f8a2a292")
+        .medicationDispense("773bb1ab-4430-5012-b203-a88c41c5dde9")
         .medicationOrder("91f4a9d2-e7fa-5b34-a875-6d75761221c7")
         .medicationStatement("e4573ebc-40e4-51bb-9da1-20a91b31ff24")
         .observation("40e2ced6-32e2-503e-85b8-198690f6611b")
