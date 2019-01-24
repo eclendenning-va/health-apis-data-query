@@ -48,7 +48,6 @@ public class PatientIT {
     verifier.verifyAll(
         test(200, Patient.class, "/api/Patient/{id}", verifier.ids().patient()),
         test(200, Patient.Bundle.class, "/api/Patient?_id={id}", verifier.ids().patient()),
-        test(200, Patient.Bundle.class, "/api/Patient?identifier={id}", verifier.ids().patient()),
         test(404, OperationOutcome.class, "/api/Patient?_id={id}", verifier.ids().unknown()));
   }
 
@@ -66,5 +65,15 @@ public class PatientIT {
       verifier.verify(
           test(403, OperationOutcome.class, "/api/Patient/{id}", verifier.ids().unknown()));
     }
+  }
+
+  /**
+   * The CDW database has disabled patient searching by identifier for both PROD/QA. We will test
+   * this only in LOCAL mode against the sandbox db.
+   */
+  @Test
+  public void patientIdentifierSearching() {
+    verifier.verify(
+        test(200, Patient.Bundle.class, "/api/Patient?identifier={id}", verifier.ids().patient()));
   }
 }
