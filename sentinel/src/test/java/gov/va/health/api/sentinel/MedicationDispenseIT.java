@@ -29,7 +29,17 @@ public class MedicationDispenseIT {
             404,
             OperationOutcome.class,
             "/api/MedicationDispense?_id={id}",
-            verifier.ids().unknown()));
+            verifier.ids().unknown()),
+        test(
+            200,
+            MedicationDispense.Bundle.class,
+            "/api/MedicationDispense?patient={patient}&status=stopped,completed",
+            verifier.ids().patient()),
+        test(
+            200,
+            MedicationDispense.Bundle.class,
+            "/api/MedicationDispense?patient={patient}&type=FF,UD",
+            verifier.ids().patient()));
   }
 
   @Test
@@ -46,16 +56,6 @@ public class MedicationDispenseIT {
             200,
             MedicationDispense.Bundle.class,
             "/api/MedicationDispense?patient={patient}",
-            verifier.ids().patient()),
-        test(
-            200,
-            MedicationDispense.Bundle.class,
-            "/api/MedicationDispense?patient={patient}&status=stopped,completed",
-            verifier.ids().patient()),
-        test(
-            200,
-            MedicationDispense.Bundle.class,
-            "/api/MedicationDispense?patient={patient}&type=FF,UD",
             verifier.ids().patient()));
   }
 }
