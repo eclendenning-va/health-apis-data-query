@@ -4,6 +4,7 @@ import static gov.va.health.api.sentinel.ResourceVerifier.test;
 
 import gov.va.api.health.argonaut.api.resources.OperationOutcome;
 import gov.va.api.health.argonaut.api.resources.Patient;
+import gov.va.health.api.sentinel.Sentinel.Environment;
 import gov.va.health.api.sentinel.categories.Prod;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -46,9 +47,33 @@ public class PatientIT {
   public void basic() {
     verifier.verifyAll(
         test(200, Patient.class, "/api/Patient/{id}", verifier.ids().patient()),
-        test(404, OperationOutcome.class, "/api/Patient/{id}", verifier.ids().unknown()),
         test(200, Patient.Bundle.class, "/api/Patient?_id={id}", verifier.ids().patient()),
-        test(200, Patient.Bundle.class, "/api/Patient?identifier={id}", verifier.ids().patient()),
         test(404, OperationOutcome.class, "/api/Patient?_id={id}", verifier.ids().unknown()));
+  }
+
+  /**
+   * In the PROD/QA environments, patient reading is restricted to your unique access-token. Any IDs
+   * but your own are revoked with a 403 Forbidden. In environments where this restriction is
+   * lifted, the result of an unknown ID should be 404 Not Found.
+   */
+  @Test
+  public void patientMatching() {
+    if (Sentinel.environment() == Environment.LOCAL) {
+      verifier.verify(
+          test(404, OperationOutcome.class, "/api/Patient/{id}", verifier.ids().unknown()));
+    } else {
+      verifier.verify(
+          test(403, OperationOutcome.class, "/api/Patient/{id}", verifier.ids().unknown()));
+    }
+  }
+
+  /**
+   * The CDW database has disabled patient searching by identifier for both PROD/QA. We will test
+   * this only in LOCAL mode against the sandbox db.
+   */
+  @Test
+  public void patientIdentifierSearching() {
+    verifier.verify(
+        test(200, Patient.Bundle.class, "/api/Patient?identifier={id}", verifier.ids().patient()));
   }
 }
