@@ -13,19 +13,6 @@ public class AppointmentIT {
   ResourceVerifier verifier = ResourceVerifier.get();
 
   @Test
-  @Category({Prod.class})
-  public void basic() {
-    verifier.verifyAll(
-        test(200, Appointment.class, "/api/Appointment/{id}", verifier.ids().appointment()),
-        test(404, OperationOutcome.class, "/api/Appointment/{id}", verifier.ids().unknown()),
-        test(
-            200,
-            Appointment.Bundle.class,
-            "/api/Appointment?patient={patient}",
-            verifier.ids().patient()));
-  }
-
-  @Test
   public void advanced() {
     verifier.verifyAll(
         test(
@@ -38,6 +25,19 @@ public class AppointmentIT {
             200,
             Appointment.Bundle.class,
             "/api/Appointment?identifier={id}",
-            verifier.ids().appointment()));
+            verifier.ids().appointment()),
+        test(
+            200,
+            Appointment.Bundle.class,
+            "/api/Appointment?patient={patient}",
+            verifier.ids().patient()));
+  }
+
+  @Test
+  @Category({Prod.class})
+  public void basic() {
+    verifier.verifyAll(
+        test(200, Appointment.class, "/api/Appointment/{id}", verifier.ids().appointment()),
+        test(404, OperationOutcome.class, "/api/Appointment/{id}", verifier.ids().unknown()));
   }
 }

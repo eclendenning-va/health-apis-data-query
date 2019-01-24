@@ -17,6 +17,12 @@ import lombok.extern.slf4j.Slf4j;
 @Builder
 @AllArgsConstructor
 public class ServiceDefinition {
+  static {
+    log.info(
+        "Using jargonaut header is {} (Override -Djargonaut=true|false)",
+        System.getProperty("jargonaut", "unset"));
+  }
+
   String url;
   int port;
   Supplier<Optional<String>> accessToken;
@@ -29,7 +35,7 @@ public class ServiceDefinition {
             .relaxedHTTPSValidation()
             .log()
             .ifValidationFails();
-    String jargonaut = System.getenv("jargonaut");
+    String jargonaut = System.getProperty("jargonaut");
     if (isNotBlank(jargonaut)) {
       spec.header("jargonaut", jargonaut);
     }
