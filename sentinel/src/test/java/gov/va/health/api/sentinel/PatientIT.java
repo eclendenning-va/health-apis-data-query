@@ -47,8 +47,7 @@ public class PatientIT {
   public void basic() {
     verifier.verifyAll(
         test(200, Patient.class, "/api/Patient/{id}", verifier.ids().patient()),
-        test(200, Patient.Bundle.class, "/api/Patient?_id={id}", verifier.ids().patient()),
-        test(404, OperationOutcome.class, "/api/Patient?_id={id}", verifier.ids().unknown()));
+        test(200, Patient.Bundle.class, "/api/Patient?_id={id}", verifier.ids().patient()));
   }
 
   /**
@@ -57,13 +56,17 @@ public class PatientIT {
    * lifted, the result of an unknown ID should be 404 Not Found.
    */
   @Test
+  @Category({Prod.class})
   public void patientMatching() {
     if (Sentinel.environment() == Environment.LOCAL) {
-      verifier.verify(
-          test(404, OperationOutcome.class, "/api/Patient/{id}", verifier.ids().unknown()));
+      verifier.verifyAll(
+          test(404, OperationOutcome.class, "/api/Patient/{id}", verifier.ids().unknown()),
+          test(404, OperationOutcome.class, "/api/Patient?_id={id}", verifier.ids().unknown()));
+
     } else {
-      verifier.verify(
-          test(403, OperationOutcome.class, "/api/Patient/{id}", verifier.ids().unknown()));
+      verifier.verifyAll(
+          test(403, OperationOutcome.class, "/api/Patient/{id}", verifier.ids().unknown()),
+          test(403, OperationOutcome.class, "/api/Patient?_id={id}", verifier.ids().unknown()));
     }
   }
 
