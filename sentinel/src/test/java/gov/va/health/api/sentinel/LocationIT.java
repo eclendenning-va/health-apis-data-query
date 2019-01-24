@@ -17,10 +17,18 @@ public class LocationIT {
   public void basic() {
     verifier.verifyAll(
         test(200, Location.class, "/api/Location/{id}", verifier.ids().location()),
-        test(404, OperationOutcome.class, "/api/Location/{id}", verifier.ids().unknown()),
+        test(404, OperationOutcome.class, "/api/Location/{id}", verifier.ids().unknown()));
+  }
+
+  @Test
+  public void advanced() {
+    verifier.verifyAll(
         test(200, Location.Bundle.class, "/api/Location?_id={id}", verifier.ids().location()),
+        test(404, OperationOutcome.class, "/api/Location?_id={id}", verifier.ids().unknown()),
         test(
-            200, Location.Bundle.class, "/api/Location?identifier={id}", verifier.ids().location()),
-        test(404, OperationOutcome.class, "/api/Location?_id={id}", verifier.ids().unknown()));
+            200,
+            Location.Bundle.class,
+            "/api/Location?identifier={id}",
+            verifier.ids().location()));
   }
 }

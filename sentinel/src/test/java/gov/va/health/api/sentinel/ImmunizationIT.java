@@ -21,18 +21,23 @@ public class ImmunizationIT {
         test(
             200,
             Immunization.Bundle.class,
-            "/api/Immunization?_id={id}",
-            verifier.ids().immunization()),
+            "/api/Immunization?patient={patient}",
+            verifier.ids().patient()));
+  }
+
+  @Test
+  public void advanced() {
+    verifier.verifyAll(
         test(
             200,
             Immunization.Bundle.class,
-            "/api/Immunization?identifier={id}",
+            "/api/Immunization?_id={id}",
             verifier.ids().immunization()),
         test(404, OperationOutcome.class, "/api/Immunization?_id={id}", verifier.ids().unknown()),
         test(
             200,
             Immunization.Bundle.class,
-            "/api/Immunization?patient={patient}",
-            verifier.ids().patient()));
+            "/api/Immunization?identifier={id}",
+            verifier.ids().immunization()));
   }
 }

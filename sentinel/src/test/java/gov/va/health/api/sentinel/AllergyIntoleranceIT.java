@@ -21,26 +21,31 @@ public class AllergyIntoleranceIT {
             AllergyIntolerance.class,
             "/api/AllergyIntolerance/{id}",
             verifier.ids().allergyIntolerance()),
+        test(404, OperationOutcome.class, "/api/AllergyIntolerance/{id}", verifier.ids().unknown()),
         test(
             200,
-            AllergyIntolerance.class,
-            "/api/AllergyIntolerance/{id}",
-            verifier.ids().allergyIntolerance()),
-        test(404, OperationOutcome.class, "/api/AllergyIntolerance/{id}", verifier.ids().unknown()),
+            AllergyIntolerance.Bundle.class,
+            "/api/AllergyIntolerance?patient={patient}",
+            verifier.ids().patient()));
+  }
+
+  @Test
+  public void advanced() {
+    verifier.verifyAll(
         test(
             200,
             AllergyIntolerance.Bundle.class,
             "/api/AllergyIntolerance?_id={id}",
             verifier.ids().allergyIntolerance()),
         test(
-            200,
-            AllergyIntolerance.Bundle.class,
-            "/api/AllergyIntolerance?identifier={id}",
-            verifier.ids().allergyIntolerance()),
+            404,
+            OperationOutcome.class,
+            "/api/AllergyIntolerance?_id={id}",
+            verifier.ids().unknown()),
         test(
             200,
             AllergyIntolerance.Bundle.class,
-            "/api/AllergyIntolerance?patient={patient}",
-            verifier.ids().patient()));
+            "/api/AllergyIntolerance?identifier={id}",
+            verifier.ids().allergyIntolerance()));
   }
 }
