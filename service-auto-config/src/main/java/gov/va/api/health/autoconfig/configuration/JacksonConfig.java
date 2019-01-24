@@ -20,7 +20,6 @@ import com.fasterxml.jackson.databind.ser.std.StdScalarSerializer;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.io.IOException;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -67,7 +66,6 @@ import org.springframework.context.annotation.Configuration;
  * </pre>
  */
 @Configuration
-@Slf4j
 public class JacksonConfig {
 
   /** Return a configured Jackson ObjectMapper. This method is useful as a supplier function. */

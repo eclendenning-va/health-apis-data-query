@@ -30,7 +30,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Singular;
 import lombok.Value;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,7 +41,6 @@ import org.springframework.web.bind.annotation.RestController;
   produces = {"application/json", "application/json+fhir", "application/fhir+json"}
 )
 @AllArgsConstructor(onConstructor = @__({@Autowired}))
-@Slf4j
 class MetadataController {
 
   private static final String ALLERGYINTOLERANCE_HTML =

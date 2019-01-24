@@ -10,7 +10,6 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import lombok.AllArgsConstructor;
 import lombok.Value;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * A decorator for the standard Rest Assured response that adds a little more error support, by
@@ -18,7 +17,6 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Value
 @AllArgsConstructor(staticName = "of")
-@Slf4j
 class ExpectedResponse {
 
   Response response;
