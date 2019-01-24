@@ -9,8 +9,10 @@ import java.util.function.Supplier;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
+import lombok.extern.slf4j.Slf4j;
 
 /** Defines particulars for interacting with a specific service. */
+@Slf4j
 @Value
 @Builder
 @AllArgsConstructor
