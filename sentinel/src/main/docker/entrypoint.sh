@@ -27,11 +27,28 @@ EOF
 exit 1
 }
 
+trustServer() {
+  local host=$1
+  curl -sk https://$host > /dev/null 2>&1
+  [ $? == 6 ] && return
+  echo "Trusting $host"
+  keytool -printcert -rfc -sslserver $host > $host.pem
+  keytool \
+    -importcert \
+    -file $host.pem \
+    -alias $host \
+    -keystore $JAVA_HOME/jre/lib/security/cacerts \
+    -storepass changeit \
+    -noprompt
+}
+
 defaultTests() {
   doListTests | grep 'IT$'
 }
 
 doTest() {
+  trustServer qa-argonaut.lighthouse.va.gov
+  trustServer staging-argonaut.lighthouse.va.gov
   local tests="$@"
   [ -z "$tests" ] && tests=$(defaultTests)
   local filter
