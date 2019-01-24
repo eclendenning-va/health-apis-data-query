@@ -27,7 +27,14 @@ public class ProcedureIT {
             "api/Procedure?patient={patient}&date={fromDate}&date={toDate}",
             verifier.ids().patient(),
             verifier.ids().procedures().fromDate(),
-            verifier.ids().procedures().toDate()));
+            verifier.ids().procedures().toDate()),
+        test(200, Procedure.Bundle.class, "/api/Procedure?_id={id}", verifier.ids().procedure()),
+        test(404, OperationOutcome.class, "/api/Procedure?_id={id}", verifier.ids().unknown()),
+        test(
+            200,
+            Procedure.Bundle.class,
+            "/api/Procedure?identifier={id}",
+            verifier.ids().procedure()));
   }
 
   @Test
@@ -36,13 +43,6 @@ public class ProcedureIT {
     verifier.verifyAll(
         test(200, Procedure.class, "/api/Procedure/{id}", verifier.ids().procedure()),
         test(404, OperationOutcome.class, "/api/Procedure/{id}", verifier.ids().unknown()),
-        test(200, Procedure.Bundle.class, "/api/Procedure?_id={id}", verifier.ids().procedure()),
-        test(404, OperationOutcome.class, "/api/Procedure?_id={id}", verifier.ids().unknown()),
-        test(
-            200,
-            Procedure.Bundle.class,
-            "/api/Procedure?identifier={id}",
-            verifier.ids().procedure()),
         test(
             200,
             Procedure.Bundle.class,

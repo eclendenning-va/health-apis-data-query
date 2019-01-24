@@ -21,17 +21,23 @@ public class AppointmentIT {
         test(
             200,
             Appointment.Bundle.class,
+            "/api/Appointment?patient={patient}",
+            verifier.ids().patient()));
+  }
+
+  @Test
+  public void advanced() {
+    verifier.verifyAll(
+        test(
+            200,
+            Appointment.Bundle.class,
             "/api/Appointment?_id={id}",
             verifier.ids().appointment()),
+        test(404, OperationOutcome.class, "/api/Appointment?_id={id}", verifier.ids().unknown()),
         test(
             200,
             Appointment.Bundle.class,
             "/api/Appointment?identifier={id}",
-            verifier.ids().appointment()),
-        test(
-            200,
-            Appointment.Bundle.class,
-            "/api/Appointment?patient={patient}",
-            verifier.ids().patient()));
+            verifier.ids().appointment()));
   }
 }

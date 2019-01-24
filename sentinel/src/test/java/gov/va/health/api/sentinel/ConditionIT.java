@@ -28,7 +28,14 @@ public class ConditionIT {
             200,
             Condition.Bundle.class,
             "/api/Condition?patient={patient}&clinicalstatus=active",
-            verifier.ids().patient()));
+            verifier.ids().patient()),
+        test(200, Condition.Bundle.class, "/api/Condition?_id={id}", verifier.ids().condition()),
+        test(404, OperationOutcome.class, "/api/Condition?_id={id}", verifier.ids().unknown()),
+        test(
+            200,
+            Condition.Bundle.class,
+            "/api/Condition?identifier={id}",
+            verifier.ids().condition()));
   }
 
   @Test
@@ -37,12 +44,6 @@ public class ConditionIT {
     verifier.verifyAll(
         test(200, Condition.class, "/api/Condition/{id}", verifier.ids().condition()),
         test(404, OperationOutcome.class, "/api/Condition/{id}", verifier.ids().unknown()),
-        test(
-            200,
-            Condition.Bundle.class,
-            "/api/Condition?identifier={id}",
-            verifier.ids().condition()),
-        test(404, OperationOutcome.class, "/api/Condition?_id={id}", verifier.ids().unknown()),
         test(
             200,
             Condition.Bundle.class,

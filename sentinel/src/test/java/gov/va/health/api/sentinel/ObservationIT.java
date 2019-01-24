@@ -55,7 +55,18 @@ public class ObservationIT {
             "/api/Observation?patient={patient}&code={loinc1},{loinc2}",
             verifier.ids().patient(),
             verifier.ids().observations().loinc1(),
-            verifier.ids().observations().loinc2()));
+            verifier.ids().observations().loinc2()),
+        test(
+            200,
+            Observation.Bundle.class,
+            "/api/Observation?_id={id}",
+            verifier.ids().observation()),
+        test(404, OperationOutcome.class, "/api/Observation?_id={id}", verifier.ids().unknown()),
+        test(
+            200,
+            Observation.Bundle.class,
+            "/api/Observation?identifier={id}",
+            verifier.ids().observation()));
   }
 
   @Test
@@ -64,17 +75,6 @@ public class ObservationIT {
     verifier.verifyAll(
         test(200, Observation.class, "/api/Observation/{id}", verifier.ids().observation()),
         test(404, OperationOutcome.class, "/api/Observation/{id}", verifier.ids().unknown()),
-        test(
-            200,
-            Observation.Bundle.class,
-            "/api/Observation?_id={id}",
-            verifier.ids().observation()),
-        test(
-            200,
-            Observation.Bundle.class,
-            "/api/Observation?identifier={id}",
-            verifier.ids().observation()),
-        test(404, OperationOutcome.class, "/api/Observation?_id={id}", verifier.ids().unknown()),
         test(
             200,
             Observation.Bundle.class,
