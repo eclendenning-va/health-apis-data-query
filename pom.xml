@@ -137,6 +137,32 @@
       </activation>
       <build>
         <plugins>
+          <!-- Compiler -->
+          <plugin>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>${maven-compiler-plugin.version}</version>
+            <executions>
+              <execution>
+                <goals>
+                  <!-- Enable warnings for compile goal. (Not testCompile.) -->
+                  <goal>compile</goal>
+                </goals>
+                <configuration>
+                  <source>${java.version}</source>
+                  <target>${java.version}</target>
+                  <showWarnings>true</showWarnings>
+                  <compilerArgs>
+                    <arg>-Xlint:all</arg>
+                    <!-- Suppress unknown annotation processing warnings. -->
+                    <arg>-Xlint:-processing</arg>
+                    <!-- Java serialization is not used. -->
+                    <arg>-Xlint:-serial</arg>
+                    <arg>-Werror</arg>
+                  </compilerArgs>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
           <!-- Maven Enforcer rules that apply to all projects. -->
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
@@ -284,6 +310,7 @@
               </execution>
             </executions>
           </plugin>
+          <!-- Checkstyle -->
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-checkstyle-plugin</artifactId>

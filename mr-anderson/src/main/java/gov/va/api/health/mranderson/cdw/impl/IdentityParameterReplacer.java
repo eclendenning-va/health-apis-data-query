@@ -9,11 +9,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.Builder;
 import lombok.Singular;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 
 /** Leverages the Identity Service to replace _identifier_ type parameters in Queries. */
+@SuppressWarnings("all")
 class IdentityParameterReplacer {
 
   private final IdentityService identityService;
@@ -24,10 +27,16 @@ class IdentityParameterReplacer {
   private IdentityParameterReplacer(
       IdentityService identityService,
       @Singular Set<String> identityKeys,
-      @Singular Map<String, String> aliases) {
+      @Singular List<Pair<String, String>> aliases) {
     this.identityService = identityService;
     this.identityKeys = identityKeys;
-    this.aliases = aliases;
+
+    // @Singular Map<String, String> emits a compiler warning from the Lombok code (??)
+    // List of pairs is a workaround.
+    this.aliases =
+        aliases
+            .stream()
+            .collect(Collectors.toMap(alias -> alias.getKey(), alias -> alias.getValue()));
   }
 
   private String aliasOf(String key) {

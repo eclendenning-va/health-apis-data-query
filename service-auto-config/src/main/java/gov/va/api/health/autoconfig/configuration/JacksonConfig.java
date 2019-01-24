@@ -166,7 +166,7 @@ public class JacksonConfig {
             @Override
             public void serialize(String value, JsonGenerator gen, SerializerProvider provider)
                 throws IOException {
-              gen.writeString(trim((String) value));
+              gen.writeString(trim(value));
             }
           });
     }
