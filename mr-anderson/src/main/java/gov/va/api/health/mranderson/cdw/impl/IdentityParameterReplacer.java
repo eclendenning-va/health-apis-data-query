@@ -16,7 +16,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 /** Leverages the Identity Service to replace _identifier_ type parameters in Queries. */
-@SuppressWarnings("all")
 class IdentityParameterReplacer {
 
   private final IdentityService identityService;
