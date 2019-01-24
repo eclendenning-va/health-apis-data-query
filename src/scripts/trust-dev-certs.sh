@@ -1,11 +1,55 @@
 #!/usr/bin/env bash
 
 #
-# Updates your cacerts trust store in your Java home to trust
-# the Lighthouse development certs, internal-sys-dev.
+# Updates cacerts trust store in Java home to trust:
+#   The Lighthouse development certs, internal-sys-dev.
+#   The nexus.freedomstream.io certificate.
+#   The tools.health.dev-developer.va.gov certificate.
 #
 # You will probably need root access to modify the trust store.
 #
+
+remove_old_certificate () {
+  set +e
+  OLD=$(keytool \
+    -list \
+    -keypass "$HEALTH_API_CERTIFICATE_PASSWORD" \
+    -keystore "$TRUST_STORE" \
+    -storepass "$TRUST_STORE_PASSWORD" \
+    | grep "$1")
+
+  if [ -n "$OLD" ]
+  then
+    echo "Removing old $1 trusted certificate"
+    keytool \
+      -delete \
+      -alias $1 \
+      -keypass "$HEALTH_API_CERTIFICATE_PASSWORD" \
+      -keystore "$TRUST_STORE" \
+      -storepass "$TRUST_STORE_PASSWORD"
+  fi
+  set -e
+}
+
+import_certificate_from_url () {
+  remove_old_certificate $1
+
+  echo "Printing certificate for SSL server $1 to $1.pem"
+  keytool \
+    -printcert \
+    -rfc \
+    -sslserver $1 \
+    > $1.pem
+
+  echo "Importing $1.pem"
+  keytool \
+    -importcert \
+    -file $1.pem \
+    -alias $1 \
+    -keystore "$TRUST_STORE" \
+    -storepass "$TRUST_STORE_PASSWORD" \
+    -noprompt
+}
 
 cd $(dirname $0)/../..
 
@@ -26,26 +70,9 @@ BACKUP=$(basename "$TRUST_STORE").$(date +%s)
 cp "$TRUST_STORE" "$BACKUP"
 echo -e "Backed up $TRUST_STORE\nto $(pwd)/$BACKUP"
 
-set +e
-OLD=$(keytool \
-  -list \
-  -keypass "$HEALTH_API_CERTIFICATE_PASSWORD" \
-  -keystore "$TRUST_STORE" \
-  -storepass "$TRUST_STORE_PASSWORD" \
-  | grep "$ALIAS")
+remove_old_certificate $ALIAS
 
-if [ -n "$OLD" ]
-then
-  echo "Removing old $ALIAS trusted certificate"
-  keytool \
-    -delete \
-    -alias $ALIAS \
-    -keypass "$HEALTH_API_CERTIFICATE_PASSWORD" \
-    -keystore "$TRUST_STORE" \
-    -storepass "$TRUST_STORE_PASSWORD"
-fi
-set -e
-
+echo -e "Exporting certificate $ALIAS from keystore $KEYSTORE to $ALIAS.crt"
 keytool \
   -exportcert \
   -storepass "$HEALTH_API_CERTIFICATE_PASSWORD" \
@@ -53,6 +80,7 @@ keytool \
   -alias $ALIAS \
   -file $ALIAS.crt
 
+echo "Importing $ALIAS.crt"
 keytool \
   -import \
   -trustcacerts \
@@ -63,3 +91,6 @@ keytool \
   -storepass "$TRUST_STORE_PASSWORD" \
   -noprompt
 
+import_certificate_from_url nexus.freedomstream.io
+
+import_certificate_from_url tools.health.dev-developer.va.gov
