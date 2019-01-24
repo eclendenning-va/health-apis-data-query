@@ -68,15 +68,12 @@ public class PatientIT {
   }
 
   /**
-   * Although dictated by the Argonaut Spec, the DB team has disabled patient searching by in
-   * PROD/QA
+   * The CDW database has disabled patient searching by identifier for both PROD/QA. We will test
+   * this only in LOCAL mode against the sandbox db.
    */
   @Test
   public void patientIdentifierSearching() {
-    if (Sentinel.environment() == Environment.LOCAL) {
-      verifier.verify(
-          test(
-              200, Patient.Bundle.class, "/api/Patient?identifier={id}", verifier.ids().patient()));
-    }
+    verifier.verify(
+        test(200, Patient.Bundle.class, "/api/Patient?identifier={id}", verifier.ids().patient()));
   }
 }
