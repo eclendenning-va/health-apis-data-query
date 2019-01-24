@@ -71,7 +71,7 @@ public class CdwCrawlerTest {
             .forceJargonaut(true)
             .build();
     crawler.crawl();
-    log.info("Results for {} ({})\n{}", patient, results.message());
+    log.info("Results for patient : {} \n{}", patient, results.message());
     assertThat(results.failures()).withFailMessage("%d Failures", results.failures()).isEqualTo(0);
   }
 
