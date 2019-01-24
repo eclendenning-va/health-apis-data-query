@@ -199,6 +199,28 @@
                     ]
                 },
                 {
+                    "type": "MedicationDispense",
+                    "profile": {
+                        "reference": "https://www.hl7.org/fhir/DSTU2/medicationdispense.html"
+                    },
+                    "interaction": [
+                        {
+                            "code": "search-type",
+                            "documentation": "Implemented per the specification"
+                        },
+                        {
+                            "code": "read",
+                            "documentation": "Implemented per the specification"
+                        }
+                    ],
+                    "searchParam": [
+                        {
+                            "name": "patient",
+                            "type": "reference"
+                        }
+                    ]
+                },
+                {
                     "type": "MedicationOrder",
                     "profile": {
                         "reference": "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-medicationorder.html"

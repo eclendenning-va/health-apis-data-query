@@ -58,6 +58,8 @@ class MetadataController {
   private static final String LOCATION_HTML = "https://www.hl7.org/fhir/DSTU2/location.html";
   private static final String MEDICATION_HTML =
       "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-medication.html";
+  private static final String MEDICATIONDISPENSE_HTML =
+      "https://www.hl7.org/fhir/DSTU2/medicationdispense.html";
   private static final String MEDICATIONORDER_HTML =
       "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-medicationorder.html";
   private static final String MEDICATIONSTATEMENT_HTML =
@@ -129,6 +131,10 @@ class MetadataController {
                 .build(),
             support("Location").documentation(LOCATION_HTML).build(),
             support("Medication").documentation(MEDICATION_HTML).build(),
+            support("MedicationDispense")
+                .documentation(MEDICATIONDISPENSE_HTML)
+                .searchBy(SearchParam.PATIENT)
+                .build(),
             support("MedicationOrder")
                 .documentation(MEDICATIONORDER_HTML)
                 .searchBy(SearchParam.PATIENT)

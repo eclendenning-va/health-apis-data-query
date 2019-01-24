@@ -48,7 +48,10 @@ import lombok.NoArgsConstructor;
   fieldVisibility = JsonAutoDetect.Visibility.ANY,
   isGetterVisibility = JsonAutoDetect.Visibility.NONE
 )
-@Schema(description = "https://www.hl7.org/fhir/DSTU2/medicationdispense.html")
+@Schema(
+  description = "https://www.hl7.org/fhir/DSTU2/medicationdispense.html",
+  example = SwaggerExamples.MEDICATION_DISPENSE
+)
 @ExactlyOneOf(
   fields = {"medicationCodeableConcept", "medicationReference"},
   message = "Exactly one medication field must be specified"
@@ -73,7 +76,7 @@ public class MedicationDispense implements DomainResource {
   @Valid List<Extension> modifierExtension;
   @Valid Identifier identifier;
   @Valid Narrative text;
-  @NotNull Status status;
+  @Valid Status status;
   @Valid Reference patient;
   @Valid Reference dispenser;
   @Valid List<Reference> authorizingPrescription;
@@ -139,7 +142,7 @@ public class MedicationDispense implements DomainResource {
   @EqualsAndHashCode(callSuper = true)
   @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
   @JsonDeserialize(builder = MedicationDispense.Bundle.BundleBuilder.class)
-  @Schema(name = "MedicationDispenseBundle")
+  @Schema(name = "MedicationDispenseBundle", example = SwaggerExamples.MEDICATION_DISPENSE_BUNDLE)
   public static class Bundle extends AbstractBundle<Entry> {
 
     @Builder
