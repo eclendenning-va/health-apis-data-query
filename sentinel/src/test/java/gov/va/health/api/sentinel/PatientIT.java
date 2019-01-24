@@ -48,7 +48,6 @@ public class PatientIT {
     verifier.verifyAll(
         test(200, Patient.class, "/api/Patient/{id}", verifier.ids().patient()),
         test(200, Patient.Bundle.class, "/api/Patient?_id={id}", verifier.ids().patient()),
-        test(200, Patient.Bundle.class, "/api/Patient?identifier={id}", verifier.ids().patient()),
         test(404, OperationOutcome.class, "/api/Patient?_id={id}", verifier.ids().unknown()));
   }
 
@@ -65,6 +64,19 @@ public class PatientIT {
     } else {
       verifier.verify(
           test(403, OperationOutcome.class, "/api/Patient/{id}", verifier.ids().unknown()));
+    }
+  }
+
+  /**
+   * Although dictated by the Argonaut Spec, the DB team has disabled patient searching by in
+   * PROD/QA
+   */
+  @Test
+  public void patientIdentifierSearching() {
+    if (Sentinel.environment() == Environment.LOCAL) {
+      verifier.verify(
+          test(
+              200, Patient.Bundle.class, "/api/Patient?identifier={id}", verifier.ids().patient()));
     }
   }
 }
