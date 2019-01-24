@@ -63,7 +63,7 @@ public class LabTest {
     discovery.queries().forEach(q::add);
     Crawler crawler =
         Crawler.builder()
-            .executor(Executors.newFixedThreadPool(4))
+            .executor(Executors.newFixedThreadPool(10))
             .requestQueue(q)
             .results(results)
             .authenticationToken(() -> robot.token().accessToken())

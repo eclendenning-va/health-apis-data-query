@@ -10,6 +10,7 @@ import lombok.Value;
 @Value
 @Builder(toBuilder = true)
 public class TestIds {
+  boolean publicIds;
   @NonNull String allergyIntolerance;
   @NonNull String appointment;
   @NonNull String condition;
@@ -30,7 +31,7 @@ public class TestIds {
 
   @NonNull DiagnosticReports diagnosticReports;
   @NonNull Observations observations;
-  @NonNull PersonallyIdentifiableInformation pii;
+  PersonallyIdentifiableInformation pii;
   @NonNull Procedures procedures;
 
   @Value

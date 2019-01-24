@@ -15,6 +15,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class Sentinel {
 
+  static {
+    String env = System.getProperty("sentinel", "LOCAL").toUpperCase(Locale.ENGLISH);
+    log.info("Using {} Sentinel environment (Override with -Dsentinel=LOCAL|QA|PROD)", env);
+  }
+
   private SystemDefinition system;
 
   /**
@@ -26,6 +31,10 @@ public class Sentinel {
     switch (env) {
       case "LOCAL":
         return new Sentinel(SystemDefinitions.get().local());
+      case "PROD":
+        return new Sentinel(SystemDefinitions.get().prod());
+      case "QA":
+        return new Sentinel(SystemDefinitions.get().qa());
       default:
         throw new IllegalArgumentException("Unknown sentinel environment: " + env);
     }

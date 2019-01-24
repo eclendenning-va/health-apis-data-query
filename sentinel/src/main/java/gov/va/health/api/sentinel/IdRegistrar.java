@@ -54,6 +54,11 @@ class IdRegistrar {
 
   private TestIds registerCdwIds() {
     TestIds cdwIds = system().cdwIds();
+    if (cdwIds.publicIds()) {
+      log.info("Registration not necessary");
+      return cdwIds;
+    }
+
     ResourceIdentity allergyIntolerance = id("ALLERGY_INTOLERANCE", cdwIds.allergyIntolerance());
     ResourceIdentity appointment = id("APPOINTMENT", cdwIds.appointment());
     ResourceIdentity condition = id("CONDITION", cdwIds.condition());
@@ -100,6 +105,7 @@ class IdRegistrar {
     TestIds publicIds =
         cdwIds
             .toBuilder()
+            .publicIds(true)
             .allergyIntolerance(findUuid(registrations, allergyIntolerance))
             .appointment(findUuid(registrations, appointment))
             .condition(findUuid(registrations, condition))

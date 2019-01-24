@@ -65,17 +65,16 @@ public class MedicationDispenseTransformerTest {
   @Test
   public void identifier() {
     assertThat(tx.identifier(null)).isNull();
-    List<CdwIdentifier> cdw = Collections.singletonList(null);
-    assertThat(tx.identifier(cdw)).isNull();
-    cdw.add(new CdwIdentifier());
-    assertThat(tx.identifier(cdw)).isNull();
+    assertThat(tx.identifier(singletonList(null))).isNull();
+    assertThat(tx.identifier(singletonList(new CdwIdentifier()))).isNull();
   }
 
   @Test
   public void identifierUse() {
     assertThat(tx.identifierUse(null)).isNull();
     assertThat(tx.identifierUse(CdwIdentifierUseCodes.OFFICIAL)).isEqualTo(IdentifierUse.official);
-    assertThat(tx.identifierUse(CdwIdentifierUseCodes.SECONDARY)).isEqualTo(IdentifierUse.secondary);
+    assertThat(tx.identifierUse(CdwIdentifierUseCodes.SECONDARY))
+        .isEqualTo(IdentifierUse.secondary);
     assertThat(tx.identifierUse(CdwIdentifierUseCodes.TEMP)).isEqualTo(IdentifierUse.temp);
     assertThat(tx.identifierUse(CdwIdentifierUseCodes.USUAL)).isEqualTo(IdentifierUse.usual);
   }

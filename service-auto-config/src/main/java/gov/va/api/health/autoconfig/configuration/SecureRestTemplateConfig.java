@@ -99,6 +99,12 @@ public class SecureRestTemplateConfig {
             "Response Body:\n{}",
             StreamUtils.copyToString(response.getBody(), StandardCharsets.UTF_8));
         log.error("----------------------------------------------------");
+      } else {
+        log.info(
+            "Response from {} {} is {}",
+            request.getMethod(),
+            request.getURI(),
+            response.getStatusCode());
       }
       return response;
     };
