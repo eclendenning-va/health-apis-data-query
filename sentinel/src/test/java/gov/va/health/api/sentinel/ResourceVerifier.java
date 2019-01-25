@@ -37,6 +37,7 @@ public class ResourceVerifier {
     if (!AbstractBundle.class.isAssignableFrom(tc.response())) {
       return;
     }
+    log.info("Verify {} page bounds", tc.label());
     argonaut()
         .get(tc.path() + "&page=0", tc.parameters())
         .expect(400)
@@ -53,6 +54,7 @@ public class ResourceVerifier {
   }
 
   public <T> T assertRequest(TestCase<T> tc) {
+    log.info("Verify {} is {} ({})", tc.label(), tc.response().getSimpleName(), tc.status());
     return argonaut()
         .get(tc.path(), tc.parameters())
         .expect(tc.status())
@@ -65,7 +67,6 @@ public class ResourceVerifier {
   }
 
   public void verifyAll(TestCase<?>... testCases) {
-    log.info("Verifying {} test cases", testCases.length);
     for (TestCase tc : testCases) {
       try {
         verify(tc);
@@ -78,7 +79,6 @@ public class ResourceVerifier {
         throw e;
       }
     }
-    log.info("Verified {} test cases", testCases.length);
   }
 
   @Value
@@ -88,5 +88,9 @@ public class ResourceVerifier {
     Class<T> response;
     String path;
     String[] parameters;
+
+    String label() {
+      return path + " with " + Arrays.toString(parameters);
+    }
   }
 }
