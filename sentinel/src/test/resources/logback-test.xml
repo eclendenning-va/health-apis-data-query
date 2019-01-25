@@ -10,4 +10,5 @@
     <appender-ref ref="STDOUT"/>
   </root>
   <logger level="INFO" name="org.apache.http"/>
+  <logger level="WARN" name="org.hibernate.validator.internal"/>
 </configuration>
