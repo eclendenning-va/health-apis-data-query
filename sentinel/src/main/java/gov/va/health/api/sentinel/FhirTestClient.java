@@ -23,7 +23,7 @@ public class FhirTestClient implements TestClient {
    * Remove data from the OO that is unique for each instance. This includes the generated ID and
    * the timestamp.
    */
-  private OperationOutcome asOperationOutcomeWithoutDiagnostics(ResponseBody body) {
+  private OperationOutcome asOperationOutcomeWithoutDiagnostics(ResponseBody<?> body) {
     try {
       OperationOutcome oo = body.as(OperationOutcome.class);
       oo.id("REMOVED-FOR-COMPARISON");

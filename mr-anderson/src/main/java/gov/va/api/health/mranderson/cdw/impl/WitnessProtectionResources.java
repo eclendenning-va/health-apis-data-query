@@ -9,6 +9,7 @@ import gov.va.api.health.mranderson.util.XmlDocuments.ParseFailed;
 import gov.va.api.health.mranderson.util.XmlDocuments.WriteFailed;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
@@ -57,7 +58,7 @@ public class WitnessProtectionResources implements Resources {
           .identityKey("identifier")
           .identityKey("identifier:exact")
           .identityKey("_id")
-          .alias("_id", "identifier")
+          .alias(Pair.of("_id", "identifier"))
           .build()
           .rebuildWithCdwIdentities(originalQuery);
     } catch (IdentityService.LookupFailed e) {

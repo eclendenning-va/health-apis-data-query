@@ -3,7 +3,6 @@ package gov.va.health.api.sentinel.crawler;
 import static java.util.stream.Collectors.joining;
 
 import gov.va.api.health.argonaut.api.bundle.AbstractBundle;
-import gov.va.api.health.argonaut.api.bundle.AbstractEntry;
 import gov.va.api.health.argonaut.api.bundle.BundleLink;
 import gov.va.api.health.argonaut.api.bundle.BundleLink.LinkRelation;
 import gov.va.health.api.sentinel.crawler.Result.Outcome;
@@ -51,7 +50,7 @@ public class Crawler {
     if (next.isPresent()) {
       requestQueue.add(next.get().url());
     }
-    bundle.entry().stream().map(AbstractEntry::fullUrl).forEach(requestQueue::add);
+    bundle.entry().stream().map(entry -> entry.fullUrl()).forEach(requestQueue::add);
   }
 
   private String asAdditionalInfo(ConstraintViolation<?> v) {

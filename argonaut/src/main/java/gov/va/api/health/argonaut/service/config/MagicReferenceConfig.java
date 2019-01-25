@@ -201,6 +201,7 @@ public class MagicReferenceConfig {
             }
 
             @Override
+            @SuppressWarnings("unchecked")
             public JsonSerializer<?> modifySerializer(
                 SerializationConfig config,
                 BeanDescription beanDesc,
