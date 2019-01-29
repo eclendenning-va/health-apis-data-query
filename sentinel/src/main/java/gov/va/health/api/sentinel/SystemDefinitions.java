@@ -148,6 +148,30 @@ public class SystemDefinitions {
         .build();
   }
 
+  /** Return definitions for the staging environment. */
+  public SystemDefinition staging() {
+    return SystemDefinition.builder()
+        .ids(
+            ServiceDefinition.builder()
+                .url("https://staging-argonaut.lighthouse.va.gov")
+                .port(443)
+                .accessToken(noAccessToken())
+                .build())
+        .mrAnderson(
+            ServiceDefinition.builder()
+                .url("https://staging-argonaut.lighthouse.va.gov")
+                .port(443)
+                .accessToken(noAccessToken())
+                .build())
+        .argonaut(
+            ServiceDefinition.builder()
+                .url("https://staging-argonaut.lighthouse.va.gov")
+                .port(443)
+                .accessToken(magicAccessToken())
+                .build())
+        .build();
+  }
+
   private TestIds prodAndQaIds() {
     return TestIds.builder()
         .publicIds(true)
