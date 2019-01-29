@@ -1,5 +1,6 @@
 package gov.va.health.api.sentinel;
 
+import static gov.va.health.api.sentinel.SystemDefinitions.magicAccessToken;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import gov.va.health.api.sentinel.categories.Sapider;
@@ -39,7 +40,14 @@ public class StagingCrawlerTest {
           + "                                              \\_"
           + "\n";
 
-  private void crawl(SystemDefinition env) {
+  @Category(Sapider.class)
+  @Test
+  public void crawlStaging() {
+
+    Supplier<String> accessTokenValue = () -> magicAccessToken().get().get();
+    assertThat(accessTokenValue.get()).isNotNull();
+    log.info("Access token is specified");
+
     String patient = System.getProperty("patient-id", "1011537977V693883");
     log.info("Using patient {} (Override with -Dpatient-id=<id>)", patient);
 
@@ -50,12 +58,11 @@ public class StagingCrawlerTest {
             + "Using patient {} (Override with -Dpatient-id=<value>)\n",
         patient);
 
-    Supplier<String> accessTokenValue = () -> env.argonaut().accessToken().get().get();
-    assertThat(accessTokenValue).isNotNull();
-    log.info("Access token is specified");
-
     ResourceDiscovery discovery =
-        ResourceDiscovery.builder().patientId(patient).url(env.argonaut().url() + "/api").build();
+        ResourceDiscovery.builder()
+            .patientId(patient)
+            .url("https://staging-argonaut.lighthouse.va.gov/api/")
+            .build();
     SummarizingResultCollector results =
         SummarizingResultCollector.wrap(
             new FileResultsCollector(new File("target/staging-crawl-" + patient)));
@@ -72,11 +79,5 @@ public class StagingCrawlerTest {
     crawler.crawl();
     log.info("Results for patient : {} \n{}", patient, results.message());
     assertThat(results.failures()).withFailMessage("%d Failures", results.failures()).isEqualTo(0);
-  }
-
-  @Category(Sapider.class)
-  @Test
-  public void crawlStaging() {
-    crawl(SystemDefinitions.get().staging());
   }
 }

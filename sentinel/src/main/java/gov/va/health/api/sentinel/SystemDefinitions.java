@@ -98,7 +98,11 @@ public class SystemDefinitions {
         .build();
   }
 
-  private Supplier<Optional<String>> magicAccessToken() {
+  /**
+   * Checks for system property access-token. Supplies it if it exists and throws an exception if it
+   * doesn't.
+   */
+  public static Supplier<Optional<String>> magicAccessToken() {
     String magic = System.getProperty("access-token");
     if (isBlank(magic)) {
       throw new IllegalStateException("Access token not specified, -Daccess-token=<value>");
