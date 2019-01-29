@@ -1,6 +1,6 @@
 package gov.va.api.health.argonaut.service.controller.diagnosticreport;
 
-import static gov.va.api.health.argonaut.service.controller.Transformers.allNull;
+import static gov.va.api.health.argonaut.service.controller.Transformers.allBlank;
 import static gov.va.api.health.argonaut.service.controller.Transformers.asDateTimeString;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convert;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convertAll;
@@ -37,7 +37,7 @@ public class DiagnosticReportTransformer implements DiagnosticReportController.T
   }
 
   CodeableConcept category(CdwDiagnosticReportCategory source) {
-    if (source == null || allNull(source.getCoding(), source.getText())) {
+    if (source == null || allBlank(source.getCoding(), source.getText())) {
       return null;
     }
     return CodeableConcept.builder()
@@ -48,7 +48,7 @@ public class DiagnosticReportTransformer implements DiagnosticReportController.T
 
   List<Coding> categoryCodings(CdwDiagnosticReportCategoryCoding optionalSource) {
     if (optionalSource == null
-        || allNull(
+        || allBlank(
             optionalSource.getSystem(), optionalSource.getCode(), optionalSource.getDisplay())) {
       return null;
     }
@@ -80,7 +80,7 @@ public class DiagnosticReportTransformer implements DiagnosticReportController.T
   }
 
   private Coding codeCoding(CdwDiagnosticReportCodeCoding cdw) {
-    if (cdw == null || allNull(cdw.getCode(), cdw.getDisplay(), cdw.getSystem())) {
+    if (cdw == null || allBlank(cdw.getCode(), cdw.getDisplay(), cdw.getSystem())) {
       return null;
     }
     return Coding.builder()
@@ -112,7 +112,7 @@ public class DiagnosticReportTransformer implements DiagnosticReportController.T
   }
 
   private boolean isUsable(CdwReference reference) {
-    return reference != null && !allNull(reference.getDisplay(), reference.getReference());
+    return reference != null && !allBlank(reference.getDisplay(), reference.getReference());
   }
 
   Reference performer(CdwReference maybeReference) {

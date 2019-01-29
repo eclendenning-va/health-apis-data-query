@@ -1,6 +1,6 @@
 package gov.va.api.health.argonaut.service.controller.medicationdispense;
 
-import static gov.va.api.health.argonaut.service.controller.Transformers.allNull;
+import static gov.va.api.health.argonaut.service.controller.Transformers.allBlank;
 import static gov.va.api.health.argonaut.service.controller.Transformers.asDateTimeString;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convert;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convertAll;
@@ -85,7 +85,7 @@ public class MedicationDispenseTransformer implements MedicationDispenseControll
     }
     CdwIdentifier firstItem = maybeCdw.get(0);
     if (firstItem == null
-        || allNull(firstItem.getSystem(), firstItem.getValue(), firstItem.getUse())) {
+        || allBlank(firstItem.getSystem(), firstItem.getValue(), firstItem.getUse())) {
       return null;
     }
     return Identifier.builder()
@@ -139,7 +139,7 @@ public class MedicationDispenseTransformer implements MedicationDispenseControll
   }
 
   Coding typeCoding(CdwMedicationDispenseTypeCoding source) {
-    if (source == null || allNull(source.getCode(), source.getDisplay(), source.getSystem())) {
+    if (source == null || allBlank(source.getCode(), source.getDisplay(), source.getSystem())) {
       return null;
     }
     Coding.CodingBuilder builder = Coding.builder();
@@ -158,7 +158,7 @@ public class MedicationDispenseTransformer implements MedicationDispenseControll
    */
   SimpleQuantity simpleQuantity(CdwSimpleQuantity source) {
     if (source == null
-        || allNull(source.getCode(), source.getSystem(), source.getUnit(), source.getValue())) {
+        || allBlank(source.getCode(), source.getSystem(), source.getUnit(), source.getValue())) {
       return null;
     }
     return SimpleQuantity.builder()
@@ -191,7 +191,7 @@ public class MedicationDispenseTransformer implements MedicationDispenseControll
 
   DosageInstruction dosageInstruction(CdwDosageInstruction cdw) {
     if (cdw == null
-        || (allNull(
+        || (allBlank(
                 cdw.getAdditionalInstructions(),
                 cdw.isAsNeededBoolean(),
                 cdw.getDoseQuantity(),
@@ -231,7 +231,7 @@ public class MedicationDispenseTransformer implements MedicationDispenseControll
 
   /* Is there a nice way to check if all the fields are blank?*/
   Coding coding(CdwCoding cdw) {
-    if (cdw == null || allNull(cdw.getCode(), cdw.getDisplay(), cdw.getSystem())) {
+    if (cdw == null || allBlank(cdw.getCode(), cdw.getDisplay(), cdw.getSystem())) {
       return null;
     }
     return Coding.builder()
@@ -261,6 +261,6 @@ public class MedicationDispenseTransformer implements MedicationDispenseControll
   }
 
   private boolean isUsable(CdwReference reference) {
-    return reference != null && !allNull(reference.getReference(), reference.getDisplay());
+    return reference != null && !allBlank(reference.getReference(), reference.getDisplay());
   }
 }

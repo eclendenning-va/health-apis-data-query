@@ -1,6 +1,6 @@
 package gov.va.api.health.argonaut.service.controller.medication;
 
-import static gov.va.api.health.argonaut.service.controller.Transformers.allNull;
+import static gov.va.api.health.argonaut.service.controller.Transformers.allBlank;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convert;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convertAll;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class MedicationTransformer implements MedicationController.Transformer {
-
   @Override
   public Medication apply(CdwMedication medication) {
     return medication(medication);
@@ -33,6 +32,7 @@ public class MedicationTransformer implements MedicationController.Transformer {
     if (optionalSource.getCoding().isEmpty() && isBlank(optionalSource.getText())) {
       return null;
     }
+
     return convert(
         optionalSource,
         cdw ->
@@ -43,14 +43,14 @@ public class MedicationTransformer implements MedicationController.Transformer {
   }
 
   List<Coding> codeCodings(List<CdwCoding> source) {
-    List<Coding> codings = convertAll(source, this::codeCoding);
-    return codings == null || codings.isEmpty() ? null : codings;
+    return convertAll(source, this::codeCoding);
   }
 
   private Coding codeCoding(CdwCoding cdw) {
-    if (cdw == null || allNull(cdw.getCode(), cdw.getDisplay(), cdw.getSystem())) {
+    if (cdw == null || allBlank(cdw.getSystem(), cdw.getCode(), cdw.getDisplay())) {
       return null;
     }
+
     return Coding.builder()
         .system(cdw.getSystem())
         .code(cdw.getCode())
@@ -72,15 +72,11 @@ public class MedicationTransformer implements MedicationController.Transformer {
   }
 
   List<Coding> formCodings(List<CdwCoding> source) {
-    List<Coding> formCodings = convertAll(source, this::formCoding);
-    if (formCodings == null) {
-      return null;
-    }
-    return formCodings.isEmpty() ? null : formCodings;
+    return convertAll(source, this::formCoding);
   }
 
   private Coding formCoding(CdwCoding cdw) {
-    if (cdw == null || allNull(cdw.getCode(), cdw.getDisplay(), cdw.getSystem())) {
+    if (cdw == null || allBlank(cdw.getCode(), cdw.getDisplay(), cdw.getSystem())) {
       return null;
     }
     return Coding.builder()
@@ -90,7 +86,7 @@ public class MedicationTransformer implements MedicationController.Transformer {
         .build();
   }
 
-  Medication medication(CdwMedication source) {
+  private Medication medication(CdwMedication source) {
     return Medication.builder()
         .id(source.getCdwId())
         .resourceType("Medication")
@@ -101,7 +97,7 @@ public class MedicationTransformer implements MedicationController.Transformer {
   }
 
   Product product(CdwProduct optionalSource) {
-    if (optionalSource == null || allNull(optionalSource.getForm(), optionalSource.getId())) {
+    if (optionalSource == null || allBlank(optionalSource.getForm(), optionalSource.getId())) {
       return null;
     }
     return convert(

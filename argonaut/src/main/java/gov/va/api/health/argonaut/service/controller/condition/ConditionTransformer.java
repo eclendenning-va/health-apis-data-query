@@ -1,6 +1,6 @@
 package gov.va.api.health.argonaut.service.controller.condition;
 
-import static gov.va.api.health.argonaut.service.controller.Transformers.allNull;
+import static gov.va.api.health.argonaut.service.controller.Transformers.allBlank;
 import static gov.va.api.health.argonaut.service.controller.Transformers.asDateString;
 import static gov.va.api.health.argonaut.service.controller.Transformers.asDateTimeString;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convert;
@@ -54,7 +54,7 @@ public class ConditionTransformer implements ConditionController.Transformer {
   }
 
   private Coding categoryCoding(CdwConditionCategoryCoding cdw) {
-    if (cdw == null || allNull(cdw.getCode(), cdw.getDisplay(), cdw.getSystem())) {
+    if (cdw == null || allBlank(cdw.getCode(), cdw.getDisplay(), cdw.getSystem())) {
       return null;
     }
     return Coding.builder()
@@ -89,7 +89,7 @@ public class ConditionTransformer implements ConditionController.Transformer {
   }
 
   private Coding codeCoding(CdwCoding cdw) {
-    if (cdw == null || allNull(cdw.getCode(), cdw.getDisplay(), cdw.getSystem())) {
+    if (cdw == null || allBlank(cdw.getCode(), cdw.getDisplay(), cdw.getSystem())) {
       return null;
     }
     return Coding.builder()
@@ -117,7 +117,7 @@ public class ConditionTransformer implements ConditionController.Transformer {
   }
 
   Reference reference(CdwReference maybeCdw) {
-    if (maybeCdw == null || allNull(maybeCdw.getDisplay(), maybeCdw.getReference())) {
+    if (maybeCdw == null || allBlank(maybeCdw.getDisplay(), maybeCdw.getReference())) {
       return null;
     }
     return convert(

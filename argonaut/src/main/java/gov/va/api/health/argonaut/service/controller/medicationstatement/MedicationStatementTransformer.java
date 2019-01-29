@@ -1,6 +1,6 @@
 package gov.va.api.health.argonaut.service.controller.medicationstatement;
 
-import static gov.va.api.health.argonaut.service.controller.Transformers.allNull;
+import static gov.va.api.health.argonaut.service.controller.Transformers.allBlank;
 import static gov.va.api.health.argonaut.service.controller.Transformers.asDateTimeString;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convert;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convertAll;
@@ -87,7 +87,7 @@ public class MedicationStatementTransformer implements MedicationStatementContro
   }
 
   private Coding coding(CdwCoding cdw) {
-    if (cdw == null || allNull(cdw.getCode(), cdw.getSystem(), cdw.getDisplay())) {
+    if (cdw == null || allBlank(cdw.getCode(), cdw.getSystem(), cdw.getDisplay())) {
       return null;
     }
     return Coding.builder()
@@ -98,7 +98,7 @@ public class MedicationStatementTransformer implements MedicationStatementContro
   }
 
   Reference reference(CdwReference maybeCdw) {
-    if (maybeCdw == null || allNull(maybeCdw.getDisplay(), maybeCdw.getReference())) {
+    if (maybeCdw == null || allBlank(maybeCdw.getDisplay(), maybeCdw.getReference())) {
       return null;
     }
     return convert(

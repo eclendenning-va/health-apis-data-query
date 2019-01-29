@@ -1,6 +1,6 @@
 package gov.va.api.health.argonaut.service.controller.encounter;
 
-import static gov.va.api.health.argonaut.service.controller.Transformers.allNull;
+import static gov.va.api.health.argonaut.service.controller.Transformers.allBlank;
 import static gov.va.api.health.argonaut.service.controller.Transformers.asDateTimeString;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convert;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convertAll;
@@ -74,7 +74,7 @@ public class EncounterTransformer implements EncounterController.Transformer {
 
   List<Coding> encounterParticipantTypeCoding(CdwEncounterParticipantType.CdwCoding maybeCdw) {
     if (maybeCdw == null
-        || allNull(maybeCdw.getCode(), maybeCdw.getDisplay(), maybeCdw.getSystem())) {
+        || allBlank(maybeCdw.getCode(), maybeCdw.getDisplay(), maybeCdw.getSystem())) {
       return null;
     }
     return convert(
@@ -94,7 +94,7 @@ public class EncounterTransformer implements EncounterController.Transformer {
   }
 
   List<Reference> episodeOfCare(CdwReference maybeCdw) {
-    if (maybeCdw == null || allNull(maybeCdw.getDisplay(), maybeCdw.getReference())) {
+    if (maybeCdw == null || allBlank(maybeCdw.getDisplay(), maybeCdw.getReference())) {
       return null;
     }
     return convert(
@@ -135,7 +135,7 @@ public class EncounterTransformer implements EncounterController.Transformer {
   }
 
   Period period(CdwEncounterPeriod maybeCdw) {
-    if (maybeCdw == null || allNull(maybeCdw.getEnd(), maybeCdw.getStart())) {
+    if (maybeCdw == null || allBlank(maybeCdw.getEnd(), maybeCdw.getStart())) {
       return null;
     }
     return convert(
@@ -148,7 +148,7 @@ public class EncounterTransformer implements EncounterController.Transformer {
   }
 
   Reference reference(CdwReference maybeCdw) {
-    if (maybeCdw == null || allNull(maybeCdw.getReference(), maybeCdw.getDisplay())) {
+    if (maybeCdw == null || allBlank(maybeCdw.getReference(), maybeCdw.getDisplay())) {
       return null;
     }
     return convert(
