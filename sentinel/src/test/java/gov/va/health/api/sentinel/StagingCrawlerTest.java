@@ -10,6 +10,7 @@ import gov.va.health.api.sentinel.crawler.FileResultsCollector;
 import gov.va.health.api.sentinel.crawler.RequestQueue;
 import gov.va.health.api.sentinel.crawler.ResourceDiscovery;
 import gov.va.health.api.sentinel.crawler.SummarizingResultCollector;
+import gov.va.health.api.sentinel.crawler.UrlRequestQueue;
 import java.io.File;
 import java.util.concurrent.Executors;
 import java.util.function.Supplier;
@@ -66,12 +67,19 @@ public class StagingCrawlerTest {
     SummarizingResultCollector results =
         SummarizingResultCollector.wrap(
             new FileResultsCollector(new File("target/staging-crawl-" + patient)));
+
     RequestQueue q = new ConcurrentRequestQueue();
-    discovery.queries().forEach(q::add);
+    UrlRequestQueue rq =
+        UrlRequestQueue.builder()
+            .forceUrl("https://staging-argonaut.lighthouse.va.gov/api/")
+            .requestQueue(q)
+            .build();
+
+    discovery.queries().forEach(rq::add);
     Crawler crawler =
         Crawler.builder()
             .executor(Executors.newFixedThreadPool(4))
-            .requestQueue(q)
+            .requestQueue(rq)
             .results(results)
             .authenticationToken(accessTokenValue)
             .forceJargonaut(true)
