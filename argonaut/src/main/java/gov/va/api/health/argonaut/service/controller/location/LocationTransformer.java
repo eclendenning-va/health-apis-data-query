@@ -1,6 +1,6 @@
 package gov.va.api.health.argonaut.service.controller.location;
 
-import static gov.va.api.health.argonaut.service.controller.Transformers.allNull;
+import static gov.va.api.health.argonaut.service.controller.Transformers.allBlank;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convert;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convertAll;
 import static gov.va.api.health.argonaut.service.controller.Transformers.ifPresent;
@@ -66,7 +66,7 @@ public class LocationTransformer implements LocationController.Transformer {
   }
 
   Reference reference(CdwReference maybeCdw) {
-    if (maybeCdw == null || allNull(maybeCdw.getReference(), maybeCdw.getDisplay())) {
+    if (maybeCdw == null || allBlank(maybeCdw.getReference(), maybeCdw.getDisplay())) {
       return null;
     }
     return convert(
@@ -100,7 +100,7 @@ public class LocationTransformer implements LocationController.Transformer {
   }
 
   CodeableConcept locationPhysicalType(CdwLocationPhysicalType maybeCdw) {
-    if (maybeCdw == null || allNull(maybeCdw.getCoding(), maybeCdw.getText())) {
+    if (maybeCdw == null || allBlank(maybeCdw.getCoding(), maybeCdw.getText())) {
       return null;
     }
     return CodeableConcept.builder()
@@ -115,7 +115,7 @@ public class LocationTransformer implements LocationController.Transformer {
   }
 
   private Coding locationTypeCoding(CdwLocation.CdwType.CdwCoding cdw) {
-    if (cdw == null || allNull(cdw.getCode(), cdw.getDisplay(), cdw.getSystem())) {
+    if (cdw == null || allBlank(cdw.getCode(), cdw.getDisplay(), cdw.getSystem())) {
       return null;
     }
     return Coding.builder()
@@ -127,7 +127,7 @@ public class LocationTransformer implements LocationController.Transformer {
 
   List<Coding> locationPhysicalTypeCoding(CdwLocationPhysicalType.CdwCoding maybeCdw) {
     if (maybeCdw == null
-        || allNull(maybeCdw.getCode(), maybeCdw.getDisplay(), maybeCdw.getSystem())) {
+        || allBlank(maybeCdw.getCode(), maybeCdw.getDisplay(), maybeCdw.getSystem())) {
       return null;
     }
     return Collections.singletonList(
@@ -163,7 +163,7 @@ public class LocationTransformer implements LocationController.Transformer {
 
   Boolean isUnusableAddress(CdwLocationAddress maybeCdw) {
     return (maybeCdw == null
-        || allNull(
+        || allBlank(
             maybeCdw.getLine(), maybeCdw.getCity(), maybeCdw.getPostalCode(), maybeCdw.getState())
         || maybeCdw.getLine().isEmpty());
   }

@@ -5,7 +5,6 @@ import static gov.va.api.health.argonaut.service.controller.Transformers.asDateT
 import static gov.va.api.health.argonaut.service.controller.Transformers.asInteger;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convert;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convertAll;
-import static gov.va.api.health.argonaut.service.controller.Transformers.convertString;
 import static gov.va.api.health.argonaut.service.controller.Transformers.firstPayloadItem;
 import static gov.va.api.health.argonaut.service.controller.Transformers.hasPayload;
 import static gov.va.api.health.argonaut.service.controller.Transformers.ifPresent;
@@ -24,11 +23,12 @@ import org.junit.Test;
 public class TransformersTest {
 
   @Test
-  public void allNull() {
-    assertThat(Transformers.allNull()).isTrue();
-    assertThat(Transformers.allNull(null, null, null, null)).isTrue();
-    assertThat(Transformers.allNull(null, 1, null, null)).isFalse();
-    assertThat(Transformers.allNull(1, "x", "z", 2.0)).isFalse();
+  public void allBlank() {
+    assertThat(Transformers.allBlank()).isTrue();
+    assertThat(Transformers.allBlank(null, null, null, null)).isTrue();
+    assertThat(Transformers.allBlank(null, "", " ")).isTrue();
+    assertThat(Transformers.allBlank(null, 1, null, null)).isFalse();
+    assertThat(Transformers.allBlank(1, "x", "z", 2.0)).isFalse();
   }
 
   @Test
@@ -98,24 +98,6 @@ public class TransformersTest {
   public void convertReturnsNullWhenItemIsNull() {
     Function<String, String> tx = o -> "x" + o;
     assertThat(convert(null, tx)).isNull();
-  }
-
-  @Test
-  public void convertStringReturnsConvertedWhenItemIsPopulated() {
-    Function<String, String> tx = o -> "x" + o;
-    assertThat(convertString("1", tx)).isEqualTo("x1");
-  }
-
-  @Test
-  public void convertStringReturnsNullWhenItemIsEmpty() {
-    Function<String, String> tx = o -> "x" + o;
-    assertThat(convertString("", tx)).isNull();
-  }
-
-  @Test
-  public void convertStringReturnsNullWhenItemIsNull() {
-    Function<String, String> tx = o -> "x" + o;
-    assertThat(convertString(null, tx)).isNull();
   }
 
   @Test

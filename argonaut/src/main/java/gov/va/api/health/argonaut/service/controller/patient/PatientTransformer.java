@@ -1,6 +1,6 @@
 package gov.va.api.health.argonaut.service.controller.patient;
 
-import static gov.va.api.health.argonaut.service.controller.Transformers.allNull;
+import static gov.va.api.health.argonaut.service.controller.Transformers.allBlank;
 import static gov.va.api.health.argonaut.service.controller.Transformers.asDateString;
 import static gov.va.api.health.argonaut.service.controller.Transformers.asDateTimeString;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convert;
@@ -111,7 +111,8 @@ public class PatientTransformer implements PatientController.Transformer {
   }
 
   Optional<Extension> argoBirthSex(CdwBirthsexExtension optionalSource) {
-    if (optionalSource == null || allNull(optionalSource.getUrl(), optionalSource.getValueCode())) {
+    if (optionalSource == null
+        || allBlank(optionalSource.getUrl(), optionalSource.getValueCode())) {
       return Optional.empty();
     }
     return Optional.of(
@@ -178,7 +179,7 @@ public class PatientTransformer implements PatientController.Transformer {
   }
 
   List<CodeableConcept> contactRelationship(CdwRelationship source) {
-    if (source == null || allNull(source.getCoding(), source.getText())) {
+    if (source == null || allBlank(source.getCoding(), source.getText())) {
       return null;
     }
     return singletonList(
@@ -189,7 +190,7 @@ public class PatientTransformer implements PatientController.Transformer {
   }
 
   List<Coding> contactRelationshipCoding(CdwRelationship.CdwCoding source) {
-    if (source == null || allNull(source.getCode(), source.getDisplay(), source.getSystem())) {
+    if (source == null || allBlank(source.getCode(), source.getDisplay(), source.getSystem())) {
       return null;
     }
     return singletonList(
@@ -239,7 +240,7 @@ public class PatientTransformer implements PatientController.Transformer {
   }
 
   private Coding identifierTypeCoding(CdwIdentifier.CdwType.CdwCoding cdw) {
-    if (cdw == null || allNull(cdw.getCode(), cdw.getSystem())) {
+    if (cdw == null || allBlank(cdw.getCode(), cdw.getSystem())) {
       return null;
     }
     return Coding.builder().system(cdw.getSystem()).code(cdw.getCode()).build();
@@ -284,7 +285,7 @@ public class PatientTransformer implements PatientController.Transformer {
   }
 
   private Coding maritalStatusCoding(CdwMaritalStatus.CdwCoding cdw) {
-    if (cdw == null || allNull(cdw.getCode(), cdw.getDisplay(), cdw.getSystem())) {
+    if (cdw == null || allBlank(cdw.getCode(), cdw.getDisplay(), cdw.getSystem())) {
       return null;
     }
     return Coding.builder()
@@ -296,7 +297,7 @@ public class PatientTransformer implements PatientController.Transformer {
 
   List<HumanName> names(CdwName optionalSource) {
     if (optionalSource == null
-        || allNull(
+        || allBlank(
             optionalSource.getUse(),
             optionalSource.getText(),
             optionalSource.getGiven(),
@@ -354,7 +355,7 @@ public class PatientTransformer implements PatientController.Transformer {
   }
 
   Coding valueCoding(CdwValueCoding source) {
-    if (source == null || allNull(source.getSystem(), source.getDisplay(), source.getCode())) {
+    if (source == null || allBlank(source.getSystem(), source.getDisplay(), source.getCode())) {
       return null;
     }
     return Coding.builder()
@@ -370,7 +371,7 @@ public class PatientTransformer implements PatientController.Transformer {
 
   private Boolean isUnusableContactAddress(CdwContact source) {
     if (source == null
-        || allNull(
+        || allBlank(
             source.getName(),
             source.getPostalCode(),
             source.getCity(),

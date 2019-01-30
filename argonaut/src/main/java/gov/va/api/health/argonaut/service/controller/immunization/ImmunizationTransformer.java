@@ -1,6 +1,6 @@
 package gov.va.api.health.argonaut.service.controller.immunization;
 
-import static gov.va.api.health.argonaut.service.controller.Transformers.allNull;
+import static gov.va.api.health.argonaut.service.controller.Transformers.allBlank;
 import static gov.va.api.health.argonaut.service.controller.Transformers.asDateTimeString;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convert;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convertAll;
@@ -64,7 +64,7 @@ public class ImmunizationTransformer implements ImmunizationController.Transform
   }
 
   private Coding coding(CdwCoding cdw) {
-    if (cdw == null || allNull(cdw.getCode(), cdw.getDisplay(), cdw.getSystem())) {
+    if (cdw == null || allBlank(cdw.getCode(), cdw.getDisplay(), cdw.getSystem())) {
       return null;
     }
     return Coding.builder()
@@ -98,7 +98,7 @@ public class ImmunizationTransformer implements ImmunizationController.Transform
   }
 
   Reference reference(CdwReference maybeSource) {
-    if (maybeSource == null || allNull(maybeSource.getReference(), maybeSource.getDisplay())) {
+    if (maybeSource == null || allBlank(maybeSource.getReference(), maybeSource.getDisplay())) {
       return null;
     }
     return convert(

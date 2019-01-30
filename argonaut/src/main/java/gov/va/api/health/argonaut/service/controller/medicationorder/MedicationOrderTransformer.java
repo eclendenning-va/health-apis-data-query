@@ -1,6 +1,6 @@
 package gov.va.api.health.argonaut.service.controller.medicationorder;
 
-import static gov.va.api.health.argonaut.service.controller.Transformers.allNull;
+import static gov.va.api.health.argonaut.service.controller.Transformers.allBlank;
 import static gov.va.api.health.argonaut.service.controller.Transformers.asDateTimeString;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convert;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convertAll;
@@ -56,7 +56,7 @@ public class MedicationOrderTransformer implements MedicationOrderController.Tra
   }
 
   private Coding additionalInstructionsCoding(CdwCoding cdw) {
-    if (cdw == null || allNull(cdw.getCode(), cdw.getDisplay(), cdw.getSystem())) {
+    if (cdw == null || allBlank(cdw.getCode(), cdw.getDisplay(), cdw.getSystem())) {
       return null;
     }
     return Coding.builder()
@@ -73,7 +73,7 @@ public class MedicationOrderTransformer implements MedicationOrderController.Tra
 
   DispenseRequest dispenseRequest(CdwDispenseRequest cdw) {
     if (cdw == null
-        || allNull(
+        || allBlank(
             cdw.getNumberOfRepeatsAllowed(), cdw.getQuantity(), cdw.getExpectedSupplyDuration())) {
       return null;
     }
@@ -89,7 +89,7 @@ public class MedicationOrderTransformer implements MedicationOrderController.Tra
 
   DosageInstruction dosageInstruction(CdwDosageInstruction cdw) {
     if (cdw == null
-        || allNull(
+        || allBlank(
             cdw.getAdditionalInstructions(),
             cdw.getAsNeededBoolean(),
             cdw.getDoseQuantity(),
@@ -121,7 +121,7 @@ public class MedicationOrderTransformer implements MedicationOrderController.Tra
 
   SimpleQuantity doseQuantity(CdwSimpleQuantity source) {
     if (source == null
-        || allNull(source.getCode(), source.getSystem(), source.getUnit(), source.getValue())) {
+        || allBlank(source.getCode(), source.getSystem(), source.getUnit(), source.getValue())) {
       return null;
     }
     return SimpleQuantity.builder()
@@ -146,7 +146,7 @@ public class MedicationOrderTransformer implements MedicationOrderController.Tra
   }
 
   Duration expectedSupplyDuration(CdwDuration cdw) {
-    if (cdw == null || allNull(cdw.getUnit(), cdw.getSystem(), cdw.getCode(), cdw.getValue())) {
+    if (cdw == null || allBlank(cdw.getUnit(), cdw.getSystem(), cdw.getCode(), cdw.getValue())) {
       return null;
     }
     return convert(
@@ -161,7 +161,7 @@ public class MedicationOrderTransformer implements MedicationOrderController.Tra
   }
 
   private boolean isUsable(CdwReference reference) {
-    return reference != null && !allNull(reference.getReference(), reference.getDisplay());
+    return reference != null && !allBlank(reference.getReference(), reference.getDisplay());
   }
 
   MedicationOrder medicationOrder(CdwMedicationOrder source) {
@@ -276,7 +276,7 @@ public class MedicationOrderTransformer implements MedicationOrderController.Tra
   }
 
   private Coding timingCodeCoding(CdwCoding cdw) {
-    if (cdw == null || allNull(cdw.getCode(), cdw.getDisplay(), cdw.getSystem())) {
+    if (cdw == null || allBlank(cdw.getCode(), cdw.getDisplay(), cdw.getSystem())) {
       return null;
     }
     return Coding.builder()

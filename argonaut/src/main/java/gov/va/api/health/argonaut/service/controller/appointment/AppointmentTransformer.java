@@ -1,6 +1,6 @@
 package gov.va.api.health.argonaut.service.controller.appointment;
 
-import static gov.va.api.health.argonaut.service.controller.Transformers.allNull;
+import static gov.va.api.health.argonaut.service.controller.Transformers.allBlank;
 import static gov.va.api.health.argonaut.service.controller.Transformers.asDateTimeString;
 import static gov.va.api.health.argonaut.service.controller.Transformers.asInteger;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convert;
@@ -53,7 +53,7 @@ public class AppointmentTransformer implements AppointmentController.Transformer
 
   Participant participant(CdwParticipant cdw) {
     if (cdw == null
-        || allNull(cdw.getActor(), cdw.getRequired(), cdw.getStatus(), cdw.getTypes())) {
+        || allBlank(cdw.getActor(), cdw.getRequired(), cdw.getStatus(), cdw.getTypes())) {
       return null;
     }
     return convert(
@@ -76,7 +76,7 @@ public class AppointmentTransformer implements AppointmentController.Transformer
   }
 
   Reference reference(CdwReference maybeCdw) {
-    if (maybeCdw == null || allNull(maybeCdw.getDisplay(), maybeCdw.getReference())) {
+    if (maybeCdw == null || allBlank(maybeCdw.getDisplay(), maybeCdw.getReference())) {
       return null;
     }
     return convert(
@@ -118,7 +118,7 @@ public class AppointmentTransformer implements AppointmentController.Transformer
   }
 
   private Coding typeCoding(CdwAppointmentParticipantTypeCoding cdw) {
-    if (cdw == null || allNull(cdw.getCode(), cdw.getDisplay(), cdw.getSystem())) {
+    if (cdw == null || allBlank(cdw.getCode(), cdw.getDisplay(), cdw.getSystem())) {
       return null;
     }
     return Coding.builder()
