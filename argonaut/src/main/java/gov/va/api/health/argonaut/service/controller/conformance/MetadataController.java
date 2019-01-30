@@ -21,7 +21,10 @@ import gov.va.api.health.argonaut.api.resources.Conformance.RestResource;
 import gov.va.api.health.argonaut.api.resources.Conformance.RestSecurity;
 import gov.va.api.health.argonaut.api.resources.Conformance.SearchParamType;
 import gov.va.api.health.argonaut.api.resources.Conformance.Software;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -29,20 +32,20 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Singular;
-import lombok.Value;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RestController
 @RequestMapping(
   value = {"/api/metadata"},
   produces = {"application/json", "application/json+fhir", "application/fhir+json"}
 )
-@AllArgsConstructor(onConstructor = @__({@Autowired}))
 class MetadataController {
-
   private static final String ALLERGYINTOLERANCE_HTML =
       "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-allergyintolerance.html";
   private static final String APPOINTMENT_HTML = "https://www.hl7.org/fhir/DSTU2/appointment.html";
@@ -72,7 +75,25 @@ class MetadataController {
       "https://www.hl7.org/fhir/DSTU2/practitioner.html";
   private static final String PROCEDURE_HTML =
       "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-procedure.html";
+
   private final ConformanceStatementProperties properties;
+
+  private final ConformanceStatementType conformanceStatementType;
+
+  @Autowired
+  public MetadataController(
+      ConformanceStatementProperties properties,
+      @Value("${conformance-statement-type}") String conformanceStatementType) {
+    this.properties = properties;
+
+    try {
+      this.conformanceStatementType =
+          ConformanceStatementType.valueOf(conformanceStatementType.toUpperCase(Locale.ENGLISH));
+    } catch (Exception e) {
+      throw new IllegalArgumentException(
+          "Invalid conformance-statement-type: " + conformanceStatementType, e);
+    }
+  }
 
   private List<Contact> contact() {
     return singletonList(
@@ -116,11 +137,11 @@ class MetadataController {
             support("Appointment").documentation(APPOINTMENT_HTML).build(),
             support("Condition")
                 .documentation(CONDITION_HTML)
-                .searchBy(SearchParam.PATIENT)
+                .search(conditionSearchParams())
                 .build(),
             support("DiagnosticReport")
                 .documentation(DIAGNOSTICREPORT_HTML)
-                .searchBy(SearchParam.PATIENT)
+                .search(diagnosticReportSearchParams())
                 .build(),
             support("Encounter").documentation(ENCOUNTER_HTML).build(),
             support("Immunization")
@@ -143,17 +164,86 @@ class MetadataController {
                 .build(),
             support("Observation")
                 .documentation(OBSERVATIONRESULTS_HTML)
-                .searchBy(SearchParam.PATIENT)
-                .searchBy(SearchParam.CATEGORY)
+                .search(observationSearchParams())
                 .build(),
             support("Organization").documentation(ORGANIZATION_HTML).build(),
-            support("Patient").documentation(PATIENT_HTML).searchBy(SearchParam.ID).build(),
+            support("Patient").documentation(PATIENT_HTML).search(patientSearchParams()).build(),
             support("Practitioner").documentation(PRACTITIONER_HTML).build(),
-            support("Procedure").documentation(PROCEDURE_HTML).searchBy(SearchParam.PATIENT).build()
-            //
-            )
+            support("Procedure")
+                .documentation(PROCEDURE_HTML)
+                .search(procedureSearchParams())
+                .build())
         .map(SupportedResource::asResource)
         .collect(Collectors.toList());
+  }
+
+  private Collection<SearchParam> conditionSearchParams() {
+    switch (conformanceStatementType) {
+      case PATIENT:
+        return singletonList(SearchParam.PATIENT);
+      case CLINICIAN:
+        return Arrays.asList(
+            SearchParam.CATEGORY, SearchParam.CLINICAL_STATUS, SearchParam.PATIENT);
+      default:
+        throw unknownConformanceStatementTypeException();
+    }
+  }
+
+  private Collection<SearchParam> diagnosticReportSearchParams() {
+    switch (conformanceStatementType) {
+      case PATIENT:
+        return singletonList(SearchParam.PATIENT);
+      case CLINICIAN:
+        return Arrays.asList(
+            SearchParam.CATEGORY, SearchParam.CODE, SearchParam.DATE, SearchParam.PATIENT);
+      default:
+        throw unknownConformanceStatementTypeException();
+    }
+  }
+
+  private Collection<SearchParam> observationSearchParams() {
+    switch (conformanceStatementType) {
+      case PATIENT:
+        return Arrays.asList(SearchParam.PATIENT, SearchParam.CATEGORY);
+      case CLINICIAN:
+        return Arrays.asList(
+            SearchParam.CATEGORY, SearchParam.CODE, SearchParam.DATE, SearchParam.PATIENT);
+      default:
+        throw unknownConformanceStatementTypeException();
+    }
+  }
+
+  private Collection<SearchParam> patientSearchParams() {
+    switch (conformanceStatementType) {
+      case PATIENT:
+        return singletonList(SearchParam.ID);
+      case CLINICIAN:
+        return Arrays.asList(
+            SearchParam.BIRTH_DATE,
+            SearchParam.FAMILY,
+            SearchParam.GENDER,
+            SearchParam.GIVEN,
+            SearchParam.ID,
+            SearchParam.NAME);
+      default:
+        throw unknownConformanceStatementTypeException();
+    }
+  }
+
+  private Collection<SearchParam> procedureSearchParams() {
+    switch (conformanceStatementType) {
+      case PATIENT:
+        return singletonList(SearchParam.PATIENT);
+      case CLINICIAN:
+        return Arrays.asList(SearchParam.DATE, SearchParam.PATIENT);
+      default:
+        throw unknownConformanceStatementTypeException();
+    }
+  }
+
+  private IllegalArgumentException unknownConformanceStatementTypeException() {
+    throw new IllegalStateException(
+        "Unknown conformance-statement-type: " + conformanceStatementType);
   }
 
   private List<Rest> rest() {
@@ -208,18 +298,31 @@ class MetadataController {
     return SupportedResource.builder().properties(properties).type(type);
   }
 
+  private enum ConformanceStatementType {
+    CLINICIAN,
+    PATIENT
+  }
+
   @Getter
   @AllArgsConstructor
   enum SearchParam {
-    ID("_id", SearchParamType.string),
+    BIRTH_DATE("birthdate", SearchParamType.date),
     CATEGORY("category", SearchParamType.string),
+    CLINICAL_STATUS("clinicalstatus", SearchParamType.token),
+    CODE("code", SearchParamType.token),
+    DATE("date", SearchParamType.date),
+    FAMILY("family", SearchParamType.string),
+    GENDER("gender", SearchParamType.token),
+    GIVEN("given", SearchParamType.string),
+    ID("_id", SearchParamType.string),
+    NAME("name", SearchParamType.string),
     PATIENT("patient", SearchParamType.reference);
 
     private final String param;
     private final SearchParamType type;
   }
 
-  @Value
+  @lombok.Value
   @Builder
   private static class SupportedResource {
     String type;
