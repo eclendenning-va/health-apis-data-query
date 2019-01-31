@@ -1,6 +1,6 @@
 package gov.va.api.health.argonaut.service.controller.practitioner;
 
-import static gov.va.api.health.argonaut.service.controller.Transformers.allNull;
+import static gov.va.api.health.argonaut.service.controller.Transformers.allBlank;
 import static gov.va.api.health.argonaut.service.controller.Transformers.asDateTimeString;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convert;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convertAll;
@@ -99,7 +99,7 @@ public class PractitionerTransformer implements PractitionerController.Transform
   }
 
   Reference managingOrganization(CdwReference source) {
-    if (source == null || allNull(source.getDisplay(), source.getReference())) {
+    if (source == null || allBlank(source.getDisplay(), source.getReference())) {
       return null;
     }
     return convert(
@@ -109,7 +109,7 @@ public class PractitionerTransformer implements PractitionerController.Transform
 
   HumanName name(CdwName source) {
     if (source == null
-        || allNull(
+        || allBlank(
             source.getFamily(),
             source.getGiven(),
             source.getPrefix(),
@@ -158,7 +158,7 @@ public class PractitionerTransformer implements PractitionerController.Transform
 
   PractitionerRole practitionerRole(CdwPractitionerRole source) {
     if (source == null
-        || allNull(
+        || allBlank(
             source.getHealthcareServices(),
             source.getLocations(),
             source.getManagingOrganization(),
@@ -188,7 +188,7 @@ public class PractitionerTransformer implements PractitionerController.Transform
   }
 
   List<Coding> roleCoding(CdwCoding source) {
-    if (source == null || allNull(source.getSystem(), source.getDisplay(), source.getCode())) {
+    if (source == null || allBlank(source.getSystem(), source.getDisplay(), source.getCode())) {
       return null;
     }
     return convert(
@@ -203,7 +203,7 @@ public class PractitionerTransformer implements PractitionerController.Transform
   }
 
   ContactPoint telecom(CdwTelecom source) {
-    if (source == null || allNull(source.getSystem(), source.getUse(), source.getValue())) {
+    if (source == null || allBlank(source.getSystem(), source.getUse(), source.getValue())) {
       return null;
     }
     return convert(

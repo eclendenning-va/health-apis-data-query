@@ -1,6 +1,6 @@
 package gov.va.api.health.argonaut.service.controller.observation;
 
-import static gov.va.api.health.argonaut.service.controller.Transformers.allNull;
+import static gov.va.api.health.argonaut.service.controller.Transformers.allBlank;
 import static gov.va.api.health.argonaut.service.controller.Transformers.asDateTimeString;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convert;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convertAll;
@@ -84,7 +84,7 @@ public class ObservationTransformer implements ObservationController.Transformer
   }
 
   private Coding categoryCoding(CdwCategory.CdwCoding cdw) {
-    if (cdw == null || allNull(cdw.getCode(), cdw.getDisplay(), cdw.getSystem())) {
+    if (cdw == null || allBlank(cdw.getCode(), cdw.getDisplay(), cdw.getSystem())) {
       return null;
     }
     return Coding.builder()
@@ -113,7 +113,7 @@ public class ObservationTransformer implements ObservationController.Transformer
   }
 
   private Coding codeCoding(CdwCode.CdwCoding cdw) {
-    if (cdw == null || allNull(cdw.getCode(), cdw.getDisplay(), cdw.getSystem())) {
+    if (cdw == null || allBlank(cdw.getCode(), cdw.getDisplay(), cdw.getSystem())) {
       return null;
     }
     return Coding.builder()
@@ -125,7 +125,7 @@ public class ObservationTransformer implements ObservationController.Transformer
 
   ObservationComponent component(CdwComponent maybeCdw) {
     if (maybeCdw == null
-        || allNull(
+        || allBlank(
             maybeCdw.getCode(),
             maybeCdw.getId(),
             maybeCdw.getValueCodeableConcept(),
@@ -163,7 +163,7 @@ public class ObservationTransformer implements ObservationController.Transformer
   }
 
   private Coding componentCoding(CdwComponent.CdwCode.CdwCoding cdw) {
-    if (cdw == null || allNull(cdw.getCode(), cdw.getDisplay(), cdw.getSystem())) {
+    if (cdw == null || allBlank(cdw.getCode(), cdw.getDisplay(), cdw.getSystem())) {
       return null;
     }
     return Coding.builder()
@@ -192,7 +192,7 @@ public class ObservationTransformer implements ObservationController.Transformer
   }
 
   private Coding componentValueCoding(CdwComponent.CdwValueCodeableConcept.CdwCoding cdw) {
-    if (cdw == null || allNull(cdw.getCode(), cdw.getDisplay(), cdw.getSystem())) {
+    if (cdw == null || allBlank(cdw.getCode(), cdw.getDisplay(), cdw.getSystem())) {
       return null;
     }
     return Coding.builder()
@@ -204,7 +204,7 @@ public class ObservationTransformer implements ObservationController.Transformer
 
   Quantity componentValueQuantity(CdwComponent.CdwValueQuantity maybeCdw) {
     if (maybeCdw == null
-        || allNull(
+        || allBlank(
             maybeCdw.getCode(),
             maybeCdw.getComparator(),
             maybeCdw.getSystem(),
@@ -247,7 +247,7 @@ public class ObservationTransformer implements ObservationController.Transformer
   }
 
   private Coding interpretationCoding(CdwInterpretation.CdwCoding cdw) {
-    if (cdw == null || allNull(cdw.getCode(), cdw.getDisplay(), cdw.getSystem())) {
+    if (cdw == null || allBlank(cdw.getCode(), cdw.getDisplay(), cdw.getSystem())) {
       return null;
     }
     return Coding.builder()
@@ -262,7 +262,7 @@ public class ObservationTransformer implements ObservationController.Transformer
   }
 
   Reference reference(CdwReference maybeCdw) {
-    if (maybeCdw == null || allNull(maybeCdw.getReference(), maybeCdw.getDisplay())) {
+    if (maybeCdw == null || allBlank(maybeCdw.getReference(), maybeCdw.getDisplay())) {
       return null;
     }
     return convert(
@@ -275,7 +275,7 @@ public class ObservationTransformer implements ObservationController.Transformer
   }
 
   ObservationReferenceRange referenceRange(CdwReferenceRange maybeCdw) {
-    if (maybeCdw == null || allNull(maybeCdw.getLow(), maybeCdw.getHigh())) {
+    if (maybeCdw == null || allBlank(maybeCdw.getLow(), maybeCdw.getHigh())) {
       return null;
     }
     return ObservationReferenceRange.builder()
@@ -286,7 +286,7 @@ public class ObservationTransformer implements ObservationController.Transformer
 
   SimpleQuantity referenceRangeQuantity(CdwObservationRefRangeQuantity maybeCdw) {
     if (maybeCdw == null
-        || allNull(
+        || allBlank(
             maybeCdw.getSystem(), maybeCdw.getCode(), maybeCdw.getUnit(), maybeCdw.getValue())) {
       return null;
     }
@@ -329,7 +329,7 @@ public class ObservationTransformer implements ObservationController.Transformer
   }
 
   private Coding valueCoding(CdwValueCodeableConcept.CdwCoding cdw) {
-    if (cdw == null || allNull(cdw.getCode(), cdw.getDisplay(), cdw.getSystem())) {
+    if (cdw == null || allBlank(cdw.getCode(), cdw.getDisplay(), cdw.getSystem())) {
       return null;
     }
     return Coding.builder()
@@ -341,7 +341,7 @@ public class ObservationTransformer implements ObservationController.Transformer
 
   Quantity valueQuantity(CdwValueQuantity maybeCdw) {
     if (maybeCdw == null
-        || allNull(
+        || allBlank(
             maybeCdw.getCode(),
             maybeCdw.getComparator(),
             maybeCdw.getSystem(),

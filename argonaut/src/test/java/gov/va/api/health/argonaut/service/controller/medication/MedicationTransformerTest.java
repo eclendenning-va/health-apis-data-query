@@ -36,9 +36,37 @@ public class MedicationTransformerTest {
   @Test
   public void codeCoding() {
     assertThat(tx.codeCodings(singletonList(cdw.codeCoding()))).isEqualTo(expected.codeCoding());
+
     assertThat(tx.codeCodings(null)).isNull();
     assertThat(tx.codeCodings(emptyList())).isNull();
     assertThat(tx.codeCodings(singletonList(new CdwCoding()))).isNull();
+
+    CdwCoding allBlank = new CdwCoding();
+    allBlank.setSystem(" ");
+    allBlank.setCode(" ");
+    allBlank.setDisplay(" ");
+    assertThat(tx.codeCodings(singletonList(allBlank))).isNull();
+
+    CdwCoding systemOnly = new CdwCoding();
+    systemOnly.setSystem("s");
+    systemOnly.setCode(" ");
+    systemOnly.setDisplay(" ");
+    assertThat(tx.codeCodings(singletonList(systemOnly)))
+        .isEqualTo(singletonList(Coding.builder().system("s").build()));
+
+    CdwCoding codeOnly = new CdwCoding();
+    codeOnly.setSystem(" ");
+    codeOnly.setCode("c");
+    codeOnly.setDisplay(" ");
+    assertThat(tx.codeCodings(singletonList(codeOnly)))
+        .isEqualTo(singletonList(Coding.builder().code("c").build()));
+
+    CdwCoding displayOnly = new CdwCoding();
+    displayOnly.setSystem(" ");
+    displayOnly.setCode(" ");
+    displayOnly.setDisplay("d");
+    assertThat(tx.codeCodings(singletonList(displayOnly)))
+        .isEqualTo(singletonList(Coding.builder().display("d").build()));
   }
 
   @Test

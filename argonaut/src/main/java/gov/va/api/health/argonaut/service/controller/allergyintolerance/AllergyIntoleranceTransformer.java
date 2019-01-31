@@ -1,6 +1,6 @@
 package gov.va.api.health.argonaut.service.controller.allergyintolerance;
 
-import static gov.va.api.health.argonaut.service.controller.Transformers.allNull;
+import static gov.va.api.health.argonaut.service.controller.Transformers.allBlank;
 import static gov.va.api.health.argonaut.service.controller.Transformers.asDateTimeString;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convert;
 import static gov.va.api.health.argonaut.service.controller.Transformers.convertAll;
@@ -120,7 +120,7 @@ public class AllergyIntoleranceTransformer implements AllergyIntoleranceControll
 
   List<Coding> reactionManifestationCoding(CdwManifestation.CdwCoding maybeSource) {
     if (maybeSource == null
-        || allNull(maybeSource.getCode(), maybeSource.getDisplay(), maybeSource.getSystem())) {
+        || allBlank(maybeSource.getCode(), maybeSource.getDisplay(), maybeSource.getSystem())) {
       return null;
     }
     return convert(
@@ -135,7 +135,7 @@ public class AllergyIntoleranceTransformer implements AllergyIntoleranceControll
   }
 
   Reference reference(CdwReference maybeSource) {
-    if (maybeSource == null || allNull(maybeSource.getReference(), maybeSource.getDisplay())) {
+    if (maybeSource == null || allBlank(maybeSource.getReference(), maybeSource.getDisplay())) {
       return null;
     }
     return convert(
@@ -153,7 +153,7 @@ public class AllergyIntoleranceTransformer implements AllergyIntoleranceControll
   }
 
   CodeableConcept substance(CdwSubstance source) {
-    if (source == null || allNull(source.getCoding(), source.getText())) {
+    if (source == null || allBlank(source.getCoding(), source.getText())) {
       return null;
     }
     return CodeableConcept.builder()
@@ -163,7 +163,7 @@ public class AllergyIntoleranceTransformer implements AllergyIntoleranceControll
   }
 
   List<Coding> substanceCoding(CdwSubstance.CdwCoding source) {
-    if (source == null || allNull(source.getCode(), source.getDisplay(), source.getSystem())) {
+    if (source == null || allBlank(source.getCode(), source.getDisplay(), source.getSystem())) {
       return null;
     }
     return singletonList(
