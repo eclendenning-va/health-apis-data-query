@@ -2,8 +2,6 @@ package gov.va.api.health.argonaut.service.controller.conformance;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import javax.validation.ConstraintViolationException;
-
 import gov.va.api.health.argonaut.api.resources.Conformance;
 import gov.va.api.health.argonaut.service.controller.conformance.ConformanceStatementProperties.ContactProperties;
 import gov.va.api.health.argonaut.service.controller.conformance.ConformanceStatementProperties.SecurityProperties;
