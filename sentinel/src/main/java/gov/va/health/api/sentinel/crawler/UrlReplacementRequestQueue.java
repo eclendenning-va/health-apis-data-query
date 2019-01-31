@@ -4,23 +4,15 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import lombok.Builder;
 
-@Builder
 public class UrlReplacementRequestQueue implements RequestQueue {
 
-  String forceUrl;
-
   String baseUrl;
+  String forceUrl;
 
   RequestQueue requestQueue;
 
   @Override
   public void add(String url) {
-    if (isBlank(baseUrl)) {
-      throw new IllegalStateException("baseUrl not specified.");
-    }
-    if (isBlank(forceUrl)) {
-      throw new IllegalStateException("forceUrl not specified.");
-    }
     requestQueue.add(url.replace(baseUrl, forceUrl));
   }
 
@@ -32,5 +24,18 @@ public class UrlReplacementRequestQueue implements RequestQueue {
   @Override
   public String next() {
     return requestQueue.next();
+  }
+
+  @Builder
+  UrlReplacementRequestQueue(String baseUrl, String forceUrl, RequestQueue requestQueue) {
+    this.baseUrl = baseUrl;
+    this.forceUrl = forceUrl;
+    this.requestQueue = requestQueue;
+    if (isBlank(forceUrl)) {
+      throw new IllegalStateException("forceUrl not specified.");
+    }
+    if (isBlank(baseUrl)) {
+      throw new IllegalStateException("baseUrl not specified.");
+    }
   }
 }
