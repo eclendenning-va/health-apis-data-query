@@ -1,6 +1,7 @@
 package gov.va.api.health.argonaut.service.controller.conformance;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 
 import gov.va.api.health.argonaut.api.datatypes.CodeableConcept;
@@ -21,7 +22,6 @@ import gov.va.api.health.argonaut.api.resources.Conformance.RestResource;
 import gov.va.api.health.argonaut.api.resources.Conformance.RestSecurity;
 import gov.va.api.health.argonaut.api.resources.Conformance.SearchParamType;
 import gov.va.api.health.argonaut.api.resources.Conformance.Software;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -115,7 +115,10 @@ class MetadataController {
                 .documentation(ALLERGYINTOLERANCE_HTML)
                 .searchBy(SearchParam.PATIENT)
                 .build(),
-            support("Appointment").documentation(APPOINTMENT_HTML).build(),
+            support("Appointment")
+                .documentation(APPOINTMENT_HTML)
+                .search(appointmentSearchParams())
+                .build(),
             support("Condition")
                 .documentation(CONDITION_HTML)
                 .search(conditionSearchParams())
@@ -133,7 +136,7 @@ class MetadataController {
             support("Medication").documentation(MEDICATION_HTML).build(),
             support("MedicationDispense")
                 .documentation(MEDICATIONDISPENSE_HTML)
-                .searchBy(SearchParam.PATIENT)
+                .search(medicationDispenseSearchParams())
                 .build(),
             support("MedicationOrder")
                 .documentation(MEDICATIONORDER_HTML)
@@ -158,13 +161,23 @@ class MetadataController {
         .collect(Collectors.toList());
   }
 
+  private Collection<SearchParam> appointmentSearchParams() {
+    switch (properties.getStatementType()) {
+      case PATIENT:
+        return emptyList();
+      case CLINICIAN:
+        return singletonList(SearchParam.PATIENT);
+      default:
+        throw unknownConformanceStatementTypeException();
+    }
+  }
+
   private Collection<SearchParam> conditionSearchParams() {
     switch (properties.getStatementType()) {
       case PATIENT:
         return singletonList(SearchParam.PATIENT);
       case CLINICIAN:
-        return Arrays.asList(
-            SearchParam.CATEGORY, SearchParam.CLINICAL_STATUS, SearchParam.PATIENT);
+        return asList(SearchParam.CATEGORY, SearchParam.CLINICAL_STATUS, SearchParam.PATIENT);
       default:
         throw unknownConformanceStatementTypeException();
     }
@@ -175,8 +188,19 @@ class MetadataController {
       case PATIENT:
         return singletonList(SearchParam.PATIENT);
       case CLINICIAN:
-        return Arrays.asList(
+        return asList(
             SearchParam.CATEGORY, SearchParam.CODE, SearchParam.DATE, SearchParam.PATIENT);
+      default:
+        throw unknownConformanceStatementTypeException();
+    }
+  }
+
+  private Collection<SearchParam> medicationDispenseSearchParams() {
+    switch (properties.getStatementType()) {
+      case PATIENT:
+        return singletonList(SearchParam.PATIENT);
+      case CLINICIAN:
+        return asList(SearchParam.PATIENT, SearchParam.STATUS, SearchParam.TYPE);
       default:
         throw unknownConformanceStatementTypeException();
     }
@@ -185,9 +209,9 @@ class MetadataController {
   private Collection<SearchParam> observationSearchParams() {
     switch (properties.getStatementType()) {
       case PATIENT:
-        return Arrays.asList(SearchParam.PATIENT, SearchParam.CATEGORY);
+        return asList(SearchParam.PATIENT, SearchParam.CATEGORY);
       case CLINICIAN:
-        return Arrays.asList(
+        return asList(
             SearchParam.CATEGORY, SearchParam.CODE, SearchParam.DATE, SearchParam.PATIENT);
       default:
         throw unknownConformanceStatementTypeException();
@@ -199,7 +223,7 @@ class MetadataController {
       case PATIENT:
         return singletonList(SearchParam.ID);
       case CLINICIAN:
-        return Arrays.asList(
+        return asList(
             SearchParam.BIRTH_DATE,
             SearchParam.FAMILY,
             SearchParam.GENDER,
@@ -216,7 +240,7 @@ class MetadataController {
       case PATIENT:
         return singletonList(SearchParam.PATIENT);
       case CLINICIAN:
-        return Arrays.asList(SearchParam.DATE, SearchParam.PATIENT);
+        return asList(SearchParam.DATE, SearchParam.PATIENT);
       default:
         throw unknownConformanceStatementTypeException();
     }
@@ -292,7 +316,9 @@ class MetadataController {
     GIVEN("given", SearchParamType.string),
     ID("_id", SearchParamType.string),
     NAME("name", SearchParamType.string),
-    PATIENT("patient", SearchParamType.reference);
+    PATIENT("patient", SearchParamType.reference),
+    STATUS("status", SearchParamType.token),
+    TYPE("type", SearchParamType.token);
 
     private final String param;
     private final SearchParamType type;
