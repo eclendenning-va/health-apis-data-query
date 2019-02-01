@@ -13,7 +13,7 @@ public class UrlReplacementRequestQueue implements RequestQueue {
   private final String replaceUrl;
   private final String withUrl;
 
-  RequestQueue requestQueue;
+  private final RequestQueue requestQueue;
 
   @Override
   public void add(String url) {
