@@ -98,7 +98,11 @@ public class SystemDefinitions {
         .build();
   }
 
-  private Supplier<Optional<String>> magicAccessToken() {
+  /**
+   * Checks for system property access-token. Supplies it if it exists and throws an exception if it
+   * doesn't.
+   */
+  public static Supplier<Optional<String>> magicAccessToken() {
     String magic = System.getProperty("access-token");
     if (isBlank(magic)) {
       throw new IllegalStateException("Access token not specified, -Daccess-token=<value>");
@@ -145,6 +149,30 @@ public class SystemDefinitions {
                 .accessToken(magicAccessToken())
                 .build())
         .cdwIds(prodAndQaIds())
+        .build();
+  }
+
+  /** Return definitions for the staging environment. */
+  public SystemDefinition staging() {
+    return SystemDefinition.builder()
+        .ids(
+            ServiceDefinition.builder()
+                .url("https://staging-argonaut.lighthouse.va.gov")
+                .port(443)
+                .accessToken(noAccessToken())
+                .build())
+        .mrAnderson(
+            ServiceDefinition.builder()
+                .url("https://staging-argonaut.lighthouse.va.gov")
+                .port(443)
+                .accessToken(noAccessToken())
+                .build())
+        .argonaut(
+            ServiceDefinition.builder()
+                .url("https://staging-argonaut.lighthouse.va.gov")
+                .port(443)
+                .accessToken(magicAccessToken())
+                .build())
         .build();
   }
 

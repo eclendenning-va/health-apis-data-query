@@ -3,6 +3,7 @@ package gov.va.health.api.sentinel;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import gov.va.health.api.sentinel.categories.Lab;
+import gov.va.health.api.sentinel.categories.Sapider;
 import gov.va.health.api.sentinel.crawler.ConcurrentRequestQueue;
 import gov.va.health.api.sentinel.crawler.Crawler;
 import gov.va.health.api.sentinel.crawler.FileResultsCollector;
@@ -15,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-@Category(Lab.class)
+@Category({Lab.class, Sapider.class})
 @Slf4j
 public class LabTest {
 

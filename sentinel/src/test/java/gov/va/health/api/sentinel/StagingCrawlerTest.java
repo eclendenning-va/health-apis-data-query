@@ -1,5 +1,6 @@
 package gov.va.health.api.sentinel;
 
+import static gov.va.health.api.sentinel.SystemDefinitions.magicAccessToken;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import gov.va.health.api.sentinel.categories.Sapider;
@@ -9,6 +10,7 @@ import gov.va.health.api.sentinel.crawler.FileResultsCollector;
 import gov.va.health.api.sentinel.crawler.RequestQueue;
 import gov.va.health.api.sentinel.crawler.ResourceDiscovery;
 import gov.va.health.api.sentinel.crawler.SummarizingResultCollector;
+import gov.va.health.api.sentinel.crawler.UrlReplacementRequestQueue;
 import java.io.File;
 import java.util.concurrent.Executors;
 import java.util.function.Supplier;
@@ -17,8 +19,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 @Slf4j
-@Category(Sapider.class)
-public class CdwCrawlerTest {
+public class StagingCrawlerTest {
   private static final String SAPIDER =
       "\n"
           + "                   /\\\n"
@@ -40,7 +41,14 @@ public class CdwCrawlerTest {
           + "                                              \\_"
           + "\n";
 
-  private void crawl(SystemDefinition env) {
+  @Category(Sapider.class)
+  @Test
+  public void crawlStaging() {
+
+    Supplier<String> accessTokenValue = () -> magicAccessToken().get().get();
+    assertThat(accessTokenValue.get()).isNotNull();
+    log.info("Access token is specified");
+
     String patient = System.getProperty("patient-id", "1011537977V693883");
     log.info("Using patient {} (Override with -Dpatient-id=<id>)", patient);
 
@@ -51,21 +59,28 @@ public class CdwCrawlerTest {
             + "Using patient {} (Override with -Dpatient-id=<value>)\n",
         patient);
 
-    Supplier<String> accessTokenValue = () -> env.argonaut().accessToken().get().get();
-    assertThat(accessTokenValue).isNotNull();
-    log.info("Access token is specified");
-
     ResourceDiscovery discovery =
-        ResourceDiscovery.builder().patientId(patient).url(env.argonaut().url() + "/api").build();
+        ResourceDiscovery.builder()
+            .patientId(patient)
+            .url("https://staging-argonaut.lighthouse.va.gov/api/")
+            .build();
     SummarizingResultCollector results =
         SummarizingResultCollector.wrap(
-            new FileResultsCollector(new File("target/cdw-crawl-" + patient)));
+            new FileResultsCollector(new File("target/staging-crawl-" + patient)));
+
     RequestQueue q = new ConcurrentRequestQueue();
-    discovery.queries().forEach(q::add);
+    UrlReplacementRequestQueue rq =
+        UrlReplacementRequestQueue.builder()
+            .replaceUrl("https://dev-api.va.gov/services/argonaut/v0/")
+            .withUrl("https://staging-argonaut.lighthouse.va.gov/api/")
+            .requestQueue(q)
+            .build();
+
+    discovery.queries().forEach(rq::add);
     Crawler crawler =
         Crawler.builder()
             .executor(Executors.newFixedThreadPool(4))
-            .requestQueue(q)
+            .requestQueue(rq)
             .results(results)
             .authenticationToken(accessTokenValue)
             .forceJargonaut(true)
@@ -73,15 +88,5 @@ public class CdwCrawlerTest {
     crawler.crawl();
     log.info("Results for patient : {} \n{}", patient, results.message());
     assertThat(results.failures()).withFailMessage("%d Failures", results.failures()).isEqualTo(0);
-  }
-
-  @Test
-  public void crawlQa() {
-    crawl(SystemDefinitions.get().qa());
-  }
-
-  @Test
-  public void crawlProd() {
-    crawl(SystemDefinitions.get().prod());
   }
 }
