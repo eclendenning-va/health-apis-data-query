@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import gov.va.api.health.argonaut.api.resources.Conformance;
 import gov.va.api.health.argonaut.service.controller.conformance.ConformanceStatementProperties.ContactProperties;
 import gov.va.api.health.argonaut.service.controller.conformance.ConformanceStatementProperties.SecurityProperties;
+import gov.va.api.health.argonaut.service.controller.conformance.ConformanceStatementProperties.StatementType;
 import gov.va.api.health.autoconfig.configuration.JacksonConfig;
 import lombok.SneakyThrows;
 import org.junit.Test;
@@ -50,15 +51,12 @@ public class MetadataControllerTest {
         .writeValueAsString(conformance);
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void unsetConformanceStatementType() {
-    new MetadataController(properties(), "unset");
-  }
-
   @Test
   @SneakyThrows
   public void readPatient() {
-    MetadataController controller = new MetadataController(properties(), "patient");
+    ConformanceStatementProperties properties = properties();
+    properties.setStatementType(StatementType.PATIENT);
+    MetadataController controller = new MetadataController(properties);
     Conformance old =
         JacksonConfig.createMapper()
             .readValue(
@@ -75,7 +73,9 @@ public class MetadataControllerTest {
   @Test
   @SneakyThrows
   public void readClinician() {
-    MetadataController controller = new MetadataController(properties(), "clinician");
+    ConformanceStatementProperties properties = properties();
+    properties.setStatementType(StatementType.CLINICIAN);
+    MetadataController controller = new MetadataController(properties);
     Conformance old =
         JacksonConfig.createMapper()
             .readValue(

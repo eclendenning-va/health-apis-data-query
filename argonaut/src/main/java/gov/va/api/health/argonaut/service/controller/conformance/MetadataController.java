@@ -24,7 +24,6 @@ import gov.va.api.health.argonaut.api.resources.Conformance.Software;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -32,8 +31,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Singular;
+import lombok.Value;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -43,6 +42,7 @@ import org.springframework.web.bind.annotation.RestController;
   value = {"/api/metadata"},
   produces = {"application/json", "application/json+fhir", "application/fhir+json"}
 )
+@AllArgsConstructor(onConstructor = @__({@Autowired}))
 class MetadataController {
   private static final String ALLERGYINTOLERANCE_HTML =
       "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-allergyintolerance.html";
@@ -75,23 +75,6 @@ class MetadataController {
       "http://www.fhir.org/guides/argonaut/r2/StructureDefinition-argo-procedure.html";
 
   private final ConformanceStatementProperties properties;
-
-  private final ConformanceStatementType conformanceStatementType;
-
-  @Autowired
-  public MetadataController(
-      ConformanceStatementProperties properties,
-      @Value("${conformance-statement-type}") String conformanceStatementType) {
-    this.properties = properties;
-
-    try {
-      this.conformanceStatementType =
-          ConformanceStatementType.valueOf(conformanceStatementType.toUpperCase(Locale.ENGLISH));
-    } catch (Exception e) {
-      throw new IllegalArgumentException(
-          "Invalid conformance-statement-type: " + conformanceStatementType, e);
-    }
-  }
 
   private List<Contact> contact() {
     return singletonList(
@@ -176,7 +159,7 @@ class MetadataController {
   }
 
   private Collection<SearchParam> conditionSearchParams() {
-    switch (conformanceStatementType) {
+    switch (properties.getStatementType()) {
       case PATIENT:
         return singletonList(SearchParam.PATIENT);
       case CLINICIAN:
@@ -188,7 +171,7 @@ class MetadataController {
   }
 
   private Collection<SearchParam> diagnosticReportSearchParams() {
-    switch (conformanceStatementType) {
+    switch (properties.getStatementType()) {
       case PATIENT:
         return singletonList(SearchParam.PATIENT);
       case CLINICIAN:
@@ -200,7 +183,7 @@ class MetadataController {
   }
 
   private Collection<SearchParam> observationSearchParams() {
-    switch (conformanceStatementType) {
+    switch (properties.getStatementType()) {
       case PATIENT:
         return Arrays.asList(SearchParam.PATIENT, SearchParam.CATEGORY);
       case CLINICIAN:
@@ -212,7 +195,7 @@ class MetadataController {
   }
 
   private Collection<SearchParam> patientSearchParams() {
-    switch (conformanceStatementType) {
+    switch (properties.getStatementType()) {
       case PATIENT:
         return singletonList(SearchParam.ID);
       case CLINICIAN:
@@ -229,7 +212,7 @@ class MetadataController {
   }
 
   private Collection<SearchParam> procedureSearchParams() {
-    switch (conformanceStatementType) {
+    switch (properties.getStatementType()) {
       case PATIENT:
         return singletonList(SearchParam.PATIENT);
       case CLINICIAN:
@@ -241,7 +224,7 @@ class MetadataController {
 
   private IllegalArgumentException unknownConformanceStatementTypeException() {
     throw new IllegalStateException(
-        "Unknown conformance-statement-type: " + conformanceStatementType);
+        "Unknown conformance-statement-type: " + properties.getStatementType());
   }
 
   private List<Rest> rest() {
@@ -296,11 +279,6 @@ class MetadataController {
     return SupportedResource.builder().properties(properties).type(type);
   }
 
-  private enum ConformanceStatementType {
-    CLINICIAN,
-    PATIENT
-  }
-
   @Getter
   @AllArgsConstructor
   enum SearchParam {
@@ -320,7 +298,7 @@ class MetadataController {
     private final SearchParamType type;
   }
 
-  @lombok.Value
+  @Value
   @Builder
   private static class SupportedResource {
     String type;

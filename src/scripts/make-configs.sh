@@ -142,7 +142,7 @@ makeConfig argonaut $PROFILE
 configValue argonaut $PROFILE mranderson.url https://localhost:8088
 configValue argonaut $PROFILE argonaut.url https://localhost:8090
 configValue argonaut $PROFILE health-check.medication-id 2f773f73-ad7f-56ca-891e-8e364c913fe0
-configValue argonaut $PROFILE conformance-statement-type patient
+configValue argonaut $PROFILE conformance.statement-type patient
 configValue argonaut $PROFILE conformance.contact.name "$(whoDis)"
 configValue argonaut $PROFILE conformance.contact.email "$(sendMoarSpams)"
 configValue argonaut $PROFILE conformance.security.token-endpoint https://fake.com/token
