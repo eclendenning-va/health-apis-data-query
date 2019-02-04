@@ -168,7 +168,7 @@ class MetadataController {
       case CLINICIAN:
         return singletonList(SearchParam.PATIENT);
       default:
-        throw unknownConformanceStatementTypeException();
+        throw noSearchParamsForConformanceStatementTypeException();
     }
   }
 
@@ -179,7 +179,7 @@ class MetadataController {
       case CLINICIAN:
         return asList(SearchParam.CATEGORY, SearchParam.CLINICAL_STATUS, SearchParam.PATIENT);
       default:
-        throw unknownConformanceStatementTypeException();
+        throw noSearchParamsForConformanceStatementTypeException();
     }
   }
 
@@ -191,7 +191,7 @@ class MetadataController {
         return asList(
             SearchParam.CATEGORY, SearchParam.CODE, SearchParam.DATE, SearchParam.PATIENT);
       default:
-        throw unknownConformanceStatementTypeException();
+        throw noSearchParamsForConformanceStatementTypeException();
     }
   }
 
@@ -202,7 +202,7 @@ class MetadataController {
       case CLINICIAN:
         return asList(SearchParam.PATIENT, SearchParam.STATUS, SearchParam.TYPE);
       default:
-        throw unknownConformanceStatementTypeException();
+        throw noSearchParamsForConformanceStatementTypeException();
     }
   }
 
@@ -214,7 +214,7 @@ class MetadataController {
         return asList(
             SearchParam.CATEGORY, SearchParam.CODE, SearchParam.DATE, SearchParam.PATIENT);
       default:
-        throw unknownConformanceStatementTypeException();
+        throw noSearchParamsForConformanceStatementTypeException();
     }
   }
 
@@ -231,7 +231,7 @@ class MetadataController {
             SearchParam.ID,
             SearchParam.NAME);
       default:
-        throw unknownConformanceStatementTypeException();
+        throw noSearchParamsForConformanceStatementTypeException();
     }
   }
 
@@ -242,13 +242,14 @@ class MetadataController {
       case CLINICIAN:
         return asList(SearchParam.DATE, SearchParam.PATIENT);
       default:
-        throw unknownConformanceStatementTypeException();
+        throw noSearchParamsForConformanceStatementTypeException();
     }
   }
 
-  private IllegalArgumentException unknownConformanceStatementTypeException() {
+  private IllegalArgumentException noSearchParamsForConformanceStatementTypeException() {
     throw new IllegalStateException(
-        "Unknown conformance-statement-type: " + properties.getStatementType());
+        "Search parameters are not configured for conformance statement type: "
+            + properties.getStatementType());
   }
 
   private List<Rest> rest() {

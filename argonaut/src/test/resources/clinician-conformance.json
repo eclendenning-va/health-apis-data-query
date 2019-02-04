@@ -91,8 +91,18 @@
           },
           "interaction" : [
             {
+              "code" : "search-type",
+              "documentation" : "Implemented per the specification"
+            },
+            {
               "code" : "read",
               "documentation" : "Implemented per the specification"
+            }
+          ],
+          "searchParam" : [
+            {
+              "name" : "patient",
+              "type" : "reference"
             }
           ]
         },
@@ -237,6 +247,14 @@
             {
               "name" : "patient",
               "type" : "reference"
+            },
+            {
+              "name" : "status",
+              "type" : "token"
+            },
+            {
+              "name" : "type",
+              "type" : "token"
             }
           ]
         },
