@@ -128,12 +128,12 @@ public class Crawler {
   private void process(String url, ResultBuilder resultBuilder) {
     Class<?> type = new UrlToResourceConverter().apply(url);
     log.info("Requesting {} as {}", url, type.getName());
-    RestAssured.useRelaxedHTTPSValidation();
     Response response =
         RestAssured.given()
             .header("Authorization", "Bearer " + authenticationToken.get())
             .contentType("application/fhir+json")
             .header("jargonaut", forceJargonaut)
+            .relaxedHTTPSValidation()
             .get(url)
             .andReturn();
     resultBuilder.httpStatus(response.getStatusCode()).body(response.getBody().asString());
