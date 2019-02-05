@@ -128,6 +128,7 @@ public class Crawler {
   private void process(String url, ResultBuilder resultBuilder) {
     Class<?> type = new UrlToResourceConverter().apply(url);
     log.info("Requesting {} as {}", url, type.getName());
+    RestAssured.useRelaxedHTTPSValidation();
     Response response =
         RestAssured.given()
             .header("Authorization", "Bearer " + authenticationToken.get())
