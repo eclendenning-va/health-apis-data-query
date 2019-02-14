@@ -3,17 +3,23 @@ package gov.va.health.api.sentinel;
 import gov.va.api.health.argonaut.api.bundle.AbstractBundle;
 import gov.va.api.health.argonaut.api.resources.OperationOutcome;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 
 /** This support class can be used to test standard resource queries, such as reads and searches. */
 @Slf4j
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ResourceVerifier {
   private static final ResourceVerifier INSTANCE = new ResourceVerifier();
 
-  private static final String apiPath = Sentinel.get().system().argonaut().apiPath();
+  private static final String API_PATH = Sentinel.get().system().argonaut().apiPath();
 
   @Getter(lazy = true)
   private final Sentinel sentinel = Sentinel.get();
@@ -22,6 +28,9 @@ public class ResourceVerifier {
 
   @Getter private final TestIds ids = IdRegistrar.of(sentinel().system()).registeredIds();
 
+  private final Set<Class<?>> verifiedPageBoundsClasses =
+      Collections.newSetFromMap(new ConcurrentHashMap<>());
+
   public static ResourceVerifier get() {
     return INSTANCE;
   }
@@ -29,7 +38,7 @@ public class ResourceVerifier {
   public static <T> TestCase<T> test(
       int status, Class<T> response, String path, String... parameters) {
     return TestCase.<T>builder()
-        .path(apiPath + path)
+        .path(API_PATH + path)
         .parameters(parameters)
         .response(response)
         .status(status)
@@ -40,11 +49,18 @@ public class ResourceVerifier {
    * If the response is a bundle, then the query is a search. We want to verify paging parameters
    * restrict page >= 1, _count >=1, and _count <= 20
    */
-  public <T> void assertPagingParameterBounds(TestCase<T> tc) {
+  private <T> void assertPagingParameterBounds(TestCase<T> tc) {
     if (!AbstractBundle.class.isAssignableFrom(tc.response())) {
       return;
     }
+
+    if (verifiedPageBoundsClasses.contains(tc.response())) {
+      log.info("Verify {} page bounds, skipping repeat {}.", tc.label(), tc.response.getName());
+      return;
+    }
+
     log.info("Verify {} page bounds", tc.label());
+    verifiedPageBoundsClasses.add(tc.response());
     argonaut()
         .get(tc.path() + "&page=0", tc.parameters())
         .expect(400)
@@ -60,7 +76,7 @@ public class ResourceVerifier {
         .expectValid(tc.response());
   }
 
-  public <T> T assertRequest(TestCase<T> tc) {
+  private <T> T assertRequest(TestCase<T> tc) {
     log.info("Verify {} is {} ({})", tc.label(), tc.response().getSimpleName(), tc.status());
     return argonaut()
         .get(tc.path(), tc.parameters())
@@ -74,10 +90,10 @@ public class ResourceVerifier {
   }
 
   public void verifyAll(TestCase<?>... testCases) {
-    for (TestCase tc : testCases) {
+    for (TestCase<?> tc : testCases) {
       try {
         verify(tc);
-      } catch (Exception e) {
+      } catch (Exception | AssertionError e) {
         log.error(
             "Failure: {} with parameters {}: {}",
             tc.path(),
