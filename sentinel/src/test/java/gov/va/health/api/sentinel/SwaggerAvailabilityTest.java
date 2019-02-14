@@ -12,7 +12,6 @@ import org.openqa.selenium.WebElement;
 
 @Slf4j
 public class SwaggerAvailabilityTest {
-
   DevApiPortal apiPortalPage = new DevApiPortal();
 
   public void checkAvailability(String url) {
@@ -32,13 +31,13 @@ public class SwaggerAvailabilityTest {
 
   @Category(Manual.class)
   @Test
-  public void checkDevDevAvailability() {
-    checkAvailability("https://dev-developer.va.gov/explore/health/docs/argonaut");
+  public void checkDevAvailability() {
+    checkAvailability("https://developer.va.gov/explore/health/docs/argonaut");
   }
 
   @Category(Manual.class)
   @Test
-  public void checkDevAvailability() {
-    checkAvailability("https://developer.va.gov/explore/health/docs/argonaut");
+  public void checkDevDevAvailability() {
+    checkAvailability("https://dev-developer.va.gov/explore/health/docs/argonaut");
   }
 }
