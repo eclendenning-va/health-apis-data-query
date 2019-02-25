@@ -31,6 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ResourceDiscovery {
   String url;
+
   String patientId;
 
   /** The 'url' parameter will be modified if necessary to include a trailing /. */
@@ -40,8 +41,42 @@ public class ResourceDiscovery {
     this.patientId = patientId;
   }
 
+  /** Indicates if a URL represents a search query. */
+  static boolean isSearch(@NonNull String url) {
+    return url.contains("?");
+  }
+
   private static <T> Stream<T> nullableListToStream(List<T> list) {
     return list == null ? Stream.empty() : list.stream();
+  }
+
+  /**
+   * Extract resource from URL.
+   *
+   * <p>For example, resource is 'Condition' for:
+   *
+   * <ul>
+   *   <li>https://foo.gov/services/argonaut/v0/Condition?patient=12345
+   *   <li>https://foo.gov/api/Condition/12345
+   * </ul>
+   */
+  static String resource(@NonNull String url) {
+    int lastSlashIndex = url.lastIndexOf("/");
+    if (isSearch(url)) {
+      int questionIndex = url.indexOf("?", lastSlashIndex);
+      if (lastSlashIndex + 1 > questionIndex) {
+        log.warn("Failed to extract resource from url '{}'.", url);
+        return url;
+      }
+      return url.substring(lastSlashIndex + 1, questionIndex);
+    } else {
+      int secondLastSlashIndex = url.substring(0, lastSlashIndex).lastIndexOf("/");
+      if (secondLastSlashIndex + 1 > lastSlashIndex) {
+        log.warn("Failed to extract resource from url '{}'.", url);
+        return url;
+      }
+      return url.substring(secondLastSlashIndex + 1, lastSlashIndex);
+    }
   }
 
   /**
@@ -70,15 +105,12 @@ public class ResourceDiscovery {
   }
 
   List<String> patientQueries(List<RestResource> restResources) {
-
     Optional<RestResource> patientMetadata =
         restResources.stream().filter(n -> "Patient".equals(n.type())).findFirst();
     if (!patientMetadata.isPresent()) {
       return emptyList();
     }
-
     List<String> patientQueries = new ArrayList<>();
-
     boolean isReadable =
         patientMetadata
             .get()
@@ -88,14 +120,12 @@ public class ResourceDiscovery {
     if (isReadable) {
       patientQueries.add(url + "Patient/" + patientId);
     }
-
     boolean isSearchable =
         nullableListToStream(patientMetadata.get().searchParam())
             .anyMatch(s -> "_id".equals(s.name()));
     if (isSearchable) {
       patientQueries.add((url + "Patient?_id=" + patientId));
     }
-
     return patientQueries;
   }
 
@@ -124,7 +154,6 @@ public class ResourceDiscovery {
             .get("metadata")
             .as(Conformance.class);
     List<RestResource> restResources = extractRestResources(conformanceStatement);
-
     List<String> queries = new LinkedList<>();
     queries.addAll(patientSearchableResourceQueries(restResources));
     queries.addAll(patientQueries(restResources));

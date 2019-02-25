@@ -28,6 +28,17 @@ public class ResourceDiscoveryTest {
   }
 
   @Test
+  public void extractResource() {
+    assertThat(
+            ResourceDiscovery.resource("https://dev-api.va.gov/services/argonaut/v0/Patient/12345"))
+        .isEqualTo("Patient");
+    assertThat(
+            ResourceDiscovery.resource(
+                "https://dev-api.va.gov/services/argonaut/v0/AllergyIntolerance?patient=12345"))
+        .isEqualTo("AllergyIntolerance");
+  }
+
+  @Test
   public void extractRestResources() {
     assertThat(resourceDiscovery.extractRestResources(null)).isEmpty();
     assertThat(resourceDiscovery.extractRestResources(data.noRestListConformanceStatement))

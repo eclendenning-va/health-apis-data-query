@@ -5,7 +5,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import gov.va.health.api.sentinel.categories.Manual;
-import gov.va.health.api.sentinel.crawler.ConcurrentRequestQueue;
+import gov.va.health.api.sentinel.crawler.ConcurrentResourceBalancingRequestQueue;
 import gov.va.health.api.sentinel.crawler.Crawler;
 import gov.va.health.api.sentinel.crawler.FileResultsCollector;
 import gov.va.health.api.sentinel.crawler.RequestQueue;
@@ -13,6 +13,8 @@ import gov.va.health.api.sentinel.crawler.ResourceDiscovery;
 import gov.va.health.api.sentinel.crawler.SummarizingResultCollector;
 import gov.va.health.api.sentinel.crawler.UrlReplacementRequestQueue;
 import java.io.File;
+import java.time.Duration;
+import java.time.format.DateTimeParseException;
 import java.util.concurrent.Executors;
 import java.util.function.Supplier;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +23,6 @@ import org.junit.experimental.categories.Category;
 
 @Slf4j
 public class CdwCrawlerTest {
-
   @Category(Manual.class)
   @Test
   public void crawl() {
@@ -49,6 +50,7 @@ public class CdwCrawlerTest {
             .results(results)
             .authenticationToken(accessTokenValue)
             .forceJargonaut(true)
+            .timeLimit(timeLimit())
             .build();
     crawler.crawl();
     log.info("Results for patient : {} \n{}", patient, results.message());
@@ -59,14 +61,14 @@ public class CdwCrawlerTest {
     String replaceUrl = System.getProperty("sentinel.argonaut.url.replace");
     if (isBlank(replaceUrl)) {
       log.info("Link replacement disabled (Override with -Dsentinel.argonaut.url.replace=<url>)");
-      return new ConcurrentRequestQueue();
+      return new ConcurrentResourceBalancingRequestQueue();
     }
     log.info(
         "Link replacement {} (Override with -Dsentinel.argonaut.url.replace=<url>)", replaceUrl);
     return UrlReplacementRequestQueue.builder()
         .replaceUrl(replaceUrl)
         .withUrl(env.argonaut().urlWithApiPath())
-        .requestQueue(new ConcurrentRequestQueue())
+        .requestQueue(new ConcurrentResourceBalancingRequestQueue())
         .build();
   }
 
@@ -83,5 +85,23 @@ public class CdwCrawlerTest {
     log.info(
         "Crawling with {} threads (Override with -Dsentinel.crawler.threads=<number>)", threads);
     return threads;
+  }
+
+  private Duration timeLimit() {
+    String maybeDuration = System.getProperty("sentinel.crawler.timelimit");
+    if (isNotBlank(maybeDuration)) {
+      try {
+        final Duration timeLimit = Duration.parse(maybeDuration);
+        log.info(
+            "Crawling with time limit {} (Override with -Dsentinel.crawler.timelimit=<PnYnMnDTnHnMnS>)",
+            timeLimit);
+        return timeLimit;
+      } catch (DateTimeParseException e) {
+        log.warn("Bad time limit {}, proceeding with no limit.", maybeDuration);
+      }
+    }
+    log.info(
+        "Crawling with no time limit (Override with -Dsentinel.crawler.timelimit=<PnYnMnDTnHnMnS>)");
+    return null;
   }
 }
