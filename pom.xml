@@ -10,7 +10,6 @@
   <version>1.0.191-SNAPSHOT</version>
   <packaging>pom</packaging>
   <modules>
-    <module>service-starter</module>
     <module>ids-api</module>
     <module>ids</module>
     <module>argonaut</module>
