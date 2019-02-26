@@ -15,6 +15,6 @@
     <module>argonaut</module>
     <module>argonaut-api</module>
     <module>mr-anderson</module>
-    <module>health-apis-data-query-tests</module>
+    <module>data-query-tests</module>
   </modules>
 </project>
