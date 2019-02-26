@@ -5,16 +5,12 @@
     <groupId>gov.va.api.health</groupId>
     <artifactId>health-apis-parent</artifactId>
     <version>1.0.191-SNAPSHOT</version>
-    <!-- lookup parent from repository -->
-    <relativePath/>
   </parent>
   <artifactId>health-apis-data-query-parent</artifactId>
   <version>1.0.191-SNAPSHOT</version>
   <packaging>pom</packaging>
   <modules>
-    <module>api-starter</module>
     <module>service-starter</module>
-    <module>service-auto-config</module>
     <module>ids-api</module>
     <module>ids</module>
     <module>argonaut</module>
