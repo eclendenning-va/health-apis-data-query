@@ -5,6 +5,7 @@
     <groupId>gov.va.api.health</groupId>
     <artifactId>api-starter</artifactId>
     <version>1.0.191-SNAPSHOT</version>
+    <relativePath/>
   </parent>
   <artifactId>ids-api</artifactId>
   <packaging>jar</packaging>
