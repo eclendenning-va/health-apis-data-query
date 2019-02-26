@@ -7,7 +7,7 @@
     <version>1.0.191-SNAPSHOT</version>
   </parent>
   <artifactId>health-apis-data-query-parent</artifactId>
-  <version>1.0.191-SNAPSHOT</version>
+  <version>1.0.192-SNAPSHOT</version>
   <packaging>pom</packaging>
   <modules>
     <module>ids-api</module>
