@@ -1,0 +1,4 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  gov.va.api.health.autoconfig.configuration.JacksonConfig,\
+  gov.va.api.health.autoconfig.configuration.SecureRestTemplateConfig,\
+  gov.va.api.health.autoconfig.configuration.SslClientProperties

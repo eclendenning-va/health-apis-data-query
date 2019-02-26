@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+  <!--
+    The MockEntityReturnDriver and related classes provide a Type 4 JDBC driver
+    implementation with a very narrow focus of reading sample data from files.
+    By design, the JDBC user specifies a file that acts as an index between
+    queries and XML files. These are test classes that are not used in production.
+  -->
+  <Match>
+    <Or>
+      <Class name="gov.va.health.api.sentinel.mockcdw.MockEntityReturnDriver"/>
+      <Class name="gov.va.health.api.sentinel.mockcdw.MockResponseSource"/>
+    </Or>
+    <Bug pattern="PATH_TRAVERSAL_IN"/>
+  </Match>
+  <!--
+    IdRegistrar.registeredIds() is a Lombok generated lazy getter that is implemented
+    correctly. Details can be read here: https://projectlombok.org/features/GetterLazy
+  -->
+  <Match>
+    <Class name="gov.va.health.api.sentinel.IdRegistrar"/>
+    <Method name="registeredIds"/>
+    <Or>
+      <Bug pattern="JLM_JSR166_UTILCONCURRENT_MONITORENTER"/>
+      <Bug pattern="RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE"/>
+    </Or>
+  </Match>
+  <!--
+    IdMeOaut.code() and token() are Lombok generated lazy getter that is implemented
+    correctly. Details can be read here: https://projectlombok.org/features/GetterLazy
+  -->
+  <Match>
+    <Class name="gov.va.health.api.sentinel.IdMeOauthRobot"/>
+    <Or>
+      <Method name="code"/>
+      <Method name="token"/>
+    </Or>
+    <Or>
+      <Bug pattern="JLM_JSR166_UTILCONCURRENT_MONITORENTER"/>
+      <Bug pattern="RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE"/>
+    </Or>
+  </Match>
+  <!--
+    LabRobots has many Lombok generated lazy getter that is implemented
+    correctly. Details can be read here: https://projectlombok.org/features/GetterLazy
+  -->
+  <Match>
+    <Class name="gov.va.health.api.sentinel.LabRobots"/>
+    <Or>
+      <Bug pattern="JLM_JSR166_UTILCONCURRENT_MONITORENTER"/>
+      <Bug pattern="RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE"/>
+    </Or>
+  </Match>
+  <!--
+    Path is determined automatically and not user specified.
+  -->
+  <Match>
+    <Class name="gov.va.health.api.sentinel.crawler.FileResultsCollector"/>
+    <Bug pattern="PATH_TRAVERSAL_IN"/>
+  </Match>
+</FindBugsFilter>
