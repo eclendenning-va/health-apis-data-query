@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>gov.va.api.health</groupId>
-    <artifactId>health-apis-parent</artifactId>
+    <artifactId>test-starter</artifactId>
     <version>1.0.191-SNAPSHOT</version>
   </parent>
   <artifactId>sentinel</artifactId>
