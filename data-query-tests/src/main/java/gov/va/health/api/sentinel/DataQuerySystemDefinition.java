@@ -1,0 +1,15 @@
+package gov.va.health.api.sentinel;
+
+import lombok.Builder;
+import lombok.NonNull;
+import lombok.Value;
+
+/** Specifies the particulars for interacting with the different services within a system. */
+@Value
+@Builder
+public class DataQuerySystemDefinition implements SystemDefinitions.SystemDefinition {
+  @NonNull ServiceDefinition ids;
+  @NonNull ServiceDefinition mrAnderson;
+  @NonNull ServiceDefinition argonaut;
+  @NonNull TestIds cdwIds;
+}
