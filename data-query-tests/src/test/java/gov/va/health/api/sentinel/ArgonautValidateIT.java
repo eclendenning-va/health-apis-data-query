@@ -38,7 +38,7 @@ public class ArgonautValidateIT {
 
   @Before
   public void _init() {
-    ids = IdRegistrar.of(DataQuerySystemDefinitions.get().systemDefinition()).registeredIds();
+    ids = IdRegistrar.of(DataQuerySystemDefinitions.systemDefinition()).registeredIds();
     argonaut = DataQueryTestClients.argonaut();
   }
 

@@ -11,12 +11,12 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import lombok.NoArgsConstructor;
+import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
 /** Data-query implementation of {@link SystemDefinitions}. */
-@NoArgsConstructor(staticName = "get")
 @Slf4j
+@UtilityClass
 public final class DataQuerySystemDefinitions {
   static {
     String env = System.getProperty("sentinel", "LOCAL").toUpperCase(Locale.ENGLISH);
@@ -343,7 +343,7 @@ public final class DataQuerySystemDefinitions {
   }
 
   /** Return the applicable system definition for the current environment. */
-  public DataQuerySystemDefinition systemDefinition() {
+  public static DataQuerySystemDefinition systemDefinition() {
     switch (Environment.get()) {
       case LAB:
         return lab();

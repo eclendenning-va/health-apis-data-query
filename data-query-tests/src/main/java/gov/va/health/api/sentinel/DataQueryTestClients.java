@@ -30,6 +30,6 @@ public final class DataQueryTestClients {
   }
 
   private static DataQuerySystemDefinition systemDefinition() {
-    return DataQuerySystemDefinitions.get().systemDefinition();
+    return DataQuerySystemDefinitions.systemDefinition();
   }
 }

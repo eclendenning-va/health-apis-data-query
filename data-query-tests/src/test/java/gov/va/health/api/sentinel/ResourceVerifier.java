@@ -20,7 +20,7 @@ public class ResourceVerifier {
   private static final ResourceVerifier INSTANCE = new ResourceVerifier();
 
   private static final String API_PATH =
-      DataQuerySystemDefinitions.get().systemDefinition().argonaut().apiPath();
+      DataQuerySystemDefinitions.systemDefinition().argonaut().apiPath();
 
   // @Getter(lazy = true)
   // private final Sentinel sentinel = Sentinel.systemDefinition();
@@ -29,7 +29,7 @@ public class ResourceVerifier {
 
   @Getter
   private final TestIds ids =
-      IdRegistrar.of(DataQuerySystemDefinitions.get().systemDefinition()).registeredIds();
+      IdRegistrar.of(DataQuerySystemDefinitions.systemDefinition()).registeredIds();
 
   private final Set<Class<?>> verifiedPageBoundsClasses =
       Collections.newSetFromMap(new ConcurrentHashMap<>());

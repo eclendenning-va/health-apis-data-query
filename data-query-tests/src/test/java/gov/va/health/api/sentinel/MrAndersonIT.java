@@ -9,7 +9,7 @@ import org.junit.experimental.categories.Category;
 
 public class MrAndersonIT {
   private final IdRegistrar registrar =
-      IdRegistrar.of(DataQuerySystemDefinitions.get().systemDefinition());
+      IdRegistrar.of(DataQuerySystemDefinitions.systemDefinition());
 
   private final String apiPath() {
     return DataQueryTestClients.argonaut().service().apiPath();
@@ -80,8 +80,7 @@ public class MrAndersonIT {
             .expect(200)
             .response()
             .path("root.patients.patient.cdwId");
-    assertThat(cdwId)
-        .isEqualTo(DataQuerySystemDefinitions.get().systemDefinition().cdwIds().patient());
+    assertThat(cdwId).isEqualTo(DataQuerySystemDefinitions.systemDefinition().cdwIds().patient());
   }
 
   @Category(Local.class)
