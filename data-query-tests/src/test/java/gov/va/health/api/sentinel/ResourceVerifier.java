@@ -22,9 +22,6 @@ public class ResourceVerifier {
   private static final String API_PATH =
       DataQuerySystemDefinitions.systemDefinition().argonaut().apiPath();
 
-  // @Getter(lazy = true)
-  // private final Sentinel sentinel = Sentinel.systemDefinition();
-
   @Getter private final TestClient argonaut = DataQueryTestClients.argonaut();
 
   @Getter
