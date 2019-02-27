@@ -3,7 +3,7 @@ package gov.va.health.api.sentinel;
 import gov.va.api.health.autoconfig.configuration.JacksonConfig;
 import lombok.experimental.UtilityClass;
 
-/** The set of different test clients used to interact with different services within a system. */
+/** Test clients for interacting with different services in a {@link DataQuerySystemDefinition}. */
 @UtilityClass
 public final class DataQueryTestClients {
   static TestClient argonaut() {
