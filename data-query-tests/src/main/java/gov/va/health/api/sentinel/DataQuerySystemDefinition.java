@@ -4,7 +4,10 @@ import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 
-/** Data-query implementation of {@link SystemDefinition}. */
+/**
+ * Data-query implementation of {@link SystemDefinition} with service definitions for ids,
+ * mr-anderson, and argonaut.
+ */
 @Value
 @Builder
 public final class DataQuerySystemDefinition implements SystemDefinition {

@@ -38,8 +38,8 @@ public class ArgonautValidateIT {
 
   @Before
   public void _init() {
-    ids = IdRegistrar.of(DataQuerySystemDefinitions.systemDefinition()).registeredIds();
-    argonaut = DataQueryTestClients.argonaut();
+    ids = IdRegistrar.of(SystemDefinitions.systemDefinition()).registeredIds();
+    argonaut = TestClients.argonaut();
   }
 
   private void validate(String resource, String id, Class<? extends AbstractBundle<?>> bundleType) {

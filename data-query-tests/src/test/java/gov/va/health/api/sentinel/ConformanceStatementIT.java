@@ -13,13 +13,13 @@ import org.junit.experimental.categories.Category;
 
 public class ConformanceStatementIT {
   private final String apiPath() {
-    return DataQueryTestClients.argonaut().service().apiPath();
+    return TestClients.argonaut().service().apiPath();
   }
 
   @Test
   @Category({Local.class, LabArgo.class, LabCargo.class, ProdArgo.class, ProdCargo.class})
   public void conformanceStatementIsValid() {
-    ExpectedResponse response = DataQueryTestClients.argonaut().get(apiPath() + "metadata");
+    ExpectedResponse response = TestClients.argonaut().get(apiPath() + "metadata");
     response.expect(200).expectValid(Conformance.class);
     String rawJson = response.response().asString();
     assertThat(rawJson)

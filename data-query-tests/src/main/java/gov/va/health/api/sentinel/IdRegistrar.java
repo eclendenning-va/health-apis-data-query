@@ -11,9 +11,7 @@ import lombok.Getter;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 
-/**
- * The ID Registrar will register CDW ids with the Identity Service then publish the public UUIDs.
- */
+/** ID Registrar will register CDW IDs with the Identity Service then publish the public UUIDs. */
 @Value
 @AllArgsConstructor(staticName = "of")
 @Slf4j
@@ -42,7 +40,7 @@ final class IdRegistrar {
     ResourceIdentity identity = id(resource, id);
     log.info("Registering {}", identity);
     List<Registration> registrations =
-        DataQueryTestClients.ids()
+        TestClients.ids()
             .post("/api/v1/ids", singletonList(identity))
             .expect(201)
             .expectListOf(Registration.class);
@@ -93,7 +91,7 @@ final class IdRegistrar {
             procedure);
     log.info("Registering {}", identities);
     List<Registration> registrations =
-        DataQueryTestClients.ids()
+        TestClients.ids()
             .post("/api/v1/ids", identities)
             .expect(201)
             .expectListOf(Registration.class);

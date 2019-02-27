@@ -10,7 +10,7 @@
   <artifactId>data-query-tests</artifactId>
   <packaging>jar</packaging>
   <dependencies>
-      <dependency>
+    <dependency>
       <groupId>gov.va.api.health</groupId>
       <artifactId>argonaut</artifactId>
       <version>${project.version}</version>

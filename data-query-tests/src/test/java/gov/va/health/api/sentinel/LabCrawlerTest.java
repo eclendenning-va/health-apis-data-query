@@ -27,7 +27,7 @@ public class LabCrawlerTest {
   private final LabRobots robots = LabRobots.fromSystemProperties();
 
   private int crawl(String patient) {
-    DataQuerySystemDefinition env = DataQuerySystemDefinitions.systemDefinition();
+    DataQuerySystemDefinition env = SystemDefinitions.systemDefinition();
     UserCredentials user =
         UserCredentials.builder()
             .id(patient)

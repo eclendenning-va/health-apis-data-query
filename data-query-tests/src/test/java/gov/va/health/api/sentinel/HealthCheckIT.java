@@ -10,27 +10,19 @@ public class HealthCheckIT {
   @Category(Local.class)
   @Test
   public void argonautIsHealthy() {
-    DataQueryTestClients.argonaut()
-        .get("/actuator/health")
-        .response()
-        .then()
-        .body("status", equalTo("UP"));
+    TestClients.argonaut().get("/actuator/health").response().then().body("status", equalTo("UP"));
   }
 
   @Category(Local.class)
   @Test
   public void idsIsHealthy() {
-    DataQueryTestClients.ids()
-        .get("/actuator/health")
-        .response()
-        .then()
-        .body("status", equalTo("UP"));
+    TestClients.ids().get("/actuator/health").response().then().body("status", equalTo("UP"));
   }
 
   @Category(Local.class)
   @Test
   public void mrAndersonIsHealthy() {
-    DataQueryTestClients.mrAnderson()
+    TestClients.mrAnderson()
         .get("/actuator/health")
         .response()
         .then()

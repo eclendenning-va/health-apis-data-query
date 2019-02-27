@@ -19,14 +19,12 @@ import lombok.extern.slf4j.Slf4j;
 public class ResourceVerifier {
   private static final ResourceVerifier INSTANCE = new ResourceVerifier();
 
-  private static final String API_PATH =
-      DataQuerySystemDefinitions.systemDefinition().argonaut().apiPath();
+  private static final String API_PATH = SystemDefinitions.systemDefinition().argonaut().apiPath();
 
-  @Getter private final TestClient argonaut = DataQueryTestClients.argonaut();
+  @Getter private final TestClient argonaut = TestClients.argonaut();
 
   @Getter
-  private final TestIds ids =
-      IdRegistrar.of(DataQuerySystemDefinitions.systemDefinition()).registeredIds();
+  private final TestIds ids = IdRegistrar.of(SystemDefinitions.systemDefinition()).registeredIds();
 
   private final Set<Class<?>> verifiedPageBoundsClasses =
       Collections.newSetFromMap(new ConcurrentHashMap<>());

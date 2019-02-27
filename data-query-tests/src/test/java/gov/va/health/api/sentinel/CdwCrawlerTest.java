@@ -26,7 +26,7 @@ public class CdwCrawlerTest {
   @Category(Manual.class)
   @Test
   public void crawl() {
-    DataQuerySystemDefinition env = DataQuerySystemDefinitions.systemDefinition();
+    DataQuerySystemDefinition env = SystemDefinitions.systemDefinition();
     String patient = System.getProperty("patient-id", "1011537977V693883");
     log.info("Using patient {} (Override with -Dpatient-id=<id>)", patient);
     Swiggity.swooty(patient);

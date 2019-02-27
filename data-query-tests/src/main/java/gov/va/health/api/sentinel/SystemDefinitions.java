@@ -10,27 +10,20 @@ import gov.va.health.api.sentinel.TestIds.Range;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Supplier;
-
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
-/** Data-query implementation of {@link SystemDefinitions}. */
+/**
+ * Data-query implementation of {@link SystemDefinitions} that provides a {@link
+ * DataQuerySystemDefinition} for the current environment.
+ */
 @Slf4j
 @UtilityClass
-public final class DataQuerySystemDefinitions {
+public final class SystemDefinitions {
   static {
     String env = System.getProperty("sentinel", "LOCAL").toUpperCase(Locale.ENGLISH);
     log.info(
         "Using {} Sentinel environment (Override with -Dsentinel=LAB|LOCAL|QA|PROD|STAGING)", env);
-  }
-
-  /** Supplies system property access-token, or throws exception if it doesn't exist. */
-  static String magicAccessToken() {
-    final String magic = System.getProperty("access-token");
-    if (isBlank(magic)) {
-      throw new IllegalStateException("Access token not specified, -Daccess-token=<value>");
-    }
-    return magic;
   }
 
   private static DiagnosticReports diagnosticReports() {
@@ -172,6 +165,15 @@ public final class DataQuerySystemDefinitions {
                 .unknown("5555555555555")
                 .build())
         .build();
+  }
+
+  /** Supplies system property access-token, or throws exception if it doesn't exist. */
+  static String magicAccessToken() {
+    final String magic = System.getProperty("access-token");
+    if (isBlank(magic)) {
+      throw new IllegalStateException("Access token not specified, -Daccess-token=<value>");
+    }
+    return magic;
   }
 
   private static Supplier<Optional<String>> noAccessToken() {

@@ -13,11 +13,11 @@ import org.junit.experimental.categories.Category;
 
 public class IdsIT {
   private String apiPath() {
-    return DataQueryTestClients.argonaut().service().apiPath();
+    return TestClients.argonaut().service().apiPath();
   }
 
   private TestClient client() {
-    return DataQueryTestClients.ids();
+    return TestClients.ids();
   }
 
   @Category(Local.class)
