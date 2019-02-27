@@ -4,12 +4,15 @@ import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 
-/** Specifies the particulars for interacting with the different services within a system. */
+/** Data-query implementation of {@link SystemDefinition}. */
 @Value
 @Builder
-public class DataQuerySystemDefinition implements SystemDefinitions.SystemDefinition {
+public final class DataQuerySystemDefinition implements SystemDefinition {
   @NonNull ServiceDefinition ids;
+
   @NonNull ServiceDefinition mrAnderson;
+
   @NonNull ServiceDefinition argonaut;
+
   @NonNull TestIds cdwIds;
 }

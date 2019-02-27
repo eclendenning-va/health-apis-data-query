@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 @Value
 @AllArgsConstructor(staticName = "of")
 @Slf4j
-class IdRegistrar {
+final class IdRegistrar {
   DataQuerySystemDefinition system;
 
   @Getter(lazy = true)

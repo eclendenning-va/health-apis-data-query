@@ -1,6 +1,6 @@
 package gov.va.health.api.sentinel;
 
-import static gov.va.health.api.sentinel.SystemDefinitions.magicAccessToken;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import gov.va.health.api.sentinel.TestIds.DiagnosticReports;
 import gov.va.health.api.sentinel.TestIds.Observations;
@@ -10,17 +10,27 @@ import gov.va.health.api.sentinel.TestIds.Range;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Supplier;
+
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-/** The standard system configurations for typical environments like QA or PROD. */
+/** Data-query implementation of {@link SystemDefinitions}. */
 @NoArgsConstructor(staticName = "get")
 @Slf4j
-public final class DataQuerySystemDefinitions implements SystemDefinitions {
+public final class DataQuerySystemDefinitions {
   static {
     String env = System.getProperty("sentinel", "LOCAL").toUpperCase(Locale.ENGLISH);
     log.info(
         "Using {} Sentinel environment (Override with -Dsentinel=LAB|LOCAL|QA|PROD|STAGING)", env);
+  }
+
+  /** Supplies system property access-token, or throws exception if it doesn't exist. */
+  static String magicAccessToken() {
+    final String magic = System.getProperty("access-token");
+    if (isBlank(magic)) {
+      throw new IllegalStateException("Access token not specified, -Daccess-token=<value>");
+    }
+    return magic;
   }
 
   private static DiagnosticReports diagnosticReports() {
@@ -70,7 +80,7 @@ public final class DataQuerySystemDefinitions implements SystemDefinitions {
             ServiceDefinition.builder()
                 .url(optionUrlArgonaut("https://dev-api.va.gov"))
                 .port(443)
-                .accessToken(magicAccessToken())
+                .accessToken(() -> Optional.of(magicAccessToken()))
                 .apiPath(optionApiPath("argonaut", "/services/argonaut/v0/"))
                 .build())
         .cdwIds(labAndStagingIds())
@@ -240,7 +250,7 @@ public final class DataQuerySystemDefinitions implements SystemDefinitions {
             ServiceDefinition.builder()
                 .url(optionUrlArgonaut("https://argonaut.lighthouse.va.gov"))
                 .port(443)
-                .accessToken(magicAccessToken())
+                .accessToken(() -> Optional.of(magicAccessToken()))
                 .apiPath(optionApiPath("argonaut", "/api/"))
                 .build())
         .cdwIds(prodAndQaIds())
@@ -296,7 +306,7 @@ public final class DataQuerySystemDefinitions implements SystemDefinitions {
             ServiceDefinition.builder()
                 .url(optionUrlArgonaut("https://qa-argonaut.lighthouse.va.gov"))
                 .port(443)
-                .accessToken(magicAccessToken())
+                .accessToken(() -> Optional.of(magicAccessToken()))
                 .apiPath(optionApiPath("argonaut", "/api/"))
                 .build())
         .cdwIds(prodAndQaIds())
@@ -326,17 +336,13 @@ public final class DataQuerySystemDefinitions implements SystemDefinitions {
             ServiceDefinition.builder()
                 .url(optionUrlArgonaut("https://staging-argonaut.lighthouse.va.gov"))
                 .port(443)
-                .accessToken(magicAccessToken())
+                .accessToken(() -> Optional.of(magicAccessToken()))
                 .apiPath(optionApiPath("argonaut", "/api/"))
                 .build())
         .build();
   }
 
-  /**
-   * Create a new Sentinel configured with the system definition based on the environment specified
-   * by the `sentinel` system property.
-   */
-  @Override
+  /** Return the applicable system definition for the current environment. */
   public DataQuerySystemDefinition systemDefinition() {
     switch (Environment.get()) {
       case LAB:

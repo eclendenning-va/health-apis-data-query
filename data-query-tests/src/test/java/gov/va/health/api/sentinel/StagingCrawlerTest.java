@@ -1,6 +1,6 @@
 package gov.va.health.api.sentinel;
 
-import static gov.va.health.api.sentinel.SystemDefinitions.magicAccessToken;
+import static gov.va.health.api.sentinel.DataQuerySystemDefinitions.magicAccessToken;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -15,7 +15,6 @@ import java.io.File;
 import java.time.Duration;
 import java.time.format.DateTimeParseException;
 import java.util.concurrent.Executors;
-import java.util.function.Supplier;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -25,8 +24,7 @@ public class StagingCrawlerTest {
   @Category(Manual.class)
   @Test
   public void crawlStaging() {
-    Supplier<String> accessTokenValue = () -> magicAccessToken().get().get();
-    assertThat(accessTokenValue.get()).isNotNull();
+    assertThat(magicAccessToken()).isNotNull();
     log.info("Access token is specified");
 
     String patient = System.getProperty("patient-id", "1011537977V693883");
@@ -55,7 +53,7 @@ public class StagingCrawlerTest {
             .executor(Executors.newFixedThreadPool(4))
             .requestQueue(rq)
             .results(results)
-            .authenticationToken(accessTokenValue)
+            .authenticationToken(() -> magicAccessToken())
             .forceJargonaut(true)
             .timeLimit(timeLimit())
             .build();

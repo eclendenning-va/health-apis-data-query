@@ -37,7 +37,6 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 @Slf4j
 @RequiredArgsConstructor(staticName = "of")
 public class IdMeOauthRobot {
-
   @Getter @NonNull private final Configuration config;
 
   private String code;

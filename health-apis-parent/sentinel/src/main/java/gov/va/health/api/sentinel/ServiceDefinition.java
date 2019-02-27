@@ -25,8 +25,11 @@ public class ServiceDefinition {
   }
 
   String url;
+
   int port;
+
   @NonNull String apiPath;
+
   Supplier<Optional<String>> accessToken;
 
   RequestSpecification requestSpecification() {

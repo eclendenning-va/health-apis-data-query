@@ -14,7 +14,6 @@ import lombok.Value;
 @Value
 @Builder
 public class BasicTestClient implements TestClient {
-
   private final ServiceDefinition service;
   String contentType;
   /** For post requests, this mapper will be used to convert the object to JSON or XML. */

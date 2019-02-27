@@ -9,7 +9,7 @@ import lombok.Value;
 /** Collection of IDs needed by the tests. */
 @Value
 @Builder(toBuilder = true)
-public class TestIds {
+public final class TestIds {
   boolean publicIds;
   @NonNull String allergyIntolerance;
   @NonNull String appointment;

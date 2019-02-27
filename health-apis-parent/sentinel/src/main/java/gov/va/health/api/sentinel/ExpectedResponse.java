@@ -18,7 +18,6 @@ import lombok.Value;
 @Value
 @AllArgsConstructor(staticName = "of")
 class ExpectedResponse {
-
   Response response;
 
   /** Expect the HTTP status code to be the given value. */

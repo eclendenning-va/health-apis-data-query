@@ -20,8 +20,7 @@ import org.apache.commons.lang3.BooleanUtils;
 
 @RequiredArgsConstructor(staticName = "get")
 @Slf4j
-public class LabRobots {
-
+public final class LabRobots {
   @Getter private final Config labConfig;
 
   @Getter(lazy = true)

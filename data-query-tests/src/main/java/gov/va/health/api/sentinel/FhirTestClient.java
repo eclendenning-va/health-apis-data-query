@@ -21,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 @Value
 @Builder
 @Slf4j
-public class FhirTestClient implements TestClient {
+public final class FhirTestClient implements TestClient {
   private final ServiceDefinition service;
 
   private final ExecutorService executorService = Executors.newFixedThreadPool(threadCount());

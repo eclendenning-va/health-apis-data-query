@@ -6,7 +6,6 @@ import lombok.experimental.UtilityClass;
 /** The set of different test clients used to interact with different services within a system. */
 @UtilityClass
 public final class DataQueryTestClients {
-
   static TestClient argonaut() {
     return FhirTestClient.builder()
         .service(systemDefinition().argonaut())
