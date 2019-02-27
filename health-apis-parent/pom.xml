@@ -45,8 +45,8 @@
     <module>api-starter</module>
     <module>service-starter</module>
     <module>service-auto-config</module>
-    <module>test-starter</module>
     <module>sentinel</module>
+    <module>test-starter</module>
   </modules>
   <dependencyManagement>
     <dependencies>

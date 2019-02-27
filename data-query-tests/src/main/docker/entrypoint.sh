@@ -2,8 +2,8 @@
 
 [ -z "$SENTINEL_BASE_DIR" ] && SENTINEL_BASE_DIR=/sentinel
 cd $SENTINEL_BASE_DIR
-SENTINEL_JAR=$(find -maxdepth 1 -name "sentinel-*.jar" -a -not -name "sentinel-*-tests.jar")
-SENTINEL_TEST_JAR=$(find -maxdepth 1 -name "sentinel-*-tests.jar")
+SENTINEL_JAR=$(find -maxdepth 1 -name "sentinel-*.jar")
+TESTS_JAR=$(find -maxdepth 1 -name "*-tests.jar")
 SYSTEM_PROPERTIES="-Dwebdriver.chrome.driver=/usr/local/bin/chromedriver -Dwebdriver.chrome.headless=true"
 EXCLUDE_CATEGORY=
 INCLUDE_CATEGORY=
@@ -72,7 +72,7 @@ doTest() {
 }
 
 doListTests() {
-  jar -tf $SENTINEL_TEST_JAR \
+  jar -tf $TESTS_JAR \
     | grep -E '(IT|Test)\.class' \
     | sed 's/\.class//' \
     | tr / . \
