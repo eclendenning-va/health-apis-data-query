@@ -18,12 +18,12 @@ Commands
 
 Example
   test \
-    --exclude-category gov.va.health.api.sentinel.categories.Manual \
-    --include-category gov.va.health.api.sentinel.categories.Local \
+    --exclude-category gov.va.api.health.sentinel.categories.Manual \
+    --include-category gov.va.api.health.sentinel.categories.Local \
     -Dlab.client-id=12345 \
     -Dlab.client-secret=ABCDEF \
     -Dlab.user-password=secret \
-    gov.va.health.api.sentinel.LabCrawlerTest
+    gov.va.api.health.sentinel.LabCrawlerTest
 
 $1
 EOF

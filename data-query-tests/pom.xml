@@ -16,7 +16,7 @@
     <maven-shade-plugin.version>3.2.1</maven-shade-plugin.version>
     <selenium.version>3.141.59</selenium.version>
     <!-- JUnit -->
-    <groups>gov.va.health.api.sentinel.categories.Local</groups>
+    <groups>gov.va.api.health.sentinel.categories.Local</groups>
     <!-- Docker -->
     <docker-maven-plugin.version>0.24.0</docker-maven-plugin.version>
     <docker.organization>vasdvp</docker.organization>
@@ -233,7 +233,7 @@
                 <argument>-Dloader.path=data-query-tests-${project.version}.jar</argument>
                 <argument>-Dloader=gov.va.api.health.mranderson.Application</argument>
                 <argument>-Dmanagement.health.db.enabled=false</argument>
-                <argument>-Dspring.datasource.driver-class-name=gov.va.health.api.sentinel.mockcdw.MockEntityReturnDriver</argument>
+                <argument>-Dspring.datasource.driver-class-name=gov.va.api.health.sentinel.mockcdw.MockEntityReturnDriver</argument>
                 <argument>-Dspring.datasource.url=jdbc:mockcdw://cdw/samples/index.yaml,${project.basedir}/src/test/resources/cdw/index.yaml</argument>
                 <argument>-Didentityservice.url=https://localhost:8089</argument>
                 <argument>-Dserver.ssl.key-store=file:certs/system/DVP-DVP-NONPROD.jks</argument>
