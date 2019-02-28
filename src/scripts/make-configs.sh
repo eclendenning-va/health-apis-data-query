@@ -105,7 +105,7 @@ checkForUnsetValues() {
 }
 
 makeSentinelSecrets() {
-cat > $REPO/sentinel/config/secrets.properties <<EOF
+cat > $REPO/data-query-tests/config/secrets.properties <<EOF
 server.ssl.key-store-password=$KEYSTORE_PASSWORD
 ssl.client-key-password=$KEYSTORE_PASSWORD
 ssl.key-store-password=$KEYSTORE_PASSWORD
