@@ -2,8 +2,8 @@
 
 [ -z "$SENTINEL_BASE_DIR" ] && SENTINEL_BASE_DIR=/sentinel
 cd $SENTINEL_BASE_DIR
-SENTINEL_JAR=$(find -maxdepth 1 -name "sentinel-*.jar")
-TESTS_JAR=$(find -maxdepth 1 -name "*-tests.jar")
+MAIN_JAR=$(find -maxdepth 1 -name "data-query-tests-*.jar" -a -not -name "data-query-tests-*-tests.jar")
+TESTS_JAR=$(find -maxdepth 1 -name "data-query-tests-*-tests.jar")
 SYSTEM_PROPERTIES="-Dwebdriver.chrome.driver=/usr/local/bin/chromedriver -Dwebdriver.chrome.headless=true"
 EXCLUDE_CATEGORY=
 INCLUDE_CATEGORY=
@@ -80,7 +80,7 @@ doListTests() {
 }
 
 doListCategories() {
-  jar -tf $SENTINEL_JAR \
+  jar -tf $MAIN_JAR \
     | grep -E 'gov/va/health/api/sentinel/categories/.*\.class' \
     | sed 's/\.class//' \
     | tr / . \

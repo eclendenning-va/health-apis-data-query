@@ -46,7 +46,6 @@
     <module>service-starter</module>
     <module>service-auto-config</module>
     <module>sentinel</module>
-    <module>test-starter</module>
   </modules>
   <dependencyManagement>
     <dependencies>
