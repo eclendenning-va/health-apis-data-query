@@ -1,13 +1,13 @@
 # Mr. Anderson Mock Database
 
-Sentinel provides a Type 4 JDBC driver implementation that mock the CDW `prc_Entity_Return` stored
-procedure.
+Data-query integration tests use a Type 4 JDBC driver implementation
+that mocks the CDW `prc_Entity_Return` stored procedure.
 
 * Driver class: `gov.va.health.api.sentinel.mockcdw.MockEntityReturnDriver`
 * JDBC Url: `jdbc:mockcdw://path/to/index.yaml,path/to/another/index.yaml`
 
-> ⚠ This driver supports just enough functionality for Mr. Anderson to function. It is not a 
-> general purpose JDBC driver and is not suitable for any other purpose. For Spring Boot 
+> ⚠ This driver supports just enough functionality for Mr. Anderson to function. It is not a
+> general purpose JDBC driver and is not suitable for any other purpose. For Spring Boot
 > applications, the health check must be disabled: `-Dmanagement.health.db.enabled=false`
 
 #### Index file
@@ -29,11 +29,8 @@ entries:
 ```
 
  Files are specified relative to the index.yaml file.
- 
- 
+
  #### Data
- The Sentinel build will download `cdw-schemas` _sample_ archive and expand it in 
- `target/cdw/samples`. This allows the same queries used to test the CDW database for XSD 
+ The build will download `cdw-schemas` _sample_ archive and expand it in
+ `target/cdw/samples`. This allows the same queries used to test the CDW database for XSD
  compliance to be used for local testing.
- 
- 
