@@ -4,10 +4,11 @@
   <parent>
     <groupId>gov.va.api.health</groupId>
     <artifactId>service-starter</artifactId>
-    <version>1.0.192-SNAPSHOT</version>
-    <relativePath>../service-starter</relativePath>
+    <version>1.1.0</version>
+    <relativePath/>
   </parent>
   <artifactId>mr-anderson</artifactId>
+  <version>1.0.192-SNAPSHOT</version>
   <packaging>jar</packaging>
   <properties>
     <mssql-jdbc.version>6.2.1.jre8</mssql-jdbc.version>

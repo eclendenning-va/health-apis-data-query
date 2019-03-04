@@ -22,10 +22,11 @@
   <parent>
     <groupId>gov.va.api.health</groupId>
     <artifactId>api-starter</artifactId>
-    <version>1.0.192-SNAPSHOT</version>
-    <relativePath>../api-starter</relativePath>
+    <version>1.1.0</version>
+    <relativePath/>
   </parent>
   <artifactId>argonaut-api</artifactId>
+  <version>1.0.192-SNAPSHOT</version>
   <packaging>jar</packaging>
   <properties>
     <checkstyle.suppressions.location>${project.basedir}/checkstyle-suppressions.xml</checkstyle.suppressions.location>

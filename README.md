@@ -10,9 +10,7 @@ backed by information from the Corporate Data Warehouse.
 - argonaut - Argonaut-compliant experience API
 - [mr-anderson](mr-anderson/README.md) - Corporate Data Warehouse access system API
 - [ids](ids/README.md) - An identity mapping service system API
-
-
-- [sentinel](sentinel/README.md) - Integration test harness
+- [data-query-tests](data-query-tests/README.md) - Integration tests
 
 ----
 
