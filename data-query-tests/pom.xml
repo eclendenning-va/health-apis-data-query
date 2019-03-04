@@ -5,6 +5,7 @@
     <groupId>gov.va.api.health</groupId>
     <artifactId>data-query-parent</artifactId>
     <version>1.0.192-SNAPSHOT</version>
+    <relativePath>..</relativePath>
   </parent>
   <artifactId>data-query-tests</artifactId>
   <version>1.0.192-SNAPSHOT</version>
