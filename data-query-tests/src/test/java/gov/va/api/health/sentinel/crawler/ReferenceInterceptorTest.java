@@ -4,8 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
-import gov.va.api.health.argonaut.api.elements.Reference;
 import gov.va.api.health.autoconfig.configuration.JacksonConfig;
+import gov.va.api.health.dataquery.api.elements.Reference;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -17,7 +17,6 @@ import lombok.SneakyThrows;
 import org.junit.Test;
 
 public class ReferenceInterceptorTest {
-
   private Reference reference(String path) {
     return Reference.builder().display("display-value").reference(path).id("id-value").build();
   }

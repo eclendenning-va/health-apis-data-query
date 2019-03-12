@@ -4,14 +4,14 @@ import gov.va.api.health.autoconfig.configuration.JacksonConfig;
 import lombok.experimental.UtilityClass;
 
 /**
- * Test clients for interacting with different services (ids, mr-anderson, argonaut) in a {@link
+ * Test clients for interacting with different services (ids, mr-anderson, data-query) in a {@link
  * SystemDefinition}.
  */
 @UtilityClass
 public final class TestClients {
-  static TestClient argonaut() {
+  static TestClient dataQuery() {
     return FhirTestClient.builder()
-        .service(SystemDefinitions.systemDefinition().argonaut())
+        .service(SystemDefinitions.systemDefinition().dataQuery())
         .mapper(JacksonConfig::createMapper)
         .build();
   }

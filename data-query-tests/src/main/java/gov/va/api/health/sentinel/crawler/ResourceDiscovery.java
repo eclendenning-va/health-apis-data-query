@@ -2,9 +2,9 @@ package gov.va.api.health.sentinel.crawler;
 
 import static java.util.Collections.emptyList;
 
-import gov.va.api.health.argonaut.api.resources.Conformance;
-import gov.va.api.health.argonaut.api.resources.Conformance.ResourceInteractionCode;
-import gov.va.api.health.argonaut.api.resources.Conformance.RestResource;
+import gov.va.api.health.dataquery.api.resources.Conformance;
+import gov.va.api.health.dataquery.api.resources.Conformance.ResourceInteractionCode;
+import gov.va.api.health.dataquery.api.resources.Conformance.RestResource;
 import io.restassured.RestAssured;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -56,7 +56,7 @@ public class ResourceDiscovery {
    * <p>For example, resource is 'Condition' for:
    *
    * <ul>
-   *   <li>https://foo.gov/services/argonaut/v0/Condition?patient=12345
+   *   <li>https://foo.gov/services/argo/v0/Condition?patient=12345
    *   <li>https://foo.gov/api/Condition/12345
    * </ul>
    */

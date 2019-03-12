@@ -3,9 +3,9 @@ package gov.va.api.health.sentinel.crawler;
 import static java.util.stream.Collectors.joining;
 
 import com.google.common.base.Stopwatch;
-import gov.va.api.health.argonaut.api.bundle.AbstractBundle;
-import gov.va.api.health.argonaut.api.bundle.BundleLink;
-import gov.va.api.health.argonaut.api.bundle.BundleLink.LinkRelation;
+import gov.va.api.health.dataquery.api.bundle.AbstractBundle;
+import gov.va.api.health.dataquery.api.bundle.BundleLink;
+import gov.va.api.health.dataquery.api.bundle.BundleLink.LinkRelation;
 import gov.va.api.health.sentinel.crawler.Result.Outcome;
 import gov.va.api.health.sentinel.crawler.Result.ResultBuilder;
 import io.restassured.RestAssured;
@@ -30,7 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
-/** The Crawler will recursive request resources from an Argonaut server. I */
+/** The Crawler will recursively request resources from a Data Query server. I */
 @Builder
 @Slf4j
 public class Crawler {

@@ -2,7 +2,7 @@ package gov.va.api.health.sentinel;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import gov.va.api.health.argonaut.api.resources.Conformance;
+import gov.va.api.health.dataquery.api.resources.Conformance;
 import gov.va.api.health.sentinel.categories.LabDataQueryClinician;
 import gov.va.api.health.sentinel.categories.LabDataQueryPatient;
 import gov.va.api.health.sentinel.categories.Local;
@@ -13,7 +13,7 @@ import org.junit.experimental.categories.Category;
 
 public class ConformanceStatementIT {
   private final String apiPath() {
-    return TestClients.argonaut().service().apiPath();
+    return TestClients.dataQuery().service().apiPath();
   }
 
   @Test
@@ -25,7 +25,7 @@ public class ConformanceStatementIT {
     ProdDataQueryClinician.class
   })
   public void conformanceStatementIsValid() {
-    ExpectedResponse response = TestClients.argonaut().get(apiPath() + "metadata");
+    ExpectedResponse response = TestClients.dataQuery().get(apiPath() + "metadata");
     response.expect(200).expectValid(Conformance.class);
     String rawJson = response.response().asString();
     assertThat(rawJson)

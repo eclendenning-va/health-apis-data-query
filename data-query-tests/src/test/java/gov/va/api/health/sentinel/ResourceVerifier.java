@@ -1,7 +1,7 @@
 package gov.va.api.health.sentinel;
 
-import gov.va.api.health.argonaut.api.bundle.AbstractBundle;
-import gov.va.api.health.argonaut.api.resources.OperationOutcome;
+import gov.va.api.health.dataquery.api.bundle.AbstractBundle;
+import gov.va.api.health.dataquery.api.resources.OperationOutcome;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Set;
@@ -19,9 +19,9 @@ import lombok.extern.slf4j.Slf4j;
 public class ResourceVerifier {
   private static final ResourceVerifier INSTANCE = new ResourceVerifier();
 
-  private static final String API_PATH = SystemDefinitions.systemDefinition().argonaut().apiPath();
+  private static final String API_PATH = SystemDefinitions.systemDefinition().dataQuery().apiPath();
 
-  @Getter private final TestClient argonaut = TestClients.argonaut();
+  @Getter private final TestClient dataQuery = TestClients.dataQuery();
 
   @Getter
   private final TestIds ids = IdRegistrar.of(SystemDefinitions.systemDefinition()).registeredIds();
@@ -59,16 +59,19 @@ public class ResourceVerifier {
 
     log.info("Verify {} page bounds", tc.label());
     verifiedPageBoundsClasses.add(tc.response());
-    argonaut()
+    dataQuery()
         .get(tc.path() + "&page=0", tc.parameters())
         .expect(400)
         .expectValid(OperationOutcome.class);
-    argonaut()
+    dataQuery()
         .get(tc.path() + "&_count=-1", tc.parameters())
         .expect(400)
         .expectValid(OperationOutcome.class);
-    argonaut().get(tc.path() + "&_count=0", tc.parameters()).expect(200).expectValid(tc.response());
-    argonaut()
+    dataQuery()
+        .get(tc.path() + "&_count=0", tc.parameters())
+        .expect(200)
+        .expectValid(tc.response());
+    dataQuery()
         .get(tc.path() + "&_count=21", tc.parameters())
         .expect(200)
         .expectValid(tc.response());
@@ -76,7 +79,7 @@ public class ResourceVerifier {
 
   private <T> T assertRequest(TestCase<T> tc) {
     log.info("Verify {} is {} ({})", tc.label(), tc.response().getSimpleName(), tc.status());
-    return argonaut()
+    return dataQuery()
         .get(tc.path(), tc.parameters())
         .expect(tc.status())
         .expectValid(tc.response());

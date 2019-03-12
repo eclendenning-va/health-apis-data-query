@@ -2,8 +2,8 @@ package gov.va.api.health.sentinel;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import gov.va.api.health.argonaut.api.elements.Extension;
-import gov.va.api.health.argonaut.api.resources.Conformance;
+import gov.va.api.health.dataquery.api.elements.Extension;
+import gov.va.api.health.dataquery.api.resources.Conformance;
 import gov.va.api.health.sentinel.selenium.IdMeOauthRobot;
 import gov.va.api.health.sentinel.selenium.IdMeOauthRobot.Configuration.Authorization;
 import gov.va.api.health.sentinel.selenium.IdMeOauthRobot.Configuration.UserCredentials;
@@ -49,7 +49,6 @@ public final class LabRobots {
    * Creates IdMeOauthRobot with specified user credentials for Lab environment using Chrome Driver.
    */
   public IdMeOauthRobot makeRobot(UserCredentials user) {
-
     SmartOnFhirUrls urls = new SmartOnFhirUrls("https://dev-api.va.gov/services/argonaut/v0");
 
     return makeRobot(user, urls);
@@ -200,7 +199,6 @@ public final class LabRobots {
     String authorize;
 
     SmartOnFhirUrls(String baseUrl) {
-
       log.info("Discovering authorization endpoints from {}", baseUrl);
 
       Conformance conformanceStatement =
