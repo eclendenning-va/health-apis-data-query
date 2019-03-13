@@ -88,8 +88,7 @@ public class ObservationTransformer implements ObservationController.Transformer
   }
 
   List<Coding> categoryCodings(List<CdwCategory.CdwCoding> source) {
-    List<Coding> codings = convertAll(source, this::categoryCoding);
-    return codings == null || codings.isEmpty() ? null : codings;
+    return convertAll(source, this::categoryCoding);
   }
 
   CodeableConcept code(CdwCode maybeCdw) {
@@ -117,8 +116,7 @@ public class ObservationTransformer implements ObservationController.Transformer
   }
 
   List<Coding> codeCodings(List<CdwCode.CdwCoding> source) {
-    List<Coding> codings = convertAll(source, this::codeCoding);
-    return codings == null || codings.isEmpty() ? null : codings;
+    return convertAll(source, this::codeCoding);
   }
 
   ObservationComponent component(CdwComponent maybeCdw) {
@@ -167,8 +165,7 @@ public class ObservationTransformer implements ObservationController.Transformer
   }
 
   List<Coding> componentCodings(List<CdwComponent.CdwCode.CdwCoding> source) {
-    List<Coding> codings = convertAll(source, this::componentCoding);
-    return codings == null || codings.isEmpty() ? null : codings;
+    return convertAll(source, this::componentCoding);
   }
 
   CodeableConcept componentValueCodeableConcept(CdwComponent.CdwValueCodeableConcept maybeCdw) {
@@ -196,8 +193,7 @@ public class ObservationTransformer implements ObservationController.Transformer
   }
 
   List<Coding> componentValueCodings(List<CdwComponent.CdwValueCodeableConcept.CdwCoding> source) {
-    List<Coding> codings = convertAll(source, this::componentValueCoding);
-    return codings == null || codings.isEmpty() ? null : codings;
+    return convertAll(source, this::componentValueCoding);
   }
 
   Quantity componentValueQuantity(CdwComponent.CdwValueQuantity maybeCdw) {
@@ -251,8 +247,7 @@ public class ObservationTransformer implements ObservationController.Transformer
   }
 
   List<Coding> interpretationCodings(List<CdwInterpretation.CdwCoding> source) {
-    List<Coding> codings = convertAll(source, this::interpretationCoding);
-    return codings == null || codings.isEmpty() ? null : codings;
+    return convertAll(source, this::interpretationCoding);
   }
 
   List<Reference> performers(CdwPerformers maybeCdw) {
@@ -333,8 +328,7 @@ public class ObservationTransformer implements ObservationController.Transformer
   }
 
   List<Coding> valueCodings(List<CdwValueCodeableConcept.CdwCoding> source) {
-    List<Coding> codings = convertAll(source, this::valueCoding);
-    return codings == null || codings.isEmpty() ? null : codings;
+    return convertAll(source, this::valueCoding);
   }
 
   Quantity valueQuantity(CdwValueQuantity maybeCdw) {

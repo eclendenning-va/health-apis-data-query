@@ -49,7 +49,7 @@ public class LocationTransformer implements LocationController.Transformer {
   }
 
   ContactPointSystem contactPointCode(String maybeCdw) {
-    if (StringUtils.isBlank(maybeCdw) || maybeCdw == null) {
+    if (StringUtils.isBlank(maybeCdw)) {
       return null;
     }
     return EnumSearcher.of(ContactPointSystem.class).find(maybeCdw);
@@ -123,8 +123,7 @@ public class LocationTransformer implements LocationController.Transformer {
   }
 
   List<Coding> locationTypeCodings(List<CdwLocation.CdwType.CdwCoding> maybeCdw) {
-    List<Coding> codings = convertAll(maybeCdw, this::locationTypeCoding);
-    return codings == null || codings.isEmpty() ? null : codings;
+    return convertAll(maybeCdw, this::locationTypeCoding);
   }
 
   Mode mode(CdwLocationMode maybeCdw) {
