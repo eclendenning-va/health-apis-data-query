@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import gov.va.api.health.autoconfig.configuration.JacksonConfig;
 import gov.va.api.health.dataquery.api.resources.Conformance;
+import gov.va.api.health.dataquery.service.config.ReferenceSerializerProperties;
 import gov.va.api.health.dataquery.service.controller.conformance.ConformanceStatementProperties.ContactProperties;
 import gov.va.api.health.dataquery.service.controller.conformance.ConformanceStatementProperties.SecurityProperties;
 import gov.va.api.health.dataquery.service.controller.conformance.ConformanceStatementProperties.StatementType;
@@ -11,14 +12,8 @@ import lombok.SneakyThrows;
 import org.junit.Test;
 
 public class MetadataControllerTest {
-  @SneakyThrows
-  private String pretty(Conformance conformance) {
-    return JacksonConfig.createMapper()
-        .writerWithDefaultPrettyPrinter()
-        .writeValueAsString(conformance);
-  }
 
-  private ConformanceStatementProperties properties() {
+  private ConformanceStatementProperties conformanceStatementProperties() {
     return ConformanceStatementProperties.builder()
         .id("lighthouse-va-fhir-conformance")
         .version("1.4.0")
@@ -51,12 +46,23 @@ public class MetadataControllerTest {
         .build();
   }
 
+  @SneakyThrows
+  private String pretty(Conformance conformance) {
+    return JacksonConfig.createMapper()
+        .writerWithDefaultPrettyPrinter()
+        .writeValueAsString(conformance);
+  }
+
   @Test
   @SneakyThrows
   public void readClinician() {
-    ConformanceStatementProperties properties = properties();
-    properties.setStatementType(StatementType.CLINICIAN);
-    MetadataController controller = new MetadataController(properties);
+    ConformanceStatementProperties conformanceStatementProperties =
+        conformanceStatementProperties();
+    ReferenceSerializerProperties referenceSerializerProperties =
+        referenceSerializerProperties(true);
+    conformanceStatementProperties.setStatementType(StatementType.CLINICIAN);
+    MetadataController controller =
+        new MetadataController(conformanceStatementProperties, referenceSerializerProperties);
     Conformance old =
         JacksonConfig.createMapper()
             .readValue(
@@ -71,10 +77,35 @@ public class MetadataControllerTest {
 
   @Test
   @SneakyThrows
+  public void readLab() {
+    ConformanceStatementProperties conformanceStatementProperties =
+        conformanceStatementProperties();
+    ReferenceSerializerProperties referenceSerializerProperties =
+        referenceSerializerProperties(false);
+    conformanceStatementProperties.setStatementType(StatementType.PATIENT);
+    MetadataController controller =
+        new MetadataController(conformanceStatementProperties, referenceSerializerProperties);
+    Conformance old =
+        JacksonConfig.createMapper()
+            .readValue(getClass().getResourceAsStream("/lab-conformance.json"), Conformance.class);
+    try {
+      assertThat(pretty(controller.read())).isEqualTo(pretty(old));
+    } catch (AssertionError e) {
+      System.out.println(e.getMessage());
+      throw e;
+    }
+  }
+
+  @Test
+  @SneakyThrows
   public void readPatient() {
-    ConformanceStatementProperties properties = properties();
-    properties.setStatementType(StatementType.PATIENT);
-    MetadataController controller = new MetadataController(properties);
+    ConformanceStatementProperties conformanceStatementProperties =
+        conformanceStatementProperties();
+    ReferenceSerializerProperties referenceSerializerProperties =
+        referenceSerializerProperties(true);
+    conformanceStatementProperties.setStatementType(StatementType.PATIENT);
+    MetadataController controller =
+        new MetadataController(conformanceStatementProperties, referenceSerializerProperties);
     Conformance old =
         JacksonConfig.createMapper()
             .readValue(
@@ -85,5 +116,16 @@ public class MetadataControllerTest {
       System.out.println(e.getMessage());
       throw e;
     }
+  }
+
+  private ReferenceSerializerProperties referenceSerializerProperties(boolean isEnabled) {
+    return ReferenceSerializerProperties.builder()
+        .appointment(isEnabled)
+        .encounter(isEnabled)
+        .location(isEnabled)
+        .medicationDispense(isEnabled)
+        .organization(isEnabled)
+        .practitioner(isEnabled)
+        .build();
   }
 }
