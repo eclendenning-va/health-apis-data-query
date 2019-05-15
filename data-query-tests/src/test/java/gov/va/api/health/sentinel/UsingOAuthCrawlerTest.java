@@ -22,7 +22,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 @Slf4j
-public class LabCrawlerTest {
+public class UsingOAuthCrawlerTest {
   private final LabRobots robots = LabRobots.fromSystemProperties();
 
   private int crawl(String patient) {
@@ -57,11 +57,7 @@ public class LabCrawlerTest {
             .timeLimit(CrawlerProperties.timeLimit())
             .build();
     crawler.crawl();
-    log.info(
-        "Results for {} ({})\n{}",
-        robot.config().user().id(),
-        robot.token().patient(),
-        results.message());
+    log.info("Results for {} ({})", robot.config().user().id(), robot.token().patient());
     return results.failures();
   }
 
