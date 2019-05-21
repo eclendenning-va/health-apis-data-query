@@ -3,11 +3,11 @@ package gov.va.api.health.dataquery.tests.crawler;
 import static java.util.stream.Collectors.joining;
 
 import com.google.common.base.Stopwatch;
-import gov.va.api.health.dataquery.api.bundle.AbstractBundle;
-import gov.va.api.health.dataquery.api.bundle.BundleLink;
-import gov.va.api.health.dataquery.api.bundle.BundleLink.LinkRelation;
 import gov.va.api.health.dataquery.tests.crawler.Result.Outcome;
 import gov.va.api.health.dataquery.tests.crawler.Result.ResultBuilder;
+import gov.va.api.health.dstu2.api.bundle.AbstractBundle;
+import gov.va.api.health.dstu2.api.bundle.BundleLink;
+import gov.va.api.health.dstu2.api.bundle.BundleLink.LinkRelation;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import java.time.Duration;

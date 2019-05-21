@@ -2,12 +2,12 @@ package gov.va.api.health.dataquery.tests;
 
 import static gov.va.api.health.dataquery.tests.ResourceVerifier.test;
 
-import gov.va.api.health.dataquery.api.resources.OperationOutcome;
-import gov.va.api.health.dataquery.api.resources.Patient;
+import gov.va.api.health.argonaut.api.resources.Patient;
 import gov.va.api.health.dataquery.tests.categories.LabDataQueryClinician;
 import gov.va.api.health.dataquery.tests.categories.LabDataQueryPatient;
 import gov.va.api.health.dataquery.tests.categories.ProdDataQueryClinician;
 import gov.va.api.health.dataquery.tests.categories.ProdDataQueryPatient;
+import gov.va.api.health.dstu2.api.resources.OperationOutcome;
 import gov.va.api.health.sentinel.Environment;
 import gov.va.api.health.sentinel.categories.Local;
 import gov.va.api.health.sentinel.categories.Smoke;

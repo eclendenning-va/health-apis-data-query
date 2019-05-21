@@ -2,8 +2,8 @@ package gov.va.api.health.dataquery.tests;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import gov.va.api.health.dataquery.api.elements.Extension;
-import gov.va.api.health.dataquery.api.resources.Conformance;
+import gov.va.api.health.dstu2.api.elements.Extension;
+import gov.va.api.health.dstu2.api.resources.Conformance;
 import gov.va.api.health.sentinel.selenium.IdMeOauthRobot;
 import gov.va.api.health.sentinel.selenium.IdMeOauthRobot.Configuration.Authorization;
 import gov.va.api.health.sentinel.selenium.IdMeOauthRobot.Configuration.UserCredentials;
@@ -198,7 +198,12 @@ public final class LabRobots {
     String token;
     String authorize;
 
-    /** . */
+    /**
+     * Create a new instance that will reach out to the given base URL to discover SMART on FHIR
+     * information. This class will attempt to interact with /metadata endpoint of the base URL
+     * immediately during construction. Failure to determine the authorize and token end points will
+     * result in an exception.
+     */
     public SmartOnFhirUrls(String baseUrl) {
       log.info("Discovering authorization endpoints from {}", baseUrl);
 

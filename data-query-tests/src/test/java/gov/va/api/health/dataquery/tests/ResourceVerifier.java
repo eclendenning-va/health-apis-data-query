@@ -1,7 +1,7 @@
 package gov.va.api.health.dataquery.tests;
 
-import gov.va.api.health.dataquery.api.bundle.AbstractBundle;
-import gov.va.api.health.dataquery.api.resources.OperationOutcome;
+import gov.va.api.health.dstu2.api.bundle.AbstractBundle;
+import gov.va.api.health.dstu2.api.resources.OperationOutcome;
 import gov.va.api.health.sentinel.TestClient;
 import java.util.Arrays;
 import java.util.Collections;

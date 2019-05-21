@@ -2,11 +2,11 @@ package gov.va.api.health.dataquery.tests;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import gov.va.api.health.dataquery.api.resources.Conformance;
 import gov.va.api.health.dataquery.tests.categories.LabDataQueryClinician;
 import gov.va.api.health.dataquery.tests.categories.LabDataQueryPatient;
 import gov.va.api.health.dataquery.tests.categories.ProdDataQueryClinician;
 import gov.va.api.health.dataquery.tests.categories.ProdDataQueryPatient;
+import gov.va.api.health.dstu2.api.resources.Conformance;
 import gov.va.api.health.sentinel.ExpectedResponse;
 import gov.va.api.health.sentinel.categories.Local;
 import org.junit.Test;
