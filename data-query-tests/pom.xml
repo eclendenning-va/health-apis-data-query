@@ -73,12 +73,6 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.12</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>gov.va.dvp</groupId>
       <artifactId>cdw-schemas</artifactId>
       <version>${cdw-schemas.version}</version>
