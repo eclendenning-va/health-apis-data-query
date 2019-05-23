@@ -62,6 +62,9 @@ public class ResourceDiscovery {
    */
   static String resource(@NonNull String url) {
     int lastSlashIndex = url.lastIndexOf("/");
+    if (lastSlashIndex == -1) {
+      throw new IllegalArgumentException("Missing / in url: " + url);
+    }
     if (isSearch(url)) {
       int questionIndex = url.indexOf("?", lastSlashIndex);
       if (lastSlashIndex + 1 > questionIndex) {

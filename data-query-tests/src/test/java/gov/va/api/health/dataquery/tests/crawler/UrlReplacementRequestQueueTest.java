@@ -2,8 +2,11 @@ package gov.va.api.health.dataquery.tests.crawler;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import gov.va.api.health.sentinel.categories.Local;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
+@Category(Local.class)
 public class UrlReplacementRequestQueueTest {
   UrlReplacementRequestQueue rq =
       UrlReplacementRequestQueue.builder()
@@ -36,7 +39,8 @@ public class UrlReplacementRequestQueueTest {
 
   @Test(expected = IllegalStateException.class)
   public void exceptionIsThrownWhenAttemptingToGetNextFromEmptyQueue() {
-    rq.add("x");
+    rq.add(
+        "https://dev-api.va.gov/services/argonaut/v0/AllergyIntolerance/3be00408-b0ff-598d-8ba1-1e0bbfb02b99");
     rq.next();
     rq.next();
   }
@@ -58,22 +62,33 @@ public class UrlReplacementRequestQueueTest {
   @Test
   public void hasNextReturnsFalseForEmptyQueue() {
     assertThat(rq.hasNext()).isFalse();
-    rq.add("x");
+    rq.add(
+        "https://dev-api.va.gov/services/argonaut/v0/AllergyIntolerance/3be00408-b0ff-598d-8ba1-1e0bbfb02b99");
     rq.next();
     assertThat(rq.hasNext()).isFalse();
   }
 
   @Test
   public void itemsAreRemovedFromQueueInOrderOfAddition() {
-    rq.add("a");
-    rq.add("b");
-    rq.add("c");
+    rq.add(
+        "https://dev-api.va.gov/services/argonaut/v0/AllergyIntolerance/3be00408-b0ff-598d-8ba1-1e0bbfb02b99");
+    rq.add(
+        "https://dev-api.va.gov/services/argonaut/v0/Condition/ea59bc29-d507-571b-a4c6-9ac0d2146c45");
+    rq.add(
+        "https://dev-api.va.gov/services/argonaut/v0/Immunization/00f4000a-b1c9-5190-993a-644569d2722b");
     assertThat(rq.hasNext()).isTrue();
-    assertThat(rq.next()).isEqualTo("a");
+    assertThat(rq.next())
+        .isEqualTo(
+            "https://staging-argonaut.lighthouse.va.gov/api/AllergyIntolerance/3be00408-b0ff-598d-8ba1-1e0bbfb02b99");
     assertThat(rq.hasNext()).isTrue();
-    assertThat(rq.next()).isEqualTo("b");
+    assertThat(rq.next())
+        .isEqualTo(
+            "https://staging-argonaut.lighthouse.va.gov/api/Condition/ea59bc29-d507-571b-a4c6-9ac0d2146c45");
     assertThat(rq.hasNext()).isTrue();
-    assertThat(rq.next()).isEqualTo("c");
+    assertThat(rq.hasNext()).isTrue();
+    assertThat(rq.next())
+        .isEqualTo(
+            "https://staging-argonaut.lighthouse.va.gov/api/Immunization/00f4000a-b1c9-5190-993a-644569d2722b");
     assertThat(rq.hasNext()).isFalse();
   }
 
@@ -116,19 +131,31 @@ public class UrlReplacementRequestQueueTest {
 
   @Test
   public void theSameItemCannotBeAddedToTheQueueTwice() {
-    rq.add("a");
-    rq.add("b");
-    rq.add("c");
+    rq.add(
+        "https://dev-api.va.gov/services/argonaut/v0/AllergyIntolerance/3be00408-b0ff-598d-8ba1-1e0bbfb02b99");
+    rq.add(
+        "https://dev-api.va.gov/services/argonaut/v0/Condition/ea59bc29-d507-571b-a4c6-9ac0d2146c45");
+    rq.add(
+        "https://dev-api.va.gov/services/argonaut/v0/Immunization/00f4000a-b1c9-5190-993a-644569d2722b");
+    assertThat(rq.hasNext()).isTrue();
     // ignored
-    rq.add("a");
+    rq.add(
+        "https://dev-api.va.gov/services/argonaut/v0/AllergyIntolerance/3be00408-b0ff-598d-8ba1-1e0bbfb02b99");
     assertThat(rq.hasNext()).isTrue();
-    assertThat(rq.next()).isEqualTo("a");
+    assertThat(rq.next())
+        .isEqualTo(
+            "https://staging-argonaut.lighthouse.va.gov/api/AllergyIntolerance/3be00408-b0ff-598d-8ba1-1e0bbfb02b99");
     // ignored
-    rq.add("a");
+    rq.add(
+        "https://dev-api.va.gov/services/argonaut/v0/AllergyIntolerance/3be00408-b0ff-598d-8ba1-1e0bbfb02b99");
     assertThat(rq.hasNext()).isTrue();
-    assertThat(rq.next()).isEqualTo("b");
+    assertThat(rq.next())
+        .isEqualTo(
+            "https://staging-argonaut.lighthouse.va.gov/api/Condition/ea59bc29-d507-571b-a4c6-9ac0d2146c45");
     assertThat(rq.hasNext()).isTrue();
-    assertThat(rq.next()).isEqualTo("c");
+    assertThat(rq.next())
+        .isEqualTo(
+            "https://staging-argonaut.lighthouse.va.gov/api/Immunization/00f4000a-b1c9-5190-993a-644569d2722b");
     assertThat(rq.hasNext()).isFalse();
   }
 
