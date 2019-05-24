@@ -37,6 +37,7 @@ import gov.va.dvp.cdw.xsd.model.CdwObservationStatus;
 import gov.va.dvp.cdw.xsd.model.CdwReference;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 import javax.validation.constraints.NotNull;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -64,7 +65,7 @@ public class ObservationTransformer implements ObservationController.Transformer
         .valueCodeableConcept(valueCodeableConcept(cdw.getValueCodeableConcept()))
         .interpretation(interpretation(cdw.getInterpretation()))
         .comments(cdw.getComments())
-        .referenceRange(referenceRanges(cdw.getReferenceRanges()))
+        .referenceRange(referenceRanges(cdw.getReferenceRanges(), cdw.getCategory()))
         .component(components(cdw.getComponents()))
         .build();
   }
@@ -219,6 +220,17 @@ public class ObservationTransformer implements ObservationController.Transformer
     return convertAll(ifPresent(maybeCdw, CdwComponents::getComponent), this::component);
   }
 
+  private Optional<CdwObservationCategoryCode> firstCode(CdwCategory maybeCdw) {
+    if (maybeCdw == null) {
+      return Optional.empty();
+    }
+    List<CdwCategory.CdwCoding> categoryCoding = maybeCdw.getCoding();
+    if (categoryCoding.isEmpty()) {
+      return Optional.empty();
+    }
+    return Optional.ofNullable(categoryCoding.get(0).getCode());
+  }
+
   CodeableConcept interpretation(CdwInterpretation maybeCdw) {
     if (maybeCdw == null) {
       return null;
@@ -291,7 +303,12 @@ public class ObservationTransformer implements ObservationController.Transformer
         .build();
   }
 
-  List<ObservationReferenceRange> referenceRanges(CdwReferenceRanges maybeCdw) {
+  List<ObservationReferenceRange> referenceRanges(
+      CdwReferenceRanges maybeCdw, CdwCategory cdwCategory) {
+    Optional<CdwObservationCategoryCode> code = firstCode(cdwCategory);
+    if (CdwObservationCategoryCode.VITAL_SIGNS.equals(code.orElse(null))) {
+      return null;
+    }
     return convertAll(
         ifPresent(maybeCdw, CdwReferenceRanges::getReferenceRange), this::referenceRange);
   }
