@@ -8,7 +8,7 @@
     <relativePath/>
   </parent>
   <artifactId>data-query</artifactId>
-  <version>1.0.220-SNAPSHOT</version>
+  <version>1.0.220</version>
   <packaging>jar</packaging>
   <properties>
     <argonaut-dstu2.version>1.0.5</argonaut-dstu2.version>
