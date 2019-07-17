@@ -4,7 +4,7 @@
   <parent>
     <groupId>gov.va.api.health</groupId>
     <artifactId>test-starter</artifactId>
-    <version>2.0.10</version>
+    <version>2.0.11</version>
     <relativePath/>
   </parent>
   <artifactId>data-query-tests</artifactId>
@@ -12,6 +12,7 @@
   <packaging>jar</packaging>
   <properties>
     <argonaut-dstu2.version>1.0.13</argonaut-dstu2.version>
+    <cdw-schemas.version>1.0.42</cdw-schemas.version>
     <groups>gov.va.api.health.sentinel.categories.Local</groups>
     <selenium.version>3.141.59</selenium.version>
     <sentinel.skipLaunch>false</sentinel.skipLaunch>
@@ -239,7 +240,11 @@
                 <argument>-Dconformance.security.token-endpoint=http://example.com/token</argument>
                 <argument>-Dconformance.security.authorize-endpoint=http://example.com/authorize</argument>
                 <argument>-Dspring.datasource.driver-class-name=org.h2.Driver</argument>
-                <argument>-Dspring.datasource.url=jdbc:h2:mem:testdb</argument>
+                <argument>-Dspring.datasource.url=jdbc:h2:${project.basedir}/src/test/resources/mitre</argument>
+                <argument>-Dspring.datasource.username=sa</argument>
+                <argument>-Dspring.datasource.password=sa</argument>
+                <argument>-Dspring.jpa.generate-ddl=false</argument>
+                <argument>-Dspring.jpa.hibernate.ddl-auto=none</argument>
                 <argument>-Dserver.ssl.key-store=file:certs/system/DVP-DVP-NONPROD.jks</argument>
                 <argument>-Dserver.ssl.key-alias=internal-sys-dev</argument>
                 <argument>-Dssl.verify=false</argument>
