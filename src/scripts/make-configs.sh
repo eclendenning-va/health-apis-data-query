@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
 usage() {
-cat <<EOF
+  cat <<EOF
 
 $0 [options]
 
@@ -20,7 +20,7 @@ Secrets Configuration
 
 $1
 EOF
-exit 1
+  exit 1
 }
 
 REPO=$(cd $(dirname $0)/../.. && pwd)
@@ -29,16 +29,16 @@ PROFILE=dev
 MARKER=$(date +%s)
 ARGS=$(getopt -n $(basename ${0}) \
     -l "debug,help,secrets-conf:" \
-    -o "h" -- "$@")
+  -o "h" -- "$@")
 [ $? != 0 ] && usage
 eval set -- "$ARGS"
 while true
 do
   case "$1" in
-    --debug) set -x;;
-    -h|--help) usage "halp! what this do?";;
-    --secrets-conf) SECRETS="$2";;
-    --) shift;break;;
+    --debug) set -x ;;
+    -h|--help) usage "halp! what this do?" ;;
+    --secrets-conf) SECRETS="$2" ;;
+    --) shift;break ;;
   esac
   shift;
 done
@@ -63,24 +63,7 @@ makeConfig() {
   local target="$REPO/$project/config/application-${profile}.properties"
   [ -f "$target" ] && mv -v $target $target.$MARKER
   grep -E '(.*= *unset)' "$REPO/$project/src/main/resources/application.properties" \
-    | grep -Ev '(^server\.ssl\.|^ssl\.)' \
     > "$target"
-cat >> "$target" <<EOF
-# Server SSL
-server.ssl.key-store=file:target/certs/system/DVP-DVP-NONPROD.jks
-server.ssl.key-alias=internal-sys-dev
-server.ssl.key-store-password=$KEYSTORE_PASSWORD
-server.ssl.trust-store=file:target/certs/system/DVP-NONPROD-truststore.jks
-server.ssl.trust-store-password=$KEYSTORE_PASSWORD
-server.ssl.client-auth=want
-# Client SSL
-ssl.key-store=file:target/certs/system/DVP-DVP-NONPROD.jks
-ssl.key-store-password=$KEYSTORE_PASSWORD
-ssl.client-key-password=$KEYSTORE_PASSWORD
-ssl.use-trust-store=true
-ssl.trust-store=file:target/certs/system/DVP-NONPROD-truststore.jks
-ssl.trust-store-password=$KEYSTORE_PASSWORD
-EOF
 }
 
 addValue() {
@@ -114,15 +97,6 @@ checkForUnsetValues() {
   [ $? == 0 ] && rm -v $target.$MARKER
 }
 
-makeTestsSecrets() {
-cat > $REPO/data-query-tests/config/secrets.properties <<EOF
-server.ssl.key-store-password=$KEYSTORE_PASSWORD
-ssl.client-key-password=$KEYSTORE_PASSWORD
-ssl.key-store-password=$KEYSTORE_PASSWORD
-ssl.trust-store-password=$KEYSTORE_PASSWORD
-EOF
-}
-
 whoDis() {
   local me=$(git config --global --get user.name)
   [ -z "$me" ] && me=$USER
@@ -139,22 +113,22 @@ makeConfig mr-anderson $PROFILE
 configValue mr-anderson $PROFILE spring.datasource.url "$MRANDERSON_DB_URL"
 configValue mr-anderson $PROFILE spring.datasource.username "$MRANDERSON_DB_USER"
 configValue mr-anderson $PROFILE spring.datasource.password "$MRANDERSON_DB_PASSWORD"
-configValue mr-anderson $PROFILE identityservice.url https://localhost:8089
+configValue mr-anderson $PROFILE identityservice.url http://localhost:8089
 # The stored procedure in the lab is named differently
 [[ "$MRANDERSON_DB_URL" =~ .*cdw.lab.freedomstream.io.* ]] \
   && addValue mr-anderson $PROFILE cdw.stored-procedure prc_resource_return
 checkForUnsetValues mr-anderson $PROFILE
 
 makeConfig data-query $PROFILE
-configValue data-query $PROFILE identityservice.url https://localhost:8089
-configValue data-query $PROFILE mranderson.url https://localhost:8088
-configValue data-query $PROFILE argonaut.url https://localhost:8090
+configValue data-query $PROFILE identityservice.url http://localhost:8089
+configValue data-query $PROFILE mranderson.url http://localhost:8088
+configValue data-query $PROFILE argonaut.url http://localhost:8090
 configValue data-query $PROFILE health-check.medication-id 2f773f73-ad7f-56ca-891e-8e364c913fe0
 configValue data-query $PROFILE conformance.statement-type patient
 configValue data-query $PROFILE conformance.contact.name "$(whoDis)"
 configValue data-query $PROFILE conformance.contact.email "$(sendMoarSpams)"
-configValue data-query $PROFILE conformance.security.token-endpoint https://fake.com/token
-configValue data-query $PROFILE conformance.security.authorize-endpoint https://fake.com/authorize
+configValue data-query $PROFILE conformance.security.token-endpoint http://fake.com/token
+configValue data-query $PROFILE conformance.security.authorize-endpoint http://fake.com/authorize
 configValue data-query $PROFILE spring.datasource.url "$DATAQUERY_DB_URL"
 configValue data-query $PROFILE spring.datasource.username "$DATAQUERY_DB_USER"
 configValue data-query $PROFILE spring.datasource.password "$DATAQUERY_DB_PASSWORD"
@@ -163,5 +137,3 @@ configValue data-query $PROFILE well-known.response-type-supported "code, refres
 configValue data-query $PROFILE well-known.scopes-supported "patient/DiagnosticReport.read, patient/Patient.read, offline_access"
 
 checkForUnsetValues data-query $PROFILE
-
-makeTestsSecrets
