@@ -108,9 +108,9 @@ public class DatamartCondition implements HasReplaceableId {
   @AllArgsConstructor(access = AccessLevel.PRIVATE)
   @JsonIgnoreProperties({"usable"})
   public static class IcdCode {
-    String code;
-    String display;
-    String version;
+    private String code;
+    private String display;
+    private String version;
 
     /** Determine if an icd code can be mapped without null values. */
     public boolean isUsable() {
@@ -124,8 +124,8 @@ public class DatamartCondition implements HasReplaceableId {
   @AllArgsConstructor(access = AccessLevel.PRIVATE)
   @JsonIgnoreProperties({"usable"})
   public static class SnomedCode {
-    String code;
-    String display;
+    private String code;
+    private String display;
 
     /** Determine if a snomed code can be mapped without null values. */
     public boolean isUsable() {
