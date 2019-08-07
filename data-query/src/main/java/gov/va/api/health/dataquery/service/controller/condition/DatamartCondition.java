@@ -19,7 +19,6 @@ import lombok.NoArgsConstructor;
 public class DatamartCondition implements HasReplaceableId {
   @Builder.Default private String objectType = "Condition";
   @Builder.Default private String objectVersion = "1";
-  private String etlDate;
   private String cdwId;
   private DatamartReference patient;
   private Optional<DatamartReference> encounter;
@@ -78,6 +77,11 @@ public class DatamartCondition implements HasReplaceableId {
       onsetDateTime = Optional.empty();
     }
     return onsetDateTime;
+  }
+
+  /** Backwards compatibility for etlDate. */
+  private void setEtlDate(String unused) {
+    /* no op */
   }
 
   /** Lazy initialization with empty. */
