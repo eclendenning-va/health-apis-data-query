@@ -97,6 +97,10 @@ public final class SystemDefinitions {
         .build();
   }
 
+  private static Procedures localAndLabProcedures() {
+    return Procedures.builder().fromDate("ge2009").onDate("ge2009").toDate("le2010").build();
+  }
+
   private static TestIds localIds() {
     return TestIds.builder()
         .publicIds(false)
@@ -141,14 +145,6 @@ public final class SystemDefinitions {
         .build();
   }
 
-  private static Procedures localAndLabProcedures() {
-    return Procedures.builder().fromDate("ge2009").onDate("ge2009").toDate("le2010").build();
-  }
-
-  private static Procedures productionCdwProcedures() {
-    return Procedures.builder().fromDate("ge2009").onDate("ge2009").toDate("le2014").build();
-  }
-
   /** Return definitions for the production environment. */
   private static SystemDefinition prod() {
     // Mr Anderson not accessible in this environment
@@ -186,6 +182,10 @@ public final class SystemDefinitions {
         .procedures(productionCdwProcedures())
         .unknown("5555555555555")
         .build();
+  }
+
+  private static Procedures productionCdwProcedures() {
+    return Procedures.builder().fromDate("ge2009").onDate("ge2009").toDate("le2014").build();
   }
 
   /** Return definitions for the qa environment. */
