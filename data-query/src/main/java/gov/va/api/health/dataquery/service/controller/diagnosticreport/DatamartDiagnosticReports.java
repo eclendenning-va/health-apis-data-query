@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-final class DatamartDiagnosticReports {
+public class DatamartDiagnosticReports {
   private String objectType;
 
   private int objectVersion;
@@ -25,6 +25,7 @@ final class DatamartDiagnosticReports {
   @JsonProperty("DiagnosticReports")
   private List<DiagnosticReport> reports;
 
+  /** Lazy getter. */
   public List<DiagnosticReport> reports() {
     if (reports == null) {
       reports = new ArrayList<>();
@@ -36,7 +37,7 @@ final class DatamartDiagnosticReports {
   @Builder
   @NoArgsConstructor(access = AccessLevel.PRIVATE)
   @AllArgsConstructor(access = AccessLevel.PRIVATE)
-  static final class DiagnosticReport {
+  public static final class DiagnosticReport {
     private String identifier;
 
     private String sta3n;
@@ -63,6 +64,7 @@ final class DatamartDiagnosticReports {
 
     private String reportStatus;
 
+    /** Lazy Getter. */
     public List<Order> orders() {
       if (orders == null) {
         orders = new ArrayList<>();
@@ -70,6 +72,7 @@ final class DatamartDiagnosticReports {
       return orders;
     }
 
+    /** Lazy Getter. */
     public List<Result> results() {
       if (results == null) {
         results = new ArrayList<>();
@@ -88,7 +91,7 @@ final class DatamartDiagnosticReports {
   @Builder
   @NoArgsConstructor(access = AccessLevel.PRIVATE)
   @AllArgsConstructor(access = AccessLevel.PRIVATE)
-  static final class Order {
+  public static final class Order {
     private String sid;
 
     private String display;
@@ -98,7 +101,7 @@ final class DatamartDiagnosticReports {
   @Builder
   @NoArgsConstructor(access = AccessLevel.PRIVATE)
   @AllArgsConstructor(access = AccessLevel.PRIVATE)
-  static final class Result {
+  public static final class Result {
     private String result;
 
     private String display;

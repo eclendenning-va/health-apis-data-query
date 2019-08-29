@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-final class DatamartPatient {
+public class DatamartPatient {
   private String objectType;
 
   private int objectVersion;
@@ -54,6 +54,7 @@ final class DatamartPatient {
 
   private List<Contact> contact;
 
+  /** Lazy getter. */
   public List<Address> address() {
     if (address == null) {
       address = new ArrayList<>();
@@ -61,6 +62,7 @@ final class DatamartPatient {
     return address;
   }
 
+  /** Lazy getter. */
   public List<Contact> contact() {
     if (contact == null) {
       contact = new ArrayList<>();
@@ -68,6 +70,7 @@ final class DatamartPatient {
     return contact;
   }
 
+  /** Lazy getter. */
   public List<Race> race() {
     if (race == null) {
       race = new ArrayList<>();
@@ -75,6 +78,7 @@ final class DatamartPatient {
     return race;
   }
 
+  /** Lazy getter. */
   public List<Telecom> telecom() {
     if (telecom == null) {
       telecom = new ArrayList<>();
@@ -86,7 +90,7 @@ final class DatamartPatient {
   @Builder
   @NoArgsConstructor(access = AccessLevel.PRIVATE)
   @AllArgsConstructor(access = AccessLevel.PRIVATE)
-  static final class Address {
+  public static final class Address {
     private String type;
 
     private String street1;
@@ -110,7 +114,7 @@ final class DatamartPatient {
   @Builder
   @NoArgsConstructor(access = AccessLevel.PRIVATE)
   @AllArgsConstructor(access = AccessLevel.PRIVATE)
-  static final class Contact {
+  public static final class Contact {
     private String name;
 
     private String type;
@@ -125,7 +129,7 @@ final class DatamartPatient {
     @Builder
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
-    static final class Phone {
+    public static final class Phone {
       private String phoneNumber;
 
       private String workPhoneNumber;
@@ -138,7 +142,7 @@ final class DatamartPatient {
   @Builder
   @NoArgsConstructor(access = AccessLevel.PRIVATE)
   @AllArgsConstructor(access = AccessLevel.PRIVATE)
-  static final class Ethnicity {
+  public static final class Ethnicity {
     private String display;
 
     private String abbrev;
@@ -150,7 +154,7 @@ final class DatamartPatient {
   @Builder
   @NoArgsConstructor(access = AccessLevel.PRIVATE)
   @AllArgsConstructor(access = AccessLevel.PRIVATE)
-  static final class MaritalStatus {
+  public static final class MaritalStatus {
     private String display;
 
     private String abbrev;
@@ -162,7 +166,7 @@ final class DatamartPatient {
   @Builder
   @NoArgsConstructor(access = AccessLevel.PRIVATE)
   @AllArgsConstructor(access = AccessLevel.PRIVATE)
-  static final class Race {
+  public static final class Race {
     private String display;
 
     private String abbrev;
@@ -172,7 +176,7 @@ final class DatamartPatient {
   @Builder
   @NoArgsConstructor(access = AccessLevel.PRIVATE)
   @AllArgsConstructor(access = AccessLevel.PRIVATE)
-  static final class Telecom {
+  public static final class Telecom {
     private String type;
 
     private String phoneNumber;
