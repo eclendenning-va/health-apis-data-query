@@ -53,7 +53,8 @@ public interface ObservationRepository
       predicates.add(criteriaBuilder.equal(root.get("icn"), patient()));
       predicates.add(
           criteriaBuilder.or(
-              categories.stream()
+              categories
+                  .stream()
                   .map(c -> criteriaBuilder.equal(root.get("category"), c))
                   .toArray(Predicate[]::new)));
 
@@ -87,7 +88,8 @@ public interface ObservationRepository
       return criteriaBuilder.and(
           criteriaBuilder.equal(root.get("icn"), patient()),
           criteriaBuilder.or(
-              codes.stream()
+              codes
+                  .stream()
                   .map(c -> criteriaBuilder.equal(root.get("code"), c))
                   .toArray(Predicate[]::new)));
     }

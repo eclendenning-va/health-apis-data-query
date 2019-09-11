@@ -55,8 +55,9 @@ import org.springframework.web.bind.annotation.RestController;
 @Validated
 @RestController
 @RequestMapping(
-    value = {"Observation", "/api/Observation"},
-    produces = {"application/json", "application/json+fhir", "application/fhir+json"})
+  value = {"Observation", "/api/Observation"},
+  produces = {"application/json", "application/json+fhir", "application/fhir+json"}
+)
 public class ObservationController {
   private final Datamart datamart = new Datamart();
 
@@ -236,8 +237,9 @@ public class ObservationController {
 
   /** Hey, this is a validate endpoint. It validates. */
   @PostMapping(
-      value = "/$validate",
-      consumes = {"application/json", "application/json+fhir", "application/fhir+json"})
+    value = "/$validate",
+    consumes = {"application/json", "application/json+fhir", "application/fhir+json"}
+  )
   public OperationOutcome validate(@RequestBody Observation.Bundle bundle) {
     return Validator.create().validate(bundle);
   }
@@ -281,7 +283,8 @@ public class ObservationController {
       replaceReferences(datamarts);
 
       List<Observation> fhir =
-          datamarts.stream()
+          datamarts
+              .stream()
               .map(dm -> DatamartObservationTransformer.builder().datamart(dm).build().toFhir())
               .collect(Collectors.toList());
 
