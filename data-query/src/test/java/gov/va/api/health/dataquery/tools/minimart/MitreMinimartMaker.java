@@ -50,6 +50,7 @@ public class MitreMinimartMaker {
           DiagnosticReportsEntity.class,
           DiagnosticReportCrossEntity.class,
           ImmunizationEntity.class,
+          MedicationEntity.class,
           MedicationStatementEntity.class,
           ObservationEntity.class,
           PatientEntity.class,
@@ -62,7 +63,7 @@ public class MitreMinimartMaker {
 
   private EntityManager entityManager;
 
-  public MitreMinimartMaker(String resourceToSync, String configFile) {
+  private MitreMinimartMaker(String resourceToSync, String configFile) {
     this.resourceToSync = resourceToSync;
     if (configFile == null || configFile.isBlank()) {
       log.info("No config file was specified... Defaulting to local h2 database...");
