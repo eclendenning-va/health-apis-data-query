@@ -2,6 +2,7 @@ package gov.va.api.health.dataquery.service.controller.observation;
 
 import static gov.va.api.health.dataquery.service.controller.observation.DatamartObservationSamples.Fhir.link;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -31,6 +32,7 @@ import java.util.stream.Collectors;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Test;
+import org.junit.runner.JUnitCore;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -587,5 +589,31 @@ public class DatamartObservationControllerTest {
                           1,
                           10))));
     }
+  }
+
+  /*
+   TODO:
+    - These tests
+    - Updates to the toEntity() method to insert a set of mock ETLDate data.
+   */
+
+  @Test
+  public void searchByIdandLastUpdated() {
+    fail();
+  }
+
+  @Test
+  public void searchByPatientandLastUpdated() {
+    fail();
+  }
+
+  @Test
+  public void searchByPatientAndCategoryAndDateAndLastUpdated() {
+    fail();
+  }
+
+  @Test
+  public void searchByPatientAndCodeAndLastUpdated() {
+    fail();
   }
 }
