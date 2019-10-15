@@ -8,17 +8,17 @@ import org.junit.Test;
 
 public class MedicationOrderIncludesIcnMajigTest {
 
-    @Test
-    public void extractIcn() {
-        ExtractIcnValidator.<MedicationOrderIncludesIcnMajig, MedicationOrder>builder()
-                .majig(new MedicationOrderIncludesIcnMajig())
-                .body(
-                        MedicationOrder.builder()
-                                .id("123")
-                                .patient(Reference.builder().reference("Patient/1010101010V666666").build())
-                                .build())
-                .expectedIcns(List.of("1010101010V666666"))
-                .build()
-                .assertIcn();
-    }
+  @Test
+  public void extractIcn() {
+    ExtractIcnValidator.<MedicationOrderIncludesIcnMajig, MedicationOrder>builder()
+        .majig(new MedicationOrderIncludesIcnMajig())
+        .body(
+            MedicationOrder.builder()
+                .id("123")
+                .patient(Reference.builder().reference("Patient/1010101010V666666").build())
+                .build())
+        .expectedIcns(List.of("1010101010V666666"))
+        .build()
+        .assertIcn();
+  }
 }
