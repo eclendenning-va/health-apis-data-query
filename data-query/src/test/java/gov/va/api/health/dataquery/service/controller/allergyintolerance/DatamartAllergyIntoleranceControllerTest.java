@@ -2,6 +2,7 @@ package gov.va.api.health.dataquery.service.controller.allergyintolerance;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.google.common.collect.LinkedHashMultimap;
@@ -21,6 +22,7 @@ import gov.va.api.health.ids.api.Registration;
 import gov.va.api.health.ids.api.ResourceIdentity;
 import java.util.ArrayList;
 import java.util.List;
+import javax.servlet.http.HttpServletResponse;
 import lombok.SneakyThrows;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,6 +35,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 @DataJpaTest
 @RunWith(SpringRunner.class)
 public class DatamartAllergyIntoleranceControllerTest {
+
+  HttpServletResponse response = mock(HttpServletResponse.class);
 
   private IdentityService ids = mock(IdentityService.class);
 
@@ -120,21 +124,23 @@ public class DatamartAllergyIntoleranceControllerTest {
   public void readRaw() {
     DatamartAllergyIntolerance dm =
         DatamartAllergyIntoleranceSamples.Datamart.create().allergyIntolerance();
-    repository.save(asEntity(dm));
+    AllergyIntoleranceEntity entity = asEntity(dm);
+    repository.save(entity);
     mockAllergyIntoleranceIdentity("1", dm.cdwId());
-    String json = controller().readRaw("1");
+    String json = controller().readRaw("1", response);
     assertThat(toObject(json)).isEqualTo(dm);
+    verify(response).addHeader("X-VA-INCLUDES-ICN", entity.icn());
   }
 
   @Test(expected = ResourceExceptions.NotFound.class)
   public void readRawThrowsNotFoundWhenDataIsMissing() {
     mockAllergyIntoleranceIdentity("1", "1");
-    controller().readRaw("1");
+    controller().readRaw("1", response);
   }
 
   @Test(expected = ResourceExceptions.NotFound.class)
   public void readRawThrowsNotFoundWhenIdIsUnknown() {
-    controller().readRaw("1");
+    controller().readRaw("1", response);
   }
 
   @Test(expected = ResourceExceptions.NotFound.class)

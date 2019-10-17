@@ -7,6 +7,7 @@ import static java.util.Collections.emptyList;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import gov.va.api.health.argonaut.api.resources.AllergyIntolerance;
+import gov.va.api.health.dataquery.service.controller.AbstractIncludesIcnMajig;
 import gov.va.api.health.dataquery.service.controller.Bundler;
 import gov.va.api.health.dataquery.service.controller.CountParameter;
 import gov.va.api.health.dataquery.service.controller.PageLinks;
@@ -25,6 +26,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.Min;
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -158,8 +160,10 @@ public class AllergyIntoleranceController {
     value = "/{publicId}",
     headers = {"raw=true"}
   )
-  public String readRaw(@PathVariable("publicId") String publicId) {
-    return datamart.readRaw(publicId);
+  public String readRaw(@PathVariable("publicId") String publicId, HttpServletResponse response) {
+    AllergyIntoleranceEntity entity = datamart.readRaw(publicId);
+    AbstractIncludesIcnMajig.addHeader(response, entity.icn());
+    return entity.payload();
   }
 
   /** Search by _id. */
@@ -266,8 +270,8 @@ public class AllergyIntoleranceController {
       return DatamartAllergyIntoleranceTransformer.builder().datamart(dm).build().toFhir();
     }
 
-    String readRaw(@PathVariable("publicId") String publicId) {
-      return findById(publicId).payload();
+    AllergyIntoleranceEntity readRaw(@PathVariable("publicId") String publicId) {
+      return findById(publicId);
     }
 
     void replaceReferences(Collection<DatamartAllergyIntolerance> resources) {

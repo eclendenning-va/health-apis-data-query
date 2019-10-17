@@ -7,6 +7,7 @@ import static java.util.Collections.emptyList;
 import gov.va.api.health.argonaut.api.resources.Medication;
 import gov.va.api.health.argonaut.api.resources.Medication.Bundle;
 import gov.va.api.health.argonaut.api.resources.Medication.Entry;
+import gov.va.api.health.dataquery.service.controller.AbstractIncludesIcnMajig;
 import gov.va.api.health.dataquery.service.controller.Bundler;
 import gov.va.api.health.dataquery.service.controller.Bundler.BundleContext;
 import gov.va.api.health.dataquery.service.controller.CountParameter;
@@ -25,6 +26,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.Min;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -118,7 +120,8 @@ public class MedicationController {
     value = {"/{publicId}"},
     headers = {"raw=true"}
   )
-  public String readRaw(@PathVariable("publicId") String publicId) {
+  public String readRaw(@PathVariable("publicId") String publicId, HttpServletResponse response) {
+    AbstractIncludesIcnMajig.addHeaderForNoPatients(response);
     return datamart.readRaw(publicId);
   }
 

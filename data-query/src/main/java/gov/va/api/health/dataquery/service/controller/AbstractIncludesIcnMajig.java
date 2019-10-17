@@ -7,6 +7,7 @@ import java.security.InvalidParameterException;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
@@ -31,9 +32,23 @@ public abstract class AbstractIncludesIcnMajig<
         T extends Resource, E extends AbstractEntry<T>, B extends AbstractBundle<E>>
     implements ResponseBodyAdvice<Object> {
 
+  public static final String INCLUDES_ICN_HEADER = "X-VA-INCLUDES-ICN";
+
   private final Class<T> type;
   private final Class<B> bundleType;
   private final Function<T, Stream<String>> extractIcns;
+
+  public static void addHeader(ServerHttpResponse serverHttpResponse, String usersCsv) {
+    serverHttpResponse.getHeaders().add(INCLUDES_ICN_HEADER, usersCsv);
+  }
+
+  public static void addHeader(HttpServletResponse serverHttpResponse, String usersCsv) {
+    serverHttpResponse.addHeader(INCLUDES_ICN_HEADER, usersCsv);
+  }
+
+  public static void addHeaderForNoPatients(HttpServletResponse serverHttpResponse) {
+    addHeader(serverHttpResponse, "NONE");
+  }
 
   @SuppressWarnings("unchecked")
   @Override
@@ -70,7 +85,7 @@ public abstract class AbstractIncludesIcnMajig<
       users = "NONE";
     }
 
-    serverHttpResponse.getHeaders().add("X-VA-INCLUDES-ICN", users);
+    addHeader(serverHttpResponse, users);
 
     return payload;
   }

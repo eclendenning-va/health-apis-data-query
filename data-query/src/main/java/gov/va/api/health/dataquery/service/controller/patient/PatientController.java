@@ -5,6 +5,7 @@ import static gov.va.api.health.dataquery.service.controller.Transformers.hasPay
 import static java.util.Arrays.asList;
 
 import gov.va.api.health.argonaut.api.resources.Patient;
+import gov.va.api.health.dataquery.service.controller.AbstractIncludesIcnMajig;
 import gov.va.api.health.dataquery.service.controller.Bundler;
 import gov.va.api.health.dataquery.service.controller.CountParameter;
 import gov.va.api.health.dataquery.service.controller.JpaDateTimeParameter;
@@ -23,6 +24,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.Min;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
@@ -251,8 +253,10 @@ public class PatientController {
     value = "/{publicId}",
     headers = {"raw=true"}
   )
-  public String readRaw(@PathVariable("publicId") String publicId) {
-    return datamartReadRaw(publicId).payload();
+  public String readRaw(@PathVariable("publicId") String publicId, HttpServletResponse response) {
+    PatientEntity entity = datamartReadRaw(publicId);
+    AbstractIncludesIcnMajig.addHeader(response, entity.icn());
+    return entity.payload();
   }
 
   private Patient.Bundle search(

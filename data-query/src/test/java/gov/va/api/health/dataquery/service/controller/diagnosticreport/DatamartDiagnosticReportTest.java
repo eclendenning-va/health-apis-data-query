@@ -5,6 +5,7 @@ import static gov.va.api.health.dataquery.service.controller.Transformers.parseI
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 import com.google.common.collect.Iterables;
 import gov.va.api.health.argonaut.api.resources.DiagnosticReport;
@@ -21,6 +22,7 @@ import gov.va.api.health.dstu2.api.elements.Reference;
 import gov.va.api.health.ids.api.IdentityService;
 import java.util.Arrays;
 import java.util.stream.Collectors;
+import javax.servlet.http.HttpServletResponse;
 import lombok.Builder;
 import lombok.SneakyThrows;
 import lombok.Value;
@@ -34,6 +36,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 @DataJpaTest
 @RunWith(SpringRunner.class)
 public final class DatamartDiagnosticReportTest {
+
+  HttpServletResponse response = mock(HttpServletResponse.class);
 
   @Autowired private TestEntityManager entityManager;
 
@@ -141,20 +145,22 @@ public final class DatamartDiagnosticReportTest {
     DatamartData dm = DatamartData.create();
     entityManager.persistAndFlush(dm.entity());
     entityManager.persistAndFlush(dm.crossEntity());
-    DatamartDiagnosticReports.DiagnosticReport report = controller().readRaw(dm.reportId());
+    DatamartDiagnosticReports.DiagnosticReport report =
+        controller().readRaw(dm.reportId(), response);
     assertThat(report).isEqualTo(dm.report());
+    verify(response).addHeader("X-VA-INCLUDES-ICN", dm.entity().icn());
   }
 
   @Test(expected = ResourceExceptions.NotFound.class)
   public void readRaw_empty() {
     DiagnosticReportController controller = controller();
-    controller.readRaw("800260864479:L");
+    controller.readRaw("800260864479:L", response);
   }
 
   @Test(expected = ResourceExceptions.NotFound.class)
   public void readRaw_unknown() {
     DiagnosticReportController controller = controller();
-    controller.readRaw("123456:X");
+    controller.readRaw("123456:X", response);
   }
 
   @Test(expected = ResourceExceptions.NotFound.class)
@@ -397,10 +403,11 @@ public final class DatamartDiagnosticReportTest {
   public void searchByPatientRaw() {
     DatamartData dm = DatamartData.create();
     entityManager.persistAndFlush(dm.entity());
-    String json = controller().searchByPatientRaw(dm.icn());
+    String json = controller().searchByPatientRaw(dm.icn(), response);
     assertThat(
             DiagnosticReportsEntity.builder().payload(json).build().asDatamartDiagnosticReports())
         .isEqualTo(dm.reports());
+    verify(response).addHeader("X-VA-INCLUDES-ICN", dm.entity().icn());
   }
 
   @Test

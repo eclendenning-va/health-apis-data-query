@@ -3,6 +3,7 @@ package gov.va.api.health.dataquery.service.controller.condition;
 import static gov.va.api.health.dataquery.service.controller.condition.DatamartConditionSamples.Fhir.link;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.google.common.collect.LinkedHashMultimap;
@@ -26,6 +27,7 @@ import gov.va.api.health.ids.api.ResourceIdentity;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.servlet.http.HttpServletResponse;
 import lombok.SneakyThrows;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,6 +40,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 @DataJpaTest
 @RunWith(SpringRunner.class)
 public class DatamartConditionControllerTest {
+
+  HttpServletResponse response = mock(HttpServletResponse.class);
 
   private IdentityService ids = mock(IdentityService.class);
 
@@ -126,21 +130,23 @@ public class DatamartConditionControllerTest {
   @Test
   public void readRaw() {
     DatamartCondition dm = Datamart.create().condition();
-    repository.save(asEntity(dm));
+    ConditionEntity entity = asEntity(dm);
+    repository.save(entity);
     mockConditionIdentity("x", dm.cdwId());
-    String json = controller().readRaw("x");
+    String json = controller().readRaw("x", response);
     assertThat(toObject(json)).isEqualTo(dm);
+    verify(response).addHeader("X-VA-INCLUDES-ICN", entity.icn());
   }
 
   @Test(expected = ResourceExceptions.NotFound.class)
   public void readRawThrowsNotFoundWhenDataIsMissing() {
     mockConditionIdentity("x", "x");
-    controller().readRaw("x");
+    controller().readRaw("x", response);
   }
 
   @Test(expected = ResourceExceptions.NotFound.class)
   public void readRawThrowsNotFoundWhenIdIsUnknown() {
-    controller().readRaw("x");
+    controller().readRaw("x", response);
   }
 
   @Test(expected = ResourceExceptions.NotFound.class)

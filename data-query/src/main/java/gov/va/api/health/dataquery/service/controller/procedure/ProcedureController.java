@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.va.api.health.argonaut.api.resources.Procedure;
 import gov.va.api.health.argonaut.api.resources.Procedure.Bundle;
 import gov.va.api.health.autoconfig.configuration.JacksonConfig;
+import gov.va.api.health.dataquery.service.controller.AbstractIncludesIcnMajig;
 import gov.va.api.health.dataquery.service.controller.Bundler;
 import gov.va.api.health.dataquery.service.controller.Bundler.BundleContext;
 import gov.va.api.health.dataquery.service.controller.CountParameter;
@@ -31,6 +32,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
@@ -167,8 +169,10 @@ public class ProcedureController {
     value = {"/{publicId}"},
     headers = {"raw=true"}
   )
-  public String readRaw(@PathVariable("publicId") String publicId) {
-    return datamart.readRaw(publicId);
+  public String readRaw(@PathVariable("publicId") String publicId, HttpServletResponse response) {
+    ProcedureEntity entity = datamart.readRaw(publicId);
+    AbstractIncludesIcnMajig.addHeader(response, entity.icn());
+    return entity.payload();
   }
 
   private CdwProcedure101Root search(MultiValueMap<String, String> params) {
@@ -366,8 +370,8 @@ public class ProcedureController {
       return fhir;
     }
 
-    String readRaw(String publicId) {
-      return findById(publicId).payload();
+    ProcedureEntity readRaw(String publicId) {
+      return findById(publicId);
     }
 
     Collection<DatamartProcedure> replaceReferences(Collection<DatamartProcedure> resources) {
