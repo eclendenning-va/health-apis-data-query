@@ -91,11 +91,6 @@ public class MitreMinimartMaker {
     return new String(Files.readAllBytes(Paths.get(file.getPath())));
   }
 
-  private void flushAndClear() {
-    entityManager.flush();
-    entityManager.clear();
-  }
-
   @SneakyThrows
   private void insertByAllergyIntolerance(File file) {
     DatamartAllergyIntolerance dm =
@@ -222,6 +217,11 @@ public class MitreMinimartMaker {
   @SneakyThrows
   private void insertByPatient(File file) {
     DatamartPatient dm = JacksonConfig.createMapper().readValue(file, DatamartPatient.class);
+
+    PatientEntity patEntity =
+        PatientEntity.builder().icn(dm.fullIcn()).payload(fileToString(file)).build();
+    save(patEntity);
+
     PatientSearchEntity patientSearchEntity =
         PatientSearchEntity.builder()
             .icn(dm.fullIcn())
@@ -230,15 +230,9 @@ public class MitreMinimartMaker {
             .name(dm.name())
             .birthDateTime(Instant.parse(dm.birthDateTime()))
             .gender(dm.gender())
+            .patient(patEntity)
             .build();
     save(patientSearchEntity);
-    PatientEntity patEntity =
-        PatientEntity.builder()
-            .icn(dm.fullIcn())
-            .search(patientSearchEntity)
-            .payload(fileToString(file))
-            .build();
-    save(patEntity);
   }
 
   @SneakyThrows
