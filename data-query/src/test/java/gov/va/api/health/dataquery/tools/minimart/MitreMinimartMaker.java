@@ -22,6 +22,8 @@ import gov.va.api.health.dataquery.service.controller.medicationstatement.Datama
 import gov.va.api.health.dataquery.service.controller.medicationstatement.MedicationStatementEntity;
 import gov.va.api.health.dataquery.service.controller.observation.DatamartObservation;
 import gov.va.api.health.dataquery.service.controller.observation.ObservationEntity;
+import gov.va.api.health.dataquery.service.controller.organization.DatamartOrganization;
+import gov.va.api.health.dataquery.service.controller.organization.OrganizationEntity;
 import gov.va.api.health.dataquery.service.controller.patient.DatamartPatient;
 import gov.va.api.health.dataquery.service.controller.patient.PatientEntity;
 import gov.va.api.health.dataquery.service.controller.patient.PatientSearchEntity;
@@ -43,6 +45,7 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 @Slf4j
 public class MitreMinimartMaker {
@@ -59,6 +62,7 @@ public class MitreMinimartMaker {
           MedicationEntity.class,
           MedicationStatementEntity.class,
           ObservationEntity.class,
+          OrganizationEntity.class,
           PatientEntity.class,
           PatientSearchEntity.class,
           PractitionerEntity.class,
@@ -237,6 +241,31 @@ public class MitreMinimartMaker {
   }
 
   @SneakyThrows
+  private void insertByOrganization(File file) {
+    DatamartOrganization dm =
+        JacksonConfig.createMapper().readValue(file, DatamartOrganization.class);
+    OrganizationEntity entity =
+        OrganizationEntity.builder()
+            .cdwId(dm.cdwId())
+            .npi(dm.npi().orElse(null))
+            .providerId(dm.providerId().orElse(null))
+            .ediId(dm.ediId().orElse(null))
+            .agencyId(dm.agencyId().orElse(null))
+            .payload(fileToString(file))
+            .address(
+                StringUtils.trimToNull(
+                    StringUtils.trimToEmpty(dm.address().line1())
+                        + " "
+                        + StringUtils.trimToEmpty(dm.address().line2())))
+            .name(dm.name())
+            .city(dm.address().city())
+            .state(dm.address().state())
+            .postalCode(dm.address().postalCode())
+            .build();
+    save(entity);
+  }
+
+  @SneakyThrows
   private void insertByPatient(File file) {
     DatamartPatient dm = JacksonConfig.createMapper().readValue(file, DatamartPatient.class);
 
@@ -339,6 +368,9 @@ public class MitreMinimartMaker {
         break;
       case "Observation":
         listByPattern(dmDirectory, "^dmObs.*json$").forEach(file -> insertByObservation(file));
+        break;
+      case "Organization":
+        listByPattern(dmDirectory, "^dmOrg.*json$").forEach(file -> insertByOrganization(file));
         break;
       case "Patient":
         listByPattern(dmDirectory, "^dmPat.*json$").forEach(file -> insertByPatient(file));
