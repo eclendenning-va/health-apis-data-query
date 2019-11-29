@@ -183,7 +183,7 @@
                 <argument>-cp</argument>
                 <argument>mr-anderson.jar</argument>
                 <argument>-Dlogging.level.root=INFO</argument>
-                <argument>-Dloader.path=data-query-tests-${project.version}.jar</argument>
+                <argument>-Dloader.path=classes</argument>
                 <argument>-Dloader=gov.va.api.health.mranderson.Application</argument>
                 <argument>-Dmanagement.health.db.enabled=false</argument>
                 <argument>-Dspring.datasource.driver-class-name=gov.va.api.health.dataquery.tests.mockcdw.MockEntityReturnDriver</argument>
@@ -206,16 +206,13 @@
               <name>data-query</name>
               <healthcheckUrl>http://localhost:8090/actuator/health</healthcheckUrl>
               <skip>${sentinel.skipLaunch}</skip>
-              <!--
               <processLogFile>${project.build.directory}/data-query.log</processLogFile>
-              -->
               <arguments>
                 <argument>java</argument>
                 <argument>-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5090</argument>
                 <argument>-cp</argument>
                 <argument>data-query.jar${path.separator}h2.jar</argument>
                 <argument>-Dlogging.level.root=INFO</argument>
-                <argument>-Dloader.path=data-query-tests-${project.version}.jar</argument>
                 <argument>-Dloader=gov.va.api.health.dataquery.service.Application</argument>
                 <argument>-Dargonaut.url=http://localhost:8090</argument>
                 <argument>-Didentityservice.url=http://localhost:8089</argument>
