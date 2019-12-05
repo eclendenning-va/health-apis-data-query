@@ -3,15 +3,13 @@ package gov.va.api.health.dataquery.service.controller.location;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.Optional;
-
-import org.junit.Test;
-
 import gov.va.api.health.dstu2.api.datatypes.Address;
 import gov.va.api.health.dstu2.api.datatypes.CodeableConcept;
 import gov.va.api.health.dstu2.api.datatypes.Coding;
 import gov.va.api.health.dstu2.api.datatypes.ContactPoint;
 import gov.va.api.health.dstu2.api.resources.Location;
+import java.util.Optional;
+import org.junit.Test;
 
 public class DatamartLocationTransformerTest {
   @Test

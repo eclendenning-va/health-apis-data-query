@@ -28,6 +28,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 @DataJpaTest
 @RunWith(SpringRunner.class)
 public class DatamartLocationControllerTest {
+
   @Autowired private LocationRepository repository;
 
   private IdentityService ids = mock(IdentityService.class);
@@ -50,6 +51,24 @@ public class DatamartLocationControllerTest {
     return JacksonConfig.createMapper().writerWithDefaultPrettyPrinter().writeValueAsString(o);
   }
 
+  private void addMockIdentities(
+      String locPubId, String locCdwId, String orgPubId, String orgCdwId) {
+    ResourceIdentity locResource =
+        ResourceIdentity.builder().system("CDW").resource("LOCATION").identifier(locCdwId).build();
+    ResourceIdentity orgResource =
+        ResourceIdentity.builder()
+            .system("CDW")
+            .resource("ORGANIZATION")
+            .identifier(orgCdwId)
+            .build();
+    when(ids.lookup(locPubId)).thenReturn(List.of(locResource));
+    when(ids.register(any()))
+        .thenReturn(
+            List.of(
+                Registration.builder().uuid(locPubId).resourceIdentity(locResource).build(),
+                Registration.builder().uuid(orgPubId).resourceIdentity(orgResource).build()));
+  }
+
   @SneakyThrows
   private DatamartLocation asObject(String json) {
     return JacksonConfig.createMapper().readValue(json, DatamartLocation.class);
@@ -65,25 +84,6 @@ public class DatamartLocationControllerTest {
         WitnessProtection.builder().identityService(ids).build());
   }
 
-  private void addMockIdentities(
-      String locPubId, String locCdwId, String orgPubId, String orgCdwId) {
-    ResourceIdentity locResource =
-        ResourceIdentity.builder().system("CDW").resource("LOCATION").identifier(locCdwId).build();
-    ResourceIdentity orgResource =
-        ResourceIdentity.builder()
-            .system("CDW")
-            .resource("ORGANIZATION")
-            .identifier(orgCdwId)
-            .build();
-
-    when(ids.lookup(locPubId)).thenReturn(List.of(locResource));
-    when(ids.register(any()))
-        .thenReturn(
-            List.of(
-                Registration.builder().uuid(locPubId).resourceIdentity(locResource).build(),
-                Registration.builder().uuid(orgPubId).resourceIdentity(orgResource).build()));
-  }
-
   @Test
   public void read() {
     String publicId = "abc";
@@ -91,7 +91,6 @@ public class DatamartLocationControllerTest {
     String orgPubId = "def";
     String orgCdwId = "456";
     addMockIdentities(publicId, cdwId, orgPubId, orgCdwId);
-
     DatamartLocation dm = DatamartLocationSamples.Datamart.create().location(cdwId, orgCdwId);
     repository.save(asEntity(dm));
     Location actual = controller().read("", publicId);
@@ -107,7 +106,6 @@ public class DatamartLocationControllerTest {
     String orgCdwId = "456";
     addMockIdentities(publicId, cdwId, orgPubId, orgCdwId);
     HttpServletResponse servletResponse = mock(HttpServletResponse.class);
-
     DatamartLocation dm = DatamartLocationSamples.Datamart.create().location(cdwId, orgCdwId);
     repository.save(asEntity(dm));
     String json = controller().readRaw(publicId, servletResponse);
@@ -144,7 +142,6 @@ public class DatamartLocationControllerTest {
     String orgPubId = "def";
     String orgCdwId = "456";
     addMockIdentities(publicId, cdwId, orgPubId, orgCdwId);
-
     DatamartLocation dm = DatamartLocationSamples.Datamart.create().location(cdwId, orgCdwId);
     repository.save(asEntity(dm));
     Location.Bundle actual = controller().searchById("true", publicId, 1, 1);
