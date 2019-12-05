@@ -7,12 +7,15 @@ import gov.va.api.health.dataquery.service.controller.condition.ConditionEntity;
 import gov.va.api.health.dataquery.service.controller.diagnosticreport.DiagnosticReportCrossEntity;
 import gov.va.api.health.dataquery.service.controller.diagnosticreport.DiagnosticReportsEntity;
 import gov.va.api.health.dataquery.service.controller.immunization.ImmunizationEntity;
+import gov.va.api.health.dataquery.service.controller.location.LocationEntity;
 import gov.va.api.health.dataquery.service.controller.medication.MedicationEntity;
 import gov.va.api.health.dataquery.service.controller.medicationorder.MedicationOrderEntity;
 import gov.va.api.health.dataquery.service.controller.medicationstatement.MedicationStatementEntity;
 import gov.va.api.health.dataquery.service.controller.observation.ObservationEntity;
+import gov.va.api.health.dataquery.service.controller.organization.OrganizationEntity;
 import gov.va.api.health.dataquery.service.controller.patient.PatientEntity;
 import gov.va.api.health.dataquery.service.controller.patient.PatientSearchEntity;
+import gov.va.api.health.dataquery.service.controller.practitioner.PractitionerEntity;
 import gov.va.api.health.dataquery.service.controller.procedure.ProcedureEntity;
 import java.util.Arrays;
 import java.util.List;
@@ -42,12 +45,15 @@ public class DatamartExporter {
           ExportForPatientCriteria.of(DiagnosticReportCrossEntity.class),
           ExportForPatientCriteria.of(DiagnosticReportsEntity.class),
           ExportForPatientCriteria.of(ImmunizationEntity.class),
+          ExportAllCriteria.of(LocationEntity.class),
           ExportForPatientCriteria.of(MedicationOrderEntity.class),
           ExportAllCriteria.of(MedicationEntity.class),
           ExportForPatientCriteria.of(MedicationStatementEntity.class),
           ExportForPatientCriteria.of(ObservationEntity.class),
+          ExportAllCriteria.of(OrganizationEntity.class),
           ExportForPatientCriteria.of(PatientEntity.class),
           ExportForPatientCriteria.of(PatientSearchEntity.class),
+          ExportAllCriteria.of(PractitionerEntity.class),
           ExportForPatientCriteria.of(ProcedureEntity.class));
 
   EntityManager h2;
