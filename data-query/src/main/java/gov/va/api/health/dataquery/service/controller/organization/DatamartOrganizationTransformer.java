@@ -47,7 +47,7 @@ final class DatamartOrganizationTransformer {
   }
 
 
-  private ContactPoint telecom(DatamartOrganization.Telecom telecom) {
+  static ContactPoint telecom(DatamartOrganization.Telecom telecom) {
     if (telecom == null || allBlank(telecom.system(), telecom.value())) {
       return null;
     }
@@ -60,7 +60,7 @@ final class DatamartOrganizationTransformer {
                             .build());
   }
 
-  ContactPoint.ContactPointSystem telecomSystem(DatamartOrganization.Telecom.System tel) {
+  static ContactPoint.ContactPointSystem telecomSystem(DatamartOrganization.Telecom.System tel) {
     return convert(
             tel, source -> EnumSearcher.of(ContactPoint.ContactPointSystem.class).find(tel.toString()));
   }
