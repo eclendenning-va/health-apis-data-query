@@ -179,7 +179,7 @@ public class Dstu2MedicationStatementControllerTest {
   @Test
   public void searchByPatient() {
     Multimap<String, MedicationStatement> medicationStatementByPatient = populateData();
-    assertThat(json(controller().searchByPatient("true", "p0", 1, 10)))
+    assertThat(json(controller().searchByPatient("p0", 1, 10)))
         .isEqualTo(
             json(
                 Dstu2.asBundle(
@@ -206,7 +206,7 @@ public class Dstu2MedicationStatementControllerTest {
   @Test
   public void searchByPatientWithCount0() {
     Multimap<String, MedicationStatement> medicationStatementByPatient = populateData();
-    assertThat(json(controller().searchByPatient("true", "p0", 1, 0)))
+    assertThat(json(controller().searchByPatient("p0", 1, 0)))
         .isEqualTo(
             json(
                 Dstu2.asBundle(

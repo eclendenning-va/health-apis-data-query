@@ -172,7 +172,6 @@ public class Dstu2MedicationStatementController {
   /** Search by patient. */
   @GetMapping(params = {"patient"})
   public MedicationStatement.Bundle searchByPatient(
-      @RequestHeader(value = "Datamart", defaultValue = "") String datamartHeader,
       @RequestParam("patient") String patient,
       @RequestParam(value = "page", defaultValue = "1") @Min(1) int page,
       @CountParameter @Min(0) int count) {
