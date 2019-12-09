@@ -13,22 +13,19 @@ import gov.va.api.health.dstu2.api.bundle.BundleLink;
 import gov.va.api.health.dstu2.api.datatypes.CodeableConcept;
 import gov.va.api.health.dstu2.api.datatypes.Coding;
 import gov.va.api.health.dstu2.api.elements.Reference;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.SneakyThrows;
-import lombok.experimental.UtilityClass;
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.stream.Collectors;
+import lombok.Builder;
+import lombok.SneakyThrows;
+import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class DiagnosticReportSamples {
 
   @Builder
   static class Datamart {
+
     @Builder.Default String icn = "1011537977V693883";
 
     @Builder.Default String reportId = "800260864479:L";
@@ -52,19 +49,19 @@ public class DiagnosticReportSamples {
     @SneakyThrows
     DiagnosticReportsEntity entity() {
       return DiagnosticReportsEntity.builder()
-              .icn(icn)
-              .payload(createMapper().writeValueAsString(reports()))
-              .build();
+          .icn(icn)
+          .payload(createMapper().writeValueAsString(reports()))
+          .build();
     }
 
     DatamartDiagnosticReports.DiagnosticReport report() {
       return DatamartDiagnosticReports.DiagnosticReport.builder()
-              .identifier(reportId)
-              .effectiveDateTime(effectiveDateTime)
-              .issuedDateTime(issuedDateTime)
-              .accessionInstitutionSid(performer)
-              .accessionInstitutionName(performerDisplay)
-              .build();
+          .identifier(reportId)
+          .effectiveDateTime(effectiveDateTime)
+          .issuedDateTime(issuedDateTime)
+          .accessionInstitutionSid(performer)
+          .accessionInstitutionName(performerDisplay)
+          .build();
     }
 
     DatamartDiagnosticReports reports() {
@@ -74,6 +71,7 @@ public class DiagnosticReportSamples {
 
   @Builder
   static class Dstu2 {
+
     @Builder.Default String icn = "1011537977V693883";
 
     @Builder.Default String reportId = "800260864479:L";
@@ -86,63 +84,66 @@ public class DiagnosticReportSamples {
 
     @Builder.Default String performerDisplay = "MANILA-RO";
 
+    static Bundle asBundle(
+        String baseUrl, Collection<DiagnosticReport> reports, int total, BundleLink... links) {
+      return Bundle.builder()
+          .resourceType("Bundle")
+          .type(AbstractBundle.BundleType.searchset)
+          .total(total)
+          .link(Arrays.asList(links))
+          .entry(
+              reports
+                  .stream()
+                  .map(
+                      c ->
+                          Entry.builder()
+                              .fullUrl(baseUrl + "/DiagnosticReport/" + c.id())
+                              .resource(c)
+                              .search(
+                                  AbstractEntry.Search.builder()
+                                      .mode(AbstractEntry.SearchMode.match)
+                                      .build())
+                              .build())
+                  .collect(Collectors.toList()))
+          .build();
+    }
+
     static Dstu2 create() {
       return Dstu2.builder().build();
     }
 
-    static Bundle asBundle(
-            String baseUrl, Collection<DiagnosticReport> reports, BundleLink... links) {
-      return Bundle.builder()
-              .resourceType("Bundle")
-              .type(AbstractBundle.BundleType.searchset)
-              .total(reports.size())
-              .link(Arrays.asList(links))
-              .entry(
-                      reports
-                              .stream()
-                              .map(
-                                      c ->
-                                              Entry.builder()
-                                                      .fullUrl(baseUrl + "/DiagnosticReport/" + c.id())
-                                                      .resource(c)
-                                                      .search(AbstractEntry.Search.builder().mode(AbstractEntry.SearchMode.match).build())
-                                                      .build())
-                              .collect(Collectors.toList()))
-              .build();
-    }
-
     static BundleLink link(BundleLink.LinkRelation rel, String base, int page, int count) {
       return BundleLink.builder()
-              .relation(rel)
-              .url(base + "&page=" + page + "&_count=" + count)
-              .build();
+          .relation(rel)
+          .url(base + "&page=" + page + "&_count=" + count)
+          .build();
     }
 
     DiagnosticReport report() {
       return DiagnosticReport.builder()
-              .id(reportId)
-              .resourceType("DiagnosticReport")
-              .status(DiagnosticReport.Code._final)
-              .category(
-                      CodeableConcept.builder()
-                              .coding(
-                                      asList(
-                                              Coding.builder()
-                                                      .system("http://hl7.org/fhir/ValueSet/diagnostic-service-sections")
-                                                      .code("LAB")
-                                                      .display("Laboratory")
-                                                      .build()))
-                              .build())
-              .code(CodeableConcept.builder().text("panel").build())
-              .subject(Reference.builder().reference("Patient/" + icn).build())
-              .effectiveDateTime(parseInstant(effectiveDateTime).toString())
-              .issued(parseInstant(issuedDateTime).toString())
-              .performer(
-                      Reference.builder()
-                              .reference("Organization/" + performer)
-                              .display(performerDisplay)
-                              .build())
-              .build();
+          .id(reportId)
+          .resourceType("DiagnosticReport")
+          .status(DiagnosticReport.Code._final)
+          .category(
+              CodeableConcept.builder()
+                  .coding(
+                      asList(
+                          Coding.builder()
+                              .system("http://hl7.org/fhir/ValueSet/diagnostic-service-sections")
+                              .code("LAB")
+                              .display("Laboratory")
+                              .build()))
+                  .build())
+          .code(CodeableConcept.builder().text("panel").build())
+          .subject(Reference.builder().reference("Patient/" + icn).build())
+          .effectiveDateTime(parseInstant(effectiveDateTime).toString())
+          .issued(parseInstant(issuedDateTime).toString())
+          .performer(
+              Reference.builder()
+                  .reference("Organization/" + performer)
+                  .display(performerDisplay)
+                  .build())
+          .build();
     }
   }
 }
