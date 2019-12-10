@@ -141,6 +141,11 @@ public class Dstu2ProcedureController {
     return mapper.readValue(withoutRecordsString, clazz);
   }
 
+  ProcedureEntity findById(String publicId) {
+    Optional<ProcedureEntity> entity = repository.findById(witnessProtection.toCdwId(publicId));
+    return entity.orElseThrow(() -> new NotFound(publicId));
+  }
+
   /**
    * In some environments, it is necessary to use procedure data for one patient, {@link
    * #withRecordsId}, to service requests for another patient, {@link #withoutRecordsId}, that has
@@ -162,9 +167,7 @@ public class Dstu2ProcedureController {
   public Procedure read(
       @PathVariable("publicId") String publicId,
       @RequestHeader(value = "X-VA-ICN", required = false) String icnHeader) {
-    Optional<ProcedureEntity> entity = repository.findById(witnessProtection.toCdwId(publicId));
-    DatamartProcedure procedure =
-        entity.orElseThrow(() -> new NotFound(publicId)).asDatamartProcedure();
+    DatamartProcedure procedure = findById(publicId).asDatamartProcedure();
     replaceReferences(List.of(procedure));
     Procedure fhir = transform(procedure);
     if (isNotBlank(icnHeader) && isPatientWithoutRecords(icnHeader)) {
@@ -182,8 +185,7 @@ public class Dstu2ProcedureController {
       @PathVariable("publicId") String publicId,
       @RequestHeader(value = "X-VA-ICN", required = false) String icnHeader,
       HttpServletResponse response) {
-    Optional<ProcedureEntity> entity1 = repository.findById(witnessProtection.toCdwId(publicId));
-    ProcedureEntity entity = entity1.orElseThrow(() -> new NotFound(publicId));
+    ProcedureEntity entity = findById(publicId);
     if (isNotBlank(icnHeader)
         && isPatientWithoutRecords(icnHeader)
         && entity.icn().equals(withRecordsId)) {
