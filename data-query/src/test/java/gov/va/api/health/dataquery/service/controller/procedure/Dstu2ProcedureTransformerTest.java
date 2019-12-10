@@ -27,7 +27,7 @@ public class Dstu2ProcedureTransformerTest {
 
   @Test
   public void reasonNotPerformed() {
-    DatamartProcedureTransformer tx = tx(Datamart.create().procedure());
+    Dstu2ProcedureTransformer tx = tx(Datamart.create().procedure());
     assertThat(tx.reasonNotPerformed(Optional.empty())).isNull();
     assertThat(tx.reasonNotPerformed(Optional.of("cuz.")))
         .isEqualTo(List.of(CodeableConcept.builder().text("cuz.").build()));
@@ -35,14 +35,14 @@ public class Dstu2ProcedureTransformerTest {
 
   @Test
   public void status() {
-    DatamartProcedureTransformer tx = tx(Datamart.create().procedure());
+    Dstu2ProcedureTransformer tx = tx(Datamart.create().procedure());
     assertThat(tx.status(Status.in_progress)).isEqualTo(Procedure.Status.in_progress);
     assertThat(tx.status(Status.aborted)).isEqualTo(Procedure.Status.aborted);
     assertThat(tx.status(Status.completed)).isEqualTo(Procedure.Status.completed);
     assertThat(tx.status(Status.cancelled)).isEqualTo(Procedure.Status.entered_in_error);
   }
 
-  DatamartProcedureTransformer tx(DatamartProcedure dm) {
-    return DatamartProcedureTransformer.builder().datamart(dm).build();
+  Dstu2ProcedureTransformer tx(DatamartProcedure dm) {
+    return Dstu2ProcedureTransformer.builder().datamart(dm).build();
   }
 }

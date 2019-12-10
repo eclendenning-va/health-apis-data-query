@@ -289,7 +289,7 @@ public class Dstu2ProcedureController {
   }
 
   Procedure transform(DatamartProcedure dm) {
-    return DatamartProcedureTransformer.builder().datamart(dm).build().toFhir();
+    return Dstu2ProcedureTransformer.builder().datamart(dm).build().toFhir();
   }
 
   /** Hey, this is a validate endpoint. It validates. */
