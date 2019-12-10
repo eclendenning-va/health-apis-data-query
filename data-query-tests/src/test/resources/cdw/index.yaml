@@ -96,16 +96,3 @@ entries:
     query: /Encounter:1.02?_id=1200753214085
     page: 1
     count: 1
-  # DiagnosticReport aliases
-  - file: ../../../../target/cdw/samples/DiaRep102p185601V825290catLABdgt19700101dlt20380101.xml
-    query: /DiagnosticReport:1.02?code=10000-8,10001-6&patient=185601V825290
-    page: 1
-    count: 15
-  - file: ../../../../target/cdw/samples/DiaRep102p185601V825290catLABdgt19700101dlt20380101.xml
-    query: /DiagnosticReport:1.02?patient=185601V825290&category=LAB
-    page: 1
-    count: 21
-  - file: ../../../../target/cdw/samples/DiaRep102p185601V825290catLABdgt19700101dlt20380101.xml
-    query: /DiagnosticReport:1.02?patient=185601V825290&category=LAB
-    page: 1
-    count: 20
