@@ -15,6 +15,7 @@ import gov.va.api.health.dstu2.api.datatypes.Coding;
 import gov.va.api.health.dstu2.api.elements.Reference;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 import lombok.Builder;
 import lombok.SneakyThrows;
@@ -54,6 +55,16 @@ public class DiagnosticReportSamples {
           .build();
     }
 
+    @SneakyThrows
+    DiagnosticReportsEntity entityWithNoReport() {
+      return DiagnosticReportsEntity.builder()
+          .icn(icn)
+          .payload(
+              createMapper()
+                  .writeValueAsString(DatamartDiagnosticReports.builder().fullIcn(icn).build()))
+          .build();
+    }
+
     DatamartDiagnosticReports.DiagnosticReport report() {
       return DatamartDiagnosticReports.DiagnosticReport.builder()
           .identifier(reportId)
@@ -61,6 +72,7 @@ public class DiagnosticReportSamples {
           .issuedDateTime(issuedDateTime)
           .accessionInstitutionSid(performer)
           .accessionInstitutionName(performerDisplay)
+          .results(List.of(DatamartDiagnosticReports.Result.builder().result("TEST").build()))
           .build();
     }
 
@@ -85,11 +97,14 @@ public class DiagnosticReportSamples {
     @Builder.Default String performerDisplay = "MANILA-RO";
 
     static Bundle asBundle(
-        String baseUrl, Collection<DiagnosticReport> reports, int total, BundleLink... links) {
+        String baseUrl,
+        Collection<DiagnosticReport> reports,
+        int totalRecords,
+        BundleLink... links) {
       return Bundle.builder()
           .resourceType("Bundle")
           .type(AbstractBundle.BundleType.searchset)
-          .total(total)
+          .total(totalRecords)
           .link(Arrays.asList(links))
           .entry(
               reports

@@ -23,7 +23,6 @@ import gov.va.api.health.dstu2.api.datatypes.CodeableConcept;
 import gov.va.api.health.dstu2.api.datatypes.Coding;
 import gov.va.api.health.dstu2.api.elements.Reference;
 import gov.va.api.health.ids.api.IdentityService;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -100,36 +99,21 @@ public class Dstu2DiagnosticReportControllerTest {
     controller.readRaw("123456:X", response);
   }
 
+  @Test(expected = ResourceExceptions.NotFound.class)
+  public void readRawWithNoReport() {
+    Datamart dm = Datamart.create();
+    entityManager.persistAndFlush(dm.entityWithNoReport());
+    entityManager.persistAndFlush(dm.crossEntity());
+    controller().readRaw("800260864479:L", response);
+  }
+
   @Test
   public void searchById() {
     Datamart dm = Datamart.create();
     entityManager.persistAndFlush(dm.entity());
     entityManager.persistAndFlush(dm.crossEntity());
     DiagnosticReport.Bundle bundle = controller().searchById("800260864479:L", 1, 15);
-    assertThat(Iterables.getOnlyElement(bundle.entry()).resource())
-        .isEqualTo(Dstu2.create().report());
-    assertThat(json(bundle))
-        .isEqualTo(
-            json(
-                Dstu2.asBundle(
-                    "http://fonzy.com/cool",
-                    List.of(Dstu2.create().report()),
-                    1,
-                    link(
-                        BundleLink.LinkRelation.first,
-                        "http://fonzy.com/cool/DiagnosticReport?identifier=800260864479:L",
-                        1,
-                        15),
-                    link(
-                        BundleLink.LinkRelation.self,
-                        "http://fonzy.com/cool/DiagnosticReport?identifier=800260864479:L",
-                        1,
-                        15),
-                    link(
-                        BundleLink.LinkRelation.last,
-                        "http://fonzy.com/cool/DiagnosticReport?identifier=800260864479:L",
-                        1,
-                        15))));
+    validateSearchByIdResult(bundle);
   }
 
   @Test
@@ -139,17 +123,17 @@ public class Dstu2DiagnosticReportControllerTest {
     entityManager.persistAndFlush(dm.crossEntity());
     DiagnosticReport.Bundle bundle = controller().searchById("800260864479:L", 1, 0);
     assertThat(json(bundle))
-            .isEqualTo(
-                    json(
-                            Dstu2.asBundle(
-                                    "http://fonzy.com/cool",
-                                    Collections.emptyList(),
-                                    1,
-                                    link(
-                                            BundleLink.LinkRelation.self,
-                                            "http://fonzy.com/cool/DiagnosticReport?identifier=800260864479:L",
-                                            1,
-                                            0))));
+        .isEqualTo(
+            json(
+                Dstu2.asBundle(
+                    "http://fonzy.com/cool",
+                    Collections.emptyList(),
+                    1,
+                    link(
+                        BundleLink.LinkRelation.self,
+                        "http://fonzy.com/cool/DiagnosticReport?identifier=800260864479:L",
+                        1,
+                        0))));
   }
 
   @Test
@@ -158,30 +142,7 @@ public class Dstu2DiagnosticReportControllerTest {
     entityManager.persistAndFlush(dm.entity());
     entityManager.persistAndFlush(dm.crossEntity());
     DiagnosticReport.Bundle bundle = controller().searchByIdentifier("800260864479:L", 1, 15);
-    assertThat(Iterables.getOnlyElement(bundle.entry()).resource())
-        .isEqualTo(Dstu2.create().report());
-    assertThat(json(bundle))
-        .isEqualTo(
-            json(
-                Dstu2.asBundle(
-                    "http://fonzy.com/cool",
-                    List.of(Dstu2.create().report()),
-                    1,
-                    link(
-                        BundleLink.LinkRelation.first,
-                        "http://fonzy.com/cool/DiagnosticReport?identifier=800260864479:L",
-                        1,
-                        15),
-                    link(
-                        BundleLink.LinkRelation.self,
-                        "http://fonzy.com/cool/DiagnosticReport?identifier=800260864479:L",
-                        1,
-                        15),
-                    link(
-                        BundleLink.LinkRelation.last,
-                        "http://fonzy.com/cool/DiagnosticReport?identifier=800260864479:L",
-                        1,
-                        15))));
+    validateSearchByIdResult(bundle);
   }
 
   @Test
@@ -426,5 +387,40 @@ public class Dstu2DiagnosticReportControllerTest {
     Datamart dm = Datamart.create();
     entityManager.persistAndFlush(dm.entity());
     controller().searchByPatientRaw("WHODIS?", response);
+  }
+
+  @Test
+  public void searchByUnknownPatient() {
+    Datamart dm = Datamart.create();
+    entityManager.persistAndFlush(dm.entity());
+    DiagnosticReport.Bundle bundle = controller().searchByPatient("WHODIS", 1, 15);
+    assertThat(bundle.entry()).isEmpty();
+  }
+
+  private void validateSearchByIdResult(DiagnosticReport.Bundle bundle) {
+    assertThat(Iterables.getOnlyElement(bundle.entry()).resource())
+        .isEqualTo(Dstu2.create().report());
+    assertThat(json(bundle))
+        .isEqualTo(
+            json(
+                Dstu2.asBundle(
+                    "http://fonzy.com/cool",
+                    List.of(Dstu2.create().report()),
+                    1,
+                    link(
+                        BundleLink.LinkRelation.first,
+                        "http://fonzy.com/cool/DiagnosticReport?identifier=800260864479:L",
+                        1,
+                        15),
+                    link(
+                        BundleLink.LinkRelation.self,
+                        "http://fonzy.com/cool/DiagnosticReport?identifier=800260864479:L",
+                        1,
+                        15),
+                    link(
+                        BundleLink.LinkRelation.last,
+                        "http://fonzy.com/cool/DiagnosticReport?identifier=800260864479:L",
+                        1,
+                        15))));
   }
 }

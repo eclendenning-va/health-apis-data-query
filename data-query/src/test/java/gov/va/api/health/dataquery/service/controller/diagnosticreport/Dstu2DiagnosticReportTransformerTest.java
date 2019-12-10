@@ -38,6 +38,11 @@ public class Dstu2DiagnosticReportTransformerTest {
   }
 
   @Test
+  public void resultWithNullResult() {
+    assertThat(Dstu2DiagnosticReportTransformer.result(null)).isNull();
+  }
+
+  @Test
   public void results() {
     assertThat(Dstu2DiagnosticReportTransformer.results(null)).isEqualTo(null);
     var expected =
@@ -48,11 +53,6 @@ public class Dstu2DiagnosticReportTransformerTest {
     assertThat(Dstu2DiagnosticReportTransformer.results(sample)).isEqualTo(expected);
     var emptySample = Arrays.asList(DatamartDiagnosticReports.Result.builder().build());
     assertThat(Dstu2DiagnosticReportTransformer.results(emptySample)).isEqualTo(null);
-  }
-
-  @Test
-  public void resultWithNullResult() {
-    assertThat(Dstu2DiagnosticReportTransformer.result(null)).isNull();
   }
 
   @Test
