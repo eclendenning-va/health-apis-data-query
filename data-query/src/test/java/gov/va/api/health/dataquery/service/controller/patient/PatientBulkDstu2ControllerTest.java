@@ -6,6 +6,7 @@ import gov.va.api.health.argonaut.api.resources.Patient;
 import gov.va.api.health.autoconfig.configuration.JacksonConfig;
 import gov.va.api.health.dataquery.service.controller.BulkFhirCount;
 import gov.va.api.health.dataquery.service.controller.ResourceExceptions.BadSearchParameter;
+import gov.va.api.health.dataquery.service.controller.patient.PatientSamples.Dstu2;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.SneakyThrows;
@@ -19,7 +20,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 @DataJpaTest
 @RunWith(SpringRunner.class)
-public class PatientBulkFhirControllerTest {
+public class PatientBulkDstu2ControllerTest {
   @Autowired private TestEntityManager entityManager;
 
   @Autowired private PatientRepository repository;
@@ -58,8 +59,8 @@ public class PatientBulkFhirControllerTest {
   }
 
   private List<Patient> populateData() {
-    var fhir = DatamartPatientSamples.Fhir.create();
-    var datamart = DatamartPatientSamples.Datamart.create();
+    var fhir = Dstu2.create();
+    var datamart = PatientSamples.Datamart.create();
     var patients = new ArrayList<Patient>();
     for (int i = 0; i < 10; i++) {
       var id = String.valueOf(i);

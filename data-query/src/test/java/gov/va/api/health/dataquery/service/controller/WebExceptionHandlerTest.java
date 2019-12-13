@@ -9,7 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.JsonMappingException;
 import gov.va.api.health.autoconfig.configuration.JacksonConfig;
-import gov.va.api.health.dataquery.service.controller.patient.PatientController;
+import gov.va.api.health.dataquery.service.controller.patient.Dstu2PatientController;
 import gov.va.api.health.dataquery.service.mranderson.client.MrAndersonClient;
 import gov.va.api.health.dataquery.service.mranderson.client.MrAndersonClient.BadRequest;
 import gov.va.api.health.dataquery.service.mranderson.client.MrAndersonClient.NotFound;
@@ -56,9 +56,8 @@ public class WebExceptionHandlerTest {
 
   @Mock HttpServletRequest request;
   @Mock MrAndersonClient mrAnderson;
-  @Mock PatientController.Transformer tx;
   @Mock Dstu2Bundler bundler;
-  private PatientController controller;
+  private Dstu2PatientController controller;
   private WebExceptionHandler exceptionHandler;
 
   @SuppressWarnings("deprecation")
@@ -93,7 +92,7 @@ public class WebExceptionHandlerTest {
   @Before
   public void _init() {
     MockitoAnnotations.initMocks(this);
-    controller = new PatientController(false, tx, mrAnderson, bundler, null, null);
+    controller = new Dstu2PatientController(bundler, null, null);
     exceptionHandler = new WebExceptionHandler();
   }
 

@@ -21,7 +21,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 @Slf4j
-public class PatientBulkFhirIT {
+public class PatientBulkDstu2IT {
 
   private String apiPath() {
     return TestClients.internalDataQuery().service().urlWithApiPath();
