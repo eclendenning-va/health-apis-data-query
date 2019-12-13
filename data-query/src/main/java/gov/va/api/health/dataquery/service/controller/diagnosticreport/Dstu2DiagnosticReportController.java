@@ -31,7 +31,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.persistence.EntityManager;
@@ -125,11 +124,7 @@ public class Dstu2DiagnosticReportController {
             .build();
     return bundler.bundle(
         Dstu2Bundler.BundleContext.of(
-            linkConfig,
-            reports,
-            Function.identity(),
-            DiagnosticReport.Entry::new,
-            DiagnosticReport.Bundle::new));
+            linkConfig, reports, DiagnosticReport.Entry::new, DiagnosticReport.Bundle::new));
   }
 
   @SneakyThrows

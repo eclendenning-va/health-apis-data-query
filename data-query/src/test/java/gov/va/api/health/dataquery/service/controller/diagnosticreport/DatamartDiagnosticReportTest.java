@@ -8,7 +8,6 @@ import lombok.SneakyThrows;
 import org.junit.Test;
 
 public class DatamartDiagnosticReportTest {
-
   public void assertReadable(String json) throws java.io.IOException {
     DatamartDiagnosticReports dmDr =
         createMapper()

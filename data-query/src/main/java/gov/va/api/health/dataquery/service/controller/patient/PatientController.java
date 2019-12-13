@@ -275,7 +275,7 @@ public class PatientController {
               .build();
       return bundler.bundle(
           Dstu2Bundler.BundleContext.of(
-              linkConfig, reports, Function.identity(), Patient.Entry::new, Patient.Bundle::new));
+              linkConfig, reports, Patient.Entry::new, Patient.Bundle::new));
     }
 
     Patient.Bundle bundle(
